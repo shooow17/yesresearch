@@ -271,13 +271,45 @@
             window.location.href = 'index.html';
         };
 
-// 處理作業提交
-document.getElementById('researchForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const confirmed = confirm('確定要提交作業嗎？');
-    if (confirmed) {
-        alert('作業已成功提交！您仍可以繼續修改。');
+// 處理作業提交和載入
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('researchForm');
+    
+    // 載入已儲存的作業內容
+    const savedAssignment = sessionStorage.getItem('assignmentData');
+    if (savedAssignment) {
+        const data = JSON.parse(savedAssignment);
+        const textareas = form.getElementsByTagName('textarea');
+        const finalTopic = form.querySelector('input[type="text"]');
+        
+        // 填入已儲存的內容
+        for (let i = 0; i < textareas.length; i++) {
+            textareas[i].value = data.textareas[i] || '';
+        }
+        finalTopic.value = data.finalTopic || '';
     }
+
+    // 處理作業提交
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const confirmed = confirm('確定要提交作業嗎？');
+        if (confirmed) {
+            // 儲存所有文本框的內容
+            const textareas = form.getElementsByTagName('textarea');
+            const finalTopic = form.querySelector('input[type="text"]');
+            
+            const assignmentData = {
+                textareas: Array.from(textareas).map(ta => ta.value),
+                finalTopic: finalTopic.value,
+                lastModified: new Date().toLocaleString()
+            };
+            
+            // 儲存到 sessionStorage
+            sessionStorage.setItem('assignmentData', JSON.stringify(assignmentData));
+            
+            alert('作業已成功提交！您仍可以繼續修改。');
+        }
+    });
 });
 
         // 初始化頁面
