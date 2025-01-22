@@ -127,12 +127,14 @@
             const user = [...userData.students, ...userData.teachers]
                 .find(u => u.id === userId && u.password === password);
 
-            if (user) {
-                loginAttempts = 0;
-                showError('');
-                alert(`歡迎, ${user.name}!`);
-                // 這裡可以加入登入成功後的導向邏輯
-            } else {
+if (user) {
+    loginAttempts = 0;
+    showError('');
+    // 儲存使用者資料到 sessionStorage
+    sessionStorage.setItem('userData', JSON.stringify(user));
+    // 重定向到儀表板
+    window.location.href = 'dashboard.html';
+} else {
                 loginAttempts++;
                 if (loginAttempts >= config.loginAttempts) {
                     lockLogin();
