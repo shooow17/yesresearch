@@ -1,0 +1,23 @@
+{
+  "students": [
+    {
+      "id": "student1",
+      "password": "password1",
+      "name": "王小明",
+      "class": "801"
+    },
+    {
+      "id": "student2",
+      "password": "password2",
+      "name": "李小華",
+      "class": "802"
+    }
+  ],
+  "teachers": [
+    {
+      "id": "teacher1",
+      "password": "teacherpass1",
+      "name": "陳老師"
+    }
+  ]
+}
