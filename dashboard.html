@@ -271,15 +271,14 @@
             window.location.href = 'index.html';
         };
 
-        // 處理作業提交
-        document.getElementById('researchForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const confirmed = confirm('確定要提交作業嗎？提交後將無法修改。');
-            if (confirmed) {
-                alert('作業已成功提交！');
-                this.reset();
-            }
-        });
+// 處理作業提交
+document.getElementById('researchForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const confirmed = confirm('確定要提交作業嗎？');
+    if (confirmed) {
+        alert('作業已成功提交！您仍可以繼續修改。');
+    }
+});
 
         // 初始化頁面
         document.getElementById('currentDate').textContent = formatDate(new Date());
