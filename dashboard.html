@@ -322,7 +322,7 @@
         </div>
     </div>
 
-  <script type="module">
+ <script type="module">
     import config from './js/config.js';
 
     // 檢查登入狀態
@@ -338,84 +338,6 @@
         document.getElementById('userIdDisplay').textContent = `ID: ${user.id}`;
     }
 
-    // 載入課程資料
-    async function loadCourseData() {
-        try {
-            const response = await fetch('/courseData.json');
-            const data = await response.json();
-            renderCourses(data);
-        } catch (error) {
-            console.error('載入課程資料失敗:', error);
-        }
-    }
-
-    function renderCourses(data) {
-        const tabsContainer = document.getElementById('weekTabs');
-        const panelsContainer = document.getElementById('weekPanels');
-        
-        if (!tabsContainer || !panelsContainer) {
-            console.error('找不到課程容器元素');
-            return;
-        }
-
-        // 清空現有內容
-        tabsContainer.innerHTML = '';
-        panelsContainer.innerHTML = '';
-        
-        // 生成標籤按鈕
-        data.weeks.forEach((week, index) => {
-            const button = document.createElement('button');
-            button.className = `tab-button ${index === 0 ? 'active' : ''}`;
-            button.textContent = `第${week.weekNum}週`;
-            button.onclick = () => switchTab(index);
-            tabsContainer.appendChild(button);
-        });
-
-        // 生成面板內容
-        data.weeks.forEach((week, index) => {
-            const panel = document.createElement('div');
-            panel.className = `tab-panel ${index === 0 ? 'active' : ''}`;
-            
-            panel.innerHTML = `
-                <div class="week-header">
-                    <h3>第${week.weekNum}週：${week.title}</h3>
-                    <span class="week-date">${week.dateRange}</span>
-                </div>
-                ${week.courses.map(course => `
-                    <div class="course-card">
-                        <div class="course-header">
-                            <h4 class="course-title">${course.title}</h4>
-                            <span class="course-status status-${course.status}">${
-                                course.status === 'pending' ? '進行中' : '已完成'
-                            }</span>
-                        </div>
-                        <div class="course-content">
-                            <p>${course.description}</p>
-                        </div>
-                        <div class="course-actions">
-                            <button class="course-button primary-button" 
-                                    onclick="openAssignment('${course.id}')">開始作業</button>
-                            <button class="course-button secondary-button" 
-                                    onclick="viewMaterials('${course.id}')">查看教材</button>
-                        </div>
-                    </div>
-                `).join('')}
-            `;
-            
-            panelsContainer.appendChild(panel);
-        });
-    }
-
-    function switchTab(index) {
-        document.querySelectorAll('.tab-button').forEach((btn, i) => {
-            btn.classList.toggle('active', i === index);
-        });
-        
-        document.querySelectorAll('.tab-panel').forEach((panel, i) => {
-            panel.classList.toggle('active', i === index);
-        });
-    }
-
     // 格式化日期
     function formatDate(date) {
         const options = {
@@ -427,74 +349,82 @@
         return date.toLocaleDateString('zh-TW', options);
     }
 
-    // 處理作業提交
-    function handleAssignmentSubmit(form) {
-        const confirmed = confirm('確定要提交作業嗎？');
-        if (confirmed) {
-            const textareas = form.getElementsByTagName('textarea');
-            const finalTopic = form.querySelector('input[type="text"]');
-            
-            const assignmentData = {
-                textareas: Array.from(textareas).map(ta => ta.value),
-                finalTopic: finalTopic.value,
-                lastModified: new Date().toLocaleString()
-            };
-            
-            sessionStorage.setItem('assignmentData', JSON.stringify(assignmentData));
-            alert('作業已成功提交！您仍可以繼續修改。');
-        }
-    }
-
-    // 設定全域函數
-    window.openAssignment = function(courseId) {
-        console.log('Opening assignment for course:', courseId);
-    };
-
-    window.viewMaterials = function(courseId) {
-        console.log('Viewing materials for course:', courseId);
-    };
-
+    // 登出函數
     window.logout = function() {
         sessionStorage.removeItem('userData');
         window.location.href = 'index.html';
     };
 
-    // 初始化頁面 - 只使用一個 DOMContentLoaded 事件
+    // 初始化頁面
     document.addEventListener('DOMContentLoaded', function() {
         // 設定當前日期
         document.getElementById('currentDate').textContent = formatDate(new Date());
         
         // 檢查登入狀態
         checkLoginStatus();
-        
-        // 載入課程資料
-        loadCourseData();
 
-        // 設定作業表單提交事件
-        const assignmentForm = document.querySelector('form');
-        if (assignmentForm) {
-            assignmentForm.addEventListener('submit', function(e) {
+        // 處理作業提交
+        const form = document.querySelector('form');
+        if (form) {
+            form.addEventListener('submit', function(e) {
                 e.preventDefault();
-                handleAssignmentSubmit(this);
+                const confirmed = confirm('確定要提交作業嗎？');
+                if (confirmed) {
+                    // 儲存所有文本框的內容
+                    const textareas = form.getElementsByTagName('textarea');
+                    const finalTopic = form.querySelector('input[type="text"]');
+                    
+                    const assignmentData = {
+                        textareas: Array.from(textareas).map(ta => ta.value),
+                        finalTopic: finalTopic.value,
+                        lastModified: new Date().toLocaleString()
+                    };
+                    
+                    // 儲存到 sessionStorage
+                    sessionStorage.setItem('assignmentData', JSON.stringify(assignmentData));
+                    
+                    alert('作業已成功提交！您仍可以繼續修改。');
+                }
             });
         }
 
-        // 設定摺疊面板事件
+        // 處理摺疊面板
         const accordionHeaders = document.querySelectorAll('.accordion-header');
         accordionHeaders.forEach(header => {
             header.addEventListener('click', function() {
                 const item = this.parentElement;
                 const isActive = item.classList.contains('active');
                 
+                // 關閉所有其他開啟的項目
                 document.querySelectorAll('.accordion-item').forEach(accItem => {
                     accItem.classList.remove('active');
                 });
                 
+                // 如果當前項目未開啟，則開啟它
                 if (!isActive) {
                     item.classList.add('active');
                 }
             });
         });
+
+        // 載入先前儲存的作業資料（如果有）
+        const savedData = sessionStorage.getItem('assignmentData');
+        if (savedData && form) {
+            const data = JSON.parse(savedData);
+            const textareas = form.getElementsByTagName('textarea');
+            const finalTopic = form.querySelector('input[type="text"]');
+            
+            // 恢復文本框內容
+            Array.from(textareas).forEach((ta, index) => {
+                if (data.textareas[index]) {
+                    ta.value = data.textareas[index];
+                }
+            });
+            
+            if (finalTopic && data.finalTopic) {
+                finalTopic.value = data.finalTopic;
+            }
+        }
     });
 </script>
 
