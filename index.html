@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>學生登入系統</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f0f2f5;
+        }
+        .login-container {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+        input {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 0.75rem;
+            background-color: #1a73e8;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #1557b0;
+        }
+        .error-message {
+            color: red;
+            margin-top: 1rem;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h2 style="text-align: center; margin-bottom: 2rem;">學生登入系統</h2>
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="userId">學號：</label>
+                <input type="text" id="userId" required>
+            </div>
+            <div class="form-group">
+                <label for="password">密碼：</label>
+                <input type="password" id="password" required>
+            </div>
+            <button type="submit">登入</button>
+        </form>
+        <div id="errorMessage" class="error-message"></div>
+    </div>
+
+    <script type="module">
+        import config from './js/config.js';
+        
+        let loginAttempts = 0;
+        let isLocked = false;
+        let lockoutTimer = null;
+
+        async function loadUserData() {
+            try {
+                const response = await fetch(config.dataUrl);
+                if (!response.ok) throw new Error('無法載入使用者資料');
+                return await response.json();
+            } catch (error) {
+                console.error('Error loading user data:', error);
+                return null;
+            }
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+        }
+
+        function lockLogin() {
+            isLocked = true;
+            showError(`登入失敗次數過多，請等待 ${config.lockoutTime / 60000} 分鐘後再試`);
+            lockoutTimer = setTimeout(() => {
+                isLocked = false;
+                loginAttempts = 0;
+                showError('');
+            }, config.lockoutTime);
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            if (isLocked) {
+                showError(`請等待 ${config.lockoutTime / 60000} 分鐘後再試`);
+                return;
+            }
+
+            const userId = document.getElementById('userId').value;
+            const password = document.getElementById('password').value;
+
+            const userData = await loadUserData();
+            if (!userData) {
+                showError('系統錯誤，請稍後再試');
+                return;
+            }
+
+            const user = [...userData.students, ...userData.teachers]
+                .find(u => u.id === userId && u.password === password);
+
+            if (user) {
+                loginAttempts = 0;
+                showError('');
+                alert(`歡迎, ${user.name}!`);
+                // 這裡可以加入登入成功後的導向邏輯
+            } else {
+                loginAttempts++;
+                if (loginAttempts >= config.loginAttempts) {
+                    lockLogin();
+                } else {
+                    showError(`登入失敗，還剩 ${config.loginAttempts - loginAttempts} 次機會`);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
