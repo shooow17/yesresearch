@@ -241,56 +241,19 @@
                 <p>今天是 <span id="currentDate">載入中...</span></p>
             </div>
 
-            <!-- 新的課程資訊區塊 -->
-            <div class="course-info-section">
-                <h2>課程資訊</h2>
-                <div class="accordion">
-                    <div class="accordion-item">
-                        <button class="accordion-header">
-                            研究提問訓練
-                            <span class="accordion-icon">▼</span>
-                        </button>
-                        <div class="accordion-content">
-                            <div class="round-card">
-                                <h3>第一輪：發散性提問</h3>
-                                <div class="requirements">
-                                    <h4>要求：</h4>
-                                    <ul>
-                                        <li>必須以「我對...現象感興趣，因為...」開頭</li>
-                                        <li>記錄AI的回答中最讓你驚訝的部分</li>
-                                        <li>從回答中找出2-3個關鍵詞</li>
-                                    </ul>
-                                </div>
-                            </div>
-                            
-                            <div class="round-card">
-                                <h3>第二輪：聚焦提問</h3>
-                                <div class="requirements">
-                                    <h4>根據第一輪的回答：</h4>
-                                    <ul>
-                                        <li>選擇一個最感興趣的關鍵詞</li>
-                                        <li>用「為什麼...」或「如何...」形成新問題</li>
-                                        <li>記錄這個問題和原始問題的關聯</li>
-                                    </ul>
-                                </div>
-                            </div>
-                            
-                            <div class="round-card">
-                                <h3>第三輪：專題形成</h3>
-                                <div class="requirements">
-                                    <h4>基於前兩輪對話：</h4>
-                                    <ul>
-                                        <li>提出「如果我想研究...，需要探討哪些問題？」</li>
-                                        <li>請AI協助列出可能的研究子題</li>
-                                        <li>選擇最適合的研究方向</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- 可以在這裡添加更多課程 -->
-                </div>
-            </div>
+           <!-- 新的課程資訊區塊 -->
+<div class="course-info-section">
+    <h2>課程資訊</h2>
+    <div class="course-tabs">
+        <div class="tab-buttons" id="weekTabs">
+            <!-- 標籤會由 JavaScript 動態生成 -->
+        </div>
+
+        <div class="tab-panels" id="weekPanels">
+            <!-- 面板內容會由 JavaScript 動態生成 -->
+        </div>
+    </div>
+</div>
 
             <div class="stats-grid">
                 <div class="stat-card">
@@ -359,7 +322,7 @@
         </div>
     </div>
 
-    <script type="module">
+   <script type="module">
         import config from './js/config.js';
 
         // 檢查登入狀態
@@ -375,6 +338,91 @@
             document.getElementById('userIdDisplay').textContent = `ID: ${user.id}`;
         }
 
+        // [在這裡加入新的程式碼]
+        async function loadCourseData() {
+            try {
+                const response = await fetch('/courseData.json');
+                const data = await response.json();
+                renderCourses(data);
+            } catch (error) {
+                console.error('載入課程資料失敗:', error);
+            }
+        }
+
+        function renderCourses(data) {
+            const tabsContainer = document.getElementById('weekTabs');
+            const panelsContainer = document.getElementById('weekPanels');
+            
+            // 生成標籤按鈕
+            data.weeks.forEach((week, index) => {
+                const button = document.createElement('button');
+                button.className = `tab-button ${index === 0 ? 'active' : ''}`;
+                button.textContent = `第${week.weekNum}週`;
+                button.onclick = () => switchTab(index);
+                tabsContainer.appendChild(button);
+            });
+
+            // 生成面板內容
+            data.weeks.forEach((week, index) => {
+                const panel = document.createElement('div');
+                panel.className = `tab-panel ${index === 0 ? 'active' : ''}`;
+                
+                panel.innerHTML = `
+                    <div class="week-header">
+                        <h3>第${week.weekNum}週：${week.title}</h3>
+                        <span class="week-date">${week.dateRange}</span>
+                    </div>
+                    ${week.courses.map(course => `
+                        <div class="course-card">
+                            <div class="course-header">
+                                <h4 class="course-title">${course.title}</h4>
+                                <span class="course-status status-${course.status}">${
+                                    course.status === 'pending' ? '進行中' : '已完成'
+                                }</span>
+                            </div>
+                            <div class="course-content">
+                                <p>${course.description}</p>
+                            </div>
+                            <div class="course-actions">
+                                <button class="course-button primary-button" 
+                                        onclick="openAssignment('${course.id}')">開始作業</button>
+                                <button class="course-button secondary-button" 
+                                        onclick="viewMaterials('${course.id}')">查看教材</button>
+                            </div>
+                        </div>
+                    `).join('')}
+                `;
+                
+                panelsContainer.appendChild(panel);
+            });
+        }
+
+        function switchTab(index) {
+            // 切換標籤的active狀態
+            document.querySelectorAll('.tab-button').forEach((btn, i) => {
+                btn.classList.toggle('active', i === index);
+            });
+            
+            // 切換面板的active狀態
+            document.querySelectorAll('.tab-panel').forEach((panel, i) => {
+                panel.classList.toggle('active', i === index);
+            });
+        }
+
+        // 添加作業和教材查看函數
+        window.openAssignment = function(courseId) {
+            // 根據課程ID打開對應的作業
+            console.log('Opening assignment for course:', courseId);
+            // 這裡可以添加打開作業的具體邏輯
+        };
+
+        window.viewMaterials = function(courseId) {
+            // 根據課程ID查看教材
+            console.log('Viewing materials for course:', courseId);
+            // 這裡可以添加查看教材的具體邏輯
+        };
+
+        // [原有的程式碼保持不變]
         // 格式化日期
         function formatDate(date) {
             const options = {
@@ -392,23 +440,13 @@
             window.location.href = 'index.html';
         };
 
-        // 處理作業提交和載入
+        // 初始化頁面
         document.addEventListener('DOMContentLoaded', function() {
-            const form = document.getElementById('researchForm');
-            
-            // 載入已儲存的作業內容
-            const savedAssignment = sessionStorage.getItem('assignmentData');
-            if (savedAssignment) {
-                const data = JSON.parse(savedAssignment);
-                const textareas = form.getElementsByTagName('textarea');
-                const finalTopic = form.querySelector('input[type="text"]');
-                
-                // 填入已儲存的內容
-                for (let i = 0; i < textareas.length; i++) {
-                    textareas[i].value = data.textareas[i] || '';
-                }
-                finalTopic.value = data.finalTopic || '';
-            }
+            document.getElementById('currentDate').textContent = formatDate(new Date());
+            checkLoginStatus();
+            loadCourseData(); // 記得加入這行來載入課程資料
+        });
+    </script>
 
             // 處理作業提交
             form.addEventListener('submit', function(e) {
