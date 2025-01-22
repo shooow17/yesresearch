@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>學生系統儀表板</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f2f5;
+        }
+        .dashboard {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            min-height: 100vh;
+        }
+        .sidebar {
+            background-color: #1a73e8;
+            color: white;
+            padding: 1rem;
+        }
+        .sidebar-header {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 1rem;
+        }
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .sidebar-menu li {
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            border-radius: 4px;
+            margin-bottom: 0.5rem;
+        }
+        .sidebar-menu li:hover {
+            background-color: rgba(255,255,255,0.1);
+        }
+        .main-content {
+            padding: 2rem;
+        }
+        .welcome-card {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        .stat-card {
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .stat-card h3 {
+            margin: 0 0 0.5rem 0;
+            color: #666;
+        }
+        .stat-card .number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #1a73e8;
+        }
+        .logout-btn {
+            background-color: rgba(255,255,255,0.1);
+            border: none;
+            color: white;
+            padding: 0.75rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 1rem;
+        }
+        .logout-btn:hover {
+            background-color: rgba(255,255,255,0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h2 id="userNameDisplay">載入中...</h2>
+                <p id="userIdDisplay">載入中...</p>
+            </div>
+            <ul class="sidebar-menu">
+                <li>📊 總覽</li>
+                <li>📚 課程資訊</li>
+                <li>📝 作業繳交</li>
+                <li>📅 行事曆</li>
+                <li>⚙️ 設定</li>
+            </ul>
+            <button class="logout-btn" onclick="logout()">登出</button>
+        </div>
+        <div class="main-content">
+            <div class="welcome-card">
+                <h1>歡迎回來！</h1>
+                <p>今天是 <span id="currentDate">載入中...</span></p>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>待繳作業</h3>
+                    <div class="number">3</div>
+                </div>
+                <div class="stat-card">
+                    <h3>本週課程數</h3>
+                    <div class="number">5</div>
+                </div>
+                <div class="stat-card">
+                    <h3>未讀通知</h3>
+                    <div class="number">2</div>
+                </div>
+                <div class="stat-card">
+                    <h3>平均成績</h3>
+                    <div class="number">85</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import config from './js/config.js';
+
+        // 檢查登入狀態
+        async function checkLoginStatus() {
+            const userData = sessionStorage.getItem('userData');
+            if (!userData) {
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            const user = JSON.parse(userData);
+            document.getElementById('userNameDisplay').textContent = user.name;
+            document.getElementById('userIdDisplay').textContent = `ID: ${user.id}`;
+        }
+
+        // 格式化日期
+        function formatDate(date) {
+            const options = {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                weekday: 'long'
+            };
+            return date.toLocaleDateString('zh-TW', options);
+        }
+
+        // 登出函數
+        window.logout = function() {
+            sessionStorage.removeItem('userData');
+            window.location.href = 'index.html';
+        };
+
+        // 初始化頁面
+        document.getElementById('currentDate').textContent = formatDate(new Date());
+        checkLoginStatus();
+    </script>
+</body>
+</html>
