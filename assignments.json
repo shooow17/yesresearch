@@ -1,0 +1,40 @@
+{
+  "assignments": [
+    {
+      "id": "assignment_1",
+      "studentId": "student123",
+      "assignmentType": "research_question",
+      "status": "in_progress",
+      "lastModified": "2024-01-22T10:30:00",
+      "content": {
+        "round1": {
+          "question": "我對...現象感興趣，因為...",
+          "aiResponse": "AI的回應內容...",
+          "keywords": ["關鍵詞1", "關鍵詞2"]
+        },
+        "round2": {
+          "focusedQuestion": "為什麼...",
+          "relationship": "與原始問題的關聯...",
+          "aiResponse": "AI的回應內容..."
+        },
+        "round3": {
+          "researchTopic": "最終研究主題",
+          "subQuestions": ["子題1", "子題2"],
+          "finalDirection": "選定的研究方向"
+        }
+      },
+      "feedback": {
+        "teacherId": "teacher456",
+        "comment": "教師評語",
+        "score": 85,
+        "feedbackDate": "2024-01-23T14:20:00"
+      },
+      "versions": [
+        {
+          "timestamp": "2024-01-21T09:00:00",
+          "content": "..." // 先前版本的內容
+        }
+      ]
+    }
+  ]
+}
