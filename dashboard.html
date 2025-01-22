@@ -322,7 +322,7 @@
         </div>
     </div>
 
- <script type="module">
+<script type="module">
     import config from './js/config.js';
 
     // 檢查登入狀態
@@ -336,6 +336,119 @@
         const user = JSON.parse(userData);
         document.getElementById('userNameDisplay').textContent = user.name;
         document.getElementById('userIdDisplay').textContent = `ID: ${user.id}`;
+    }
+
+    // 獲取當前用戶ID
+    function getCurrentUserId() {
+        const userData = JSON.parse(sessionStorage.getItem('userData'));
+        return userData ? userData.id : null;
+    }
+
+    // 獲取當前作業ID（這裡需要根據您的需求修改）
+    function getCurrentAssignmentId() {
+        // 可以從 URL 參數或其他地方獲取
+        return 'assignment_1'; // 這裡只是示例
+    }
+
+    // 作業管理器
+    const AssignmentManager = {
+        // 保存作業
+        async saveAssignment(assignmentData) {
+            try {
+                const response = await fetch('/api/assignments', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        studentId: getCurrentUserId(),
+                        assignmentType: 'research_question',
+                        content: assignmentData,
+                        status: 'in_progress',
+                        lastModified: new Date().toISOString()
+                    })
+                });
+                
+                if (!response.ok) throw new Error('儲存失敗');
+                return await response.json();
+            } catch (error) {
+                console.error('儲存作業時發生錯誤:', error);
+                throw error;
+            }
+        },
+
+        // 讀取作業
+        async loadAssignment(assignmentId) {
+            try {
+                const response = await fetch(`/api/assignments/${assignmentId}`);
+                if (!response.ok) throw new Error('讀取失敗');
+                return await response.json();
+            } catch (error) {
+                console.error('讀取作業時發生錯誤:', error);
+                throw error;
+            }
+        },
+
+        // 更新作業
+        async updateAssignment(assignmentId, newData) {
+            try {
+                const response = await fetch(`/api/assignments/${assignmentId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        ...newData,
+                        lastModified: new Date().toISOString()
+                    })
+                });
+                
+                if (!response.ok) throw new Error('更新失敗');
+                return await response.json();
+            } catch (error) {
+                console.error('更新作業時發生錯誤:', error);
+                throw error;
+            }
+        }
+    };
+
+    // 填充表單資料
+    function fillFormWithData(data) {
+        const form = document.querySelector('form');
+        const textareas = form.getElementsByTagName('textarea');
+        const finalTopic = form.querySelector('input[type="text"]');
+
+        if (data.content.round1) {
+            textareas[0].value = data.content.round1.question || '';
+            textareas[1].value = data.content.round1.aiResponse || '';
+        }
+        if (data.content.round2) {
+            textareas[2].value = data.content.round2.focusedQuestion || '';
+            textareas[3].value = data.content.round2.relationship || '';
+        }
+        if (data.content.round3) {
+            finalTopic.value = data.content.round3.researchTopic || '';
+        }
+    }
+
+    // 載入先前的作業內容
+    async function loadPreviousAssignment() {
+        try {
+            const currentAssignmentId = getCurrentAssignmentId();
+            if (currentAssignmentId) {
+                const assignmentData = await AssignmentManager.loadAssignment(currentAssignmentId);
+                if (assignmentData) {
+                    fillFormWithData(assignmentData);
+                }
+            }
+        } catch (error) {
+            console.error('載入先前作業時發生錯誤:', error);
+            // 如果API還未準備好，fallback到sessionStorage
+            const savedData = sessionStorage.getItem('assignmentDataBackup');
+            if (savedData) {
+                fillFormWithData(JSON.parse(savedData));
+            }
+        }
     }
 
     // 格式化日期
@@ -366,26 +479,44 @@
         // 處理作業提交
         const form = document.querySelector('form');
         if (form) {
-            form.addEventListener('submit', function(e) {
+            form.addEventListener('submit', async function(e) {
                 e.preventDefault();
                 const confirmed = confirm('確定要提交作業嗎？');
                 if (confirmed) {
-                    // 儲存所有文本框的內容
-                    const textareas = form.getElementsByTagName('textarea');
-                    const finalTopic = form.querySelector('input[type="text"]');
-                    
-                    const assignmentData = {
-                        textareas: Array.from(textareas).map(ta => ta.value),
-                        finalTopic: finalTopic.value,
-                        lastModified: new Date().toLocaleString()
-                    };
-                    
-                    // 儲存到 sessionStorage
-                    sessionStorage.setItem('assignmentData', JSON.stringify(assignmentData));
-                    
-                    alert('作業已成功提交！您仍可以繼續修改。');
+                    try {
+                        const textareas = form.getElementsByTagName('textarea');
+                        const finalTopic = form.querySelector('input[type="text"]');
+                        
+                        const assignmentData = {
+                            round1: {
+                                question: textareas[0].value,
+                                aiResponse: textareas[1].value
+                            },
+                            round2: {
+                                focusedQuestion: textareas[2].value,
+                                relationship: textareas[3].value
+                            },
+                            round3: {
+                                researchTopic: finalTopic.value
+                            }
+                        };
+
+                        // 儲存到資料庫
+                        await AssignmentManager.saveAssignment(assignmentData);
+                        
+                        // 保留本地暫存作為備份
+                        sessionStorage.setItem('assignmentDataBackup', JSON.stringify(assignmentData));
+                        
+                        alert('作業已成功提交！');
+                    } catch (error) {
+                        alert('提交作業時發生錯誤，請稍後再試。');
+                        console.error('提交作業錯誤:', error);
+                    }
                 }
             });
+
+            // 載入先前的作業內容
+            loadPreviousAssignment();
         }
 
         // 處理摺疊面板
@@ -395,85 +526,16 @@
                 const item = this.parentElement;
                 const isActive = item.classList.contains('active');
                 
-                // 關閉所有其他開啟的項目
                 document.querySelectorAll('.accordion-item').forEach(accItem => {
                     accItem.classList.remove('active');
                 });
                 
-                // 如果當前項目未開啟，則開啟它
                 if (!isActive) {
                     item.classList.add('active');
                 }
             });
         });
-
-        // 載入先前儲存的作業資料（如果有）
-        const savedData = sessionStorage.getItem('assignmentData');
-        if (savedData && form) {
-            const data = JSON.parse(savedData);
-            const textareas = form.getElementsByTagName('textarea');
-            const finalTopic = form.querySelector('input[type="text"]');
-            
-            // 恢復文本框內容
-            Array.from(textareas).forEach((ta, index) => {
-                if (data.textareas[index]) {
-                    ta.value = data.textareas[index];
-                }
-            });
-            
-            if (finalTopic && data.finalTopic) {
-                finalTopic.value = data.finalTopic;
-            }
-        }
     });
 </script>
-
-            // 處理作業提交
-            form.addEventListener('submit', function(e) {
-                e.preventDefault();
-                const confirmed = confirm('確定要提交作業嗎？');
-                if (confirmed) {
-                    // 儲存所有文本框的內容
-                    const textareas = form.getElementsByTagName('textarea');
-                    const finalTopic = form.querySelector('input[type="text"]');
-                    
-                    const assignmentData = {
-                        textareas: Array.from(textareas).map(ta => ta.value),
-                        finalTopic: finalTopic.value,
-                        lastModified: new Date().toLocaleString()
-                    };
-                    
-                    // 儲存到 sessionStorage
-                    sessionStorage.setItem('assignmentData', JSON.stringify(assignmentData));
-                    
-                    alert('作業已成功提交！您仍可以繼續修改。');
-                }
-            });
-            
-            // 處理摺疊面板
-            const accordionHeaders = document.querySelectorAll('.accordion-header');
-            
-            accordionHeaders.forEach(header => {
-                header.addEventListener('click', function() {
-                    const item = this.parentElement;
-                    const isActive = item.classList.contains('active');
-                    
-                    // 關閉所有其他開啟的項目
-                    document.querySelectorAll('.accordion-item').forEach(accItem => {
-                        accItem.classList.remove('active');
-                    });
-                    
-                    // 如果當前項目未開啟，則開啟它
-                    if (!isActive) {
-                        item.classList.add('active');
-                    }
-                });
-            });
-        });
-
-        // 初始化頁面
-        document.getElementById('currentDate').textContent = formatDate(new Date());
-        checkLoginStatus();
-    </script>
 </body>
 </html>
