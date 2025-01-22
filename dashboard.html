@@ -147,6 +147,76 @@
             border-radius: 4px;
             margin-top: 1rem;
         }
+
+        /* 新增的摺疊面板樣式 */
+        .accordion-item {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            overflow: hidden;
+        }
+
+        .accordion-header {
+            width: 100%;
+            padding: 1rem;
+            background: #f8f9fa;
+            border: none;
+            text-align: left;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .accordion-content {
+            display: none;
+            padding: 1rem;
+        }
+
+        .accordion-item.active .accordion-content {
+            display: block;
+        }
+
+        .accordion-icon {
+            transition: transform 0.3s ease;
+        }
+
+        .accordion-item.active .accordion-icon {
+            transform: rotate(180deg);
+        }
+
+        .round-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 1.5rem;
+            background-color: #f8f9fa;
+            margin-bottom: 1rem;
+        }
+
+        .round-card h3 {
+            color: #1a73e8;
+            margin-top: 0;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .round-card h4 {
+            color: #333;
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .requirements ul {
+            margin: 0;
+            padding-left: 1.5rem;
+        }
+
+        .requirements li {
+            margin-bottom: 0.5rem;
+            line-height: 1.5;
+            color: #555;
+        }
     </style>
 </head>
 <body>
@@ -165,32 +235,63 @@
             </ul>
             <button class="logout-btn" onclick="logout()">登出</button>
         </div>
-       <div class="main-content">
-    <!-- 保留歡迎卡片 -->
-    <div class="welcome-card">
-        <h1>歡迎回來！</h1>
-        <p>今天是 <span id="currentDate">載入中...</span></p>
-    </div>
+        <div class="main-content">
+            <div class="welcome-card">
+                <h1>歡迎回來！</h1>
+                <p>今天是 <span id="currentDate">載入中...</span></p>
+            </div>
 
-    <!-- 新增課程資訊在這裡 -->
-    <div class="course-info-section">
-        <h2>課程資訊：研究提問訓練</h2>
-        <div class="course-content">
-            <!-- 三個回合的卡片內容 -->
-            <!-- ... 前面提供的課程資訊內容 ... -->
-        </div>
-    </div>
+            <!-- 新的課程資訊區塊 -->
+            <div class="course-info-section">
+                <h2>課程資訊</h2>
+                <div class="accordion">
+                    <div class="accordion-item">
+                        <button class="accordion-header">
+                            研究提問訓練
+                            <span class="accordion-icon">▼</span>
+                        </button>
+                        <div class="accordion-content">
+                            <div class="round-card">
+                                <h3>第一輪：發散性提問</h3>
+                                <div class="requirements">
+                                    <h4>要求：</h4>
+                                    <ul>
+                                        <li>必須以「我對...現象感興趣，因為...」開頭</li>
+                                        <li>記錄AI的回答中最讓你驚訝的部分</li>
+                                        <li>從回答中找出2-3個關鍵詞</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <div class="round-card">
+                                <h3>第二輪：聚焦提問</h3>
+                                <div class="requirements">
+                                    <h4>根據第一輪的回答：</h4>
+                                    <ul>
+                                        <li>選擇一個最感興趣的關鍵詞</li>
+                                        <li>用「為什麼...」或「如何...」形成新問題</li>
+                                        <li>記錄這個問題和原始問題的關聯</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <div class="round-card">
+                                <h3>第三輪：專題形成</h3>
+                                <div class="requirements">
+                                    <h4>基於前兩輪對話：</h4>
+                                    <ul>
+                                        <li>提出「如果我想研究...，需要探討哪些問題？」</li>
+                                        <li>請AI協助列出可能的研究子題</li>
+                                        <li>選擇最適合的研究方向</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 可以在這裡添加更多課程 -->
+                </div>
+            </div>
 
-    <!-- 保留統計卡片 -->
-    <div class="stats-grid">
-        <!-- ... 原有的統計卡片內容 ... -->
-    </div>
-
-    <!-- 保留作業區塊 -->
-    <div class="assignment-section">
-        <!-- ... 原有的作業表單內容 ... -->
-    </div>
-</div>
             <div class="stats-grid">
                 <div class="stat-card">
                     <h3>待繳作業</h3>
@@ -209,7 +310,6 @@
                     <div class="number">85</div>
                 </div>
             </div>
-            
             <div class="assignment-section">
                 <h2>研究提問作業</h2>
                 <form id="researchForm">
@@ -292,46 +392,66 @@
             window.location.href = 'index.html';
         };
 
-// 處理作業提交和載入
-document.addEventListener('DOMContentLoaded', function() {
-    const form = document.getElementById('researchForm');
-    
-    // 載入已儲存的作業內容
-    const savedAssignment = sessionStorage.getItem('assignmentData');
-    if (savedAssignment) {
-        const data = JSON.parse(savedAssignment);
-        const textareas = form.getElementsByTagName('textarea');
-        const finalTopic = form.querySelector('input[type="text"]');
-        
-        // 填入已儲存的內容
-        for (let i = 0; i < textareas.length; i++) {
-            textareas[i].value = data.textareas[i] || '';
-        }
-        finalTopic.value = data.finalTopic || '';
-    }
+        // 處理作業提交和載入
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('researchForm');
+            
+            // 載入已儲存的作業內容
+            const savedAssignment = sessionStorage.getItem('assignmentData');
+            if (savedAssignment) {
+                const data = JSON.parse(savedAssignment);
+                const textareas = form.getElementsByTagName('textarea');
+                const finalTopic = form.querySelector('input[type="text"]');
+                
+                // 填入已儲存的內容
+                for (let i = 0; i < textareas.length; i++) {
+                    textareas[i].value = data.textareas[i] || '';
+                }
+                finalTopic.value = data.finalTopic || '';
+            }
 
-    // 處理作業提交
-    form.addEventListener('submit', function(e) {
-        e.preventDefault();
-        const confirmed = confirm('確定要提交作業嗎？');
-        if (confirmed) {
-            // 儲存所有文本框的內容
-            const textareas = form.getElementsByTagName('textarea');
-            const finalTopic = form.querySelector('input[type="text"]');
+            // 處理作業提交
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const confirmed = confirm('確定要提交作業嗎？');
+                if (confirmed) {
+                    // 儲存所有文本框的內容
+                    const textareas = form.getElementsByTagName('textarea');
+                    const finalTopic = form.querySelector('input[type="text"]');
+                    
+                    const assignmentData = {
+                        textareas: Array.from(textareas).map(ta => ta.value),
+                        finalTopic: finalTopic.value,
+                        lastModified: new Date().toLocaleString()
+                    };
+                    
+                    // 儲存到 sessionStorage
+                    sessionStorage.setItem('assignmentData', JSON.stringify(assignmentData));
+                    
+                    alert('作業已成功提交！您仍可以繼續修改。');
+                }
+            });
             
-            const assignmentData = {
-                textareas: Array.from(textareas).map(ta => ta.value),
-                finalTopic: finalTopic.value,
-                lastModified: new Date().toLocaleString()
-            };
+            // 處理摺疊面板
+            const accordionHeaders = document.querySelectorAll('.accordion-header');
             
-            // 儲存到 sessionStorage
-            sessionStorage.setItem('assignmentData', JSON.stringify(assignmentData));
-            
-            alert('作業已成功提交！您仍可以繼續修改。');
-        }
-    });
-});
+            accordionHeaders.forEach(header => {
+                header.addEventListener('click', function() {
+                    const item = this.parentElement;
+                    const isActive = item.classList.contains('active');
+                    
+                    // 關閉所有其他開啟的項目
+                    document.querySelectorAll('.accordion-item').forEach(accItem => {
+                        accItem.classList.remove('active');
+                    });
+                    
+                    // 如果當前項目未開啟，則開啟它
+                    if (!isActive) {
+                        item.classList.add('active');
+                    }
+                });
+            });
+        });
 
         // 初始化頁面
         document.getElementById('currentDate').textContent = formatDate(new Date());
