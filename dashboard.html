@@ -42,6 +42,7 @@
         }
         .main-content {
             padding: 2rem;
+            overflow-y: auto;
         }
         .welcome-card {
             background-color: white;
@@ -84,6 +85,68 @@
         .logout-btn:hover {
             background-color: rgba(255,255,255,0.2);
         }
+        .assignment-section {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 2rem;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+        }
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+            resize: vertical;
+            min-height: 100px;
+        }
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1rem;
+            background-color: white;
+        }
+        .table th, .table td {
+            padding: 1rem;
+            border: 1px solid #ddd;
+            vertical-align: top;
+        }
+        .table th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+            text-align: left;
+        }
+        .table td textarea {
+            min-height: 100px;
+        }
+        .submit-btn {
+            background-color: #1a73e8;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+        }
+        .submit-btn:hover {
+            background-color: #1557b0;
+        }
+        .final-topic {
+            padding: 1rem;
+            border: 2px solid #1a73e8;
+            border-radius: 4px;
+            margin-top: 1rem;
+        }
     </style>
 </head>
 <body>
@@ -125,6 +188,53 @@
                     <div class="number">85</div>
                 </div>
             </div>
+            
+            <div class="assignment-section">
+                <h2>研究提問作業</h2>
+                <form id="researchForm">
+                    <table class="table">
+                        <tr>
+                            <th width="20%">輪次</th>
+                            <th width="40%">我的提問</th>
+                            <th width="40%">AI的關鍵回應/關聯性/相關問題</th>
+                        </tr>
+                        <tr>
+                            <td>第一輪：<br>發散階段</td>
+                            <td>
+                                <textarea class="form-control" placeholder="我對(  )現象感興趣，因為(  )" required></textarea>
+                            </td>
+                            <td>
+                                <textarea class="form-control" placeholder="AI的關鍵回應(複製)" required></textarea>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>第二輪：<br>聚焦階段</td>
+                            <td>
+                                <textarea class="form-control" placeholder="為什麼(  ) 或 如何(  )" required></textarea>
+                            </td>
+                            <td>
+                                <textarea class="form-control" placeholder="本輪的問題和第一輪問題的差異" required></textarea>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>第三輪：<br>定題階段</td>
+                            <td>
+                                <textarea class="form-control" placeholder="如果我想研究(  )，需要探討哪些問題？" required></textarea>
+                            </td>
+                            <td>
+                                <textarea class="form-control" placeholder="列出跟你的提問相關的問題" required></textarea>
+                            </td>
+                        </tr>
+                    </table>
+                    <div class="final-topic">
+                        <label class="form-label">我決定的研究主題：</label>
+                        <input type="text" class="form-control" style="min-height: auto;" required>
+                    </div>
+                    <div style="text-align: center; margin-top: 2rem;">
+                        <button type="submit" class="submit-btn">提交作業</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 
@@ -160,6 +270,16 @@
             sessionStorage.removeItem('userData');
             window.location.href = 'index.html';
         };
+
+        // 處理作業提交
+        document.getElementById('researchForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const confirmed = confirm('確定要提交作業嗎？提交後將無法修改。');
+            if (confirmed) {
+                alert('作業已成功提交！');
+                this.reset();
+            }
+        });
 
         // 初始化頁面
         document.getElementById('currentDate').textContent = formatDate(new Date());
