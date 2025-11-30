@@ -1,67 +1,775 @@
-<!DOCTYPE HTML>
-<html xmlns="http://www.w3.org/1999/xhtml">
-
+<!DOCTYPE html>
+<html lang="zh-TW">
 <head>
-	<title>FLIP PDF PLUS</title>
-	<meta http-equiv="X-UA-Compatible" content="IE=Edge">
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
-	<meta name="apple-mobile-web-app-capable" content="yes" />
-	<meta name="monitor-signature" content="monitor:player:html5">
-	<meta name="keywords" content="" />
-	<meta name="og:image" content="files/shot.png" />
-	<meta property="og:image" content="files/shot.png" />
-	<meta property="og:title" content="FLIP PDF PLUS" />
-	<meta property="og:description" content="" />
-	<meta name="Description" content="">
-	<link rel="image_src" href="files/shot.png" />
-	<meta name="Generator" content="FlipPDFPlus for win v6.29.1 at https://www.flipbuilder.com" />
-  <!-- <link rel="stylesheet" href="style/style.css" /> -->
-	<!-- <link rel="stylesheet" href="style/hiSlider2.min.css" /> -->
-  <!-- <link rel="stylesheet" href="style/FlipBookPlugins.min.css" /> -->
-	<link rel="shortcut icon" href='files/extfile/htmlIcon.png' />
-	
-	
-	<style>
-		html {width: 100%;height: 100%;left: 0;top: 0;margin: 0;padding: 0;position: fixed;}
-		body {width: 100%;height: 100%;left: 0;top: 0;margin: 0;padding: 0;position: fixed;}
-	</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 識讀特務總部 - 深偽辨識任務</title>
+    <!-- 引入 Tailwind CSS 進行快速排版 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 引入 FontAwesome 圖示 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- 引入 Google Fonts (更具科技感的字體) -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* 自定義動畫與樣式 */
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #0f172a; /* 深藍色背景 */
+            color: #e2e8f0;
+            overflow-x: hidden;
+        }
+
+        .tech-font {
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        /* 霓虹光暈效果 */
+        .neon-border {
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.5), 0 0 20px rgba(56, 189, 248, 0.3);
+            border: 1px solid rgba(56, 189, 248, 0.5);
+        }
+
+        .neon-text {
+            text-shadow: 0 0 5px rgba(56, 189, 248, 0.8);
+        }
+
+        /* 按鈕互動效果 */
+        .cyber-btn {
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .cyber-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 15px rgba(168, 85, 247, 0.6); /* 紫色光暈 */
+        }
+        .cyber-btn:active {
+            transform: translateY(1px);
+        }
+
+        /* 頁面切換動畫 */
+        .screen {
+            display: none; /* 預設隱藏所有區塊 */
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+        .screen.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        /* 選項卡片 (Quiz用) */
+        .option-card {
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        .option-card:hover {
+            background-color: rgba(56, 189, 248, 0.1);
+            border-color: #38bdf8;
+        }
+
+        /* 檢核表按鈕 (Stage 1用) */
+        .checklist-item {
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .checklist-item.selected {
+            background-color: rgba(56, 189, 248, 0.2);
+            border-color: #38bdf8;
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
+        }
+
+        /* 培訓手冊縮圖卡 (Training Mini Card) */
+        .training-mini-card {
+            cursor: pointer;
+            transition: all 0.3s;
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid #475569;
+        }
+        .training-mini-card:hover {
+            transform: scale(1.05);
+            background: rgba(30, 41, 59, 0.9);
+            border-color: #fbbf24;
+            box-shadow: 0 0 15px rgba(251, 191, 36, 0.3);
+        }
+
+        /* 彈出視窗 (Modal) */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(8px);
+            z-index: 50;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .modal-overlay.active {
+            display: flex;
+            opacity: 1;
+        }
+        .modal-content {
+            transform: scale(0.9);
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .modal-overlay.active .modal-content {
+            transform: scale(1);
+        }
+
+        /* 載入條動畫 */
+        @keyframes loading {
+            0% { width: 0%; }
+            100% { width: 100%; }
+        }
+        .loading-bar-inner {
+            animation: loading 2s ease-in-out forwards;
+        }
+        
+        /* 隱藏的 Canvas */
+        #certificate-canvas {
+            display: none;
+        }
+
+        /* 自定義卷軸 */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #1e293b; 
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #475569; 
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #64748b; 
+        }
+    </style>
 </head>
+<body class="min-h-screen flex flex-col items-center justify-center bg-slate-900 bg-[url('https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center bg-no-repeat bg-blend-overlay bg-fixed">
 
-<body>
-  
-	<div id="tmpLoading" style="width: 100%; height: 100%; position: absolute; z-index: -2;background:#323232;"></div>
-	<!-- <script src="javascript/jquery-3.5.1.min.js"></script> -->
-	<script src="javascript/config.js"></script>
-	<script src="javascript/LoadingJS.js"></script>
-  <script src="javascript/resource_skeleton.js"></script>
-	<!-- <script type="text/javascript" src="javascript/deString.js"></script> -->
-	<!-- <script type="text/javascript" src="javascript/book.min.js"></script> -->
-	<!-- <script type="text/javascript" src="javascript/pageItems.min.js"></script> -->
-	<!-- <script type="text/javascript" src="javascript/main.min.js"></script> -->
-	<script type="text/javascript" src="javascript/editor.js"></script>
-  <script type="text/javascript" src="javascript/BookPreview.js"></script>
-	<script type="text/javascript" src="files/search/book_config.js"></script>
-	<script type="text/javascript">var sendvisitinfo = function (type, page) { };</script>
-	<!-- <script type="text/javascript" async src="javascript/FlipBookPlugins.min.js"></script> -->
-	<!-- <script type="text/javascript" defer src="javascript/flipHtml5.hiSlider2.min.js"></script> -->
-  <script type="text/javascript">
-		window.readerConfigLoaded = true;
-	</script>
-	
-	
-	<script src="javascript/pdf.js"></script>
-                <script>
-                    try {
-                        if (pdfjsLib) {
-                            pdfjsLib.GlobalWorkerOptions.workerSrc = "javascript/pdf.worker.js";
-                        }
-                    } catch (error) {
+    <!-- 遮罩，讓背景暗一點 -->
+    <div class="absolute inset-0 bg-slate-900/80 z-0"></div>
+
+    <!-- 主要內容容器 -->
+    <div id="app" class="relative z-10 w-full max-w-4xl p-6">
+        
+        <!-- 1. 登入畫面 -->
+        <div id="screen-login" class="screen active flex-col items-center text-center space-y-8 animate-fade-in">
+            <div class="mb-4">
+                <i class="fa-solid fa-user-secret text-6xl text-cyan-400 mb-4 animate-bounce"></i>
+                <h1 class="text-4xl md:text-5xl font-bold tech-font text-white neon-text mb-2">AI 識讀特務總部</h1>
+                <p class="text-cyan-200 text-lg">Deepfake Identification Training</p>
+            </div>
+            
+            <div class="bg-slate-800/80 backdrop-blur-md p-8 rounded-2xl neon-border w-full max-w-md mx-auto">
+                <p class="mb-6 text-gray-300">特務你好，請輸入代號以開始任務...</p>
+                <input type="text" id="student-name" placeholder="請輸入姓名或座號" 
+                    class="w-full bg-slate-900 border border-slate-600 rounded-lg p-4 text-white text-center text-xl focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition mb-6">
+                
+                <button onclick="goToVideo()" class="cyber-btn w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold py-4 rounded-lg text-xl tracking-wider">
+                    開始任務 <i class="fa-solid fa-arrow-right ml-2"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- 2. 影片觀看畫面 -->
+        <div id="screen-video" class="screen flex-col items-center w-full max-w-3xl mx-auto">
+            <h2 class="text-2xl font-bold text-white mb-4 tech-font">目標監控中...</h2>
+            
+            <div class="w-full bg-black rounded-lg overflow-hidden neon-border relative aspect-video flex items-center justify-center group mb-4">
+                <!-- Google Drive 影片嵌入 (使用 iframe) -->
+                <iframe 
+                    src="https://drive.google.com/file/d/1_1udwBn9j_Gcmxx1_bZc9p5m4m067HfL/preview" 
+                    class="w-full h-full object-cover border-none"
+                    allow="autoplay; encrypted-media; fullscreen">
+                </iframe>
+
+                <div class="absolute top-4 left-4 flex items-center space-x-2 pointer-events-none">
+                    <div class="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+                    <span class="text-red-500 font-mono text-sm">REC</span>
+                </div>
+            </div>
+            
+            <!-- 備用連結：如果 iframe 無法播放 -->
+            <a href="https://drive.google.com/file/d/1_1udwBn9j_Gcmxx1_bZc9p5m4m067HfL/view?usp=sharing" target="_blank" 
+               class="text-cyan-400 hover:text-cyan-300 underline text-sm flex items-center mb-2">
+               <i class="fa-solid fa-arrow-up-right-from-square mr-1"></i> 無法播放影片？點此在新視窗開啟
+            </a>
+
+            <p class="mt-2 text-cyan-200 text-center text-sm">
+                <i class="fa-solid fa-circle-info mr-1"></i> 請仔細觀察影片 15 秒，尋找蛛絲馬跡。
+            </p>
+
+            <button onclick="startStage1()" class="cyber-btn mt-6 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold py-3 px-10 rounded-lg text-lg animate-pulse">
+                開始初級探員試煉 <i class="fa-solid fa-magnifying-glass ml-2"></i>
+            </button>
+        </div>
+
+        <!-- 3. Stage 1: 異常定位檢核表 -->
+        <div id="screen-checklist" class="screen flex-col w-full max-w-3xl mx-auto">
+            <div class="flex justify-between items-center mb-4">
+                <span class="px-3 py-1 bg-cyan-900 text-cyan-300 rounded text-sm font-bold border border-cyan-500">
+                    STAGE 1: 異常定位
+                </span>
+                <span class="text-gray-400 text-sm">請勾選所有可疑的項目</span>
+            </div>
+
+            <div class="bg-slate-800/90 backdrop-blur p-6 rounded-2xl neon-border flex flex-col">
+                <h3 class="text-xl font-bold text-white mb-4 leading-relaxed text-center">
+                    <i class="fa-solid fa-list-check text-cyan-400 mr-2"></i>現場勘查報告
+                </h3>
+                <p class="text-gray-400 text-center mb-6 text-sm">請回想影片內容，勾選出所有你認為「不自然」或「有破綻」的部位（可複選）。</p>
+                
+                <div id="checklist-container" class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+                    <!-- 動態產生 -->
+                </div>
+
+                <button onclick="submitChecklist()" class="cyber-btn w-full bg-gradient-to-r from-cyan-600 to-blue-600 text-white font-bold py-3 rounded-lg text-lg">
+                    提交勘查結果 <i class="fa-solid fa-paper-plane ml-2"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- 4. 第一階段結算 -->
+        <div id="screen-stage1-result" class="screen flex-col items-center justify-center text-center space-y-6">
+             <i class="fa-solid fa-clipboard-check text-6xl text-cyan-400 mb-4"></i>
+             <h2 class="text-3xl font-bold text-white tech-font">初步勘查完成</h2>
+             
+             <div class="bg-slate-800/80 p-6 rounded-xl w-full max-w-md mx-auto">
+                 <p class="text-gray-300 mb-2">你的發現</p>
+                 <p id="stage1-feedback" class="text-lg text-white mb-4 font-mono leading-relaxed">
+                     <!-- 顯示選對了幾個 -->
+                 </p>
+                 <p class="text-sm text-gray-400 border-t border-slate-600 pt-4 mt-2">
+                     有些細節可能被你忽略了，也可能有些是誤判。<br>打開機密手冊，確認真正的破綻吧！
+                 </p>
+             </div>
+
+             <button onclick="goToTraining()" class="cyber-btn mt-4 bg-gradient-to-r from-yellow-500 to-orange-600 text-white font-bold py-3 px-8 rounded-lg text-lg">
+                 開啟機密培訓手冊 <i class="fa-solid fa-book-open ml-2"></i>
+             </button>
+        </div>
+
+        <!-- 5. 教學畫面 (Training Manual - 戰情牆版) -->
+        <div id="screen-training" class="screen flex-col items-center space-y-6 w-full">
+            <h2 class="text-3xl font-bold text-white tech-font mb-2"><i class="fa-solid fa-graduation-cap text-yellow-400 mr-2"></i>機密培訓手冊</h2>
+            <p class="text-cyan-200 text-sm mb-4">請點擊圖示查看詳細鑑識重點</p>
+            
+            <!-- 戰情牆 Grid -->
+            <div id="training-grid" class="grid grid-cols-2 md:grid-cols-4 gap-4 w-full p-2">
+                <!-- 縮圖卡片會由 JS 動態生成 -->
+            </div>
+
+            <button onclick="startStage2()" class="cyber-btn mt-4 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-bold py-3 px-8 rounded-full text-lg shadow-lg shadow-green-500/30">
+                進入中級解析試煉 <i class="fa-solid fa-magnifying-glass-arrow-right ml-2"></i>
+            </button>
+
+            <!-- 彈出視窗 (Modal) -->
+            <div id="training-modal" class="modal-overlay" onclick="closeModal()">
+                <div class="modal-content bg-slate-800 border-2 border-yellow-400 p-8 rounded-2xl max-w-lg w-11/12 text-center relative shadow-[0_0_50px_rgba(250,204,21,0.2)]" onclick="event.stopPropagation()">
+                    <!-- 關閉按鈕 -->
+                    <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-2xl w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-700 transition"><i class="fa-solid fa-xmark"></i></button>
+                    
+                    <!-- 內容 -->
+                    <div id="modal-icon" class="text-6xl text-cyan-400 mb-6 mt-2"></div>
+                    <h3 id="modal-title" class="text-2xl font-bold text-white tech-font mb-4"></h3>
+                    <div class="border-t border-slate-600 w-full mb-6"></div>
+                    <div class="text-left bg-slate-900/50 p-4 rounded-lg">
+                        <p class="text-yellow-400 font-bold mb-2"><i class="fa-solid fa-magnifying-glass mr-2"></i>鑑識重點：</p>
+                        <p id="modal-desc" class="text-lg text-gray-200 leading-relaxed"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 6. Stage 2: 中級解析 (Quiz) -->
+        <div id="screen-quiz" class="screen flex-col w-full max-w-3xl mx-auto">
+            <div class="flex justify-between items-center mb-4">
+                <span class="px-3 py-1 bg-orange-900 text-orange-300 rounded text-sm font-bold border border-orange-500">
+                    STAGE 2: 中級解析 (詳解)
+                </span>
+                <span class="text-gray-400 text-sm">
+                    Q<span id="current-q-num">1</span>/5
+                </span>
+            </div>
+
+            <div class="w-full bg-slate-700 h-2 rounded-full mb-6">
+                <div id="progress-bar" class="bg-cyan-400 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+            </div>
+
+            <div id="question-container" class="bg-slate-800/90 backdrop-blur p-6 rounded-2xl neon-border min-h-[300px] flex flex-col justify-between">
+                <div>
+                    <h3 id="question-text" class="text-xl font-bold text-white mb-6 leading-relaxed">
+                        <!-- 問題 -->
+                    </h3>
+                    
+                    <div id="options-container" class="space-y-3">
+                        <!-- 選項 -->
+                    </div>
+                </div>
+                
+                <div id="feedback-area" class="mt-4 hidden p-3 rounded-lg text-center font-bold">
+                    <!-- 回饋 -->
+                </div>
+            </div>
+        </div>
+
+        <!-- 7. 提交中畫面 -->
+        <div id="screen-submitting" class="screen flex-col items-center justify-center text-center">
+            <h2 class="text-2xl font-bold text-cyan-400 mb-4 tech-font">正在上傳特務評鑑...</h2>
+            <div class="w-64 bg-slate-700 h-4 rounded-full overflow-hidden">
+                <div class="bg-green-500 h-full loading-bar-inner"></div>
+            </div>
+            <p class="mt-4 text-gray-400 font-mono">Syncing to HQ Database...</p>
+        </div>
+
+        <!-- 8. 最終結果 -->
+        <div id="screen-result" class="screen flex-col items-center text-center space-y-6">
+            <div id="result-badge" class="w-32 h-32 rounded-full flex items-center justify-center border-4 border-gray-400 mb-2">
+                <i id="result-icon" class="fa-solid fa-user text-6xl text-gray-400"></i>
+            </div>
+            
+            <h2 class="text-3xl font-bold text-white tech-font">認證結果出爐</h2>
+            
+            <div class="bg-slate-800/80 p-6 rounded-xl w-full max-w-md mx-auto">
+                <p class="text-gray-400 mb-1">永順國小特務編號</p>
+                <p id="display-name" class="text-2xl font-bold text-white mb-4">User</p>
+                
+                <div class="flex justify-center space-x-8 border-t border-slate-600 pt-4">
+                    <div>
+                        <p class="text-gray-400 text-sm">最終考核分</p>
+                        <p id="display-score" class="text-3xl font-bold text-cyan-400">0</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-400 text-sm">特務階級</p>
+                        <p id="display-rank" class="text-xl font-bold text-purple-400">初級探員</p>
+                    </div>
+                </div>
+            </div>
+
+            <p id="result-comment" class="text-cyan-200 font-bold text-lg">
+                <!-- 評語 -->
+            </p>
+
+            <div class="flex flex-col md:flex-row gap-4 mt-4">
+                <button id="btn-download-cert" onclick="downloadCertificate()" class="hidden cyber-btn bg-gradient-to-r from-yellow-500 to-amber-600 text-white font-bold py-3 px-6 rounded-lg transition-colors">
+                    <i class="fa-solid fa-file-contract mr-2"></i> 下載高級探員證書
+                </button>
+
+                <button onclick="resetSystem()" class="cyber-btn bg-transparent border-2 border-cyan-500 text-cyan-400 hover:bg-cyan-500 hover:text-white font-bold py-3 px-6 rounded-lg transition-colors">
+                    <i class="fa-solid fa-rotate-right mr-2"></i> 重新訓練
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- 隱藏的 Canvas 用於生成證書 -->
+    <canvas id="certificate-canvas" width="800" height="600"></canvas>
+
+    <!-- 邏輯腳本 -->
+    <script>
+        // ================= 配置區域 (請依照教學填入 5 個 ID) =================
+        const GOOGLE_FORM_URL = "YOUR_GOOGLE_FORM_ACTION_URL_HERE"; 
+        
+        // 欄位 1: 特務編號
+        const ENTRY_ID_NAME = "entry.123456"; 
+        
+        // 欄位 2: 第一階段選擇內容 (例如: 手部細節, 背景環境...)
+        const ENTRY_ID_S1_CONTENT = "entry.222222";
+        
+        // 欄位 3: 第一階段分數
+        const ENTRY_ID_S1_SCORE = "entry.333333";
+        
+        // 欄位 4: 第二階段作答詳情 (例如: Q1:對, Q2:錯...)
+        const ENTRY_ID_S2_CONTENT = "entry.444444";
+        
+        // 欄位 5: 第二階段最終分數
+        const ENTRY_ID_S2_SCORE = "entry.555555";
+        // =================================================================
+
+        const realAnomalies = [
+            { id: 1, name: "手部細節", icon: "fa-hand", desc: "AI 不擅長畫手，手指常會像黏土般融化、數量不對或關節扭曲。" },
+            { id: 2, name: "臉部表情", icon: "fa-face-smile", desc: "臉部肌肉連動不自然，例如大笑時眼角沒有皺紋，呈現「皮笑肉不笑」。" },
+            { id: 3, name: "背景環境", icon: "fa-image", desc: "背景物體（如旗幟、水流）出現不自然的循環動畫，或線條扭曲模糊。" },
+            { id: 4, name: "光影邏輯", icon: "fa-lightbulb", desc: "光源方向混亂，眉毛或鼻子下方缺乏應有的陰影，臉部亮度異常。" },
+            { id: 5, name: "殘留浮水印", icon: "fa-stamp", desc: "畫面角落出現模糊的英文 Logo 或不明文字，這是生成工具的特徵。" },
+            { id: 6, name: "聲音特徵", icon: "fa-microphone-lines", desc: "語音聽起來平淡無起伏、咬字過於標準，或缺乏自然的換氣聲。" },
+            { id: 7, name: "物理現象", icon: "fa-wind", desc: "頭髮或衣物未隨環境風勢飄動，彷彿人物是靜止貼圖貼上去的。" }
+        ];
+
+        const fakeAnomalies = [
+            { id: 8, name: "字幕錯字", icon: "fa-font", desc: "字幕打錯字通常是人為疏失，並非 AI 生成影像的直接辨識特徵。" },
+            { id: 9, name: "服裝顏色", icon: "fa-shirt", desc: "服裝顏色鮮豔或款式特殊是正常的，並非深偽的判斷依據。" },
+            { id: 10, name: "鏡頭晃動", icon: "fa-video", desc: "真實拍攝也常有手持鏡頭晃動，這不能證明影片是假的。" }
+        ];
+
+        const quizQuestions = [
+            { catId: 1, text: "關於剛才勾選的「手部細節」，具體破綻是什麼？", options: [{t:"手指靈活且骨節分明",c:false}, {t:"手指像黏土一樣融化在一起",c:true}, {t:"手掌紋路清晰可見",c:false}], hint: "AI 生成手部時，常出現手指數量錯誤或像是黏在一起的融化感。" },
+            { catId: 2, text: "關於「臉部表情」，哪個描述符合影片狀況？", options: [{t:"笑的時候眼角沒有魚尾紋，肌肉僵硬",c:true}, {t:"表情非常豐富自然",c:false}, {t:"臉紅心跳的樣子很真實",c:false}], hint: "真實人類笑的時候會牽動眼角肌肉。AI 生成的表情常有「皮笑肉不笑」的違和感。" },
+            { catId: 3, text: "關於「背景環境」，旗幟的狀態如何？", options: [{t:"隨風飄揚，很有隨機感",c:false}, {t:"看起來像固定循環的動畫，缺乏慣性",c:true}, {t:"旗幟完全靜止不動",c:false}], hint: "AI 影片背景中的動態物體常呈現不自然的規律循環，缺乏真實物理慣性。" },
+            { catId: 4, text: "關於「光影邏輯」，臉上的光線哪裡怪怪的？", options: [{t:"臉部亮得像被手電筒直射，無陰影",c:true}, {t:"光影層次分明，陰影自然",c:false}, {t:"臉部光線很昏暗",c:false}], hint: "AI 常忽略遮蔽關係，導致眉毛、鼻子下方該有陰影的地方卻一片光亮。" },
+            { catId: 5, text: "關於「殘留浮水印」，你在哪裡看到了？", options: [{t:"什麼都沒有，很乾淨",c:false}, {t:"右下角有模糊的英文 Logo",c:true}, {t:"有電視台的標誌",c:false}], hint: "許多免費 AI 生成工具會在角落壓上 Logo，這是最直接的辨識證據。" },
+            { catId: 6, text: "關於「聲音特徵」，聽起來感覺如何？", options: [{t:"帶有換氣聲，情感豐富",c:false}, {t:"聽起來平淡無奇，有機械感",c:true}, {t:"背景有吵雜的環境音",c:false}], hint: "AI 語音有時仍會缺乏人類自然的換氣停頓，或語調過於平整。" },
+            { catId: 7, text: "關於「物理現象」，頭髮的表現合理嗎？", options: [{t:"頭髮隨風亂飛，很凌亂",c:false}, {t:"風很大但頭髮紋絲不動",c:true}, {t:"頭髮被雨淋濕了",c:false}], hint: "這是合成痕跡。人物像是在室內拍好再貼到風景上的，所以頭髮沒有受到背景風勢的影響。" }
+        ];
+
+        // 資料收集變數
+        let userName = "";
+        
+        // Stage 1 Data
+        let selectedStage1Items = []; 
+        let stage1ScoreLog = 0;
+        let stage1ContentLog = ""; // 記錄選了哪些項目名稱
+
+        // Stage 2 Data
+        let activeQuestions = [];
+        let currentStep = 0;
+        let score = 0; // Stage 2 Score
+        let stage2ContentLog = ""; // 記錄每題答對答錯 (例如: Q1:O, Q2:X)
+
+
+        // ------------------ 頁面切換 ------------------
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(el => {
+                el.classList.remove('active');
+                setTimeout(() => {
+                    if(!el.classList.contains('active')) el.style.display = 'none';
+                }, 500);
+            });
+            const target = document.getElementById(screenId);
+            target.style.display = 'flex';
+            setTimeout(() => {
+                target.classList.add('active');
+            }, 50);
+        }
+
+        // ------------------ 流程控制 ------------------
+
+        function goToVideo() {
+            const inputName = document.getElementById('student-name').value.trim();
+            if (!inputName) {
+                const input = document.getElementById('student-name');
+                input.classList.add('border-red-500', 'ring-1', 'ring-red-500');
+                setTimeout(() => input.classList.remove('border-red-500', 'ring-1', 'ring-red-500'), 500);
+                return;
+            }
+            userName = inputName;
+            showScreen('screen-video');
+        }
+
+        function startStage1() {
+            selectedStage1Items = []; 
+
+            const allOptions = [...realAnomalies, ...fakeAnomalies].sort(() => 0.5 - Math.random());
+            
+            const container = document.getElementById('checklist-container');
+            container.innerHTML = "";
+
+            allOptions.forEach(item => {
+                const div = document.createElement('div');
+                div.className = "checklist-item border border-slate-600 rounded-lg p-4 bg-slate-800/50 text-white font-bold flex items-center justify-center space-x-2 select-none hover:bg-slate-700";
+                div.innerHTML = `<i class="fa-solid ${item.icon} text-cyan-500"></i><span>${item.name}</span>`;
+                div.onclick = () => {
+                    if (selectedStage1Items.includes(item.id)) {
+                        selectedStage1Items = selectedStage1Items.filter(id => id !== item.id);
+                        div.classList.remove('selected', 'bg-cyan-900/50');
+                    } else {
+                        selectedStage1Items.push(item.id);
+                        div.classList.add('selected', 'bg-cyan-900/50');
                     }
-                </script>
-	
-  <noscript><div><hr/><ul><li><a href="files/basic-html/page1.html">Pages</a></li></ul><hr style="width:80%"/></div></noscript>
+                };
+                container.appendChild(div);
+            });
 
+            showScreen('screen-checklist');
+        }
+
+        function submitChecklist() {
+            let correctCount = 0;
+            let wrongCount = 0;
+            let selectedNames = [];
+
+            // 整合所有選項資料以查找名稱
+            const allItems = [...realAnomalies, ...fakeAnomalies];
+
+            selectedStage1Items.forEach(id => {
+                const item = allItems.find(i => i.id === id);
+                if (item) selectedNames.push(item.name);
+
+                if (realAnomalies.find(r => r.id === id)) correctCount++;
+                if (fakeAnomalies.find(f => f.id === id)) wrongCount++;
+            });
+
+            // 計算分數 (簡單邏輯：選對+1, 選錯-1，不低於0，這只是參考用)
+            // 這裡可以自定義計分邏輯
+            stage1ScoreLog = Math.max(0, (correctCount * 10) - (wrongCount * 5));
+            
+            // 記錄內容字串
+            stage1ContentLog = selectedNames.join(", ");
+            if (stage1ContentLog === "") stage1ContentLog = "未選擇任何項目";
+
+            const feedbackEl = document.getElementById('stage1-feedback');
+            feedbackEl.innerHTML = `
+                <div class="flex justify-around w-full mb-2">
+                    <span class="text-green-400"><i class="fa-solid fa-check"></i> 發現真破綻: ${correctCount} 個</span>
+                    <span class="text-red-400"><i class="fa-solid fa-xmark"></i> 誤判假線索: ${wrongCount} 個</span>
+                </div>
+                <div class="text-xs text-gray-500 mt-1">你的選擇紀錄已存檔</div>
+            `;
+            
+            showScreen('screen-stage1-result');
+        }
+
+        // 3. 開啟培訓手冊 (戰情牆 + Modal 模式)
+        function goToTraining() {
+            const grid = document.getElementById('training-grid');
+            grid.innerHTML = "";
+
+            realAnomalies.forEach((item, index) => {
+                const card = document.createElement('div');
+                card.className = "training-mini-card rounded-xl p-4 flex flex-col items-center justify-center h-40 relative overflow-hidden group";
+                
+                const num = document.createElement('span');
+                num.className = "absolute top-2 left-3 text-xs text-gray-500 font-mono";
+                num.innerText = `NO.${String(index + 1).padStart(2, '0')}`;
+                
+                card.innerHTML = `
+                    ${num.outerHTML}
+                    <div class="text-cyan-400 text-4xl mb-2 transition group-hover:scale-110 group-hover:text-yellow-400"><i class="fa-solid ${item.icon}"></i></div>
+                    <h4 class="text-white font-bold text-lg">${item.name}</h4>
+                    <span class="text-xs text-gray-400 mt-2 opacity-0 group-hover:opacity-100 transition">點擊查看詳情</span>
+                `;
+                
+                card.onclick = () => openModal(item);
+                grid.appendChild(card);
+            });
+
+            showScreen('screen-training');
+        }
+
+        function openModal(item) {
+            const modal = document.getElementById('training-modal');
+            document.getElementById('modal-icon').innerHTML = `<i class="fa-solid ${item.icon}"></i>`;
+            document.getElementById('modal-title').innerText = item.name;
+            document.getElementById('modal-desc').innerText = item.desc;
+            
+            modal.classList.add('active');
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('training-modal');
+            modal.classList.remove('active');
+        }
+
+        function startStage2() {
+            currentStep = 0;
+            score = 0;
+            stage2ContentLog = ""; // 重置記錄
+            
+            activeQuestions = [...quizQuestions]
+                .sort(() => 0.5 - Math.random())
+                .slice(0, 5);
+
+            showScreen('screen-quiz');
+            loadQuizQuestion();
+        }
+
+        function loadQuizQuestion() {
+            const qData = activeQuestions[currentStep];
+            const qContainer = document.getElementById('question-text');
+            const optContainer = document.getElementById('options-container');
+            const feedbackArea = document.getElementById('feedback-area');
+            const progressBar = document.getElementById('progress-bar');
+            const qNum = document.getElementById('current-q-num');
+
+            qNum.innerText = currentStep + 1;
+            const progress = ((currentStep) / activeQuestions.length) * 100;
+            progressBar.style.width = `${progress}%`;
+
+            qContainer.innerText = qData.text;
+            optContainer.innerHTML = '';
+            feedbackArea.classList.add('hidden');
+
+            qData.options.forEach((opt) => {
+                const btn = document.createElement('div');
+                btn.className = "option-card border border-slate-600 rounded-lg p-4 bg-slate-800/50 text-white font-medium hover:text-cyan-300 flex justify-between items-center";
+                btn.innerHTML = `<span>${opt.t}</span>`;
+                btn.onclick = () => checkQuizAnswer(opt.c, qData.hint, btn);
+                optContainer.appendChild(btn);
+            });
+        }
+
+        function checkQuizAnswer(isCorrect, hint, btnElement) {
+            const allBtns = document.querySelectorAll('.option-card');
+            allBtns.forEach(b => b.style.pointerEvents = 'none');
+
+            // 記錄作答情況
+            stage2ContentLog += `Q${currentStep + 1}:${isCorrect ? "O" : "X"} `;
+
+            const feedbackArea = document.getElementById('feedback-area');
+            feedbackArea.classList.remove('hidden');
+
+            if (isCorrect) {
+                score += 100 / activeQuestions.length;
+                btnElement.classList.add('bg-green-600', 'border-green-400');
+                btnElement.innerHTML += '<i class="fa-solid fa-check text-white"></i>';
+                feedbackArea.innerHTML = `<span class="text-green-400 text-lg"><i class="fa-solid fa-circle-check"></i> 答對了！</span><div class="mt-2 text-left text-sm text-gray-300 border-t border-slate-600 pt-2">${hint}</div>`;
+            } else {
+                btnElement.classList.add('bg-red-600', 'border-red-400');
+                btnElement.innerHTML += '<i class="fa-solid fa-xmark text-white"></i>';
+                feedbackArea.innerHTML = `<span class="text-red-400 text-lg"><i class="fa-solid fa-circle-xmark"></i> 答錯囉！</span><div class="mt-2 text-left text-sm text-gray-300 border-t border-slate-600 pt-2">${hint}</div>`;
+            }
+
+            setTimeout(() => {
+                currentStep++;
+                if (currentStep < activeQuestions.length) {
+                    loadQuizQuestion();
+                } else {
+                    finishQuizFinal();
+                }
+            }, 3500);
+        }
+
+        function finishQuizFinal() {
+            showScreen('screen-submitting');
+            submitToGoogleForm();
+        }
+
+        function submitToGoogleForm() {
+            if (GOOGLE_FORM_URL === "YOUR_GOOGLE_FORM_ACTION_URL_HERE") {
+                console.log("模擬提交：", {
+                    name: userName,
+                    s1_content: stage1ContentLog,
+                    s1_score: stage1ScoreLog,
+                    s2_content: stage2ContentLog,
+                    s2_score: Math.round(score)
+                });
+                setTimeout(showResult, 2000);
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append(ENTRY_ID_NAME, userName);
+            formData.append(ENTRY_ID_S1_CONTENT, stage1ContentLog);
+            formData.append(ENTRY_ID_S1_SCORE, stage1ScoreLog);
+            formData.append(ENTRY_ID_S2_CONTENT, stage2ContentLog);
+            formData.append(ENTRY_ID_S2_SCORE, Math.round(score));
+            
+            fetch(GOOGLE_FORM_URL, {
+                method: "POST",
+                body: formData,
+                mode: "no-cors"
+            }).then(() => setTimeout(showResult, 2000))
+              .catch(() => {
+                  alert("連線錯誤");
+                  showResult();
+              });
+        }
+
+        function showResult() {
+            showScreen('screen-result');
+            document.getElementById('display-name').innerText = userName;
+            const finalScore = Math.round(score);
+            document.getElementById('display-score').innerText = finalScore;
+
+            const rankEl = document.getElementById('display-rank');
+            const commentEl = document.getElementById('result-comment');
+            const iconEl = document.getElementById('result-icon');
+            const badgeEl = document.getElementById('result-badge');
+            const btnDownload = document.getElementById('btn-download-cert');
+
+            btnDownload.classList.add('hidden');
+
+            if (finalScore >= 80) {
+                rankEl.innerText = "高級探員";
+                rankEl.className = "text-xl font-bold text-yellow-400";
+                commentEl.innerHTML = "恭喜獲得認證！<br>你已經具備識破 AI 假訊息的專業能力。";
+                iconEl.className = "fa-solid fa-user-shield text-6xl text-yellow-400";
+                badgeEl.className = "w-32 h-32 rounded-full flex items-center justify-center border-4 border-yellow-400 mb-2 shadow-[0_0_20px_rgba(250,204,21,0.5)]";
+                btnDownload.classList.remove('hidden');
+            } 
+            else if (finalScore >= 60) {
+                rankEl.innerText = "中級探員";
+                rankEl.className = "text-xl font-bold text-green-400";
+                commentEl.innerText = "做得不錯！但還有一些細節可以再加強。";
+                iconEl.className = "fa-solid fa-user-secret text-6xl text-green-400";
+                badgeEl.className = "w-32 h-32 rounded-full flex items-center justify-center border-4 border-green-400 mb-2";
+            } else {
+                rankEl.innerText = "初級探員";
+                rankEl.className = "text-xl font-bold text-gray-400";
+                commentEl.innerText = "別氣餒！多看幾次教學，你會越來越厲害。";
+                iconEl.className = "fa-solid fa-user text-6xl text-gray-400";
+                badgeEl.className = "w-32 h-32 rounded-full flex items-center justify-center border-4 border-gray-400 mb-2";
+            }
+        }
+
+        function downloadCertificate() {
+            const canvas = document.getElementById('certificate-canvas');
+            const ctx = canvas.getContext('2d');
+            
+            const grd = ctx.createLinearGradient(0, 0, 800, 600);
+            grd.addColorStop(0, "#0f172a");
+            grd.addColorStop(1, "#1e293b");
+            ctx.fillStyle = grd;
+            ctx.fillRect(0, 0, 800, 600);
+
+            ctx.strokeStyle = "#fbbf24"; 
+            ctx.lineWidth = 10;
+            ctx.strokeRect(20, 20, 760, 560);
+            
+            ctx.strokeStyle = "#38bdf8";
+            ctx.lineWidth = 4;
+            ctx.strokeRect(35, 35, 730, 530);
+
+            ctx.textAlign = "center";
+            ctx.fillStyle = "#fbbf24";
+            ctx.font = "bold 60px 'Microsoft JhengHei', sans-serif";
+            ctx.fillText("高級探員認證書", 400, 150);
+
+            ctx.fillStyle = "#94a3b8";
+            ctx.font = "30px 'Microsoft JhengHei', sans-serif";
+            ctx.fillText("AI 識讀特務總部", 400, 220);
+
+            ctx.fillStyle = "#ffffff";
+            ctx.font = "bold 80px 'Microsoft JhengHei', sans-serif";
+            ctx.fillText(userName, 400, 350);
+            
+            // 這裡修改了證書上的文字
+            ctx.font = "20px 'Microsoft JhengHei', sans-serif";
+            ctx.fillStyle = "#94a3b8";
+            ctx.fillText("永順國小特務編號", 400, 290);
+
+            ctx.fillStyle = "#38bdf8";
+            ctx.font = "30px 'Microsoft JhengHei', sans-serif";
+            ctx.fillText("已具備辨識 Deepfake 深偽影像之專業能力", 400, 430);
+            ctx.fillText("特此證明", 400, 470);
+
+            const date = new Date();
+            const dateStr = `${date.getFullYear()} / ${date.getMonth() + 1} / ${date.getDate()}`;
+            ctx.fillStyle = "#64748b";
+            ctx.font = "20px sans-serif";
+            ctx.fillText(dateStr, 400, 550);
+
+            const link = document.createElement('a');
+            link.download = `特務證書_${userName}.png`;
+            link.href = canvas.toDataURL("image/png");
+            link.click();
+        }
+
+        function resetSystem() {
+            score = 0;
+            currentStep = 0;
+            goToVideo(); 
+        }
+
+    </script>
 </body>
-
 </html>
