@@ -9,7 +9,7 @@
     <!-- 引入 FontAwesome 圖示 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- 引入 Google Fonts (更具科技感的字體) -->
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;70你的0&family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
 
     <style>
         /* 自定義動畫與樣式 */
@@ -164,13 +164,13 @@
         <div id="screen-login" class="screen active flex-col items-center text-center space-y-8 animate-fade-in">
             <div class="mb-4">
                 <i class="fa-solid fa-user-secret text-6xl text-cyan-400 mb-4 animate-bounce"></i>
-                <h1 class="text-4xl md:text-5xl font-bold tech-font text-white neon-text mb-2">AI 識讀特務總部</h1>
+                <h1 class="text-4xl md:text-5xl font-bold tech-font text-white neon-text mb-2">永順國小AI 識讀特務總部</h1>
                 <p class="text-cyan-200 text-lg">Deepfake Identification Training</p>
             </div>
             
             <div class="bg-slate-800/80 backdrop-blur-md p-8 rounded-2xl neon-border w-full max-w-md mx-auto">
-                <p class="mb-6 text-gray-300">特務你好，請輸入你的班級座號及姓名以開始任務...</p>
-                <input type="text" id="student-name" placeholder="例如50139騙人布" 
+                <p class="mb-6 text-gray-300">特務你好，請輸入班級座號和姓名以開始任務...</p>
+                <input type="text" id="student-name" placeholder="例如 50199騙人布" 
                     class="w-full bg-slate-900 border border-slate-600 rounded-lg p-4 text-white text-center text-xl focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition mb-6">
                 
                 <button onclick="goToVideo()" class="cyber-btn w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold py-4 rounded-lg text-xl tracking-wider">
@@ -204,7 +204,7 @@
             </a>
 
             <p class="mt-2 text-cyan-200 text-center text-sm">
-                <i class="fa-solid fa-circle-info mr-1"></i> 請仔細觀察影片1分鐘，尋找蛛絲馬跡。
+                <i class="fa-solid fa-circle-info mr-1"></i> 請仔細觀察影片 15 秒，尋找蛛絲馬跡。
             </p>
 
             <button onclick="startStage1()" class="cyber-btn mt-6 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold py-3 px-10 rounded-lg text-lg animate-pulse">
@@ -376,23 +376,25 @@
 
     <!-- 邏輯腳本 -->
     <script>
-        // ================= 配置區域 (請依照教學填入 5 個 ID) =================
-        const GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSc_0dbr4N-BDzqFHOMRi9N1CL8halVK8FeHtW30zmgLIAipow/formResponse?usp=pp_url&entry.1587097495=ID_TEST&entry.235680782=S1_CONTENT&entry.1236483592=111&entry.176009302=S2_CONTENT&entry.1513634700=999"; 
+        // ================= 配置區域 (已修正) =================
+        // 修正 1: 移除網址後面的 ?usp=pp_url... 參數，只保留到 formResponse
+        const GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSc_0dbr4N-BDzqFHOMRi9N1CL8halVK8FeHtW30zmgLIAipow/formResponse"; 
         
+        // 修正 2: 補上 entry. 前綴
         // 欄位 1: 特務編號
-        const ENTRY_ID_NAME = "1587097495"; 
+        const ENTRY_ID_NAME = "entry.1587097495"; 
         
-        // 欄位 2: 第一階段選擇內容 (例如: 手部細節, 背景環境...)
-        const ENTRY_ID_S1_CONTENT = "235680782";
+        // 欄位 2: 第一階段選擇內容
+        const ENTRY_ID_S1_CONTENT = "entry.235680782";
         
         // 欄位 3: 第一階段分數
-        const ENTRY_ID_S1_SCORE = "1236483592";
+        const ENTRY_ID_S1_SCORE = "entry.1236483592";
         
-        // 欄位 4: 第二階段作答詳情 (例如: Q1:對, Q2:錯...)
-        const ENTRY_ID_S2_CONTENT = "176009302";
+        // 欄位 4: 第二階段作答詳情
+        const ENTRY_ID_S2_CONTENT = "entry.176009302";
         
         // 欄位 5: 第二階段最終分數
-        const ENTRY_ID_S2_SCORE = "1513634700";
+        const ENTRY_ID_S2_SCORE = "entry.1513634700";
         // =================================================================
 
         const realAnomalies = [
@@ -773,7 +775,3 @@
     </script>
 </body>
 </html>
-
-
-
-
