@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="zh-TW" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 教育新紀元 | 科技與學習的融合</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        tech: {
+                            bg: '#0a0a12',
+                            card: '#13131f',
+                            accent: '#00f3ff',
+                            secondary: '#bc13fe',
+                            text: '#e0e0e0',
+                            dim: '#8a8a9b'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Noto Sans TC', 'sans-serif'],
+                        tech: ['Orbitron', 'sans-serif']
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #0a0a12;
+            color: #e0e0e0;
+            overflow-x: hidden;
+        }
+        
+        /* Tech Grid Background */
+        .bg-grid {
+            background-size: 40px 40px;
+            background-image: linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+            mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
+        }
+
+        /* Neon Glow Utilities */
+        .text-glow {
+            text-shadow: 0 0 10px rgba(0, 243, 255, 0.7);
+        }
+        .border-glow {
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.2), inset 0 0 15px rgba(0, 243, 255, 0.1);
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px -10px rgba(188, 19, 254, 0.4);
+            border-color: #bc13fe;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0a0a12;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #00f3ff;
+        }
+
+        /* Reveal Animation Classes */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease-out;
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body class="relative">
+
+    <!-- Navbar -->
+    <nav class="fixed w-full z-50 bg-tech-bg/90 backdrop-blur-md border-b border-white/10">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <i class="fas fa-microchip text-tech-accent text-2xl animate-pulse-slow"></i>
+                <span class="font-tech text-xl font-bold tracking-wider text-white">EDU<span class="text-tech-accent">.AI</span></span>
+            </div>
+            <div class="hidden md:flex space-x-8 text-sm font-medium">
+                <a href="#breakthrough" class="hover:text-tech-accent transition-colors">突破發展</a>
+                <a href="#applications" class="hover:text-tech-accent transition-colors">多元應用</a>
+                <a href="#challenges" class="hover:text-tech-accent transition-colors">挑戰與對策</a>
+                <a href="#conclusion" class="hover:text-tech-accent transition-colors">未來展望</a>
+            </div>
+            <button class="md:hidden text-white" onclick="document.getElementById('mobile-menu').classList.toggle('hidden')">
+                <i class="fas fa-bars text-xl"></i>
+            </button>
+        </div>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-tech-card p-4 border-t border-white/10">
+            <a href="#breakthrough" class="block py-2 hover:text-tech-accent">突破發展</a>
+            <a href="#applications" class="block py-2 hover:text-tech-accent">多元應用</a>
+            <a href="#challenges" class="block py-2 hover:text-tech-accent">挑戰與對策</a>
+            <a href="#conclusion" class="block py-2 hover:text-tech-accent">未來展望</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="relative min-h-screen flex items-center justify-center overflow-hidden bg-grid pt-20">
+        <!-- Abstract Background Elements -->
+        <div class="absolute top-20 left-10 w-72 h-72 bg-tech-secondary/20 rounded-full blur-[100px]"></div>
+        <div class="absolute bottom-20 right-10 w-96 h-96 bg-tech-accent/10 rounded-full blur-[100px]"></div>
+
+        <div class="container mx-auto px-6 text-center z-10">
+            <div class="inline-block px-4 py-1 mb-6 border border-tech-accent/50 rounded-full bg-tech-accent/10 text-tech-accent text-xs font-tech tracking-widest animate-pulse-slow">
+                SYSTEM UPDATE: EDUCATION 2.0
+            </div>
+            <h1 class="text-5xl md:text-7xl font-bold mb-6 leading-tight">
+                AI 的<span class="text-transparent bg-clip-text bg-gradient-to-r from-tech-accent to-tech-secondary text-glow">突破性發展</span><br>
+                與教育的重要性
+            </h1>
+            <p class="text-tech-dim text-lg md:text-xl max-w-3xl mx-auto mb-10 leading-relaxed">
+                自 OpenAI 推出 ChatGPT 以來，人工智慧不僅在專業考試中擊敗人類考生，更如工業革命般深刻改變全球教育面貌。我們正處於教育變革的風口浪尖。
+            </p>
+            <div class="flex justify-center gap-4">
+                <a href="#breakthrough" class="px-8 py-3 bg-tech-accent text-black font-bold rounded hover:bg-white transition-colors duration-300 shadow-[0_0_20px_rgba(0,243,255,0.4)]">
+                    探索數據
+                </a>
+                <a href="#conclusion" class="px-8 py-3 border border-white/20 text-white rounded hover:bg-white/10 transition-colors duration-300">
+                    閱讀結論
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Breakthrough Stats Section -->
+    <section id="breakthrough" class="py-20 bg-tech-bg relative">
+        <div class="container mx-auto px-6">
+            <div class="mb-16 reveal">
+                <h2 class="text-3xl font-tech font-bold text-white mb-4 border-l-4 border-tech-accent pl-4">01. 性能指標分析</h2>
+                <p class="text-tech-dim">GPT-4 模型在多項專業領域考試中展現了驚人的能力，標誌著 AI 新紀元的到來。</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <!-- Text Content -->
+                <div class="space-y-6 reveal">
+                    <div class="bg-tech-card p-6 rounded-lg border border-white/5">
+                        <h3 class="text-xl font-bold text-white mb-2 flex items-center">
+                            <i class="fas fa-rocket text-tech-secondary mr-3"></i>迅速崛起
+                        </h3>
+                        <p class="text-gray-400">OpenAI 於 2022 年推出 ChatGPT，隨後於 2023 年推出優化的 GPT-4。它能進行自然對話、解答代數，甚至通過高難度執照考試。</p>
+                    </div>
+                    <div class="bg-tech-card p-6 rounded-lg border border-white/5">
+                        <h3 class="text-xl font-bold text-white mb-2 flex items-center">
+                            <i class="fas fa-globe text-tech-secondary mr-3"></i>全球衝擊
+                        </h3>
+                        <p class="text-gray-400">這些成績促使全球教育界重新思考傳統的運作模式。AI 正迅速成為教育變革的驅動力量。</p>
+                    </div>
+                </div>
+
+                <!-- Interactive Stats/Progress Bars -->
+                <div class="bg-tech-card/50 p-8 rounded-2xl border border-tech-accent/20 backdrop-blur-sm reveal">
+                    <h3 class="font-tech text-tech-accent mb-6 text-sm tracking-widest">GPT-4 EXAM PERFORMANCE</h3>
+                    
+                    <!-- Item 1 -->
+                    <div class="mb-6 group">
+                        <div class="flex justify-between mb-2">
+                            <span class="text-white font-medium">UBE 律師資格考試</span>
+                            <span class="text-tech-accent">Top 10%</span>
+                        </div>
+                        <div class="w-full bg-gray-800 rounded-full h-2.5 overflow-hidden">
+                            <div class="bg-gradient-to-r from-tech-accent to-blue-500 h-2.5 rounded-full w-0 group-hover:w-[90%] transition-all duration-1000 ease-out delay-100" style="width: 90%"></div>
+                        </div>
+                        <p class="text-xs text-tech-dim mt-1">超越 90% 人類考生 (Katz et al., 2024)</p>
+                    </div>
+
+                    <!-- Item 2 -->
+                    <div class="mb-6 group">
+                        <div class="flex justify-between mb-2">
+                            <span class="text-white font-medium">國際生物奧林匹亞</span>
+                            <span class="text-tech-accent">Top 1%</span>
+                        </div>
+                        <div class="w-full bg-gray-800 rounded-full h-2.5 overflow-hidden">
+                            <div class="bg-gradient-to-r from-tech-secondary to-purple-500 h-2.5 rounded-full w-0 transition-all duration-1000 ease-out delay-300" style="width: 99%"></div>
+                        </div>
+                        <p class="text-xs text-tech-dim mt-1">超越 99% 考生 (Achiam et al., 2023)</p>
+                    </div>
+
+                    <!-- Item 3 -->
+                    <div class="mb-2 group">
+                        <div class="flex justify-between mb-2">
+                            <span class="text-white font-medium">會計師執業資格 (CPA/CMA/CIA)</span>
+                            <span class="text-green-400">PASSED</span>
+                        </div>
+                        <div class="w-full bg-gray-800 rounded-full h-2.5 overflow-hidden">
+                            <div class="bg-gradient-to-r from-green-400 to-emerald-600 h-2.5 rounded-full w-0 transition-all duration-1000 ease-out delay-500" style="width: 100%"></div>
+                        </div>
+                        <p class="text-xs text-tech-dim mt-1">通過四大會計資格考試</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Applications Section -->
+    <section id="applications" class="py-20 bg-[#0d0d16]">
+        <div class="container mx-auto px-6">
+            <div class="mb-16 text-center reveal">
+                <h2 class="text-3xl md:text-4xl font-tech font-bold text-white mb-4">
+                    AI 在教育中的 <span class="text-tech-accent">多元應用</span>
+                </h2>
+                <p class="text-tech-dim max-w-2xl mx-auto">從教材生成到特殊教育輔助，技術正在重塑學習的每一個環節。</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Card 1 -->
+                <div class="bg-tech-card p-8 rounded-xl border border-white/5 card-hover transition-all duration-300 reveal">
+                    <div class="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center mb-6 text-blue-400 text-2xl">
+                        <i class="fas fa-book-open"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">教材自動生成</h3>
+                    <p class="text-tech-dim text-sm leading-relaxed">
+                        解決即時性與在地性需求。AI 可協助編輯者生成教材雛型，控制詞彙難度，自動建立生詞表與習題。
+                    </p>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="bg-tech-card p-8 rounded-xl border border-white/5 card-hover transition-all duration-300 reveal delay-100">
+                    <div class="w-12 h-12 bg-tech-accent/20 rounded-lg flex items-center justify-center mb-6 text-tech-accent text-2xl">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">教學輔助</h3>
+                    <p class="text-tech-dim text-sm leading-relaxed">
+                        釋放教師時間。AI 可協助設計課程、訂定評分量尺、撰寫評語，甚至快速找出作業中的錯誤，讓教師專注於個別指導。
+                    </p>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="bg-tech-card p-8 rounded-xl border border-white/5 card-hover transition-all duration-300 reveal delay-200">
+                    <div class="w-12 h-12 bg-tech-secondary/20 rounded-lg flex items-center justify-center mb-6 text-tech-secondary text-2xl">
+                        <i class="fas fa-sliders-h"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">適性學習 (Adaptive)</h3>
+                    <p class="text-tech-dim text-sm leading-relaxed">
+                        依據學生能力動態調整課程。例如韓國 AI 數位教科書與個性化考試，讓教師全方位掌握學生狀況。
+                    </p>
+                </div>
+
+                <!-- Card 4 -->
+                <div class="bg-tech-card p-8 rounded-xl border border-white/5 card-hover transition-all duration-300 reveal">
+                    <div class="w-12 h-12 bg-green-500/20 rounded-lg flex items-center justify-center mb-6 text-green-400 text-2xl">
+                        <i class="fas fa-user-astronaut"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">自主學習</h3>
+                    <p class="text-tech-dim text-sm leading-relaxed">
+                        學生可依自己的節奏學習。AI 平台可定製學習路徑，提升動機，如 SciSpace, ScholarGPT 等工具輔助研究。
+                    </p>
+                </div>
+
+                <!-- Card 5 -->
+                <div class="bg-tech-card p-8 rounded-xl border border-white/5 card-hover transition-all duration-300 reveal delay-100">
+                    <div class="w-12 h-12 bg-red-500/20 rounded-lg flex items-center justify-center mb-6 text-red-400 text-2xl">
+                        <i class="fas fa-hands-helping"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">特殊教育支援</h3>
+                    <p class="text-tech-dim text-sm leading-relaxed">
+                        幫助 ADHD 學生組織思緒、克服寫作障礙；協助高功能自閉症 (HFA) 學生模擬社交情境與對話練習。
+                    </p>
+                </div>
+
+                <!-- Card 6 -->
+                <div class="bg-tech-card p-8 rounded-xl border border-white/5 card-hover transition-all duration-300 reveal delay-200">
+                    <div class="w-12 h-12 bg-yellow-500/20 rounded-lg flex items-center justify-center mb-6 text-yellow-400 text-2xl">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">管理與行政</h3>
+                    <p class="text-tech-dim text-sm leading-relaxed">
+                        AI 協助回覆家長郵件、撰寫推薦信、處理重複性行政工作，讓教育回歸「人」的互動。
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Challenges & Solutions -->
+    <section id="challenges" class="py-20 bg-tech-bg relative overflow-hidden">
+        <!-- Background Accents -->
+        <div class="absolute top-1/2 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-tech-accent/30 to-transparent"></div>
+
+        <div class="container mx-auto px-6 relative z-10">
+            <div class="mb-16 text-center reveal">
+                <h2 class="text-3xl font-tech font-bold text-white mb-4">挑戰 <span class="text-tech-dim text-xl mx-2">VS</span> 對策</h2>
+                <p class="text-tech-dim">技術是一把雙面刃，我們需要智慧來駕馭它。</p>
+            </div>
+
+            <div class="space-y-8">
+                <!-- Row 1 -->
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-6 reveal">
+                    <div class="md:col-span-5 bg-red-900/10 border border-red-500/30 p-6 rounded-lg">
+                        <h3 class="text-red-400 font-bold text-lg mb-2"><i class="fas fa-exclamation-triangle mr-2"></i>學術誠信與作弊</h3>
+                        <p class="text-sm text-gray-400">ChatGPT 數秒生成論文，引發抄襲擔憂。部分學校初期採取禁止策略，期刊修改投稿指南。</p>
+                    </div>
+                    <div class="hidden md:flex md:col-span-2 items-center justify-center text-tech-dim">
+                        <i class="fas fa-arrow-right text-2xl animate-pulse"></i>
+                    </div>
+                    <div class="md:col-span-5 bg-green-900/10 border border-green-500/30 p-6 rounded-lg">
+                        <h3 class="text-green-400 font-bold text-lg mb-2"><i class="fas fa-check-circle mr-2"></i>因應：善用而非禁止</h3>
+                        <p class="text-sm text-gray-400">禁止不切實際。應研擬使用指南，鼓勵學生善用 AI 提高品質，並將 AI 集成於學習平台，設計符合學科要求的工具。</p>
+                    </div>
+                </div>
+
+                <!-- Row 2 -->
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-6 reveal delay-100">
+                    <div class="md:col-span-5 bg-red-900/10 border border-red-500/30 p-6 rounded-lg">
+                        <h3 class="text-red-400 font-bold text-lg mb-2"><i class="fas fa-user-clock mr-2"></i>依賴性與能力喪失</h3>
+                        <p class="text-sm text-gray-400">學生過度依賴工具，學習過程可能被機器取代。寫作若變成單純的作業，學生將失去思考能力。</p>
+                    </div>
+                    <div class="hidden md:flex md:col-span-2 items-center justify-center text-tech-dim">
+                        <i class="fas fa-arrow-right text-2xl animate-pulse"></i>
+                    </div>
+                    <div class="md:col-span-5 bg-green-900/10 border border-green-500/30 p-6 rounded-lg">
+                        <h3 class="text-green-400 font-bold text-lg mb-2"><i class="fas fa-brain mr-2"></i>因應：改變教學法</h3>
+                        <p class="text-sm text-gray-400">注重口頭報告、多媒體作業。推行「人機協作」寫作。要求學生反思寫作原因，培養真正感興趣的話題。</p>
+                    </div>
+                </div>
+
+                <!-- Row 3 -->
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-6 reveal delay-200">
+                    <div class="md:col-span-5 bg-red-900/10 border border-red-500/30 p-6 rounded-lg">
+                        <h3 class="text-red-400 font-bold text-lg mb-2"><i class="fas fa-balance-scale-right mr-2"></i>品質、偏見與隱私</h3>
+                        <p class="text-sm text-gray-400">訓練資料偏見導致不公平。英語為主導致語言多樣性減少。數位落差擴大。資料隱私外洩風險。</p>
+                    </div>
+                    <div class="hidden md:flex md:col-span-2 items-center justify-center text-tech-dim">
+                        <i class="fas fa-arrow-right text-2xl animate-pulse"></i>
+                    </div>
+                    <div class="md:col-span-5 bg-green-900/10 border border-green-500/30 p-6 rounded-lg">
+                        <h3 class="text-green-400 font-bold text-lg mb-2"><i class="fas fa-shield-alt mr-2"></i>因應：倫理規範與政策</h3>
+                        <p class="text-sm text-gray-400">制定 AI 素養法案、使用手冊。強調透明度、隱私保護。培養批判性思維以分辨偏見資訊。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Teacher Role Shift Section -->
+    <section class="py-20 bg-[#0a0a12] border-t border-white/5">
+        <div class="container mx-auto px-6">
+            <div class="bg-gradient-to-br from-tech-card to-gray-900 p-8 md:p-12 rounded-2xl border border-tech-accent/20 relative overflow-hidden reveal">
+                <div class="absolute top-0 right-0 w-64 h-64 bg-tech-accent/5 rounded-full blur-3xl"></div>
+                
+                <h2 class="text-2xl md:text-3xl font-bold mb-8 text-white">教師角色的關鍵轉型</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <div class="space-y-3">
+                        <div class="w-10 h-10 rounded-full bg-tech-secondary flex items-center justify-center text-white font-bold">1</div>
+                        <h4 class="text-tech-accent font-bold">從傳授者到指導者</h4>
+                        <p class="text-sm text-tech-dim">重複性工作交給 AI，教師專注於引導深度學習與解決問題。</p>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="w-10 h-10 rounded-full bg-tech-secondary flex items-center justify-center text-white font-bold">2</div>
+                        <h4 class="text-tech-accent font-bold">專注高層次教學</h4>
+                        <p class="text-sm text-tech-dim">設計創新學習活動，進行跨學科探究，培養學生批判性思維。</p>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="w-10 h-10 rounded-full bg-tech-secondary flex items-center justify-center text-white font-bold">3</div>
+                        <h4 class="text-tech-accent font-bold">增強倫理教育</h4>
+                        <p class="text-sm text-tech-dim">教導學生判讀內容、查證事實，確保 AI 使用符合道德規範。</p>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="w-10 h-10 rounded-full bg-tech-secondary flex items-center justify-center text-white font-bold">4</div>
+                        <h4 class="text-tech-accent font-bold">提升科技素養</h4>
+                        <p class="text-sm text-tech-dim">參與培訓，掌握 AI 工具，利用數據分析學生學習狀態。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Conclusion Section -->
+    <section id="conclusion" class="py-20 bg-grid relative">
+        <div class="container mx-auto px-6 max-w-4xl text-center reveal">
+            <i class="fas fa-lightbulb text-5xl text-yellow-400 mb-6 animate-float"></i>
+            <h2 class="text-4xl font-tech font-bold text-white mb-8">結論與展望</h2>
+            <p class="text-lg text-gray-300 mb-10 leading-relaxed">
+                AI 在教育領域的應用前景廣闊，但只有在確保<span class="text-tech-accent">公平</span>、<span class="text-tech-accent">負責任</span>、並以<span class="text-tech-accent">學生為中心</span>的前提下，才能真正實現其對教育變革的正面影響。
+            </p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
+                <div class="p-4 border border-white/10 rounded hover:bg-white/5 transition">
+                    <h5 class="text-tech-accent font-bold mb-1">保障隱私與安全</h5>
+                    <p class="text-xs text-tech-dim">建立法規防止數據濫用。</p>
+                </div>
+                <div class="p-4 border border-white/10 rounded hover:bg-white/5 transition">
+                    <h5 class="text-tech-accent font-bold mb-1">縮小數位落差</h5>
+                    <p class="text-xs text-tech-dim">確保所有學生平等獲得 AI 資源。</p>
+                </div>
+                <div class="p-4 border border-white/10 rounded hover:bg-white/5 transition">
+                    <h5 class="text-tech-accent font-bold mb-1">保留核心價值</h5>
+                    <p class="text-xs text-tech-dim">教師引導與情感智慧無法被取代。</p>
+                </div>
+                <div class="p-4 border border-white/10 rounded hover:bg-white/5 transition">
+                    <h5 class="text-tech-accent font-bold mb-1">持續政策優化</h5>
+                    <p class="text-xs text-tech-dim">長期跟蹤研究，動態調整教育政策。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-black py-8 border-t border-white/10">
+        <div class="container mx-auto px-6 text-center">
+            <p class="text-tech-dim text-sm">© 2025 AI Education Report. Design based on analysis of global education trends.</p>
+            <div class="mt-4 space-x-4">
+                <a href="#" class="text-gray-500 hover:text-white transition"><i class="fab fa-github"></i></a>
+                <a href="#" class="text-gray-500 hover:text-white transition"><i class="fab fa-twitter"></i></a>
+                <a href="#" class="text-gray-500 hover:text-white transition"><i class="fas fa-envelope"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Reveal Animation on Scroll
+        function reveal() {
+            var reveals = document.querySelectorAll(".reveal");
+            for (var i = 0; i < reveals.length; i++) {
+                var windowHeight = window.innerHeight;
+                var elementTop = reveals[i].getBoundingClientRect().top;
+                var elementVisible = 150;
+                if (elementTop < windowHeight - elementVisible) {
+                    reveals[i].classList.add("active");
+                }
+            }
+        }
+        window.addEventListener("scroll", reveal);
+        // Trigger once on load
+        reveal();
+
+        // Progress Bar Animation (Simple visibility check to animate width)
+        document.addEventListener('DOMContentLoaded', () => {
+             // Initial state handled by CSS transitions in the class list
+        });
+    </script>
+</body>
+</html>
