@@ -1011,7 +1011,8 @@
       renderer.shadowMap.enabled = true;
 
       scene = new THREE.Scene();
-      scene.background = new THREE.Color(0x87ceeb);
+      // 修改背景顏色為漸層天空藍
+      scene.background = new THREE.Color(0x87ceeb); // 原本的顏色
 
       const width = canvas.clientWidth || canvas.offsetWidth || 800;
       const height = canvas.clientHeight || canvas.offsetHeight || 600;
@@ -1020,13 +1021,18 @@
       camera.lookAt(0, 0, 0);
       renderer.setSize(width, height, false);
 
-      const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 0.8);
+      // 調整環境光：天空光偏暖，地面光偏冷
+      const hemiLight = new THREE.HemisphereLight(0xffeeb1, 0x080820, 0.8);
       hemiLight.position.set(0, 20, 0);
       scene.add(hemiLight);
 
-      const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+      // 調整直射光：模擬太陽光
+      const dirLight = new THREE.DirectionalLight(0xffaa33, 0.8);
       dirLight.position.set(5, 10, 7);
       dirLight.castShadow = true;
+      // 增加陰影的柔和度
+      dirLight.shadow.mapSize.width = 1024;
+      dirLight.shadow.mapSize.height = 1024;
       scene.add(dirLight);
 
       buildLevel(currentLevelIndex);
