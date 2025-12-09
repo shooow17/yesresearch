@@ -506,4 +506,599 @@
       // 頭
       const head = new THREE.Group();
       head.position.y = 1.5;
-      head.add(createVoxel(
+      head.add(createVoxel(skin, 0, 0, 0, 0.4, 0.4, 0.4));
+      head.add(createVoxel(hair, 0, 0.21, 0, 0.42, 0.05, 0.42));
+      head.add(createVoxel(hair, 0, 0.1, -0.21, 0.42, 0.2, 0.05));
+      head.add(createVoxel(hair, -0.21, 0.1, 0, 0.05, 0.2, 0.4));
+      head.add(createVoxel(hair, 0.21, 0.1, 0, 0.05, 0.2, 0.4));
+
+      const fz = 0.205;
+      head.add(createVoxel(0xFFFFFF,  0.1,  0.05, fz,         0.1, 0.05, 0.02));
+      head.add(createVoxel(0x2222FF,  0.12, 0.05, fz + 0.001, 0.05, 0.05, 0.02));
+      head.add(createVoxel(0xFFFFFF, -0.1,  0.05, fz,         0.1, 0.05, 0.02));
+      head.add(createVoxel(0x2222FF, -0.12, 0.05, fz + 0.001, 0.05, 0.05, 0.02));
+      head.add(createVoxel(0xB87E6A, 0, -0.05, fz, 0.08, 0.05, 0.02));
+      head.add(createVoxel(0x9E6A4A, 0, -0.12, fz, 0.2,  0.06, 0.02));
+
+      steveGroup.add(head);
+
+      // 身體
+      steveGroup.add(createVoxel(0x009999, 0, 0.9, 0, 0.4, 0.6, 0.2));
+
+      // 四肢
+      const limbs = {};
+
+      function mkLimb(x, y, color, w, h, d, isLeg) {
+        const g = new THREE.Group();
+        g.position.set(x, y, 0);
+        g.add(createVoxel(color, 0, -h / 2 + (isLeg ? 0 : 0.1), 0, w, h, d));
+        steveGroup.add(g);
+        return g;
+      }
+
+      limbs.armL = mkLimb(-0.3, 1.1, skin,     0.18, 0.6, 0.18, false);
+      limbs.armR = mkLimb( 0.3, 1.1, skin,     0.18, 0.6, 0.18, false);
+      limbs.legL = mkLimb(-0.1, 0.6, 0x0000AA, 0.18, 0.6, 0.18, true);
+      limbs.legR = mkLimb( 0.1, 0.6, 0x0000AA, 0.18, 0.6, 0.18, true);
+
+      return { group: steveGroup, limbs: limbs };
+    }
+
+    // ========= NPC：苦力怕、乳牛、小羊 =========
+    function createCreeper() {
+      const group = new THREE.Group();
+      const green = 0x3ba635;
+
+      // 身體
+      group.add(createVoxel(green, 0, 0.9, 0, 0.5, 1.0, 0.4));
+      // 頭
+      group.add(createVoxel(green, 0, 1.6, 0, 0.5, 0.5, 0.5));
+      // 腿
+      const legHeight = 0.3;
+      const legY = 0.15;
+      const legs = [
+        [-0.15, legY, -0.12],
+        [ 0.15, legY, -0.12],
+        [-0.15, legY,  0.12],
+        [ 0.15, legY,  0.12]
+      ];
+      legs.forEach(([x, y, z]) => {
+        group.add(createVoxel(green, x, y, z, 0.18, legHeight, 0.18));
+      });
+      return group;
+    }
+
+    function createCow() {
+      const group = new THREE.Group();
+      const bodyColor = 0x8b4513;
+      const spotColor = 0xffffff;
+      const legColor = 0x4b3621;
+
+      // 身體
+      group.add(createVoxel(bodyColor, 0, 0.7, 0, 0.9, 0.5, 0.5));
+      // 斑點
+      group.add(createVoxel(spotColor, 0.15, 0.8, 0.26, 0.2, 0.2, 0.05));
+      group.add(createVoxel(spotColor, -0.25, 0.6, -0.26, 0.25, 0.15, 0.05));
+      // 頭
+      group.add(createVoxel(bodyColor, 0, 1.0, 0.4, 0.4, 0.4, 0.4));
+      // 腿
+      const legH = 0.4;
+      const legY = 0.2;
+      const legs = [
+        [-0.3, legY, -0.18],
+        [ 0.3, legY, -0.18],
+        [-0.3, legY,  0.18],
+        [ 0.3, legY,  0.18]
+      ];
+      legs.forEach(([x, y, z]) => {
+        group.add(createVoxel(legColor, x, y, z, 0.18, legH, 0.18));
+      });
+      return group;
+    }
+
+    function createSheep() {
+      const group = new THREE.Group();
+      const wool = 0xffffff;
+      const face = 0xd8c0a8;
+      const legColor = 0x777777;
+
+      // 身體
+      group.add(createVoxel(wool, 0, 0.8, 0, 0.9, 0.6, 0.5));
+      // 頭
+      group.add(createVoxel(face, 0, 0.85, 0.45, 0.4, 0.4, 0.4));
+      // 腿
+      const legH = 0.35;
+      const legY = 0.175;
+      const legs = [
+        [-0.3, legY, -0.18],
+        [ 0.3, legY, -0.18],
+        [-0.3, legY,  0.18],
+        [ 0.3, legY,  0.18]
+      ];
+      legs.forEach(([x, y, z]) => {
+        group.add(createVoxel(legColor, x, y, z, 0.18, legH, 0.18));
+      });
+      return group;
+    }
+
+    // ========= 主角動作 =========
+    function setIdlePose() {
+      if (!playerLimbs.armL) return;
+      playerLimbs.armL.rotation.x = 0;
+      playerLimbs.armR.rotation.x = 0;
+      playerLimbs.legL.rotation.x = 0;
+      playerLimbs.legR.rotation.x = 0;
+    }
+
+    function updateWalkAnimation(progress) {
+      if (!playerLimbs.armL) return;
+      const swing = Math.sin(progress * Math.PI) * 0.7;
+      playerLimbs.armL.rotation.x =  swing;
+      playerLimbs.armR.rotation.x = -swing;
+      playerLimbs.legL.rotation.x = -swing;
+      playerLimbs.legR.rotation.x =  swing;
+    }
+
+    function updatePlayerTransform() {
+      if (!player) return;
+      const worldX = playerState.x - GRID_OFFSET;
+      const worldZ = playerState.z - GRID_OFFSET;
+      player.position.set(worldX, 0, worldZ);
+      player.rotation.y = DIR_ROTATIONS[playerState.dir];
+    }
+
+    function resetPlayer() {
+      const level = LEVELS[currentLevelIndex];
+      playerState.x = level.start.x;
+      playerState.z = level.start.z;
+      playerState.dir = level.start.dir;
+
+      collectedSymbols = [];
+      items.forEach(item => {
+        item.collected = false;
+        item.mesh.visible = true;
+      });
+
+      updatePlayerTransform();
+      setIdlePose();
+      hideCompleteDialog();
+      updateCollectedInfo();
+    }
+
+    // ========= 注音字卡與收集判定 =========
+    function createZhuyinCard(char) {
+      const canvas = document.createElement('canvas');
+      canvas.width = 128;
+      canvas.height = 128;
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, 128, 128);
+      ctx.font = 'bold 110px "Microsoft JhengHei", "Noto Sans TC", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.strokeStyle = '#FFFFFF';
+      ctx.lineWidth = 10;
+      ctx.strokeText(char, 64, 64);
+      ctx.fillStyle = '#00FFFF';
+      ctx.fillText(char, 64, 64);
+
+      const texture = new THREE.CanvasTexture(canvas);
+      const geometry = new THREE.BoxGeometry(1.3, 1.3, 0.05);
+      const material = new THREE.MeshBasicMaterial({
+        map: texture,
+        transparent: true,
+        side: THREE.FrontSide,
+        depthWrite: false
+      });
+      const mesh = new THREE.Mesh(geometry, material);
+      return mesh;
+    }
+
+    function checkPickup() {
+      const level = LEVELS[currentLevelIndex];
+      if (!level) return;
+
+      for (const item of items) {
+        if (!item.collected &&
+            item.gridX === playerState.x &&
+            item.gridZ === playerState.z) {
+
+          if (collectedSymbols.length >= level.targetZhuyin.length) {
+            updateStatus("你已經收集完所有注音了，可以重設或切換關卡。");
+            return;
+          }
+
+          const expected = level.targetZhuyin[collectedSymbols.length];
+          if (item.symbol === expected) {
+            item.collected = true;
+            item.mesh.visible = false;
+            collectedSymbols.push(item.symbol);
+            updateCollectedInfo();
+            updateStatus("收集到：「" + item.symbol + "」，目前：" + collectedSymbols.join(" "));
+
+            if (collectedSymbols.length === level.targetZhuyin.length) {
+              updateStatus("太棒了！你用 " +
+                level.targetZhuyin.join(" ") +
+                " 組成了「" + level.targetChar + "」。");
+              showCompleteDialog(level);
+            }
+          } else {
+            updateStatus("順序錯誤！應先收集「" +
+              expected + "」，但你踩到「" + item.symbol + "」。");
+          }
+          break;
+        }
+      }
+    }
+
+    // ========= 移動與轉向動畫 =========
+    async function animateMove() {
+      const dirVecs = [
+        { dx: 0, dz: -1 },
+        { dx: 1, dz:  0 },
+        { dx: 0, dz:  1 },
+        { dx: -1,dz:  0 }
+      ];
+      const v = dirVecs[playerState.dir];
+      const nx = playerState.x + v.dx;
+      const nz = playerState.z + v.dz;
+
+      if (nx < 0 || nx >= GRID_SIZE || nz < 0 || nz >= GRID_SIZE) {
+        updateStatus("撞到邊界了，不能再前進！");
+        return;
+      }
+
+      const startX = player.position.x;
+      const startZ = player.position.z;
+      const endX   = startX + v.dx;
+      const endZ   = startZ + v.dz;
+
+      const duration = 280;
+      const steps = 14;
+
+      for (let i = 0; i <= steps; i++) {
+        const t = i / steps;
+        player.position.x = startX + (endX - startX) * t;
+        player.position.z = startZ + (endZ - startZ) * t;
+        updateWalkAnimation(t);
+        await delay(duration / steps);
+      }
+
+      playerState.x = nx;
+      playerState.z = nz;
+      updatePlayerTransform();
+      setIdlePose();
+      checkPickup();
+    }
+
+    async function animateTurn(deltaDir) {
+      const oldDir = playerState.dir;
+      const newDir = (playerState.dir + deltaDir + 4) % 4;
+      const startRot = DIR_ROTATIONS[oldDir];
+      const endRot   = DIR_ROTATIONS[newDir];
+
+      const duration = 200;
+      const steps = 12;
+
+      for (let i = 0; i <= steps; i++) {
+        const t = i / steps;
+        const angle = startRot + (endRot - startRot) * t;
+        player.rotation.y = angle;
+        await delay(duration / steps);
+      }
+
+      playerState.dir = newDir;
+      updatePlayerTransform();
+      setIdlePose();
+    }
+
+    // ========= Three.js 場景與關卡建立 =========
+    function initThree() {
+      const canvas = document.getElementById('gameCanvas');
+      renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
+      renderer.setPixelRatio(window.devicePixelRatio || 1);
+      renderer.shadowMap.enabled = true;
+
+      scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x87ceeb);
+
+      const width = canvas.clientWidth || canvas.offsetWidth || 800;
+      const height = canvas.clientHeight || canvas.offsetHeight || 600;
+      camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
+      camera.position.set(0, 8, 10);
+      camera.lookAt(0, 0, 0);
+      renderer.setSize(width, height, false);
+
+      const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 0.8);
+      hemiLight.position.set(0, 20, 0);
+      scene.add(hemiLight);
+
+      const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+      dirLight.position.set(5, 10, 7);
+      dirLight.castShadow = true;
+      scene.add(dirLight);
+
+      buildLevel(currentLevelIndex);
+      animate();
+
+      window.addEventListener('resize', function () {
+        resizeRenderer();
+      });
+    }
+
+    function buildLevel(levelIndex) {
+      const level = LEVELS[levelIndex];
+      if (!level || !scene) return;
+
+      if (levelGroup) {
+        scene.remove(levelGroup);
+      }
+      levelGroup = new THREE.Group();
+      scene.add(levelGroup);
+
+      tiles = [];
+      items = [];
+      extraPlayers = [];
+      player = null;
+      playerLimbs = {};
+
+      const tileSize    = 0.9;
+      const dirtHeight  = 0.6;
+      const grassHeight = 0.2;
+
+      for (let z = 0; z < GRID_SIZE; z++) {
+        for (let x = 0; x < GRID_SIZE; x++) {
+          const cell = level.map[z][x];
+          const hasItem = level.itemMapping && level.itemMapping[cell];
+          const worldX = x - GRID_OFFSET;
+          const worldZ = z - GRID_OFFSET;
+
+          const dirtGeo  = new THREE.BoxGeometry(tileSize, dirtHeight, tileSize);
+          const grassGeo = new THREE.BoxGeometry(tileSize * 0.98, grassHeight, tileSize * 0.98);
+
+          const dirtMat  = new THREE.MeshStandardMaterial({ color: 0x8b5a2b });
+          const grassCol = hasItem ? 0x3d7a3d : 0x55aa55;
+          const grassMat = new THREE.MeshStandardMaterial({ color: grassCol });
+
+          const dirt = new THREE.Mesh(dirtGeo, dirtMat);
+          dirt.position.set(worldX, -grassHeight - dirtHeight / 2, worldZ);
+          dirt.receiveShadow = true;
+          levelGroup.add(dirt);
+
+          const grass = new THREE.Mesh(grassGeo, grassMat);
+          grass.position.set(worldX, -grassHeight / 2, worldZ);
+          grass.receiveShadow = true;
+          grass.castShadow = false;
+          levelGroup.add(grass);
+          tiles.push(grass);
+
+          if (hasItem) {
+            const shadowGeo = new THREE.PlaneGeometry(1.05, 1.05);
+            const shadowMat = new THREE.MeshStandardMaterial({
+              color: 0x000000,
+              transparent: true,
+              opacity: 0.35,
+              side: THREE.DoubleSide
+            });
+            const shadow = new THREE.Mesh(shadowGeo, shadowMat);
+            shadow.rotation.x = -Math.PI / 2;
+            shadow.position.set(worldX, 0.01, worldZ);
+            shadow.receiveShadow = true;
+            levelGroup.add(shadow);
+
+            const char = level.itemMapping[cell];
+            const mesh = createZhuyinCard(char);
+            const baseY = 1.2;
+            mesh.position.set(worldX, baseY, worldZ);
+            mesh.rotation.x = -Math.PI / 3.5;
+            levelGroup.add(mesh);
+
+            items.push({
+              mesh,
+              symbol: char,
+              gridX: x,
+              gridZ: z,
+              collected: false,
+              baseY: baseY,
+              floatPhase: Math.random() * Math.PI * 2
+            });
+          }
+        }
+      }
+
+      const steve = createSteve();
+      player = steve.group;
+      playerLimbs = steve.limbs;
+      levelGroup.add(player);
+
+      // 額外 1-2 個隨機 NPC（苦力怕 / 乳牛 / 小羊）
+      const bannedForExtra = new Set();
+      bannedForExtra.add(level.start.x + "," + level.start.z);
+      for (const item of items) {
+        bannedForExtra.add(item.gridX + "," + item.gridZ);
+      }
+      const extraCount = 1 + Math.floor(Math.random() * 2); // 1 或 2 個
+      const extraPositions = getRandomGridPositions(extraCount, bannedForExtra);
+      extraPositions.forEach(pos => {
+        const type = Math.floor(Math.random() * 3); // 0: creeper, 1: cow, 2: sheep
+        let g;
+        if (type === 0) {
+          g = createCreeper();
+        } else if (type === 1) {
+          g = createCow();
+        } else {
+          g = createSheep();
+        }
+        const worldX = pos.x - GRID_OFFSET;
+        const worldZ = pos.z - GRID_OFFSET;
+        g.position.set(worldX, 0, worldZ);
+        g.rotation.y = DIR_ROTATIONS[Math.floor(Math.random() * DIR_ROTATIONS.length)];
+        levelGroup.add(g);
+        extraPlayers.push(g);
+      });
+
+      resetPlayer();
+      updateLevelInfo();
+    }
+
+    function resizeRenderer() {
+      if (!renderer || !camera) return;
+      const canvas = renderer.domElement;
+      const width = canvas.clientWidth || canvas.offsetWidth;
+      const height = canvas.clientHeight || canvas.offsetHeight;
+      if (!width || !height) return;
+      renderer.setSize(width, height, false);
+      camera.aspect = width / height;
+      camera.updateProjectionMatrix();
+    }
+
+    // 這裡控制：注音卡「只上下漂浮、不旋轉」
+    function animate(time) {
+      requestAnimationFrame(animate);
+      if (!renderer || !scene || !camera) return;
+
+      const t = (time || 0) * 0.001;
+      const floatAmp = 0.1;
+      const floatSpeed = 1.5;
+
+      for (const item of items) {
+        if (!item.mesh || item.collected) continue;
+        item.mesh.position.y =
+          item.baseY + Math.sin(t * floatSpeed + item.floatPhase) * floatAmp;
+        // 不再旋轉：拿掉 rotation.y += ...
+      }
+
+      renderer.render(scene, camera);
+    }
+
+    // ========= 執行 Blockly 程式 =========
+    async function executeCommands(commands) {
+      updateStatus("執行中，共 " + commands.length + " 個指令…");
+      for (let i = 0; i < commands.length; i++) {
+        const cmd = commands[i];
+        if (cmd === "MOVE") {
+          await animateMove();
+        } else if (cmd === "LEFT") {
+          await animateTurn(-1);
+        } else if (cmd === "RIGHT") {
+          await animateTurn(1);
+        }
+      }
+      updateStatus("執行完畢，共 " + commands.length + " 個指令。");
+    }
+
+    async function runCode() {
+      if (!workspace) return;
+      let code = "";
+      const commands = [];
+      try {
+        code = Blockly.JavaScript.workspaceToCode(workspace);
+        const wrapped = new Function("commands", code);
+        wrapped(commands);
+      } catch (e) {
+        console.error(e);
+        alert("程式碼產生或執行錯誤：\n" + e);
+        updateStatus("程式錯誤，請檢查積木。");
+        return;
+      }
+
+      if (!commands.length) {
+        updateStatus("目前沒有指令喔，先拖一些積木再按執行。");
+        return;
+      }
+
+      await executeCommands(commands);
+    }
+
+    // ========= 初始化 =========
+    window.addEventListener('load', function () {
+      initBlockly();
+      initThree();
+      updateLevelInfo();
+
+      document.getElementById('runBtn').addEventListener('click', function () {
+        runCode();
+      });
+      document.getElementById('resetBtn').addEventListener('click', function () {
+        resetPlayer();
+        updateStatus("人物已重設到中央。");
+      });
+
+      const prevBtn = document.getElementById('prevLevelBtn');
+      const nextBtn = document.getElementById('nextLevelBtn');
+      if (prevBtn) {
+        prevBtn.addEventListener('click', function () {
+          if (currentLevelIndex > 0) {
+            setLevel(currentLevelIndex - 1);
+          }
+        });
+      }
+      if (nextBtn) {
+        nextBtn.addEventListener('click', function () {
+          if (currentLevelIndex < LEVELS.length - 1) {
+            setLevel(currentLevelIndex + 1);
+          }
+        });
+      }
+
+      const restartBtn = document.getElementById('dialogRestartBtn');
+      const dialogNextBtn = document.getElementById('dialogNextBtn');
+      if (restartBtn) {
+        restartBtn.addEventListener('click', function () {
+          resetPlayer();
+          hideCompleteDialog();
+        });
+      }
+      if (dialogNextBtn) {
+        dialogNextBtn.addEventListener('click', function () {
+          if (currentLevelIndex < LEVELS.length - 1) {
+            setLevel(currentLevelIndex + 1);
+          } else {
+            hideCompleteDialog();
+          }
+        });
+      }
+
+      const completeDialog = document.getElementById('completeDialog');
+      if (completeDialog) {
+        completeDialog.addEventListener('click', function (e) {
+          if (e.target.id === 'completeDialog') {
+            hideCompleteDialog();
+          }
+        });
+      }
+
+      // 編輯關卡按鈕：更新本關 / 新增關卡
+      const cfgApplyBtn = document.getElementById('cfgApplyCurrent');
+      const cfgAddBtn   = document.getElementById('cfgAddLevel');
+      const wordInput   = document.getElementById('cfgWordInput');
+      const zhuyinInput = document.getElementById('cfgZhuyinInput');
+
+      if (cfgApplyBtn) {
+        cfgApplyBtn.addEventListener('click', function () {
+          const w = (wordInput.value || "").trim();
+          const z = (zhuyinInput.value || "").trim();
+          if (!w || !z) {
+            alert("請輸入國字和注音（注音中間用空格分開）。");
+            return;
+          }
+          levelInputConfig[currentLevelIndex] = { word: w, zhuyin: z };
+          rebuildLevelsAndStay(currentLevelIndex);
+        });
+      }
+
+      if (cfgAddBtn) {
+        cfgAddBtn.addEventListener('click', function () {
+          const w = (wordInput.value || "").trim();
+          const z = (zhuyinInput.value || "").trim();
+          if (!w || !z) {
+            alert("請輸入國字和注音（注音中間用空格分開）。");
+            return;
+          }
+          levelInputConfig.push({ word: w, zhuyin: z });
+          rebuildLevelsAndStay(levelInputConfig.length - 1);
+        });
+      }
+    });
+  </script>
+</body>
+</html>
