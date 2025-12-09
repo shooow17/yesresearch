@@ -825,6 +825,48 @@
       return group;
     }
 
+    // ========= 背景雲朵 =========
+    function initClouds() {
+      const cloudsGroup = new THREE.Group();
+      const white = 0xffffff;
+      
+      // 產生 12 朵雲
+      for (let i = 0; i < 12; i++) {
+        const cloud = new THREE.Group();
+        // 每朵雲由 3~6 個方塊組成
+        const chunks = 3 + Math.floor(Math.random() * 4);
+        
+        for (let j = 0; j < chunks; j++) {
+          // 隨機大小
+          const sx = 1.5 + Math.random() * 1.5;
+          const sy = 0.5 + Math.random() * 0.5;
+          const sz = 1.0 + Math.random() * 1.0;
+          
+          // 隨機偏移 (讓雲朵看起來不規則)
+          const ox = (Math.random() - 0.5) * 2.5;
+          const oy = (Math.random() - 0.5) * 0.5;
+          const oz = (Math.random() - 0.5) * 1.5;
+          
+          const mesh = createVoxel(white, ox, oy, oz, sx, sy, sz);
+          // 雲朵通常不投射陰影，或視需求開啟
+          mesh.castShadow = false; 
+          cloud.add(mesh);
+        }
+        
+        // 將雲朵散佈在天空中 (圓柱座標系分佈)
+        const radius = 25 + Math.random() * 25; // 距離中心 25~50 單位
+        const angle = Math.random() * Math.PI * 2;
+        const x = Math.cos(angle) * radius;
+        const z = Math.sin(angle) * radius;
+        const y = 10 + Math.random() * 8; // 高度 10~18
+        
+        cloud.position.set(x, y, z);
+        cloud.lookAt(0, y, 0); // 稍微面向中心
+        cloudsGroup.add(cloud);
+      }
+      scene.add(cloudsGroup);
+    }
+
     // ========= 主角動作 =========
     function setIdlePose() {
       if (!playerLimbs.armL) return;
@@ -1043,6 +1085,7 @@
       scene.add(dirLight);
 
       buildLevel(currentLevelIndex);
+      initClouds(); // 新增雲朵
       animate();
 
       window.addEventListener('resize', function () {
