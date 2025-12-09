@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>注音符號大冒險 (老師出題版)</title>
+    <title>注音符號大冒險</title>
     
     <!-- 引入 React 核心 -->
     <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
@@ -24,39 +24,36 @@
     <script src="https://unpkg.com/blockly@9.3.3/javascript_compressed.js"></script>
     <script src="https://unpkg.com/blockly@9.3.3/msg/zh-hant.js"></script>
 
-    <!-- 樣式設定 -->
     <style>
         body { font-family: "Microsoft JhengHei", "Noto Sans TC", sans-serif; }
         
-        /* 積木區 (Toolbox) - 上方 40% */
+        /* 讓 React Root 填滿螢幕 */
+        #root { width: 100%; height: 100%; }
+
+        /* Blockly 容器填滿父層 */
+        #blocklyArea {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* 優化積木區背景顏色 */
         .blocklyToolboxDiv { 
             background-color: #f1f5f9 !important;
-            border-bottom: 2px solid #94a3b8 !important;
-            height: 40% !important;
-            width: 100% !important;
-            box-sizing: border-box;
-            padding: 10px;
-            padding-top: 36px;
-            overflow-y: auto !important;
-            display: flex;
-            flex-wrap: wrap;
-            align-content: flex-start;
-            position: absolute !important;
-            top: 0 !important;
-            left: 0 !important;
+            border-bottom: 2px solid #cbd5e1;
         }
         
-        .blocklyFlyout { transform: scale(0.9); }
-
-        /* 程式區 (Workspace) - 下方 */
+        /* 工作區背景設為純白 */
         .blocklySvg {
             background-color: #ffffff !important;
-            height: 100% !important;
-            position: absolute;
-            top: 0;
         }
         
-        .blocklyMainBackground { stroke: none !important; }
+        /* 隱藏垃圾桶 */
+        .blocklyTrash { display: none; }
+        
+        /* 隱藏預設背景圖案 */
+        .blocklyMainBackground {
+            stroke: none !important;
+        }
     </style>
 </head>
 <body class="bg-gray-900 text-white overflow-hidden h-screen w-screen">
@@ -66,17 +63,16 @@
     <script type="text/babel">
         const { useState, useEffect, useRef, useCallback } = React;
 
-        // --- SVG Icons ---
+        // --- 圖示定義 ---
         const IconPlay = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>;
         const IconRotate = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>;
         const IconCheck = () => <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#4ade80" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>;
         const IconAlert = () => <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#f87171" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>;
-        const IconCode = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>;
-        const IconCube = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>;
         const IconEdit = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>;
         const IconClose = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>;
+        const IconCube = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>;
+        const IconCode = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>;
 
-        // --- 預設關卡資料 ---
         const INITIAL_LEVELS = [
             {
                 targetChar: "順",
@@ -105,7 +101,6 @@
             const [currentLevel, setCurrentLevel] = useState(0);
             const [collectedSymbols, setCollectedSymbols] = useState([]);
             
-            // 老師模式狀態
             const [showTeacherModal, setShowTeacherModal] = useState(false);
             const [newLevelChar, setNewLevelChar] = useState('');
             const [newLevelZhuyin, setNewLevelZhuyin] = useState('');
@@ -114,7 +109,6 @@
             const workspaceRef = useRef(null);
             const canvasRef = useRef(null);
             const mountRef = useRef(null);
-            
             const sceneRef = useRef(null);
             const playerRef = useRef(null); 
             const playerLimbsRef = useRef({ armL: null, armR: null, legL: null, legR: null });
@@ -122,50 +116,34 @@
             const rendererRef = useRef(null);
             const itemsRef = useRef([]); 
             const shadowsRef = useRef([]); 
-            
             const playerState = useRef({ x: 0, z: 0, dir: 0 }); 
             const levelData = useRef(null);
 
-            // --- 產生隨機地圖 (老師模式核心) ---
+            // 產生隨機地圖
             const generateRandomLevel = (char, zhuyinStr) => {
                 const zhuyinList = zhuyinStr.trim().split(/\s+/);
                 if (zhuyinList.length === 0 || !char) return null;
-
-                // 9x9 全草地
                 const newMap = Array(9).fill().map(() => Array(9).fill(1));
                 const itemMapping = {};
-                
-                // 找出所有可用位置 (排除中心 4,4)
                 const availableSpots = [];
                 for(let x=0; x<9; x++){
                     for(let z=0; z<9; z++){
                         if(x !== 4 || z !== 4) availableSpots.push({x, z});
                     }
                 }
-
-                // 隨機洗牌
                 for (let i = availableSpots.length - 1; i > 0; i--) {
                     const j = Math.floor(Math.random() * (i + 1));
                     [availableSpots[i], availableSpots[j]] = [availableSpots[j], availableSpots[i]];
                 }
-
-                // 分配位置
                 zhuyinList.forEach((z, idx) => {
                     if(idx < availableSpots.length) {
                         const spot = availableSpots[idx];
-                        const code = 10 + idx; // ID 從 10 開始
+                        const code = 10 + idx; 
                         newMap[spot.z][spot.x] = code;
                         itemMapping[code] = z;
                     }
                 });
-
-                return {
-                    targetChar: char,
-                    targetZhuyin: zhuyinList,
-                    map: newMap,
-                    itemMapping: itemMapping,
-                    start: { x: 4, z: 4, dir: 0 }
-                };
+                return { targetChar: char, targetZhuyin: zhuyinList, map: newMap, itemMapping: itemMapping, start: { x: 4, z: 4, dir: 0 } };
             };
 
             const handleAddLevel = () => {
@@ -173,22 +151,20 @@
                 if (newLevel) {
                     const newLevels = [...levels, newLevel];
                     setLevels(newLevels);
-                    setCurrentLevel(newLevels.length - 1); // 跳轉到新關卡
+                    setCurrentLevel(newLevels.length - 1);
                     setGameState('IDLE');
                     setShowTeacherModal(false);
                     setNewLevelChar('');
                     setNewLevelZhuyin('');
                 } else {
-                    alert("請輸入完整的國字與注音符號！");
+                    alert("請輸入國字與注音！");
                 }
             };
 
             const registerBlocklyDefinitions = () => {
                 if (!window.Blockly || !window.Blockly.JavaScript) return;
-
                 const blocks = ['mc_move', 'mc_turn_left', 'mc_turn_right'];
                 const titles = { 'mc_move': '前進一格', 'mc_turn_left': '左轉 ↺', 'mc_turn_right': '右轉 ↻' };
-
                 blocks.forEach(blockName => {
                     if (!window.Blockly.Blocks[blockName]) {
                         window.Blockly.Blocks[blockName] = {
@@ -201,19 +177,15 @@
                         };
                     }
                 });
-
                 const genCode = {
                     'mc_move': 'commands.push("MOVE");\n',
                     'mc_turn_left': 'commands.push("LEFT");\n',
                     'mc_turn_right': 'commands.push("RIGHT");\n'
                 };
-
                 Object.keys(genCode).forEach(key => {
                     const func = () => genCode[key];
                     window.Blockly.JavaScript[key] = func;
-                    if (window.Blockly.JavaScript.forBlock) {
-                        window.Blockly.JavaScript.forBlock[key] = func;
-                    }
+                    if (window.Blockly.JavaScript.forBlock) window.Blockly.JavaScript.forBlock[key] = func;
                 });
             };
 
@@ -230,40 +202,30 @@
             const initScene = useCallback(() => {
                 if (!canvasRef.current || !window.THREE) return;
                 const THREE = window.THREE;
-
                 const width = canvasRef.current.clientWidth;
                 const height = canvasRef.current.clientHeight;
-                
                 const scene = new THREE.Scene();
                 scene.background = new THREE.Color(0x87CEEB); 
                 scene.fog = new THREE.Fog(0x87CEEB, 10, 60);
-
                 const camera = new THREE.PerspectiveCamera(40, width / height, 0.1, 100);
-                camera.position.set(0, 20, 12); 
-                camera.lookAt(0, 0, 1);
+                camera.position.set(0, 20, 12); camera.lookAt(0, 0, 1);
                 cameraRef.current = camera;
-
                 const renderer = new THREE.WebGLRenderer({ canvas: canvasRef.current, antialias: true, alpha: false });
                 renderer.setSize(width, height);
                 renderer.shadowMap.enabled = true;
                 rendererRef.current = renderer;
-
                 const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
                 scene.add(ambientLight);
                 const dirLight = new THREE.DirectionalLight(0xffffff, 0.5);
                 dirLight.position.set(20, 30, 20);
                 dirLight.castShadow = true;
                 scene.add(dirLight);
-
                 sceneRef.current = scene;
-
                 const animate = () => {
                     if (!mountRef.current) return;
                     requestAnimationFrame(animate);
                     itemsRef.current.forEach((item, idx) => {
-                        if (item.mesh.visible) {
-                            item.mesh.position.y = 1.3 + Math.sin(Date.now() * 0.003 + idx) * 0.1;
-                        }
+                        if (item.mesh.visible) item.mesh.position.y = 1.3 + Math.sin(Date.now() * 0.003 + idx) * 0.1;
                     });
                     renderer.render(scene, camera);
                 };
@@ -275,18 +237,13 @@
                 const THREE = window.THREE;
                 const geo = new THREE.BoxGeometry(1, 1, 1);
                 const mats = [
-                    new THREE.MeshStandardMaterial({ color: side }), 
-                    new THREE.MeshStandardMaterial({ color: side }), 
-                    new THREE.MeshStandardMaterial({ color: top }),  
-                    new THREE.MeshStandardMaterial({ color: bottom }), 
-                    new THREE.MeshStandardMaterial({ color: side }), 
-                    new THREE.MeshStandardMaterial({ color: side }) 
+                    new THREE.MeshStandardMaterial({ color: side }), new THREE.MeshStandardMaterial({ color: side }), 
+                    new THREE.MeshStandardMaterial({ color: top }), new THREE.MeshStandardMaterial({ color: bottom }), 
+                    new THREE.MeshStandardMaterial({ color: side }), new THREE.MeshStandardMaterial({ color: side }) 
                 ];
                 const mesh = new THREE.Mesh(geo, mats);
                 mesh.position.set(x, y, z);
-                mesh.castShadow = true;
-                mesh.receiveShadow = true;
-                
+                mesh.castShadow = true; mesh.receiveShadow = true;
                 const edges = new THREE.EdgesGeometry(geo);
                 const line = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: 0x000000, opacity: 0.3, transparent: true }));
                 mesh.add(line);
@@ -331,28 +288,20 @@
                 if (!sceneRef.current || !window.THREE) return;
                 const THREE = window.THREE;
                 const scene = sceneRef.current;
-
                 for(let i = scene.children.length - 1; i >= 0; i--) { 
-                    if(scene.children[i].type !== "DirectionalLight" && scene.children[i].type !== "AmbientLight") {
-                        scene.remove(scene.children[i]); 
-                    }
+                    if(scene.children[i].type !== "DirectionalLight" && scene.children[i].type !== "AmbientLight") scene.remove(scene.children[i]); 
                 }
-
-                // 安全檢查，防止關卡索引越界
                 const safeIndex = Math.min(levelIndex, levels.length - 1);
                 const data = levels[safeIndex];
-                
                 levelData.current = JSON.parse(JSON.stringify(data)); 
                 playerState.current = { ...data.start };
                 setCollectedSymbols([]);
                 setFailReason('');
                 itemsRef.current = [];
                 shadowsRef.current = [];
-
                 const mapGroup = new THREE.Group();
                 const offsetX = -(data.map[0].length * 1) / 2;
                 const offsetZ = -(data.map.length * 1) / 2;
-
                 data.map.forEach((row, z) => {
                     row.forEach((cell, x) => {
                         const posX = (x * 1) + offsetX;
@@ -376,7 +325,6 @@
                     });
                 });
                 scene.add(mapGroup);
-
                 const steveGroup = new THREE.Group();
                 const skin = 0xCF9E7A, hair = 0x3A2208;
                 const head = new THREE.Group();
@@ -408,10 +356,8 @@
                 playerLimbsRef.current.legR = mkLimb(0.1, 0.6, 0x0000AA, 0.18, 0.6, 0.18, true);
                 scene.add(steveGroup);
                 playerRef.current = steveGroup;
-
                 updatePlayerTransform(data.start.x, data.start.z, data.start.dir, offsetX, offsetZ);
-
-            }, [levels]); // 依賴 levels，因為現在 levels 是動態的
+            }, [levels]);
 
             const updatePlayerTransform = (gridX, gridZ, dirIndex, offX, offZ) => {
                 if (!playerRef.current) return;
@@ -423,14 +369,13 @@
 
             useEffect(() => {
                 if (!isLibrariesLoaded || !blocklyDiv.current) return;
-                
                 initScene();
-                buildLevel(currentLevel); // 使用 currentLevel
+                buildLevel(currentLevel);
                 registerBlocklyDefinitions();
-
                 const Blockly = window.Blockly;
                 if (workspaceRef.current) workspaceRef.current.dispose();
-
+                
+                // 設定水平佈局，積木在上方
                 workspaceRef.current = Blockly.inject(blocklyDiv.current, {
                     toolbox: `
                     <xml>
@@ -443,32 +388,28 @@
                     </xml>`,
                     scrollbars: true, 
                     trashcan: true,
+                    horizontalLayout: true, // 關鍵設定：水平
+                    toolboxPosition: 'start', // 關鍵設定：上方
                     zoom: { startScale: 1.0, maxScale: 3, minScale: 0.8, scaleSpeed: 1.2 },
                     theme: { 'componentStyles': { 'workspaceBackgroundColour': '#ffffff', 'toolboxBackgroundColour': '#f1f5f9' } }
                 });
-
                 const observer = new ResizeObserver(() => Blockly.svgResize(workspaceRef.current));
                 observer.observe(blocklyDiv.current);
                 return () => observer.disconnect();
-
             }, [isLibrariesLoaded, initScene]); 
 
-            // 當關卡改變時，重建場景
             useEffect(() => {
                 if (isLibrariesLoaded) { buildLevel(currentLevel); }
             }, [currentLevel, isLibrariesLoaded, buildLevel]);
 
             const runCode = async () => {
                 if (gameState === 'RUNNING') return;
-                
                 registerBlocklyDefinitions(); 
                 if (!window.Blockly || !window.Blockly.JavaScript) {
                     alert("Blockly 尚未載入完成"); return;
                 }
-
                 setGameState('RUNNING');
                 setFailReason('');
-                
                 const data = levelData.current;
                 const offX = -(data.map[0].length)/2;
                 const offZ = -(data.map.length)/2;
@@ -477,11 +418,10 @@
                 setCollectedSymbols([]);
                 itemsRef.current.forEach(i => { 
                     i.mesh.visible = true; 
-                    i.shadow.visible = true;
+                    i.shadow.visible = true; 
                     i.collected = false; 
                     i.mesh.material.color.setHex(0xffffff); 
                 });
-
                 let code = '';
                 try {
                     window.Blockly.JavaScript.init(workspaceRef.current);
@@ -491,7 +431,6 @@
                     setGameState('FAIL');
                     return;
                 }
-
                 const commands = [];
                 try {
                     new Function('commands', code)(commands);
@@ -499,13 +438,11 @@
                     setGameState('FAIL');
                     return;
                 }
-
                 let currentCollected = [];
                 for (let cmd of commands) {
                     if (!mountRef.current) break;
                     let { x, z, dir } = playerState.current;
                     let fail = false;
-
                     if (cmd === 'LEFT') {
                         dir = (dir + 3) % 4; playerState.current.dir = dir;
                         await animateTurn(Math.PI / 2);
@@ -515,18 +452,16 @@
                     } else if (cmd === 'MOVE') {
                         let nx = x, nz = z;
                         if (dir === 0) nz -= 1; if (dir === 1) nx += 1; if (dir === 2) nz += 1; if (dir === 3) nx -= 1;
-
                         if (nz >= 0 && nz < data.map.length && nx >= 0 && nx < data.map[0].length && data.map[nz][nx] !== 0) {
                             playerState.current.x = nx; playerState.current.z = nz;
                             await animateMove(nx, nz, offX, offZ);
-                            
                             const idx = itemsRef.current.findIndex(i => i.gridX === nx && i.gridZ === nz && !i.collected);
                             if (idx !== -1) {
                                 const item = itemsRef.current[idx];
                                 const expected = data.targetZhuyin[currentCollected.length];
                                 if (item.symbol === expected) {
                                     item.mesh.visible = false; 
-                                    item.shadow.visible = false;
+                                    item.shadow.visible = false; 
                                     item.collected = true;
                                     currentCollected.push(item.symbol);
                                     setCollectedSymbols([...currentCollected]);
@@ -545,7 +480,6 @@
                     if (fail) { setGameState('FAIL'); return; }
                     await new Promise(r => setTimeout(r, 200));
                 }
-
                 if (currentCollected.length === data.targetZhuyin.length) {
                     setGameState('SUCCESS');
                 } else {
@@ -575,7 +509,6 @@
                     const { armL, armR, legL, legR } = playerLimbsRef.current;
                     if(armL) armL.rotation.x = ang; if(armR) armR.rotation.x = -ang;
                     if(legL) legL.rotation.x = -ang; if(legR) legR.rotation.x = ang;
-
                     if(p<30) requestAnimationFrame(tick); else {
                         playerRef.current.position.set(targetX, 0, targetZ);
                         Object.values(playerLimbsRef.current).forEach(l => l.rotation.x = 0);
@@ -598,27 +531,22 @@
                 <div className="flex w-full h-full relative">
                     {/* 左側：操作區 (1/3) */}
                     <div className="w-1/3 min-w-[320px] h-full flex flex-col border-r border-gray-700 bg-gray-100 relative">
-                        {/* 標籤：積木庫 */}
+                        {/* 上方標籤：積木庫 */}
                         <div className="absolute top-0 left-0 right-0 h-9 bg-gray-100 border-b border-gray-300 flex items-center px-4 z-10 pointer-events-none shadow-sm">
                             <span className="text-gray-700 font-bold text-sm flex items-center gap-2">
                                 <IconCube /> 積木庫 (從此拖曳)
                             </span>
                         </div>
                         
-                        {/* 標籤：工作區 */}
-                        <div className="absolute top-[40%] left-0 right-0 h-8 bg-white/90 border-t border-gray-200 flex items-center px-4 z-10 pointer-events-none">
-                            <span className="text-gray-500 font-bold text-xs flex items-center gap-2">
-                                <IconCode /> 工作區 (在此組合程式)
-                            </span>
-                        </div>
-
+                        {/* 這裡不再使用多餘的標籤，讓 Workspace 更乾淨 */}
+                        
                         <div className="flex-1 relative">
-                            <div ref={blocklyDiv} className="absolute inset-0" />
+                            <div ref={blocklyDiv} id="blocklyArea" />
                             {!isLibrariesLoaded && <div className="absolute inset-0 flex items-center justify-center bg-white/80 z-20 text-black font-bold">資源載入中...</div>}
                         </div>
                     </div>
 
-                    {/* 右側：遊戲區 (2/3) */}
+                    {/* 右側：遊戲畫面 (2/3) */}
                     <div className="flex-1 flex flex-col bg-gray-900 relative">
                         <header className="bg-emerald-600 p-4 shadow-lg flex justify-between items-center z-10 h-16 shrink-0">
                             <div className="flex items-center gap-4">
@@ -635,11 +563,9 @@
                                 </div>
                             </div>
                             <div className="flex items-center gap-2">
-                                {/* 老師模式按鈕 */}
                                 <button onClick={() => setShowTeacherModal(true)} className="flex items-center gap-1 bg-white/10 hover:bg-white/20 text-white px-3 py-1.5 rounded-lg text-sm transition-colors mr-2">
                                     <IconEdit /> 出題
                                 </button>
-
                                 <span className="bg-black/20 px-3 py-1 rounded text-sm text-white/80">關卡 {currentLevel + 1}/{levels.length}</span>
                                 <button onClick={runCode} disabled={gameState === 'RUNNING' || !isLibrariesLoaded} className={`flex items-center gap-2 px-6 py-2 rounded-lg font-bold shadow transition-transform active:scale-95 ${gameState === 'RUNNING' ? 'bg-gray-500' : 'bg-orange-500 hover:bg-orange-600'}`}>
                                     <IconPlay /> {gameState === 'RUNNING' ? '執行中...' : '開始拼音'}
@@ -649,7 +575,6 @@
 
                         <canvas ref={canvasRef} className="flex-1 block w-full outline-none" />
 
-                        {/* 狀態 Overlay */}
                         {gameState === 'IDLE' && (
                             <div className="absolute bottom-4 right-4 bg-black/60 p-4 rounded-lg text-right pointer-events-none backdrop-blur-sm">
                                 <p className="text-gray-300 text-sm mb-1">目標：依照順序收集</p>
@@ -686,7 +611,6 @@
                         )}
                     </div>
 
-                    {/* 老師出題 Modal */}
                     {showTeacherModal && (
                         <div className="absolute inset-0 z-50 bg-black/80 flex items-center justify-center">
                             <div className="bg-white text-gray-900 p-8 rounded-2xl shadow-2xl max-w-md w-full relative">
@@ -696,42 +620,20 @@
                                 <h2 className="text-2xl font-bold mb-6 text-emerald-700 flex items-center gap-2">
                                     <IconEdit /> 老師出題模式
                                 </h2>
-                                
                                 <div className="space-y-4">
                                     <div>
                                         <label className="block text-sm font-bold text-gray-700 mb-1">目標國字</label>
-                                        <input 
-                                            type="text" 
-                                            maxLength="1"
-                                            placeholder="例如：貓" 
-                                            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none text-lg"
-                                            value={newLevelChar}
-                                            onChange={e => setNewLevelChar(e.target.value)}
-                                        />
+                                        <input type="text" maxLength="1" placeholder="例如：貓" className="w-full p-3 border border-gray-300 rounded-lg outline-none text-lg" value={newLevelChar} onChange={e => setNewLevelChar(e.target.value)} />
                                     </div>
                                     <div>
                                         <label className="block text-sm font-bold text-gray-700 mb-1">注音符號 (請用空白分開)</label>
-                                        <input 
-                                            type="text" 
-                                            placeholder="例如：ㄇ ㄠ" 
-                                            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none text-lg"
-                                            value={newLevelZhuyin}
-                                            onChange={e => setNewLevelZhuyin(e.target.value)}
-                                        />
-                                        <p className="text-xs text-gray-500 mt-1">系統將自動產生 9x9 地圖並隨機配置符號位置。</p>
+                                        <input type="text" placeholder="例如：ㄇ ㄠ" className="w-full p-3 border border-gray-300 rounded-lg outline-none text-lg" value={newLevelZhuyin} onChange={e => setNewLevelZhuyin(e.target.value)} />
                                     </div>
-                                    
-                                    <button 
-                                        onClick={handleAddLevel}
-                                        className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-lg shadow-lg transition-transform active:scale-95 mt-4"
-                                    >
-                                        生成並開始遊玩
-                                    </button>
+                                    <button onClick={handleAddLevel} className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-lg mt-4">生成並開始遊玩</button>
                                 </div>
                             </div>
                         </div>
                     )}
-
                 </div>
             );
         };
