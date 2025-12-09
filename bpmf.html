@@ -9,22 +9,22 @@
     <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     
-    <!-- 引入 Babel 用於解析 JSX -->
+    <!-- 引入 Babel -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     
-    <!-- 引入 Tailwind CSS 用於樣式 -->
+    <!-- 引入 Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- 引入 Three.js (3D 引擎) -->
+    <!-- 引入 Three.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     
-    <!-- 引入 Blockly (積木程式核心) - 鎖定版本 v9.3.3 -->
+    <!-- 引入 Blockly -->
     <script src="https://unpkg.com/blockly@9.3.3/blockly_compressed.js"></script>
     <script src="https://unpkg.com/blockly@9.3.3/blocks_compressed.js"></script>
     <script src="https://unpkg.com/blockly@9.3.3/javascript_compressed.js"></script>
     <script src="https://unpkg.com/blockly@9.3.3/msg/zh-hant.js"></script>
 
-    <!-- 字型設定 -->
+    <!-- 字型設定 (移除導致錯誤的 CSS) -->
     <style>
         body { font-family: "Microsoft JhengHei", "Noto Sans TC", sans-serif; }
         .blocklyToolboxDiv { background-color: #f3f4f6 !important; }
@@ -38,12 +38,51 @@
     <script type="text/babel">
         const { useState, useEffect, useRef, useCallback } = React;
 
-        // --- SVG Icons (取代 Lucide-react) ---
+        // --- SVG Icons ---
         const IconPlay = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>;
         const IconRotate = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>;
         const IconCheck = () => <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#4ade80" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>;
         const IconAlert = () => <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#f87171" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>;
         const IconCode = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>;
+
+        // --- 關卡資料 ---
+        const LEVELS_DATA = [
+            {
+                targetChar: "順",
+                targetZhuyin: ["ㄕ", "ㄨ", "ㄣ", "ˋ"],
+                // 9x9 Map
+                map: [
+                    [1, 1, 1, 1, 1, 1, 1, 1, 1],
+                    [1, 1, 1, 1, 10, 1, 1, 1, 1], // ㄕ
+                    [1, 1, 1, 1, 1, 1, 1, 1, 1],
+                    [1, 1, 1, 1, 1, 1, 1, 1, 1],
+                    [1, 11, 1, 1, 1, 1, 1, 12, 1], // ㄨ, ㄣ
+                    [1, 1, 1, 1, 1, 1, 1, 1, 1],
+                    [1, 1, 1, 1, 1, 1, 1, 1, 1],
+                    [1, 1, 1, 1, 13, 1, 1, 1, 1], // ˋ
+                    [1, 1, 1, 1, 1, 1, 1, 1, 1]
+                ],
+                itemMapping: { 10: "ㄕ", 11: "ㄨ", 12: "ㄣ", 13: "ˋ" },
+                start: { x: 4, z: 4, dir: 0 }, 
+            },
+            {
+                targetChar: "學",
+                targetZhuyin: ["ㄒ", "ㄩ", "ㄝ", "ˊ"],
+                map: [
+                    [1, 1, 1, 1, 1, 1, 1, 1, 1],
+                    [1, 13, 1, 1, 1, 1, 1, 12, 1],
+                    [1, 1, 1, 1, 1, 1, 1, 1, 1],
+                    [1, 1, 1, 1, 1, 1, 1, 1, 1],
+                    [1, 1, 1, 1, 1, 1, 1, 1, 1],
+                    [1, 1, 1, 1, 1, 1, 1, 1, 1],
+                    [1, 1, 1, 1, 1, 1, 1, 1, 1],
+                    [1, 10, 1, 1, 1, 1, 1, 11, 1],
+                    [1, 1, 1, 1, 1, 1, 1, 1, 1]
+                ],
+                itemMapping: { 10: "ㄒ", 11: "ㄩ", 12: "ㄝ", 13: "ˊ" },
+                start: { x: 4, z: 4, dir: 2 }, 
+            }
+        ];
 
         const ZhuyinGame = () => {
             const [isLibrariesLoaded, setIsLibrariesLoaded] = useState(false);
@@ -63,6 +102,7 @@
             const cameraRef = useRef(null);
             const rendererRef = useRef(null);
             const itemsRef = useRef([]); 
+            const shadowsRef = useRef([]); // 管理陰影
             
             const playerState = useRef({ x: 0, z: 0, dir: 0 }); 
             const levelData = useRef(null);
@@ -102,47 +142,8 @@
                 });
             };
 
-            // --- 關卡設定 ---
-            const levels = [
-                {
-                    targetChar: "順",
-                    targetZhuyin: ["ㄕ", "ㄨ", "ㄣ", "ˋ"],
-                    map: [
-                        [1, 1, 1, 1, 1, 1, 1, 1, 1],
-                        [1, 1, 1, 1, 10, 1, 1, 1, 1], // ㄕ
-                        [1, 1, 1, 1, 1, 1, 1, 1, 1],
-                        [1, 1, 1, 1, 1, 1, 1, 1, 1],
-                        [1, 11, 1, 1, 1, 1, 1, 12, 1], // ㄨ, Start, ㄣ
-                        [1, 1, 1, 1, 1, 1, 1, 1, 1],
-                        [1, 1, 1, 1, 1, 1, 1, 1, 1],
-                        [1, 1, 1, 1, 13, 1, 1, 1, 1], // ˋ
-                        [1, 1, 1, 1, 1, 1, 1, 1, 1]
-                    ],
-                    itemMapping: { 10: "ㄕ", 11: "ㄨ", 12: "ㄣ", 13: "ˋ" },
-                    start: { x: 4, z: 4, dir: 0 }, 
-                },
-                {
-                    targetChar: "學",
-                    targetZhuyin: ["ㄒ", "ㄩ", "ㄝ", "ˊ"],
-                    map: [
-                        [1, 1, 1, 1, 1, 1, 1, 1, 1],
-                        [1, 13, 1, 1, 1, 1, 1, 12, 1],
-                        [1, 1, 1, 1, 1, 1, 1, 1, 1],
-                        [1, 1, 1, 1, 1, 1, 1, 1, 1],
-                        [1, 1, 1, 1, 1, 1, 1, 1, 1],
-                        [1, 1, 1, 1, 1, 1, 1, 1, 1],
-                        [1, 1, 1, 1, 1, 1, 1, 1, 1],
-                        [1, 10, 1, 1, 1, 1, 1, 11, 1],
-                        [1, 1, 1, 1, 1, 1, 1, 1, 1]
-                    ],
-                    itemMapping: { 10: "ㄒ", 11: "ㄩ", 12: "ㄝ", 13: "ˊ" },
-                    start: { x: 4, z: 4, dir: 2 }, 
-                }
-            ];
-
             // --- 初始化確認 ---
             useEffect(() => {
-                // 檢查是否所有必要的全域變數都已載入
                 const checkLoaded = setInterval(() => {
                     if (window.THREE && window.Blockly && window.Blockly.JavaScript) {
                         clearInterval(checkLoaded);
@@ -164,9 +165,10 @@
                 scene.background = new THREE.Color(0x87CEEB); 
                 scene.fog = new THREE.Fog(0x87CEEB, 10, 60);
 
-                const camera = new THREE.PerspectiveCamera(40, width / height, 0.1, 100);
-                camera.position.set(0, 20, 12); 
-                camera.lookAt(0, 0, 1);
+                // 優化後的攝影機視角
+                const camera = new THREE.PerspectiveCamera(35, width / height, 0.1, 100);
+                camera.position.set(0, 18, 12); 
+                camera.lookAt(0, 0, 0);
                 cameraRef.current = camera;
 
                 const renderer = new THREE.WebGLRenderer({ canvas: canvasRef.current, antialias: true, alpha: false });
@@ -189,6 +191,7 @@
                     
                     itemsRef.current.forEach((item, idx) => {
                         if (item.mesh.visible) {
+                            // 符號上下浮動
                             item.mesh.position.y = 1.3 + Math.sin(Date.now() * 0.003 + idx) * 0.1;
                         }
                     });
@@ -200,7 +203,7 @@
 
             }, []);
 
-            // --- 輔助函式：建立方塊與符號 ---
+            // --- 輔助函式 ---
             const createMultiVoxel = (top, side, bottom, x, y, z) => {
                 const THREE = window.THREE;
                 const geo = new THREE.BoxGeometry(1, 1, 1);
@@ -217,13 +220,13 @@
                 mesh.castShadow = true;
                 mesh.receiveShadow = true;
                 
-                // 格線
                 const edges = new THREE.EdgesGeometry(geo);
                 const line = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: 0x000000, opacity: 0.3, transparent: true }));
                 mesh.add(line);
                 return mesh;
             };
 
+            // 單面大注音
             const createZhuyin3D = (char) => {
                 const THREE = window.THREE;
                 const canvas = document.createElement('canvas');
@@ -246,6 +249,21 @@
                 return new THREE.Mesh(geometry, material);
             };
 
+            // **地面陰影效果 (Shadow Plane)**
+            const createShadowPlane = () => {
+                const THREE = window.THREE;
+                const geometry = new THREE.PlaneGeometry(0.8, 0.8);
+                const material = new THREE.MeshBasicMaterial({ 
+                    color: 0x000000, 
+                    transparent: true, 
+                    opacity: 0.4,
+                    side: THREE.FrontSide
+                });
+                const mesh = new THREE.Mesh(geometry, material);
+                mesh.rotation.x = -Math.PI / 2; // Lie flat
+                return mesh;
+            };
+
             const createVoxel = (color, x, y, z, sx, sy, sz) => {
                 const THREE = window.THREE;
                 const mesh = new THREE.Mesh(
@@ -263,19 +281,19 @@
                 const THREE = window.THREE;
                 const scene = sceneRef.current;
 
-                // 清除舊物件 (保留光源)
                 for(let i = scene.children.length - 1; i >= 0; i--) { 
                     if(scene.children[i].type !== "DirectionalLight" && scene.children[i].type !== "AmbientLight") {
                         scene.remove(scene.children[i]); 
                     }
                 }
 
-                const data = levels[levelIndex];
+                const data = LEVELS_DATA[levelIndex];
                 levelData.current = JSON.parse(JSON.stringify(data)); 
                 playerState.current = { ...data.start };
                 setCollectedSymbols([]);
                 setFailReason('');
                 itemsRef.current = [];
+                shadowsRef.current = [];
 
                 const mapGroup = new THREE.Group();
                 const offsetX = -(data.map[0].length * 1) / 2;
@@ -297,7 +315,14 @@
                             mesh.position.set(posX, 1.3, posZ); 
                             mesh.rotation.x = -Math.PI / 3.5; 
                             scene.add(mesh);
-                            itemsRef.current.push({ mesh, symbol: char, gridX: x, gridZ: z, collected: false });
+                            
+                            // **加入地面陰影**
+                            const shadow = createShadowPlane();
+                            shadow.position.set(posX, 0.02, posZ);
+                            scene.add(shadow);
+                            shadowsRef.current.push(shadow);
+
+                            itemsRef.current.push({ mesh, shadow, symbol: char, gridX: x, gridZ: z, collected: false });
                         }
                     });
                 });
@@ -306,16 +331,13 @@
                 // --- 史帝夫 ---
                 const steveGroup = new THREE.Group();
                 const skin = 0xCF9E7A, hair = 0x3A2208;
-                
-                // Head
                 const head = new THREE.Group();
                 head.position.y = 1.5;
                 head.add(createVoxel(skin, 0, 0, 0, 0.4, 0.4, 0.4));
-                head.add(createVoxel(hair, 0, 0.21, 0, 0.42, 0.05, 0.42)); // Top
-                head.add(createVoxel(hair, 0, 0.1, -0.21, 0.42, 0.2, 0.05)); // Back
-                head.add(createVoxel(hair, -0.21, 0.1, 0, 0.05, 0.2, 0.4)); // R
-                head.add(createVoxel(hair, 0.21, 0.1, 0, 0.05, 0.2, 0.4)); // L
-                // Face
+                head.add(createVoxel(hair, 0, 0.21, 0, 0.42, 0.05, 0.42));
+                head.add(createVoxel(hair, 0, 0.1, -0.21, 0.42, 0.2, 0.05));
+                head.add(createVoxel(hair, -0.21, 0.1, 0, 0.05, 0.2, 0.4));
+                head.add(createVoxel(hair, 0.21, 0.1, 0, 0.05, 0.2, 0.4));
                 const fz = 0.205;
                 head.add(createVoxel(0xFFFFFF, 0.1, 0.05, fz, 0.1, 0.05, 0.02)); 
                 head.add(createVoxel(0x2222FF, 0.12, 0.05, fz+0.001, 0.05, 0.05, 0.02)); 
@@ -324,11 +346,7 @@
                 head.add(createVoxel(0xB87E6A, 0, -0.05, fz, 0.08, 0.05, 0.02)); 
                 head.add(createVoxel(0x9E6A4A, 0, -0.12, fz, 0.2, 0.06, 0.02)); 
                 steveGroup.add(head);
-
-                // Body
                 steveGroup.add(createVoxel(0x009999, 0, 0.9, 0, 0.4, 0.6, 0.2)); 
-
-                // Limbs
                 const mkLimb = (x, y, c, w, h, d, isLeg) => {
                     const g = new THREE.Group();
                     g.position.set(x, y, 0);
@@ -336,12 +354,10 @@
                     steveGroup.add(g);
                     return g;
                 };
-                
                 playerLimbsRef.current.armL = mkLimb(-0.3, 1.1, skin, 0.18, 0.6, 0.18, false);
                 playerLimbsRef.current.armR = mkLimb(0.3, 1.1, skin, 0.18, 0.6, 0.18, false);
                 playerLimbsRef.current.legL = mkLimb(-0.1, 0.6, 0x0000AA, 0.18, 0.6, 0.18, true);
                 playerLimbsRef.current.legR = mkLimb(0.1, 0.6, 0x0000AA, 0.18, 0.6, 0.18, true);
-
                 scene.add(steveGroup);
                 playerRef.current = steveGroup;
 
@@ -363,7 +379,7 @@
                 if (!isLibrariesLoaded || !blocklyDiv.current) return;
                 
                 initScene();
-                buildLevel(0);
+                // 移除此處的 buildLevel(0)，交由下一個 useEffect 處理
                 registerBlocklyDefinitions();
 
                 const Blockly = window.Blockly;
@@ -388,13 +404,20 @@
                 observer.observe(blocklyDiv.current);
                 return () => observer.disconnect();
 
-            }, [isLibrariesLoaded, initScene, buildLevel]);
+            }, [isLibrariesLoaded, initScene]);
+
+            // --- 監聽關卡變化 ---
+            useEffect(() => {
+                if (isLibrariesLoaded) {
+                    buildLevel(currentLevel);
+                }
+            }, [currentLevel, isLibrariesLoaded, buildLevel]);
 
             // --- 執行邏輯 ---
             const runCode = async () => {
                 if (gameState === 'RUNNING') return;
                 
-                registerBlocklyDefinitions(); // 強制重新註冊產生器
+                registerBlocklyDefinitions(); 
                 if (!window.Blockly || !window.Blockly.JavaScript) {
                     alert("Blockly 尚未載入完成"); return;
                 }
@@ -402,29 +425,30 @@
                 setGameState('RUNNING');
                 setFailReason('');
                 
-                // 重置狀態
                 const data = levelData.current;
                 const offX = -(data.map[0].length)/2;
                 const offZ = -(data.map.length)/2;
                 playerState.current = { ...data.start };
                 updatePlayerTransform(data.start.x, data.start.z, data.start.dir, offX, offZ);
                 setCollectedSymbols([]);
-                itemsRef.current.forEach(i => { i.mesh.visible = true; i.collected = false; i.mesh.material.color.setHex(0xffffff); });
+                itemsRef.current.forEach(i => { 
+                    i.mesh.visible = true; 
+                    i.shadow.visible = true; // 顯示陰影
+                    i.collected = false; 
+                    i.mesh.material.color.setHex(0xffffff); 
+                });
 
-                // 產生程式碼
                 let code = '';
                 try {
                     window.Blockly.JavaScript.init(workspaceRef.current);
                     code = window.Blockly.JavaScript.workspaceToCode(workspaceRef.current);
                 } catch (e) {
-                    console.error(e);
                     setFailReason("程式碼錯誤：" + e.message);
                     setGameState('FAIL');
                     return;
                 }
 
                 const commands = [];
-                // 建立一個安全的執行環境來收集指令
                 try {
                     new Function('commands', code)(commands);
                 } catch (e) {
@@ -432,7 +456,6 @@
                     return;
                 }
 
-                // 執行指令
                 let currentCollected = [];
                 for (let cmd of commands) {
                     if (!mountRef.current) break;
@@ -453,13 +476,14 @@
                             playerState.current.x = nx; playerState.current.z = nz;
                             await animateMove(nx, nz, offX, offZ);
                             
-                            // 檢查收集
                             const idx = itemsRef.current.findIndex(i => i.gridX === nx && i.gridZ === nz && !i.collected);
                             if (idx !== -1) {
                                 const item = itemsRef.current[idx];
                                 const expected = data.targetZhuyin[currentCollected.length];
                                 if (item.symbol === expected) {
-                                    item.mesh.visible = false; item.collected = true;
+                                    item.mesh.visible = false; 
+                                    item.shadow.visible = false; // 隱藏陰影
+                                    item.collected = true;
                                     currentCollected.push(item.symbol);
                                     setCollectedSymbols([...currentCollected]);
                                 } else {
@@ -485,7 +509,6 @@
                 }
             };
 
-            // --- 動畫函式 ---
             const animateTurn = (delta) => new Promise(res => {
                 const start = playerRef.current.rotation.y, target = start + delta;
                 let p = 0;
@@ -504,7 +527,6 @@
                     playerRef.current.position.x = startX + (targetX - startX) * t;
                     playerRef.current.position.z = startZ + (targetZ - startZ) * t;
                     playerRef.current.position.y = Math.sin(t * Math.PI) * 0.5;
-                    // Limbs
                     const ang = Math.sin(t * Math.PI * 2) * 0.5;
                     const { armL, armR, legL, legR } = playerLimbsRef.current;
                     if(armL) armL.rotation.x = ang; if(armR) armR.rotation.x = -ang;
@@ -526,12 +548,12 @@
                 }; tick();
             });
 
-            const currentData = levels[currentLevel];
+            const currentData = LEVELS_DATA[currentLevel];
 
             return (
                 <div className="flex w-full h-full">
-                    {/* 左側：程式區 (1/3) */}
-                    <div className="w-1/3 min-w-[320px] flex flex-col border-r border-gray-700 bg-gray-100">
+                    {/* 左側：程式區 (25%) - 回復到簡單的左側配置 */}
+                    <div className="w-1/4 min-w-[280px] flex flex-col border-r border-gray-700 bg-gray-100">
                         <div className="bg-gray-200 px-4 py-2 text-sm font-bold text-gray-700 flex items-center gap-2 border-b border-gray-300">
                             <IconCode /> 程式積木區
                         </div>
@@ -541,9 +563,8 @@
                         </div>
                     </div>
 
-                    {/* 右側：遊戲區 (2/3) */}
+                    {/* 右側：遊戲區 (75%) */}
                     <div className="flex-1 flex flex-col bg-gray-900 relative">
-                        {/* Header */}
                         <header className="bg-emerald-600 p-4 shadow-lg flex justify-between items-center z-10">
                             <div className="flex items-center gap-4">
                                 <div className="bg-white text-emerald-700 w-12 h-12 flex items-center justify-center rounded-lg font-bold text-3xl shadow">
@@ -558,15 +579,16 @@
                                     </div>
                                 </div>
                             </div>
-                            <button onClick={runCode} disabled={gameState === 'RUNNING' || !isLibrariesLoaded} className={`flex items-center gap-2 px-6 py-2 rounded-lg font-bold shadow transition-transform active:scale-95 ${gameState === 'RUNNING' ? 'bg-gray-500' : 'bg-orange-500 hover:bg-orange-600'}`}>
-                                <IconPlay /> {gameState === 'RUNNING' ? '執行中...' : '開始拼音'}
-                            </button>
+                            <div className="flex items-center gap-2">
+                                <span className="bg-black/20 px-3 py-1 rounded text-sm text-white/80">關卡 {currentLevel + 1}/{LEVELS_DATA.length}</span>
+                                <button onClick={runCode} disabled={gameState === 'RUNNING' || !isLibrariesLoaded} className={`flex items-center gap-2 px-6 py-2 rounded-lg font-bold shadow transition-transform active:scale-95 ${gameState === 'RUNNING' ? 'bg-gray-500' : 'bg-orange-500 hover:bg-orange-600'}`}>
+                                    <IconPlay /> {gameState === 'RUNNING' ? '執行中...' : '開始拼音'}
+                                </button>
+                            </div>
                         </header>
 
-                        {/* 3D Canvas */}
                         <canvas ref={canvasRef} className="flex-1 block w-full outline-none" />
 
-                        {/* Overlays */}
                         {gameState === 'IDLE' && (
                             <div className="absolute bottom-4 right-4 bg-black/60 p-4 rounded-lg text-right pointer-events-none backdrop-blur-sm">
                                 <p className="text-gray-300 text-sm mb-1">目標：依照順序收集</p>
@@ -581,7 +603,7 @@
                                 <IconCheck />
                                 <h2 className="text-4xl font-bold text-white mt-4 mb-2">拼音成功！</h2>
                                 <p className="text-gray-300 mb-8">太棒了！你完成了「{currentData.targetChar}」的拼音。</p>
-                                {currentLevel < levels.length - 1 ? (
+                                {currentLevel < LEVELS_DATA.length - 1 ? (
                                     <button onClick={() => { setCurrentLevel(c => c+1); setGameState('IDLE'); }} className="bg-green-600 hover:bg-green-500 text-white px-8 py-3 rounded-xl font-bold text-xl shadow-lg">下一關 ➜</button>
                                 ) : (
                                     <div className="text-yellow-400 text-2xl font-bold">🎉 全數通關！太厲害了！</div>
