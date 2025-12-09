@@ -68,57 +68,73 @@
       <canvas id="gameCanvas"></canvas>
 
       <!-- 資訊面板 -->
+      <!-- 修改：手機版字體改為 text-xs，padding 改為 py-2 px-3，增加折疊功能 -->
       <div id="info"
-           class="absolute top-2 left-2 md:top-4 md:left-4 bg-black/70 text-sm md:text-lg px-3 py-2 md:px-5 md:py-4 rounded-lg pointer-events-auto z-10 shadow-lg max-w-[90%] md:max-w-md transition-all">
-        <div class="space-y-1 md:space-y-2">
-          <div id="wordInfo" class="font-bold text-yellow-300">國字：</div>
-          <div id="zhuyinInfo" class="font-semibold">注音：</div>
-          <div id="collectedInfo" class="text-slate-200 text-xs md:text-base">目前收集：尚未收集</div>
+           class="absolute top-2 left-2 md:top-4 md:left-4 bg-black/70 text-xs md:text-lg px-2 py-2 md:px-5 md:py-4 rounded-lg pointer-events-auto z-10 shadow-lg max-w-[200px] md:max-w-md transition-all duration-300">
+        
+        <!-- 標題列 + 折疊按鈕 -->
+        <div class="flex justify-between items-center mb-1 md:mb-2">
+           <span class="font-bold text-emerald-400 text-xs md:text-lg">關卡資訊</span>
+           <button id="toggleInfoBtn" class="text-white/80 hover:text-white focus:outline-none ml-2 p-1 rounded hover:bg-white/10">
+             <!-- 預設顯示向上箭頭 (表示可收起) -->
+             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 md:h-6 md:w-6 transition-transform duration-300" id="toggleIcon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
+             </svg>
+           </button>
         </div>
 
-        <div class="flex items-center gap-2 md:gap-3 pt-2 md:pt-3 mt-2 md:mt-3 border-t border-white/30">
-          <button id="prevLevelBtn"
-                  class="px-2 py-1 md:px-3 md:py-1.5 rounded bg-white/10 text-xs md:text-base hover:bg-white/20 disabled:opacity-40 disabled:hover:bg-white/10 transition">
-            ◀
-          </button>
-          <div id="levelInfo" class="text-xs md:text-base font-medium whitespace-nowrap">
-            1 / 1
+        <!-- 可折疊內容區域 -->
+        <div id="infoBody" class="transition-all duration-300 overflow-hidden">
+          <div class="space-y-1 md:space-y-2">
+            <div id="wordInfo" class="font-bold text-yellow-300">國字：</div>
+            <div id="zhuyinInfo" class="font-semibold">注音：</div>
+            <div id="collectedInfo" class="text-slate-200 text-[10px] md:text-base">目前收集：尚未收集</div>
           </div>
-          <button id="nextLevelBtn"
-                  class="px-2 py-1 md:px-3 md:py-1.5 rounded bg-white/10 text-xs md:text-base hover:bg-white/20 disabled:opacity-40 disabled:hover:bg-white/10 transition">
-            ▶
-          </button>
-        </div>
 
-        <!-- 編輯關卡面板 -->
-        <details class="mt-2 md:mt-3 bg-black/40 rounded px-2 py-1 md:px-3 md:py-2 text-xs md:text-base">
-          <summary class="cursor-pointer select-none font-medium text-slate-300 hover:text-white">
-            編輯
-          </summary>
-          <div class="mt-2 space-y-2">
-            <div class="flex items-center gap-2">
-              <span class="shrink-0">國字</span>
-              <input id="cfgWordInput"
-                     class="w-16 md:w-28 px-1 md:px-2 py-0.5 md:py-1 rounded bg-white/90 text-slate-900 outline-none focus:ring-2 focus:ring-emerald-500" />
+          <div class="flex items-center gap-1 md:gap-3 pt-2 md:pt-3 mt-2 md:mt-3 border-t border-white/30">
+            <button id="prevLevelBtn"
+                    class="px-2 py-1 md:px-3 md:py-1.5 rounded bg-white/10 text-[10px] md:text-base hover:bg-white/20 disabled:opacity-40 disabled:hover:bg-white/10 transition">
+              ◀
+            </button>
+            <div id="levelInfo" class="text-[10px] md:text-base font-medium whitespace-nowrap">
+              1 / 1
             </div>
-            <div class="flex items-center gap-2">
-              <span class="shrink-0">注音</span>
-              <input id="cfgZhuyinInput"
-                     placeholder="例：ㄕ ㄨ ㄣ ˋ"
-                     class="w-24 md:w-40 px-1 md:px-2 py-0.5 md:py-1 rounded bg-white/90 text-slate-900 outline-none focus:ring-2 focus:ring-emerald-500" />
-            </div>
-            <div class="flex gap-2 pt-1">
-              <button id="cfgApplyCurrent"
-                      class="flex-1 px-2 py-1 rounded bg-emerald-500 text-white hover:bg-emerald-600 transition shadow">
-                更新
-              </button>
-              <button id="cfgAddLevel"
-                      class="flex-1 px-2 py-1 rounded bg-sky-500 text-white hover:bg-sky-600 transition shadow">
-                新增
-              </button>
-            </div>
+            <button id="nextLevelBtn"
+                    class="px-2 py-1 md:px-3 md:py-1.5 rounded bg-white/10 text-[10px] md:text-base hover:bg-white/20 disabled:opacity-40 disabled:hover:bg-white/10 transition">
+              ▶
+            </button>
           </div>
-        </details>
+
+          <!-- 編輯關卡面板 -->
+          <details class="mt-2 md:mt-3 bg-black/40 rounded px-2 py-1 md:px-3 md:py-2 text-[10px] md:text-base">
+            <summary class="cursor-pointer select-none font-medium text-slate-300 hover:text-white">
+              編輯
+            </summary>
+            <div class="mt-2 space-y-2">
+              <div class="flex items-center gap-1 md:gap-2">
+                <span class="shrink-0">國字</span>
+                <input id="cfgWordInput"
+                       class="w-14 md:w-28 px-1 md:px-2 py-0.5 md:py-1 rounded bg-white/90 text-slate-900 outline-none focus:ring-2 focus:ring-emerald-500" />
+              </div>
+              <div class="flex items-center gap-1 md:gap-2">
+                <span class="shrink-0">注音</span>
+                <input id="cfgZhuyinInput"
+                       placeholder="例：ㄕ ㄨ ㄣ ˋ"
+                       class="w-20 md:w-40 px-1 md:px-2 py-0.5 md:py-1 rounded bg-white/90 text-slate-900 outline-none focus:ring-2 focus:ring-emerald-500" />
+              </div>
+              <div class="flex gap-1 md:gap-2 pt-1">
+                <button id="cfgApplyCurrent"
+                        class="flex-1 px-1 md:px-2 py-1 rounded bg-emerald-500 text-white hover:bg-emerald-600 transition shadow">
+                  更新
+                </button>
+                <button id="cfgAddLevel"
+                        class="flex-1 px-1 md:px-2 py-1 rounded bg-sky-500 text-white hover:bg-sky-600 transition shadow">
+                  新增
+                </button>
+              </div>
+            </div>
+          </details>
+        </div>
       </div>
 
       <!-- 狀態提示 -->
@@ -1380,6 +1396,29 @@
           levelInputConfig.push({ word: w, zhuyin: z });
           rebuildLevelsAndStay(levelInputConfig.length - 1);
         });
+      }
+
+      // 控制面板折疊功能
+      const toggleInfoBtn = document.getElementById('toggleInfoBtn');
+      const infoBody = document.getElementById('infoBody');
+      const toggleIcon = document.getElementById('toggleIcon');
+      let isInfoExpanded = true;
+
+      if (toggleInfoBtn && infoBody && toggleIcon) {
+        toggleInfoBtn.addEventListener('click', function() {
+          isInfoExpanded = !isInfoExpanded;
+          if (isInfoExpanded) {
+            // 展開
+            infoBody.style.height = infoBody.scrollHeight + "px";
+            toggleIcon.style.transform = "rotate(0deg)";
+          } else {
+            // 折疊
+            infoBody.style.height = "0px";
+            toggleIcon.style.transform = "rotate(180deg)";
+          }
+        });
+        // 初始設定高度以支援動畫
+        infoBody.style.height = "auto";
       }
     });
   </script>
