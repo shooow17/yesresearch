@@ -162,10 +162,35 @@
           </div>
         </div>
       </div>
+
+      <!-- 一般訊息對話框 (替代 alert) -->
+      <div id="msgDialog" class="hidden fixed inset-0 flex items-center justify-center bg-black/60 z-30">
+        <div class="bg-white text-slate-900 rounded-xl shadow-xl px-6 py-4 w-80 max-w-[90vw] text-center">
+          <div class="text-lg font-semibold mb-2">提示</div>
+          <div id="msgDialogText" class="text-sm mb-4"></div>
+          <button onclick="document.getElementById('msgDialog').classList.add('hidden')" class="px-4 py-2 rounded-md bg-slate-600 text-white text-sm hover:bg-slate-700">
+            確定
+          </button>
+        </div>
+      </div>
+
     </div>
   </div>
 
   <script>
+    // ========= 替代 alert 的函式 =========
+    function showMsg(text) {
+      const el = document.getElementById('msgDialog');
+      const txt = document.getElementById('msgDialogText');
+      if (el && txt) {
+        txt.textContent = text;
+        el.classList.remove('hidden');
+      } else {
+        // Fallback if elements are missing
+        console.log(text);
+      }
+    }
+
     // ========= 教師預設關卡（載入時用這些當起點） =========
     let levelInputConfig = [
       { word: "順", zhuyin: "ㄕ ㄨ ㄣ ˋ" },
@@ -497,6 +522,35 @@
       return mesh;
     }
 
+    // ========= 材質產生器（像素雜訊） =========
+    function createNoiseTexture(colorHex) {
+      const size = 64; // 貼圖大小
+      const data = new Uint8Array(size * size * 4);
+      const baseColor = new THREE.Color(colorHex);
+      
+      for (let i = 0; i < size * size; i++) {
+        // 雜訊範圍：在基礎顏色上做微小偏移
+        // (Math.random() - 0.5) * 0.15 代表 RGB 變動約 +/- 7%
+        const n = (Math.random() - 0.5) * 0.15;
+        
+        const r = Math.min(1, Math.max(0, baseColor.r + n));
+        const g = Math.min(1, Math.max(0, baseColor.g + n));
+        const b = Math.min(1, Math.max(0, baseColor.b + n));
+        
+        data[i * 4] = Math.floor(r * 255);
+        data[i * 4 + 1] = Math.floor(g * 255);
+        data[i * 4 + 2] = Math.floor(b * 255);
+        data[i * 4 + 3] = 255; // Alpha
+      }
+      
+      const texture = new THREE.DataTexture(data, size, size, THREE.RGBAFormat);
+      texture.needsUpdate = true;
+      // 設定 NearestFilter 讓放大的時候有像素顆粒感，不要模糊
+      texture.magFilter = THREE.NearestFilter;
+      texture.minFilter = THREE.NearestFilter;
+      return texture;
+    }
+
     // ========= 主角：Steve =========
     function createSteve() {
       const steveGroup = new THREE.Group();
@@ -544,15 +598,26 @@
       return { group: steveGroup, limbs: limbs };
     }
 
-    // ========= NPC：苦力怕、乳牛、小羊 =========
+    // ========= NPC：多樣化生物 =========
+    
+    // 1. 苦力怕 (Creeper)
     function createCreeper() {
       const group = new THREE.Group();
       const green = 0x3ba635;
+      const dark = 0x000000;
 
       // 身體
       group.add(createVoxel(green, 0, 0.9, 0, 0.5, 1.0, 0.4));
       // 頭
-      group.add(createVoxel(green, 0, 1.6, 0, 0.5, 0.5, 0.5));
+      const head = new THREE.Group();
+      head.position.y = 1.6;
+      head.add(createVoxel(green, 0, 0, 0, 0.5, 0.5, 0.5));
+      // 臉部特徵 (簡單示意)
+      head.add(createVoxel(dark, -0.1, 0.05, 0.26, 0.1, 0.1, 0.02)); // 左眼
+      head.add(createVoxel(dark, 0.1, 0.05, 0.26, 0.1, 0.1, 0.02));  // 右眼
+      head.add(createVoxel(dark, 0, -0.1, 0.26, 0.12, 0.12, 0.02)); // 嘴
+      group.add(head);
+
       // 腿
       const legHeight = 0.3;
       const legY = 0.15;
@@ -568,6 +633,7 @@
       return group;
     }
 
+    // 2. 乳牛 (Cow)
     function createCow() {
       const group = new THREE.Group();
       const bodyColor = 0x8b4513;
@@ -580,7 +646,14 @@
       group.add(createVoxel(spotColor, 0.15, 0.8, 0.26, 0.2, 0.2, 0.05));
       group.add(createVoxel(spotColor, -0.25, 0.6, -0.26, 0.25, 0.15, 0.05));
       // 頭
-      group.add(createVoxel(bodyColor, 0, 1.0, 0.4, 0.4, 0.4, 0.4));
+      const head = new THREE.Group();
+      head.position.set(0, 1.0, 0.4);
+      head.add(createVoxel(bodyColor, 0, 0, 0, 0.4, 0.4, 0.4));
+      // 角
+      head.add(createVoxel(0x222222, -0.22, 0.2, 0, 0.05, 0.12, 0.05));
+      head.add(createVoxel(0x222222, 0.22, 0.2, 0, 0.05, 0.12, 0.05));
+      group.add(head);
+
       // 腿
       const legH = 0.4;
       const legY = 0.2;
@@ -596,13 +669,14 @@
       return group;
     }
 
+    // 3. 羊 (Sheep)
     function createSheep() {
       const group = new THREE.Group();
       const wool = 0xffffff;
       const face = 0xd8c0a8;
-      const legColor = 0x777777;
+      const legColor = 0xd8c0a8;
 
-      // 身體
+      // 身體 (毛)
       group.add(createVoxel(wool, 0, 0.8, 0, 0.9, 0.6, 0.5));
       // 頭
       group.add(createVoxel(face, 0, 0.85, 0.45, 0.4, 0.4, 0.4));
@@ -618,6 +692,128 @@
       legs.forEach(([x, y, z]) => {
         group.add(createVoxel(legColor, x, y, z, 0.18, legH, 0.18));
       });
+      return group;
+    }
+
+    // 4. 終界使者 (Enderman) - 高挑、黑紫色
+    function createEnderman() {
+      const group = new THREE.Group();
+      const black = 0x111111;
+      const purple = 0xcc00cc;
+
+      // 身體 (短)
+      group.add(createVoxel(black, 0, 1.4, 0, 0.4, 0.6, 0.2));
+      
+      // 頭
+      const head = new THREE.Group();
+      head.position.y = 1.95;
+      head.add(createVoxel(black, 0, 0, 0, 0.4, 0.4, 0.4));
+      // 眼睛
+      head.add(createVoxel(purple, -0.12, -0.05, 0.21, 0.1, 0.05, 0.02));
+      head.add(createVoxel(purple, 0.12, -0.05, 0.21, 0.1, 0.05, 0.02));
+      group.add(head);
+
+      // 手臂 (長)
+      group.add(createVoxel(black, -0.28, 1.3, 0, 0.08, 0.9, 0.08));
+      group.add(createVoxel(black, 0.28, 1.3, 0, 0.08, 0.9, 0.08));
+
+      // 腿 (長)
+      group.add(createVoxel(black, -0.1, 0.55, 0, 0.1, 1.1, 0.1));
+      group.add(createVoxel(black, 0.1, 0.55, 0, 0.1, 1.1, 0.1));
+
+      return group;
+    }
+
+    // 5. 蜘蛛 (Spider) - 扁平、多腳
+    function createSpider() {
+      const group = new THREE.Group();
+      const darkGrey = 0x222222;
+      const red = 0xff0000;
+
+      // 頭
+      const head = new THREE.Group();
+      head.position.set(0, 0.4, 0.4);
+      head.add(createVoxel(darkGrey, 0, 0, 0, 0.35, 0.3, 0.35));
+      // 眼睛
+      head.add(createVoxel(red, -0.1, 0.05, 0.18, 0.08, 0.05, 0.02));
+      head.add(createVoxel(red, 0.1, 0.05, 0.18, 0.08, 0.05, 0.02));
+      group.add(head);
+
+      // 身體 (後)
+      group.add(createVoxel(darkGrey, 0, 0.45, -0.2, 0.5, 0.35, 0.6));
+
+      // 腳 (簡化為6隻)
+      const legY = 0.3;
+      const legParams = [
+        [-0.4, legY, 0.2], [0.4, legY, 0.2],
+        [-0.45, legY, 0], [0.45, legY, 0],
+        [-0.4, legY, -0.3], [0.4, legY, -0.3]
+      ];
+      legParams.forEach(([x, y, z]) => {
+        group.add(createVoxel(darkGrey, x, y, z, 0.3, 0.08, 0.08));
+      });
+
+      return group;
+    }
+
+    // 6. 狼 (Wolf) - 灰白色、有尾巴
+    function createWolf() {
+      const group = new THREE.Group();
+      const fur = 0xdddddd;
+      const nose = 0x333333;
+
+      // 身體
+      group.add(createVoxel(fur, 0, 0.5, 0, 0.4, 0.4, 0.7));
+      
+      // 頭
+      const head = new THREE.Group();
+      head.position.set(0, 0.8, 0.35);
+      head.add(createVoxel(fur, 0, 0, 0, 0.35, 0.35, 0.35));
+      // 鼻子
+      head.add(createVoxel(nose, 0, -0.05, 0.2, 0.15, 0.15, 0.1));
+      // 耳朵
+      head.add(createVoxel(fur, -0.1, 0.2, 0.05, 0.08, 0.1, 0.05));
+      head.add(createVoxel(fur, 0.1, 0.2, 0.05, 0.08, 0.1, 0.05));
+      group.add(head);
+
+      // 腿
+      const legH = 0.3;
+      const legY = 0.15;
+      const legs = [
+        [-0.12, legY, -0.25], [0.12, legY, -0.25],
+        [-0.12, legY, 0.25], [0.12, legY, 0.25]
+      ];
+      legs.forEach(([x, y, z]) => {
+        group.add(createVoxel(fur, x, y, z, 0.12, legH, 0.12));
+      });
+
+      // 尾巴
+      group.add(createVoxel(fur, 0, 0.5, -0.4, 0.1, 0.1, 0.3));
+
+      return group;
+    }
+
+    // 7. 雪人 (Snow Golem) - 雪球身體、南瓜頭
+    function createSnowGolem() {
+      const group = new THREE.Group();
+      const snow = 0xffffff;
+      const pumpkin = 0xd35400;
+
+      // 下身 (大雪球)
+      group.add(createVoxel(snow, 0, 0.4, 0, 0.6, 0.6, 0.6));
+      // 上身 (中雪球)
+      group.add(createVoxel(snow, 0, 0.9, 0, 0.45, 0.45, 0.45));
+      
+      // 頭 (南瓜)
+      const head = new THREE.Group();
+      head.position.y = 1.35;
+      head.add(createVoxel(pumpkin, 0, 0, 0, 0.4, 0.45, 0.4));
+      group.add(head);
+
+      // 手 (樹枝)
+      group.add(createVoxel(0x5d4037, -0.35, 1.0, 0, 0.3, 0.05, 0.05));
+      group.add(createVoxel(0x5d4037, 0.35, 1.0, 0, 0.3, 0.05, 0.05));
+
       return group;
     }
 
@@ -819,7 +1015,7 @@
       const width = canvas.clientWidth || canvas.offsetWidth || 800;
       const height = canvas.clientHeight || canvas.offsetHeight || 600;
       camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
-      camera.position.set(0, 8, 10);
+      camera.position.set(0, 6, 12);
       camera.lookAt(0, 0, 0);
       renderer.setSize(width, height, false);
 
@@ -860,6 +1056,11 @@
       const dirtHeight  = 0.6;
       const grassHeight = 0.2;
 
+      // 預先建立草地貼圖，節省效能並保持統一風格
+      // 顏色改為較深的綠色，讓畫面更沉穩
+      const normalGrassTex = createNoiseTexture(0x337733); // 一般草地：深綠
+      const darkGrassTex   = createNoiseTexture(0x225522); // 有道具草地：更深綠
+
       for (let z = 0; z < GRID_SIZE; z++) {
         for (let x = 0; x < GRID_SIZE; x++) {
           const cell = level.map[z][x];
@@ -871,8 +1072,11 @@
           const grassGeo = new THREE.BoxGeometry(tileSize * 0.98, grassHeight, tileSize * 0.98);
 
           const dirtMat  = new THREE.MeshStandardMaterial({ color: 0x8b5a2b });
-          const grassCol = hasItem ? 0x3d7a3d : 0x55aa55;
-          const grassMat = new THREE.MeshStandardMaterial({ color: grassCol });
+          
+          // 修改處：使用產生出來的像素雜訊貼圖，而不是單純顏色
+          const grassMat = new THREE.MeshStandardMaterial({ 
+            map: hasItem ? darkGrassTex : normalGrassTex
+          });
 
           const dirt = new THREE.Mesh(dirtGeo, dirtMat);
           dirt.position.set(worldX, -grassHeight - dirtHeight / 2, worldZ);
@@ -925,7 +1129,7 @@
       playerLimbs = steve.limbs;
       levelGroup.add(player);
 
-      // 額外 1-2 個隨機 NPC（苦力怕 / 乳牛 / 小羊）
+      // 額外 1-2 個隨機 NPC
       const bannedForExtra = new Set();
       bannedForExtra.add(level.start.x + "," + level.start.z);
       for (const item of items) {
@@ -933,16 +1137,23 @@
       }
       const extraCount = 1 + Math.floor(Math.random() * 2); // 1 或 2 個
       const extraPositions = getRandomGridPositions(extraCount, bannedForExtra);
+      
+      // 定義所有可用的 NPC 建立函式
+      const npcCreators = [
+        createCreeper,     // 苦力怕
+        createCow,         // 乳牛
+        createSheep,       // 羊
+        createEnderman,    // 終界使者 (新)
+        createSpider,      // 蜘蛛 (新)
+        createWolf,        // 狼 (新)
+        createSnowGolem    // 雪人 (新)
+      ];
+
       extraPositions.forEach(pos => {
-        const type = Math.floor(Math.random() * 3); // 0: creeper, 1: cow, 2: sheep
-        let g;
-        if (type === 0) {
-          g = createCreeper();
-        } else if (type === 1) {
-          g = createCow();
-        } else {
-          g = createSheep();
-        }
+        // 隨機選一個種類
+        const typeIdx = Math.floor(Math.random() * npcCreators.length);
+        const g = npcCreators[typeIdx]();
+
         const worldX = pos.x - GRID_OFFSET;
         const worldZ = pos.z - GRID_OFFSET;
         g.position.set(worldX, 0, worldZ);
@@ -1010,7 +1221,7 @@
         wrapped(commands);
       } catch (e) {
         console.error(e);
-        alert("程式碼產生或執行錯誤：\n" + e);
+        showMsg("程式碼產生或執行錯誤：\n" + e);
         updateStatus("程式錯誤，請檢查積木。");
         return;
       }
@@ -1092,7 +1303,7 @@
           const w = (wordInput.value || "").trim();
           const z = (zhuyinInput.value || "").trim();
           if (!w || !z) {
-            alert("請輸入國字和注音（注音中間用空格分開）。");
+            showMsg("請輸入國字和注音（注音中間用空格分開）。");
             return;
           }
           levelInputConfig[currentLevelIndex] = { word: w, zhuyin: z };
@@ -1105,7 +1316,7 @@
           const w = (wordInput.value || "").trim();
           const z = (zhuyinInput.value || "").trim();
           if (!w || !z) {
-            alert("請輸入國字和注音（注音中間用空格分開）。");
+            showMsg("請輸入國字和注音（注音中間用空格分開）。");
             return;
           }
           levelInputConfig.push({ word: w, zhuyin: z });
