@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Play, RotateCcw, Box, CheckCircle, AlertTriangle, BookOpen } from 'lucide-react';
 
-// 注音符號程式冒險 - 史帝夫版 (左右分割 1:2 + 單面符號 + 視角優化)
+// 注音符號程式冒險 - 史帝夫版 (左右分割 1:2 + 單面符號 + 視角優化 + 自動編碼修正)
 // 1. Three.js: 繪製 Voxel 世界與注音符號
 // 2. Blockly: 拖曳積木控制史帝夫
 // 3. Logic: 順序蒐集機制
@@ -31,6 +31,20 @@ const ZhuyinGame = () => {
   // Game State Refs
   const playerState = useRef({ x: 0, z: 0, dir: 0 }); 
   const levelData = useRef(null);
+
+  // --- Github Pages Encoding Fix ---
+  useEffect(() => {
+    // 強制設定網頁編碼為 UTF-8，解決 GitHub Pages 可能出現的亂碼問題
+    let metaCharset = document.querySelector("meta[charset]");
+    if (!metaCharset) {
+        metaCharset = document.createElement("meta");
+        metaCharset.setAttribute("charset", "utf-8");
+        document.head.insertBefore(metaCharset, document.head.firstChild);
+    }
+    
+    // 設定網頁標題
+    document.title = "注音符號大冒險 - Minecraft Coding";
+  }, []);
 
   // --- Level Design (9x9 Solid Grid) ---
   const levels = [
@@ -210,6 +224,8 @@ const ZhuyinGame = () => {
       const ctx = canvas.getContext('2d');
       
       ctx.clearRect(0, 0, 128, 128);
+      
+      // Use a font stack that supports Traditional Chinese well
       ctx.font = 'bold 110px "Microsoft JhengHei", "Noto Sans TC", sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
