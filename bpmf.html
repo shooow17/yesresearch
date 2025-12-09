@@ -1,808 +1,613 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Play, RotateCcw, Box, CheckCircle, AlertTriangle, BookOpen } from 'lucide-react';
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>注音符號大冒險</title>
+    
+    <!-- 引入 React 核心 -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    
+    <!-- 引入 Babel 用於解析 JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- 引入 Tailwind CSS 用於樣式 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- 引入 Three.js (3D 引擎) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <!-- 引入 Blockly (積木程式核心) - 鎖定版本 v9.3.3 -->
+    <script src="https://unpkg.com/blockly@9.3.3/blockly_compressed.js"></script>
+    <script src="https://unpkg.com/blockly@9.3.3/blocks_compressed.js"></script>
+    <script src="https://unpkg.com/blockly@9.3.3/javascript_compressed.js"></script>
+    <script src="https://unpkg.com/blockly@9.3.3/msg/zh-hant.js"></script>
 
-// 注音符號程式冒險 - 史帝夫版 (修復產生器錯誤 + 左右分割 1:2)
-// 1. Three.js: 繪製 Voxel 世界與注音符號
-// 2. Blockly: 拖曳積木控制史帝夫
-// 3. Logic: 順序蒐集機制
+    <!-- 字型設定 -->
+    <style>
+        body { font-family: "Microsoft JhengHei", "Noto Sans TC", sans-serif; }
+        .blocklyToolboxDiv { background-color: #f3f4f6 !important; }
+        .blocklyFlyoutBackground { fill: #e5e7eb !important; }
+    </style>
+</head>
+<body class="bg-gray-900 text-white overflow-hidden h-screen w-screen">
 
-const ZhuyinGame = () => {
-  const [isLibrariesLoaded, setIsLibrariesLoaded] = useState(false);
-  const [gameState, setGameState] = useState('IDLE'); // IDLE, RUNNING, SUCCESS, FAIL
-  const [failReason, setFailReason] = useState('');
-  const [currentLevel, setCurrentLevel] = useState(0);
-  const [collectedSymbols, setCollectedSymbols] = useState([]); // Array of strings
-  const [consoleLog, setConsoleLog] = useState([]);
-  
-  // Refs
-  const blocklyDiv = useRef(null);
-  const workspaceRef = useRef(null);
-  const canvasRef = useRef(null);
-  const mountRef = useRef(null);
-  
-  // 3D Engine Refs
-  const sceneRef = useRef(null);
-  const playerRef = useRef(null); 
-  const playerLimbsRef = useRef({ armL: null, armR: null, legL: null, legR: null });
-  const cameraRef = useRef(null);
-  const rendererRef = useRef(null);
-  const itemsRef = useRef([]); // Array of symbol meshes
-  
-  // Game State Refs
-  const playerState = useRef({ x: 0, z: 0, dir: 0 }); 
-  const levelData = useRef(null);
+    <div id="root"></div>
 
-  // --- Github Pages Encoding Fix ---
-  useEffect(() => {
-    let metaCharset = document.querySelector("meta[charset]");
-    if (!metaCharset) {
-        metaCharset = document.createElement("meta");
-        metaCharset.setAttribute("charset", "utf-8");
-        document.head.insertBefore(metaCharset, document.head.firstChild);
-    }
-    document.title = "注音符號大冒險 - Minecraft Coding";
-  }, []);
+    <script type="text/babel">
+        const { useState, useEffect, useRef, useCallback } = React;
 
-  // --- Helper: Register Generators (關鍵修復：獨立成函式以便重複呼叫) ---
-  const registerGenerators = useCallback(() => {
-    if (window.Blockly && window.Blockly.JavaScript) {
-        window.Blockly.JavaScript['mc_move'] = function(block) {
-            return 'commands.push("MOVE");\n';
-        };
-        window.Blockly.JavaScript['mc_turn_left'] = function(block) {
-            return 'commands.push("LEFT");\n';
-        };
-        window.Blockly.JavaScript['mc_turn_right'] = function(block) {
-            return 'commands.push("RIGHT");\n';
-        };
-    }
-  }, []);
+        // --- SVG Icons (取代 Lucide-react) ---
+        const IconPlay = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>;
+        const IconRotate = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>;
+        const IconCheck = () => <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#4ade80" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>;
+        const IconAlert = () => <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#f87171" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>;
+        const IconCode = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>;
 
-  // --- Level Design (9x9 Solid Grid) ---
-  const levels = [
-    {
-      targetChar: "順",
-      targetZhuyin: ["ㄕ", "ㄨ", "ㄣ", "ˋ"],
-      map: [
-        [1, 1, 1, 1, 1, 1, 1, 1, 1],
-        [1, 1, 1, 1, 10, 1, 1, 1, 1], // ㄕ
-        [1, 1, 1, 1, 1, 1, 1, 1, 1],
-        [1, 1, 1, 1, 1, 1, 1, 1, 1],
-        [1, 11, 1, 1, 1, 1, 1, 12, 1], // ㄨ, (Start), ㄣ
-        [1, 1, 1, 1, 1, 1, 1, 1, 1],
-        [1, 1, 1, 1, 1, 1, 1, 1, 1],
-        [1, 1, 1, 1, 13, 1, 1, 1, 1], // ˋ
-        [1, 1, 1, 1, 1, 1, 1, 1, 1]
-      ],
-      itemMapping: { 10: "ㄕ", 11: "ㄨ", 12: "ㄣ", 13: "ˋ" },
-      start: { x: 4, z: 4, dir: 0 }, // Center
-    },
-    {
-      targetChar: "學",
-      targetZhuyin: ["ㄒ", "ㄩ", "ㄝ", "ˊ"],
-      map: [
-        [1, 1, 1, 1, 1, 1, 1, 1, 1],
-        [1, 13, 1, 1, 1, 1, 1, 12, 1], // ˊ, ㄝ
-        [1, 1, 1, 1, 1, 1, 1, 1, 1],
-        [1, 1, 1, 1, 1, 1, 1, 1, 1],
-        [1, 1, 1, 1, 1, 1, 1, 1, 1],
-        [1, 1, 1, 1, 1, 1, 1, 1, 1],
-        [1, 1, 1, 1, 1, 1, 1, 1, 1],
-        [1, 10, 1, 1, 1, 1, 1, 11, 1], // ㄒ, ㄩ
-        [1, 1, 1, 1, 1, 1, 1, 1, 1]
-      ],
-      itemMapping: { 10: "ㄒ", 11: "ㄩ", 12: "ㄝ", 13: "ˊ" },
-      start: { x: 4, z: 4, dir: 2 }, 
-    }
-  ];
-
-  // --- 1. Library Loader ---
-  const loadScript = (src) => {
-    return new Promise((resolve, reject) => {
-      if (document.querySelector(`script[src="${src}"]`)) {
-        resolve(); return;
-      }
-      const script = document.createElement('script');
-      script.src = src;
-      script.crossOrigin = "anonymous";
-      script.onload = resolve;
-      script.onerror = () => reject(new Error(`Failed to load ${src}`));
-      document.head.appendChild(script);
-    });
-  };
-
-  useEffect(() => {
-    const loadDependencies = async () => {
-      try {
-        await loadScript('https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js');
-        await loadScript('https://unpkg.com/blockly@9.3.3/blockly_compressed.js');
-        await loadScript('https://unpkg.com/blockly@9.3.3/blocks_compressed.js');
-        await loadScript('https://unpkg.com/blockly@9.3.3/javascript_compressed.js');
-        await loadScript('https://unpkg.com/blockly@9.3.3/msg/zh-hant.js');
-        
-        await new Promise(r => setTimeout(r, 500)); 
-        setIsLibrariesLoaded(true);
-      } catch (error) {
-        console.error(error);
-        setConsoleLog(prev => [...prev, "載入失敗，請檢查網路連線。"]);
-      }
-    };
-    loadDependencies();
-  }, []);
-
-  // --- 2. Initialize 3D Minecraft Scene ---
-  const initScene = useCallback(() => {
-    if (!canvasRef.current || !window.THREE) return;
-    const THREE = window.THREE;
-
-    const width = canvasRef.current.clientWidth;
-    const height = canvasRef.current.clientHeight;
-    const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x87CEEB); 
-    scene.fog = new THREE.Fog(0x87CEEB, 10, 60);
-
-    const camera = new THREE.PerspectiveCamera(40, width / height, 0.1, 100);
-    camera.position.set(0, 20, 12); 
-    camera.lookAt(0, 0, 1);
-    cameraRef.current = camera;
-
-    const renderer = new THREE.WebGLRenderer({ canvas: canvasRef.current, antialias: true, alpha: false });
-    renderer.setSize(width, height);
-    renderer.shadowMap.enabled = true;
-    rendererRef.current = renderer;
-
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
-    scene.add(ambientLight);
-    const dirLight = new THREE.DirectionalLight(0xffffff, 0.5);
-    dirLight.position.set(20, 30, 20);
-    dirLight.castShadow = true;
-    dirLight.shadow.mapSize.width = 1024;
-    dirLight.shadow.mapSize.height = 1024;
-    dirLight.shadow.camera.left = -15;
-    dirLight.shadow.camera.right = 15;
-    dirLight.shadow.camera.top = 15;
-    dirLight.shadow.camera.bottom = -15;
-    scene.add(dirLight);
-
-    sceneRef.current = scene;
-
-    const animate = () => {
-        if (!mountRef.current) return;
-        requestAnimationFrame(animate);
-        
-        itemsRef.current.forEach((item, idx) => {
-            if (item.mesh.visible) {
-                item.mesh.position.y = 1.3 + Math.sin(Date.now() * 0.003 + idx) * 0.1;
-            }
-        });
-
-        renderer.render(scene, camera);
-    };
-    mountRef.current = true;
-    animate();
-
-  }, []);
-
-  // --- Helper: Build Voxel ---
-  const createVoxel = (color, x, y, z, sx, sy, sz) => {
-      const THREE = window.THREE;
-      const geo = new THREE.BoxGeometry(sx, sy, sz);
-      const mat = new THREE.MeshStandardMaterial({ color });
-      const mesh = new THREE.Mesh(geo, mat);
-      mesh.position.set(x, y, z);
-      mesh.castShadow = true;
-      mesh.receiveShadow = true;
-      return mesh;
-  };
-
-  // --- Helper: Build Multi-Textured Block with Grid Lines ---
-  const createMultiVoxel = (topColor, sideColor, bottomColor, x, y, z, sx, sy, sz) => {
-    const THREE = window.THREE;
-    const geo = new THREE.BoxGeometry(sx, sy, sz);
-    const materials = [
-        new THREE.MeshStandardMaterial({ color: sideColor }), 
-        new THREE.MeshStandardMaterial({ color: sideColor }), 
-        new THREE.MeshStandardMaterial({ color: topColor }),  
-        new THREE.MeshStandardMaterial({ color: bottomColor }), 
-        new THREE.MeshStandardMaterial({ color: sideColor }), 
-        new THREE.MeshStandardMaterial({ color: sideColor }) 
-    ];
-    const mesh = new THREE.Mesh(geo, materials);
-    mesh.position.set(x, y, z);
-    mesh.castShadow = true;
-    mesh.receiveShadow = true;
-
-    // Add Edges (Grid Lines)
-    const edges = new THREE.EdgesGeometry(geo);
-    const line = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: 0x000000, opacity: 0.3, transparent: true }));
-    mesh.add(line);
-
-    return mesh;
-  };
-
-  // --- Helper: Create 3D Transparent Symbol (Single Side) ---
-  const createZhuyin3D = (char) => {
-      const THREE = window.THREE;
-      const canvas = document.createElement('canvas');
-      canvas.width = 128;
-      canvas.height = 128;
-      const ctx = canvas.getContext('2d');
-      
-      ctx.clearRect(0, 0, 128, 128);
-      ctx.font = 'bold 110px "Microsoft JhengHei", "Noto Sans TC", sans-serif';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.strokeStyle = '#FFFFFF';
-      ctx.lineWidth = 10; 
-      ctx.strokeText(char, 64, 64);
-      ctx.fillStyle = '#00FFFF'; // Cyan Neon
-      ctx.fillText(char, 64, 64);
-      
-      const texture = new THREE.CanvasTexture(canvas);
-      const geometry = new THREE.BoxGeometry(1.3, 1.3, 0.05);
-      
-      const material = new THREE.MeshBasicMaterial({ 
-          map: texture,
-          transparent: true,
-          side: THREE.FrontSide, 
-          depthWrite: false 
-      });
-      
-      const mesh = new THREE.Mesh(geometry, material);
-      return mesh;
-  };
-
-  // --- 3. Build Level & Character ---
-  const buildLevel = useCallback((levelIndex) => {
-     if (!sceneRef.current || !window.THREE) return;
-     const THREE = window.THREE;
-     const scene = sceneRef.current;
-
-     while(scene.children.length > 0){ 
-        scene.remove(scene.children[0]); 
-     }
-     
-     const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
-     scene.add(ambientLight);
-     const dirLight = new THREE.DirectionalLight(0xffffff, 0.6);
-     dirLight.position.set(20, 30, 20);
-     dirLight.castShadow = true;
-     dirLight.shadow.mapSize.width = 1024;
-     dirLight.shadow.mapSize.height = 1024;
-     dirLight.shadow.camera.left = -15;
-     dirLight.shadow.camera.right = 15;
-     dirLight.shadow.camera.top = 15;
-     dirLight.shadow.camera.bottom = -15;
-     scene.add(dirLight);
-
-     const data = levels[levelIndex];
-     levelData.current = JSON.parse(JSON.stringify(data)); 
-     
-     playerState.current = { ...data.start };
-     setCollectedSymbols([]);
-     setFailReason('');
-
-     itemsRef.current = [];
-     const mapGroup = new THREE.Group();
-     
-     const offsetX = -(data.map[0].length * 1) / 2;
-     const offsetZ = -(data.map.length * 1) / 2;
-
-     data.map.forEach((row, z) => {
-        row.forEach((cell, x) => {
-            const posX = (x * 1) + offsetX;
-            const posZ = (z * 1) + offsetZ;
+        const ZhuyinGame = () => {
+            const [isLibrariesLoaded, setIsLibrariesLoaded] = useState(false);
+            const [gameState, setGameState] = useState('IDLE');
+            const [failReason, setFailReason] = useState('');
+            const [currentLevel, setCurrentLevel] = useState(0);
+            const [collectedSymbols, setCollectedSymbols] = useState([]); 
             
-            if (cell > 0) {
-                const grassColor = 0x4C9131;
-                const dirtColor = 0x724C30;
-                const grassBlock = createMultiVoxel(grassColor, dirtColor, dirtColor, posX, -0.5, posZ, 1, 1, 1);
-                mapGroup.add(grassBlock);
-            }
+            const blocklyDiv = useRef(null);
+            const workspaceRef = useRef(null);
+            const canvasRef = useRef(null);
+            const mountRef = useRef(null);
+            
+            const sceneRef = useRef(null);
+            const playerRef = useRef(null); 
+            const playerLimbsRef = useRef({ armL: null, armR: null, legL: null, legR: null });
+            const cameraRef = useRef(null);
+            const rendererRef = useRef(null);
+            const itemsRef = useRef([]); 
+            
+            const playerState = useRef({ x: 0, z: 0, dir: 0 }); 
+            const levelData = useRef(null);
 
-            if (data.itemMapping && data.itemMapping[cell]) {
-                const symbolChar = data.itemMapping[cell];
-                const symbolMesh = createZhuyin3D(symbolChar);
-                symbolMesh.position.set(posX, 1.3, posZ); 
-                symbolMesh.rotation.x = -Math.PI / 2.5; 
-                scene.add(symbolMesh);
-                itemsRef.current.push({
-                    mesh: symbolMesh,
-                    symbol: symbolChar,
-                    gridX: x,
-                    gridZ: z,
-                    collected: false
+            // --- 註冊 Blockly ---
+            const registerBlocklyDefinitions = () => {
+                if (!window.Blockly || !window.Blockly.JavaScript) return;
+
+                const blocks = ['mc_move', 'mc_turn_left', 'mc_turn_right'];
+                const titles = { 'mc_move': '前進一格', 'mc_turn_left': '左轉 ↺', 'mc_turn_right': '右轉 ↻' };
+
+                blocks.forEach(blockName => {
+                    if (!window.Blockly.Blocks[blockName]) {
+                        window.Blockly.Blocks[blockName] = {
+                            init: function() {
+                                this.appendDummyInput().appendField(titles[blockName]);
+                                this.setPreviousStatement(true, null);
+                                this.setNextStatement(true, null);
+                                this.setColour(160);
+                            }
+                        };
+                    }
                 });
-            }
-        });
-     });
-     scene.add(mapGroup);
 
-     // Build Steve
-     const steveGroup = new THREE.Group();
-     const skinColor = 0xCF9E7A;
-     const hairColor = 0x3A2208;
-     
-     // Head
-     const headGroup = new THREE.Group();
-     headGroup.position.y = 1.5;
-     headGroup.add(createVoxel(skinColor, 0, 0, 0, 0.4, 0.4, 0.4)); 
-     headGroup.add(createVoxel(hairColor, 0, 0.21, 0, 0.42, 0.05, 0.42)); 
-     headGroup.add(createVoxel(hairColor, 0, 0.1, -0.21, 0.42, 0.2, 0.05)); 
-     headGroup.add(createVoxel(hairColor, -0.21, 0.1, 0, 0.05, 0.2, 0.4)); 
-     headGroup.add(createVoxel(hairColor, 0.21, 0.1, 0, 0.05, 0.2, 0.4)); 
+                const genCode = {
+                    'mc_move': 'commands.push("MOVE");\n',
+                    'mc_turn_left': 'commands.push("LEFT");\n',
+                    'mc_turn_right': 'commands.push("RIGHT");\n'
+                };
 
-     // Face
-     const faceZ = 0.205;
-     headGroup.add(createVoxel(0xFFFFFF, 0.1, 0.05, faceZ, 0.1, 0.05, 0.02)); 
-     headGroup.add(createVoxel(0x2222FF, 0.12, 0.05, faceZ + 0.001, 0.05, 0.05, 0.02)); 
-     headGroup.add(createVoxel(0xFFFFFF, -0.1, 0.05, faceZ, 0.1, 0.05, 0.02)); 
-     headGroup.add(createVoxel(0x2222FF, -0.12, 0.05, faceZ + 0.001, 0.05, 0.05, 0.02)); 
-     headGroup.add(createVoxel(0xB87E6A, 0, -0.05, faceZ, 0.08, 0.05, 0.02)); 
-     headGroup.add(createVoxel(0x9E6A4A, 0, -0.12, faceZ, 0.2, 0.06, 0.02)); 
+                Object.keys(genCode).forEach(key => {
+                    const func = () => genCode[key];
+                    window.Blockly.JavaScript[key] = func;
+                    if (window.Blockly.JavaScript.forBlock) {
+                        window.Blockly.JavaScript.forBlock[key] = func;
+                    }
+                });
+            };
 
-     steveGroup.add(headGroup);
+            // --- 關卡設定 ---
+            const levels = [
+                {
+                    targetChar: "順",
+                    targetZhuyin: ["ㄕ", "ㄨ", "ㄣ", "ˋ"],
+                    map: [
+                        [1, 1, 1, 1, 1, 1, 1, 1, 1],
+                        [1, 1, 1, 1, 10, 1, 1, 1, 1], // ㄕ
+                        [1, 1, 1, 1, 1, 1, 1, 1, 1],
+                        [1, 1, 1, 1, 1, 1, 1, 1, 1],
+                        [1, 11, 1, 1, 1, 1, 1, 12, 1], // ㄨ, Start, ㄣ
+                        [1, 1, 1, 1, 1, 1, 1, 1, 1],
+                        [1, 1, 1, 1, 1, 1, 1, 1, 1],
+                        [1, 1, 1, 1, 13, 1, 1, 1, 1], // ˋ
+                        [1, 1, 1, 1, 1, 1, 1, 1, 1]
+                    ],
+                    itemMapping: { 10: "ㄕ", 11: "ㄨ", 12: "ㄣ", 13: "ˋ" },
+                    start: { x: 4, z: 4, dir: 0 }, 
+                },
+                {
+                    targetChar: "學",
+                    targetZhuyin: ["ㄒ", "ㄩ", "ㄝ", "ˊ"],
+                    map: [
+                        [1, 1, 1, 1, 1, 1, 1, 1, 1],
+                        [1, 13, 1, 1, 1, 1, 1, 12, 1],
+                        [1, 1, 1, 1, 1, 1, 1, 1, 1],
+                        [1, 1, 1, 1, 1, 1, 1, 1, 1],
+                        [1, 1, 1, 1, 1, 1, 1, 1, 1],
+                        [1, 1, 1, 1, 1, 1, 1, 1, 1],
+                        [1, 1, 1, 1, 1, 1, 1, 1, 1],
+                        [1, 10, 1, 1, 1, 1, 1, 11, 1],
+                        [1, 1, 1, 1, 1, 1, 1, 1, 1]
+                    ],
+                    itemMapping: { 10: "ㄒ", 11: "ㄩ", 12: "ㄝ", 13: "ˊ" },
+                    start: { x: 4, z: 4, dir: 2 }, 
+                }
+            ];
 
-     // Body
-     steveGroup.add(createVoxel(0x009999, 0, 0.9, 0, 0.4, 0.6, 0.2)); 
-     
-     // Limbs
-     const leftArm = new THREE.Group();
-     leftArm.position.set(-0.3, 1.1, 0); 
-     leftArm.add(createVoxel(skinColor, 0, -0.2, 0, 0.18, 0.6, 0.18)); 
-     steveGroup.add(leftArm);
-     playerLimbsRef.current.armL = leftArm;
+            // --- 初始化確認 ---
+            useEffect(() => {
+                // 檢查是否所有必要的全域變數都已載入
+                const checkLoaded = setInterval(() => {
+                    if (window.THREE && window.Blockly && window.Blockly.JavaScript) {
+                        clearInterval(checkLoaded);
+                        setIsLibrariesLoaded(true);
+                    }
+                }, 100);
+                return () => clearInterval(checkLoaded);
+            }, []);
 
-     const rightArm = new THREE.Group();
-     rightArm.position.set(0.3, 1.1, 0); 
-     rightArm.add(createVoxel(skinColor, 0, -0.2, 0, 0.18, 0.6, 0.18));
-     steveGroup.add(rightArm);
-     playerLimbsRef.current.armR = rightArm;
+            // --- Three.js 初始化 ---
+            const initScene = useCallback(() => {
+                if (!canvasRef.current || !window.THREE) return;
+                const THREE = window.THREE;
 
-     const leftLeg = new THREE.Group();
-     leftLeg.position.set(-0.1, 0.6, 0); 
-     leftLeg.add(createVoxel(0x0000AA, 0, -0.3, 0, 0.18, 0.6, 0.18));
-     steveGroup.add(leftLeg);
-     playerLimbsRef.current.legL = leftLeg;
-
-     const rightLeg = new THREE.Group();
-     rightLeg.position.set(0.1, 0.6, 0); 
-     rightLeg.add(createVoxel(0x0000AA, 0, -0.3, 0, 0.18, 0.6, 0.18));
-     steveGroup.add(rightLeg);
-     playerLimbsRef.current.legR = rightLeg;
-
-     scene.add(steveGroup);
-     playerRef.current = steveGroup;
-
-     // Initial Transform
-     const rots = [Math.PI, Math.PI/2, 0, -Math.PI/2]; 
-     updatePlayerTransform(data.start.x, data.start.z, data.start.dir, offsetX, offsetZ, rots);
-
-  }, []);
-
-  const updatePlayerTransform = (gridX, gridZ, dirIndex, offX, offZ, rots) => {
-      if (!playerRef.current) return;
-      playerRef.current.position.x = (gridX * 1) + offX;
-      playerRef.current.position.z = (gridZ * 1) + offZ;
-      if (rots) {
-          playerRef.current.rotation.y = rots[dirIndex];
-      }
-      if(playerLimbsRef.current.armL) playerLimbsRef.current.armL.rotation.x = 0;
-      if(playerLimbsRef.current.armR) playerLimbsRef.current.armR.rotation.x = 0;
-      if(playerLimbsRef.current.legL) playerLimbsRef.current.legL.rotation.x = 0;
-      if(playerLimbsRef.current.legR) playerLimbsRef.current.legR.rotation.x = 0;
-  };
-
-  // --- 4. Blockly Setup ---
-  useEffect(() => {
-    if (!isLibrariesLoaded || !blocklyDiv.current) return;
-    
-    if (!window.Blockly || !window.Blockly.JavaScript) {
-        return;
-    }
-
-    initScene();
-    buildLevel(0);
-    // 首次載入也註冊一次產生器
-    registerGenerators();
-
-    const Blockly = window.Blockly;
-
-    // Define Blocks
-    if (!Blockly.Blocks['mc_move']) {
-        Blockly.Blocks['mc_move'] = {
-            init: function() {
-              this.appendDummyInput().appendField("前進一格");
-              this.setPreviousStatement(true, null);
-              this.setNextStatement(true, null);
-              this.setColour(160);
-            }
-        };
-    }
-    if (!Blockly.Blocks['mc_turn_left']) {
-        Blockly.Blocks['mc_turn_left'] = {
-            init: function() {
-              this.appendDummyInput().appendField("左轉 ↺");
-              this.setPreviousStatement(true, null);
-              this.setNextStatement(true, null);
-              this.setColour(160);
-            }
-        };
-    }
-    if (!Blockly.Blocks['mc_turn_right']) {
-        Blockly.Blocks['mc_turn_right'] = {
-            init: function() {
-              this.appendDummyInput().appendField("右轉 ↻");
-              this.setPreviousStatement(true, null);
-              this.setNextStatement(true, null);
-              this.setColour(160);
-            }
-        };
-    }
-
-    // Inject Workspace
-    if (workspaceRef.current) workspaceRef.current.dispose();
-    
-    workspaceRef.current = Blockly.inject(blocklyDiv.current, {
-        toolbox: `
-        <xml>
-            <block type="mc_move"></block>
-            <block type="mc_turn_left"></block>
-            <block type="mc_turn_right"></block>
-            <block type="controls_repeat_ext">
-                <value name="TIMES">
-                    <shadow type="math_number">
-                        <field name="NUM">4</field>
-                    </shadow>
-                </value>
-            </block>
-        </xml>`,
-        scrollbars: true,
-        trashcan: true,
-        zoom: { 
-            controls: true,
-            wheel: true,
-            startScale: 1.0, 
-            maxScale: 3, 
-            minScale: 0.8, 
-            scaleSpeed: 1.2 
-        },
-        theme: {
-            'componentStyles': {
-                'workspaceBackgroundColour': '#f0f0f0',
-                'toolboxBackgroundColour': '#dedede'
-            }
-        }
-    });
-    
-    const resizeObserver = new ResizeObserver(() => {
-        Blockly.svgResize(workspaceRef.current);
-    });
-    resizeObserver.observe(blocklyDiv.current);
-
-    return () => {
-        if (workspaceRef.current) workspaceRef.current.dispose();
-        resizeObserver.disconnect();
-    }
-  }, [isLibrariesLoaded, initScene, buildLevel, registerGenerators]);
-
-
-  // --- 5. Game Logic Interpreter ---
-  const runCode = async () => {
-    if (gameState === 'RUNNING') return;
-
-    // --- CRITICAL FIX: Force Generator Registration before run ---
-    // 解決 "JavaScript generator does not know how to generate code" 錯誤
-    registerGenerators();
-    
-    if (!window.Blockly || !window.Blockly.JavaScript) {
-        setConsoleLog(prev => ["錯誤: 程式碼產生器未初始化。", ...prev]);
-        return;
-    }
-
-    setGameState('RUNNING');
-    setFailReason('');
-    setConsoleLog(['> 開始執行...']);
-    
-    // Reset state
-    const data = levelData.current;
-    const offX = -(data.map[0].length)/2;
-    const offZ = -(data.map.length)/2;
-    playerState.current = { ...data.start };
-    
-    const initRots = [Math.PI, Math.PI/2, 0, -Math.PI/2];
-    updatePlayerTransform(data.start.x, data.start.z, data.start.dir, offX, offZ, initRots);
-    
-    setCollectedSymbols([]);
-    // Visual reset
-    itemsRef.current.forEach(i => {
-        i.mesh.visible = true;
-        i.collected = false;
-        i.mesh.material.color.setHex(0xffffff); // Reset color
-    });
-
-    let code = '';
-    try {
-        window.Blockly.JavaScript.init(workspaceRef.current);
-        code = window.Blockly.JavaScript.workspaceToCode(workspaceRef.current);
-    } catch (e) {
-        console.error("Generators failed:", e);
-        setFailReason(`產生程式碼錯誤: ${e.message}`);
-        setGameState('FAIL');
-        return;
-    }
-    
-    const commands = [];
-    try {
-        // eslint-disable-next-line no-new-func
-        new Function('commands', code)(commands);
-    } catch (e) {
-        setGameState('FAIL');
-        return;
-    }
-
-    // --- Execution Loop ---
-    let currentCollected = [];
-
-    for (let cmd of commands) {
-        if (!mountRef.current) break; 
-
-        let { x, z, dir } = playerState.current;
-        let fail = false;
-
-        if (cmd === 'LEFT') {
-            dir = (dir + 3) % 4; 
-            playerState.current.dir = dir;
-            await animateTurn(Math.PI / 2);
-        } else if (cmd === 'RIGHT') {
-            dir = (dir + 1) % 4;
-            playerState.current.dir = dir;
-            await animateTurn(-Math.PI / 2);
-        } else if (cmd === 'MOVE') {
-            let nx = x;
-            let nz = z;
-            if (dir === 0) nz -= 1; // North
-            if (dir === 1) nx += 1; // East
-            if (dir === 2) nz += 1; // South
-            if (dir === 3) nx -= 1; // West
-
-            // Check walls
-            if (nz >= 0 && nz < data.map.length && nx >= 0 && nx < data.map[0].length && data.map[nz][nx] !== 0) {
-                playerState.current.x = nx;
-                playerState.current.z = nz;
-                await animateMove(nx, nz, offX, offZ);
+                const width = canvasRef.current.clientWidth;
+                const height = canvasRef.current.clientHeight;
                 
-                // Check Item Collection
-                const itemIndex = itemsRef.current.findIndex(i => i.gridX === nx && i.gridZ === nz && !i.collected);
+                const scene = new THREE.Scene();
+                scene.background = new THREE.Color(0x87CEEB); 
+                scene.fog = new THREE.Fog(0x87CEEB, 10, 60);
+
+                const camera = new THREE.PerspectiveCamera(40, width / height, 0.1, 100);
+                camera.position.set(0, 20, 12); 
+                camera.lookAt(0, 0, 1);
+                cameraRef.current = camera;
+
+                const renderer = new THREE.WebGLRenderer({ canvas: canvasRef.current, antialias: true, alpha: false });
+                renderer.setSize(width, height);
+                renderer.shadowMap.enabled = true;
+                rendererRef.current = renderer;
+
+                const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+                scene.add(ambientLight);
+                const dirLight = new THREE.DirectionalLight(0xffffff, 0.5);
+                dirLight.position.set(20, 30, 20);
+                dirLight.castShadow = true;
+                scene.add(dirLight);
+
+                sceneRef.current = scene;
+
+                const animate = () => {
+                    if (!mountRef.current) return;
+                    requestAnimationFrame(animate);
+                    
+                    itemsRef.current.forEach((item, idx) => {
+                        if (item.mesh.visible) {
+                            item.mesh.position.y = 1.3 + Math.sin(Date.now() * 0.003 + idx) * 0.1;
+                        }
+                    });
+
+                    renderer.render(scene, camera);
+                };
+                mountRef.current = true;
+                animate();
+
+            }, []);
+
+            // --- 輔助函式：建立方塊與符號 ---
+            const createMultiVoxel = (top, side, bottom, x, y, z) => {
+                const THREE = window.THREE;
+                const geo = new THREE.BoxGeometry(1, 1, 1);
+                const mats = [
+                    new THREE.MeshStandardMaterial({ color: side }), 
+                    new THREE.MeshStandardMaterial({ color: side }), 
+                    new THREE.MeshStandardMaterial({ color: top }),  
+                    new THREE.MeshStandardMaterial({ color: bottom }), 
+                    new THREE.MeshStandardMaterial({ color: side }), 
+                    new THREE.MeshStandardMaterial({ color: side }) 
+                ];
+                const mesh = new THREE.Mesh(geo, mats);
+                mesh.position.set(x, y, z);
+                mesh.castShadow = true;
+                mesh.receiveShadow = true;
                 
-                if (itemIndex !== -1) {
-                    const item = itemsRef.current[itemIndex];
-                    
-                    // Logic Check
-                    const expectedSymbol = data.targetZhuyin[currentCollected.length];
-                    
-                    if (item.symbol === expectedSymbol) {
-                        // Correct!
-                        item.mesh.visible = false;
-                        item.collected = true;
-                        currentCollected.push(item.symbol);
-                        setCollectedSymbols([...currentCollected]); 
-                        
-                    } else {
-                        // Wrong Symbol!
-                        setFailReason(`順序錯誤！你需要先蒐集「${expectedSymbol}」，但你拿到了「${item.symbol}」。`);
-                        item.mesh.material.color.setHex(0xFF0000); 
-                        fail = true;
+                // 格線
+                const edges = new THREE.EdgesGeometry(geo);
+                const line = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: 0x000000, opacity: 0.3, transparent: true }));
+                mesh.add(line);
+                return mesh;
+            };
+
+            const createZhuyin3D = (char) => {
+                const THREE = window.THREE;
+                const canvas = document.createElement('canvas');
+                canvas.width = 128; canvas.height = 128;
+                const ctx = canvas.getContext('2d');
+                
+                ctx.clearRect(0, 0, 128, 128);
+                ctx.font = 'bold 110px "Microsoft JhengHei", sans-serif';
+                ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                ctx.strokeStyle = '#FFFFFF'; ctx.lineWidth = 10; 
+                ctx.strokeText(char, 64, 64);
+                ctx.fillStyle = '#00FFFF'; 
+                ctx.fillText(char, 64, 64);
+                
+                const texture = new THREE.CanvasTexture(canvas);
+                const geometry = new THREE.BoxGeometry(1.3, 1.3, 0.05);
+                const material = new THREE.MeshBasicMaterial({ 
+                    map: texture, transparent: true, side: THREE.FrontSide, depthWrite: false 
+                });
+                return new THREE.Mesh(geometry, material);
+            };
+
+            const createVoxel = (color, x, y, z, sx, sy, sz) => {
+                const THREE = window.THREE;
+                const mesh = new THREE.Mesh(
+                    new THREE.BoxGeometry(sx, sy, sz),
+                    new THREE.MeshStandardMaterial({ color })
+                );
+                mesh.position.set(x, y, z);
+                mesh.castShadow = true; mesh.receiveShadow = true;
+                return mesh;
+            };
+
+            // --- 建立關卡 ---
+            const buildLevel = useCallback((levelIndex) => {
+                if (!sceneRef.current || !window.THREE) return;
+                const THREE = window.THREE;
+                const scene = sceneRef.current;
+
+                // 清除舊物件 (保留光源)
+                for(let i = scene.children.length - 1; i >= 0; i--) { 
+                    if(scene.children[i].type !== "DirectionalLight" && scene.children[i].type !== "AmbientLight") {
+                        scene.remove(scene.children[i]); 
                     }
                 }
 
-            } else {
-                setFailReason("撞到牆壁了！");
-                await animateBump(); 
-                fail = true;
-            }
-        }
-        
-        if (fail) {
-            setGameState('FAIL');
-            return;
-        }
+                const data = levels[levelIndex];
+                levelData.current = JSON.parse(JSON.stringify(data)); 
+                playerState.current = { ...data.start };
+                setCollectedSymbols([]);
+                setFailReason('');
+                itemsRef.current = [];
 
-        await new Promise(r => setTimeout(r, 200)); 
-    }
+                const mapGroup = new THREE.Group();
+                const offsetX = -(data.map[0].length * 1) / 2;
+                const offsetZ = -(data.map.length * 1) / 2;
 
-    // Check Win
-    if (currentCollected.length === data.targetZhuyin.length) {
-        setGameState('SUCCESS');
-    } else {
-        if (gameState !== 'FAIL') {
-             setFailReason("尚未蒐集完所有注音符號！");
-             setGameState('FAIL');
-        }
-    }
-  };
+                data.map.forEach((row, z) => {
+                    row.forEach((cell, x) => {
+                        const posX = (x * 1) + offsetX;
+                        const posZ = (z * 1) + offsetZ;
+                        
+                        if (cell > 0) {
+                            const grass = createMultiVoxel(0x4C9131, 0x724C30, 0x724C30, posX, -0.5, posZ);
+                            mapGroup.add(grass);
+                        }
 
-  // --- Animations ---
-  const animateTurn = (angleDelta) => {
-      return new Promise(resolve => {
-          const startRot = playerRef.current.rotation.y;
-          const targetRot = startRot + angleDelta;
-          let progress = 0; const duration = 20; 
-          const tick = () => {
-              progress++; const t = progress/duration;
-              playerRef.current.rotation.y = startRot + (angleDelta) * t;
-              if (progress < duration) requestAnimationFrame(tick);
-              else { playerRef.current.rotation.y = targetRot; resolve(); }
-          };
-          tick();
-      });
-  };
+                        if (data.itemMapping && data.itemMapping[cell]) {
+                            const char = data.itemMapping[cell];
+                            const mesh = createZhuyin3D(char);
+                            mesh.position.set(posX, 1.3, posZ); 
+                            mesh.rotation.x = -Math.PI / 3.5; 
+                            scene.add(mesh);
+                            itemsRef.current.push({ mesh, symbol: char, gridX: x, gridZ: z, collected: false });
+                        }
+                    });
+                });
+                scene.add(mapGroup);
 
-  const animateMove = (nx, nz, offX, offZ) => {
-    return new Promise(resolve => {
-        const startX = playerRef.current.position.x;
-        const startZ = playerRef.current.position.z;
-        const targetX = (nx * 1) + offX;
-        const targetZ = (nz * 1) + offZ;
-        const { armL, armR, legL, legR } = playerLimbsRef.current;
-        let progress = 0; const duration = 30; 
-        const tick = () => {
-            progress++; const t = progress / duration;
-            const yOffset = Math.sin(t * Math.PI) * 0.5; 
-            playerRef.current.position.x = startX + (targetX - startX) * t;
-            playerRef.current.position.z = startZ + (targetZ - startZ) * t;
-            playerRef.current.position.y = yOffset; 
-            // Limbs
-            const limbAngle = Math.sin(t * Math.PI * 2) * 0.5; 
-            if(armL) armL.rotation.x = limbAngle; if(armR) armR.rotation.x = -limbAngle;
-            if(legL) legL.rotation.x = -limbAngle; if(legR) legR.rotation.x = limbAngle;
-            
-            if (progress < duration) requestAnimationFrame(tick);
-            else {
-                playerRef.current.position.set(targetX, 0, targetZ);
-                if(armL) armL.rotation.x = 0; if(armR) armR.rotation.x = 0;
-                if(legL) legL.rotation.x = 0; if(legR) legR.rotation.x = 0;
-                resolve();
-            }
+                // --- 史帝夫 ---
+                const steveGroup = new THREE.Group();
+                const skin = 0xCF9E7A, hair = 0x3A2208;
+                
+                // Head
+                const head = new THREE.Group();
+                head.position.y = 1.5;
+                head.add(createVoxel(skin, 0, 0, 0, 0.4, 0.4, 0.4));
+                head.add(createVoxel(hair, 0, 0.21, 0, 0.42, 0.05, 0.42)); // Top
+                head.add(createVoxel(hair, 0, 0.1, -0.21, 0.42, 0.2, 0.05)); // Back
+                head.add(createVoxel(hair, -0.21, 0.1, 0, 0.05, 0.2, 0.4)); // R
+                head.add(createVoxel(hair, 0.21, 0.1, 0, 0.05, 0.2, 0.4)); // L
+                // Face
+                const fz = 0.205;
+                head.add(createVoxel(0xFFFFFF, 0.1, 0.05, fz, 0.1, 0.05, 0.02)); 
+                head.add(createVoxel(0x2222FF, 0.12, 0.05, fz+0.001, 0.05, 0.05, 0.02)); 
+                head.add(createVoxel(0xFFFFFF, -0.1, 0.05, fz, 0.1, 0.05, 0.02)); 
+                head.add(createVoxel(0x2222FF, -0.12, 0.05, fz+0.001, 0.05, 0.05, 0.02)); 
+                head.add(createVoxel(0xB87E6A, 0, -0.05, fz, 0.08, 0.05, 0.02)); 
+                head.add(createVoxel(0x9E6A4A, 0, -0.12, fz, 0.2, 0.06, 0.02)); 
+                steveGroup.add(head);
+
+                // Body
+                steveGroup.add(createVoxel(0x009999, 0, 0.9, 0, 0.4, 0.6, 0.2)); 
+
+                // Limbs
+                const mkLimb = (x, y, c, w, h, d, isLeg) => {
+                    const g = new THREE.Group();
+                    g.position.set(x, y, 0);
+                    g.add(createVoxel(c, 0, -h/2 + (isLeg?0:0.1), 0, w, h, d));
+                    steveGroup.add(g);
+                    return g;
+                };
+                
+                playerLimbsRef.current.armL = mkLimb(-0.3, 1.1, skin, 0.18, 0.6, 0.18, false);
+                playerLimbsRef.current.armR = mkLimb(0.3, 1.1, skin, 0.18, 0.6, 0.18, false);
+                playerLimbsRef.current.legL = mkLimb(-0.1, 0.6, 0x0000AA, 0.18, 0.6, 0.18, true);
+                playerLimbsRef.current.legR = mkLimb(0.1, 0.6, 0x0000AA, 0.18, 0.6, 0.18, true);
+
+                scene.add(steveGroup);
+                playerRef.current = steveGroup;
+
+                updatePlayerTransform(data.start.x, data.start.z, data.start.dir, offsetX, offsetZ);
+
+            }, []);
+
+            const updatePlayerTransform = (gridX, gridZ, dirIndex, offX, offZ) => {
+                if (!playerRef.current) return;
+                playerRef.current.position.set((gridX * 1) + offX, 0, (gridZ * 1) + offZ);
+                const rots = [Math.PI, Math.PI/2, 0, -Math.PI/2];
+                playerRef.current.rotation.y = rots[dirIndex];
+                
+                Object.values(playerLimbsRef.current).forEach(l => { if(l) l.rotation.x = 0; });
+            };
+
+            // --- Blockly 初始化 ---
+            useEffect(() => {
+                if (!isLibrariesLoaded || !blocklyDiv.current) return;
+                
+                initScene();
+                buildLevel(0);
+                registerBlocklyDefinitions();
+
+                const Blockly = window.Blockly;
+                if (workspaceRef.current) workspaceRef.current.dispose();
+
+                workspaceRef.current = Blockly.inject(blocklyDiv.current, {
+                    toolbox: `
+                    <xml>
+                        <block type="mc_move"></block>
+                        <block type="mc_turn_left"></block>
+                        <block type="mc_turn_right"></block>
+                        <block type="controls_repeat_ext">
+                            <value name="TIMES"><shadow type="math_number"><field name="NUM">4</field></shadow></value>
+                        </block>
+                    </xml>`,
+                    scrollbars: true, trashcan: true,
+                    zoom: { startScale: 1.0, maxScale: 3, minScale: 0.8, scaleSpeed: 1.2 },
+                    theme: { 'componentStyles': { 'workspaceBackgroundColour': '#f0f0f0', 'toolboxBackgroundColour': '#e5e7eb' } }
+                });
+
+                const observer = new ResizeObserver(() => Blockly.svgResize(workspaceRef.current));
+                observer.observe(blocklyDiv.current);
+                return () => observer.disconnect();
+
+            }, [isLibrariesLoaded, initScene, buildLevel]);
+
+            // --- 執行邏輯 ---
+            const runCode = async () => {
+                if (gameState === 'RUNNING') return;
+                
+                registerBlocklyDefinitions(); // 強制重新註冊產生器
+                if (!window.Blockly || !window.Blockly.JavaScript) {
+                    alert("Blockly 尚未載入完成"); return;
+                }
+
+                setGameState('RUNNING');
+                setFailReason('');
+                
+                // 重置狀態
+                const data = levelData.current;
+                const offX = -(data.map[0].length)/2;
+                const offZ = -(data.map.length)/2;
+                playerState.current = { ...data.start };
+                updatePlayerTransform(data.start.x, data.start.z, data.start.dir, offX, offZ);
+                setCollectedSymbols([]);
+                itemsRef.current.forEach(i => { i.mesh.visible = true; i.collected = false; i.mesh.material.color.setHex(0xffffff); });
+
+                // 產生程式碼
+                let code = '';
+                try {
+                    window.Blockly.JavaScript.init(workspaceRef.current);
+                    code = window.Blockly.JavaScript.workspaceToCode(workspaceRef.current);
+                } catch (e) {
+                    console.error(e);
+                    setFailReason("程式碼錯誤：" + e.message);
+                    setGameState('FAIL');
+                    return;
+                }
+
+                const commands = [];
+                // 建立一個安全的執行環境來收集指令
+                try {
+                    new Function('commands', code)(commands);
+                } catch (e) {
+                    setGameState('FAIL');
+                    return;
+                }
+
+                // 執行指令
+                let currentCollected = [];
+                for (let cmd of commands) {
+                    if (!mountRef.current) break;
+                    let { x, z, dir } = playerState.current;
+                    let fail = false;
+
+                    if (cmd === 'LEFT') {
+                        dir = (dir + 3) % 4; playerState.current.dir = dir;
+                        await animateTurn(Math.PI / 2);
+                    } else if (cmd === 'RIGHT') {
+                        dir = (dir + 1) % 4; playerState.current.dir = dir;
+                        await animateTurn(-Math.PI / 2);
+                    } else if (cmd === 'MOVE') {
+                        let nx = x, nz = z;
+                        if (dir === 0) nz -= 1; if (dir === 1) nx += 1; if (dir === 2) nz += 1; if (dir === 3) nx -= 1;
+
+                        if (nz >= 0 && nz < data.map.length && nx >= 0 && nx < data.map[0].length && data.map[nz][nx] !== 0) {
+                            playerState.current.x = nx; playerState.current.z = nz;
+                            await animateMove(nx, nz, offX, offZ);
+                            
+                            // 檢查收集
+                            const idx = itemsRef.current.findIndex(i => i.gridX === nx && i.gridZ === nz && !i.collected);
+                            if (idx !== -1) {
+                                const item = itemsRef.current[idx];
+                                const expected = data.targetZhuyin[currentCollected.length];
+                                if (item.symbol === expected) {
+                                    item.mesh.visible = false; item.collected = true;
+                                    currentCollected.push(item.symbol);
+                                    setCollectedSymbols([...currentCollected]);
+                                } else {
+                                    setFailReason(`順序錯誤！應先收集「${expected}」，但你碰到了「${item.symbol}」。`);
+                                    item.mesh.material.color.setHex(0xFF0000);
+                                    fail = true;
+                                }
+                            }
+                        } else {
+                            setFailReason("撞牆了！");
+                            await animateBump();
+                            fail = true;
+                        }
+                    }
+                    if (fail) { setGameState('FAIL'); return; }
+                    await new Promise(r => setTimeout(r, 200));
+                }
+
+                if (currentCollected.length === data.targetZhuyin.length) {
+                    setGameState('SUCCESS');
+                } else {
+                    if (gameState !== 'FAIL') { setFailReason("尚未收集完所有注音！"); setGameState('FAIL'); }
+                }
+            };
+
+            // --- 動畫函式 ---
+            const animateTurn = (delta) => new Promise(res => {
+                const start = playerRef.current.rotation.y, target = start + delta;
+                let p = 0;
+                const tick = () => {
+                    p++; playerRef.current.rotation.y = start + delta * (p/20);
+                    if(p<20) requestAnimationFrame(tick); else { playerRef.current.rotation.y = target; res(); }
+                }; tick();
+            });
+
+            const animateMove = (nx, nz, offX, offZ) => new Promise(res => {
+                const startX = playerRef.current.position.x, startZ = playerRef.current.position.z;
+                const targetX = (nx * 1) + offX, targetZ = (nz * 1) + offZ;
+                let p = 0;
+                const tick = () => {
+                    p++; const t = p/30;
+                    playerRef.current.position.x = startX + (targetX - startX) * t;
+                    playerRef.current.position.z = startZ + (targetZ - startZ) * t;
+                    playerRef.current.position.y = Math.sin(t * Math.PI) * 0.5;
+                    // Limbs
+                    const ang = Math.sin(t * Math.PI * 2) * 0.5;
+                    const { armL, armR, legL, legR } = playerLimbsRef.current;
+                    if(armL) armL.rotation.x = ang; if(armR) armR.rotation.x = -ang;
+                    if(legL) legL.rotation.x = -ang; if(legR) legR.rotation.x = ang;
+
+                    if(p<30) requestAnimationFrame(tick); else {
+                        playerRef.current.position.set(targetX, 0, targetZ);
+                        Object.values(playerLimbsRef.current).forEach(l => l.rotation.x = 0);
+                        res();
+                    }
+                }; tick();
+            });
+
+            const animateBump = () => new Promise(res => {
+                let p = 0;
+                const tick = () => {
+                    p++; playerRef.current.rotation.z = Math.sin(p) * 0.1;
+                    if(p<20) requestAnimationFrame(tick); else { playerRef.current.rotation.z = 0; res(); }
+                }; tick();
+            });
+
+            const currentData = levels[currentLevel];
+
+            return (
+                <div className="flex w-full h-full">
+                    {/* 左側：程式區 (1/3) */}
+                    <div className="w-1/3 min-w-[320px] flex flex-col border-r border-gray-700 bg-gray-100">
+                        <div className="bg-gray-200 px-4 py-2 text-sm font-bold text-gray-700 flex items-center gap-2 border-b border-gray-300">
+                            <IconCode /> 程式積木區
+                        </div>
+                        <div className="flex-1 relative">
+                            <div ref={blocklyDiv} className="absolute inset-0" />
+                            {!isLibrariesLoaded && <div className="absolute inset-0 flex items-center justify-center bg-white/80 z-20 text-black font-bold">資源載入中...</div>}
+                        </div>
+                    </div>
+
+                    {/* 右側：遊戲區 (2/3) */}
+                    <div className="flex-1 flex flex-col bg-gray-900 relative">
+                        {/* Header */}
+                        <header className="bg-emerald-600 p-4 shadow-lg flex justify-between items-center z-10">
+                            <div className="flex items-center gap-4">
+                                <div className="bg-white text-emerald-700 w-12 h-12 flex items-center justify-center rounded-lg font-bold text-3xl shadow">
+                                    {currentData.targetChar}
+                                </div>
+                                <div>
+                                    <h1 className="text-xl font-bold">注音大冒險</h1>
+                                    <div className="flex gap-1 mt-1">
+                                        {currentData.targetZhuyin.map((c, i) => (
+                                            <span key={i} className={`w-8 h-8 flex items-center justify-center rounded border-2 font-bold text-lg ${collectedSymbols.length > i ? 'bg-yellow-400 text-black border-yellow-500' : 'bg-black/20 text-white/30 border-white/20'}`}>{c}</span>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                            <button onClick={runCode} disabled={gameState === 'RUNNING' || !isLibrariesLoaded} className={`flex items-center gap-2 px-6 py-2 rounded-lg font-bold shadow transition-transform active:scale-95 ${gameState === 'RUNNING' ? 'bg-gray-500' : 'bg-orange-500 hover:bg-orange-600'}`}>
+                                <IconPlay /> {gameState === 'RUNNING' ? '執行中...' : '開始拼音'}
+                            </button>
+                        </header>
+
+                        {/* 3D Canvas */}
+                        <canvas ref={canvasRef} className="flex-1 block w-full outline-none" />
+
+                        {/* Overlays */}
+                        {gameState === 'IDLE' && (
+                            <div className="absolute bottom-4 right-4 bg-black/60 p-4 rounded-lg text-right pointer-events-none backdrop-blur-sm">
+                                <p className="text-gray-300 text-sm mb-1">目標：依照順序收集</p>
+                                <div className="flex justify-end gap-2">
+                                    {currentData.targetZhuyin.map((z, i) => <span key={i} className="text-yellow-400 font-bold text-xl">{z}</span>)}
+                                </div>
+                            </div>
+                        )}
+
+                        {gameState === 'SUCCESS' && (
+                            <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center z-20">
+                                <IconCheck />
+                                <h2 className="text-4xl font-bold text-white mt-4 mb-2">拼音成功！</h2>
+                                <p className="text-gray-300 mb-8">太棒了！你完成了「{currentData.targetChar}」的拼音。</p>
+                                {currentLevel < levels.length - 1 ? (
+                                    <button onClick={() => { setCurrentLevel(c => c+1); setGameState('IDLE'); }} className="bg-green-600 hover:bg-green-500 text-white px-8 py-3 rounded-xl font-bold text-xl shadow-lg">下一關 ➜</button>
+                                ) : (
+                                    <div className="text-yellow-400 text-2xl font-bold">🎉 全數通關！太厲害了！</div>
+                                )}
+                            </div>
+                        )}
+
+                        {gameState === 'FAIL' && (
+                            <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center z-20">
+                                <div className="bg-gray-800 p-8 rounded-2xl border-2 border-red-500 text-center max-w-md shadow-2xl">
+                                    <div className="flex justify-center mb-4"><IconAlert /></div>
+                                    <h3 className="text-2xl font-bold text-white mb-2">失敗了...</h3>
+                                    <p className="text-red-300 mb-6 text-lg">{failReason}</p>
+                                    <button onClick={() => { setGameState('IDLE'); buildLevel(currentLevel); }} className="bg-white/10 hover:bg-white/20 text-white px-6 py-2 rounded-lg flex items-center gap-2 mx-auto">
+                                        <IconRotate /> 再試一次
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
         };
-        tick();
-    });
-  };
 
-  const animateBump = () => {
-      return new Promise(resolve => {
-          let progress = 0; const duration = 20;
-          const tick = () => {
-              progress++;
-              playerRef.current.rotation.z = Math.sin(progress) * 0.1;
-              if (progress < duration) requestAnimationFrame(tick);
-              else { playerRef.current.rotation.z = 0; resolve(); }
-          };
-          tick();
-      });
-  };
-
-  const nextLevel = () => {
-      if (currentLevel < levels.length - 1) {
-          const next = currentLevel + 1;
-          setCurrentLevel(next);
-          buildLevel(next);
-          setGameState('IDLE');
-          setConsoleLog([]);
-          workspaceRef.current.clear();
-      }
-  };
-
-  const currentLevelData = levels[currentLevel];
-
-  return (
-    <div className="flex flex-col h-screen bg-neutral-900 text-white font-sans overflow-hidden">
-      {/* Header - Educational Style */}
-      <header className="bg-emerald-600 p-4 shadow-lg flex justify-between items-center z-10 h-16 shrink-0">
-        <div className="flex items-center gap-4">
-           <div className="bg-white text-emerald-700 p-1 rounded-lg font-serif font-bold text-2xl w-10 h-10 flex items-center justify-center shadow-inner">
-             {currentLevelData.targetChar}
-           </div>
-           <div>
-             <h1 className="text-lg font-bold tracking-wide">注音符號大冒險</h1>
-             <div className="flex gap-1 mt-0.5">
-                {currentLevelData.targetZhuyin.map((char, i) => {
-                    const isCollected = collectedSymbols.length > i;
-                    return (
-                        <span key={i} className={`
-                            w-6 h-6 flex items-center justify-center rounded font-mono text-sm font-bold border
-                            ${isCollected 
-                                ? 'bg-yellow-400 text-black border-yellow-500 scale-110' 
-                                : 'bg-black/20 text-white/50 border-white/20'}
-                        `}>
-                            {char}
-                        </span>
-                    );
-                })}
-             </div>
-           </div>
-        </div>
-        
-        <div className="flex items-center gap-2">
-             <div className="text-xs bg-black/20 px-2 py-1 rounded">
-                Level {currentLevel + 1}
-             </div>
-            <button 
-                onClick={runCode}
-                disabled={gameState === 'RUNNING' || !isLibrariesLoaded}
-                className={`flex items-center gap-2 px-4 py-1.5 rounded-lg font-bold shadow-lg text-sm transition-all ${
-                    gameState === 'RUNNING' ? 'bg-gray-500 cursor-not-allowed' : 'bg-orange-500 hover:bg-orange-600 hover:scale-105'
-                }`}
-            >
-                {gameState === 'RUNNING' ? '拼音中...' : <><Play size={16} fill="currentColor" /> 開始</>}
-            </button>
-        </div>
-      </header>
-
-      {/* Main Area (Horizontal Split) */}
-      <div className="flex flex-1 overflow-hidden">
-         
-         {/* Left: Blockly Editor (1/3) */}
-         <div className="w-1/3 min-w-[320px] relative border-r border-gray-700 bg-gray-100">
-            <div ref={blocklyDiv} className="absolute inset-0" />
-            {!isLibrariesLoaded && (
-                <div className="absolute inset-0 flex items-center justify-center bg-white/80 z-20 text-black">
-                    載入資源中...
-                </div>
-            )}
-         </div>
-
-         {/* Right: 3D View (2/3) */}
-         <div className="flex-1 flex flex-col bg-gray-900 relative">
-            <canvas ref={canvasRef} className="flex-1 block w-full outline-none cursor-move" />
-            
-            {/* Status Overlays */}
-            {gameState === 'SUCCESS' && (
-                <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center animate-in fade-in zoom-in p-8 text-center z-20">
-                    <CheckCircle className="w-16 h-16 text-green-400 mb-4" />
-                    <h2 className="text-3xl font-bold text-white mb-2">{currentLevelData.targetChar}</h2>
-                    <p className="text-gray-300 mb-6 text-base">拼音成功！你真棒！</p>
-                    
-                    {currentLevel < levels.length - 1 ? (
-                        <button onClick={nextLevel} className="bg-green-600 hover:bg-green-500 text-white px-6 py-2 rounded-xl font-bold text-lg shadow-lg transform hover:scale-105 transition-all">
-                            挑戰下一個字 ➜
-                        </button>
-                    ) : (
-                        <div className="text-yellow-400 text-xl font-bold">🎉 全部學會了！太厲害了！ 🎉</div>
-                    )}
-                </div>
-            )}
-
-            {gameState === 'FAIL' && (
-                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-red-900/95 p-6 rounded-xl border-2 border-red-500 text-center shadow-2xl w-3/4 max-w-sm z-20">
-                    <AlertTriangle className="w-12 h-12 text-red-400 mx-auto mb-2" />
-                    <h3 className="text-xl font-bold text-white mb-2">哎呀...</h3>
-                    <p className="text-red-100 mb-4 text-sm font-medium">{failReason}</p>
-                    <button onClick={() => { 
-                        setGameState('IDLE'); 
-                        buildLevel(currentLevel); 
-                    }} className="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg flex items-center gap-2 mx-auto transition-colors">
-                        <RotateCcw size={16} /> 再試一次
-                    </button>
-                 </div>
-            )}
-
-            {/* Instruction Overlay */}
-            {gameState === 'IDLE' && (
-                 <div className="absolute bottom-2 right-2 bg-black/60 p-2 rounded text-right pointer-events-none z-10">
-                     <p className="text-gray-300 text-xs">目標：依照順序蒐集注音</p>
-                     <div className="flex justify-end gap-1 mt-1">
-                        {currentLevelData.targetZhuyin.map((z,i) => (
-                            <span key={i} className="text-yellow-400 font-bold text-sm">{z}</span>
-                        ))}
-                     </div>
-                 </div>
-            )}
-         </div>
-
-      </div>
-    </div>
-  );
-};
-
-export default ZhuyinGame;
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<ZhuyinGame />);
+    </script>
+</body>
+</html>
