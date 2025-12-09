@@ -23,12 +23,11 @@
       padding: 0;
       width: 100%;
       height: 100%;
-      overflow: hidden; /* 防止捲動 */
+      overflow: hidden; /* 防止整個網頁捲動 */
       font-family: "Microsoft JhengHei", "Noto Sans TC", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-      touch-action: none; /* 禁止預設觸控行為 */
+      touch-action: none; /* 禁止預設觸控行為，優化手機拖曳體驗 */
     }
 
-    /* 確保 Blockly 填滿容器 */
     #blocklyDiv {
       width: 100%;
       height: 100%;
@@ -39,7 +38,6 @@
       width: 100%;
       height: 100%;
       outline: none;
-      touch-action: none;
     }
 
     /* Blockly 外觀微調 */
@@ -57,18 +55,19 @@
   </style>
 </head>
 <body class="bg-slate-900 text-white fixed inset-0">
-  <!-- 主要容器：手機版 flex-col (上下)，電腦版 md:flex-row (左右) -->
-  <div class="flex flex-col md:flex-row w-full h-full">
+  
+  <!-- 主要容器：使用 h-screen 強制佔滿視窗 -->
+  <!-- 手機：flex-col (垂直排列) -->
+  <!-- 電腦 (md以上)：flex-row (水平排列) -->
+  <div class="flex flex-col md:flex-row w-full h-screen overflow-hidden">
     
     <!-- 區域 1：遊戲畫面 (Three.js) -->
-    <!-- 手機：上方 (order-1)，高度 45% -->
-    <!-- 電腦：右方 (md:order-2)，自動填滿剩餘空間 (md:flex-1, md:h-full) -->
-    <div class="order-1 md:order-2 w-full h-[45%] md:flex-1 md:h-full relative z-0 bg-slate-800">
+    <!-- 手機：高度佔 40vh (視窗高度的 40%)，順序 1 (最上面) -->
+    <!-- 電腦：高度佔滿 (h-full)，寬度自動分配 (flex-1)，順序 2 (右邊) -->
+    <div class="relative w-full h-[40vh] md:h-full md:flex-1 order-1 md:order-2 z-0 bg-sky-300">
       <canvas id="gameCanvas"></canvas>
 
-      <!-- 資訊面板：自適應大小與位置 -->
-      <!-- 手機：字體小一點 (text-sm)，padding 小一點 -->
-      <!-- 電腦：字體大 (md:text-lg)，padding 大 -->
+      <!-- 資訊面板 -->
       <div id="info"
            class="absolute top-2 left-2 md:top-4 md:left-4 bg-black/70 text-sm md:text-lg px-3 py-2 md:px-5 md:py-4 rounded-lg pointer-events-auto z-10 shadow-lg max-w-[90%] md:max-w-md transition-all">
         <div class="space-y-1 md:space-y-2">
@@ -130,9 +129,9 @@
     </div>
 
     <!-- 區域 2：Blockly 控制區 -->
-    <!-- 手機：下方 (order-2)，高度 55% -->
-    <!-- 電腦：左方 (order-1)，寬度 1/3 (md:w-1/3)，高度 100% -->
-    <div class="order-2 md:order-1 w-full h-[55%] md:w-1/3 md:h-full min-w-[300px] bg-slate-100 text-slate-900 flex flex-col border-t md:border-t-0 md:border-r border-slate-700 relative z-20">
+    <!-- 手機：高度佔 60vh (剩下的 60%)，順序 2 (下面) -->
+    <!-- 電腦：高度佔滿，寬度佔 1/3，順序 1 (左邊) -->
+    <div class="relative w-full h-[60vh] md:h-full md:w-1/3 min-w-[300px] bg-slate-100 text-slate-900 flex flex-col border-t-2 md:border-t-0 md:border-r border-slate-400 order-2 md:order-1 z-10">
       <div class="px-4 py-2 border-b border-slate-300 bg-slate-50 flex items-center justify-between shrink-0">
         <div class="font-semibold text-slate-700">程式積木</div>
         <div class="text-xs text-slate-500">拖曳積木控制</div>
@@ -828,38 +827,40 @@
     // ========= 背景雲朵 =========
     function initClouds() {
       const cloudsGroup = new THREE.Group();
-      const white = 0xffffff;
       
-      // 產生 15 朵雲 (稍微增加數量)
+      // 修正：改用 MeshBasicMaterial 確保是「純白色」，不受光影變黃影響
+      const cloudMat = new THREE.MeshBasicMaterial({
+        color: 0xffffff,
+        transparent: true,
+        opacity: 0.8
+      });
+      
+      // 產生 15 朵雲
       for (let i = 0; i < 15; i++) {
         const cloud = new THREE.Group();
-        // 每朵雲由 3~6 個方塊組成
         const chunks = 3 + Math.floor(Math.random() * 4);
         
         for (let j = 0; j < chunks; j++) {
-          // 隨機大小
           const sx = 1.5 + Math.random() * 1.5;
           const sy = 0.5 + Math.random() * 0.5;
           const sz = 1.0 + Math.random() * 1.0;
           
-          // 隨機偏移 (讓雲朵看起來不規則)
           const ox = (Math.random() - 0.5) * 2.5;
           const oy = (Math.random() - 0.5) * 0.5;
           const oz = (Math.random() - 0.5) * 1.5;
           
-          const mesh = createVoxel(white, ox, oy, oz, sx, sy, sz);
-          // 雲朵通常不投射陰影，或視需求開啟
+          // 使用雲朵專用材質創建 mesh
+          const geo = new THREE.BoxGeometry(sx, sy, sz);
+          const mesh = new THREE.Mesh(geo, cloudMat);
+          mesh.position.set(ox, oy, oz);
           mesh.castShadow = false; 
           cloud.add(mesh);
         }
         
-        // 修改位置邏輯：放置在攝影機看到的背景方向 (負 Z 軸方向)
-        // 攝影機在 (0, 6, 12)，看向 (0,0,0)
-        // 雲需要放在 Z < 0 的遠處，且高度 Y 要適中，才能出現在畫面上方
-        
-        const x = (Math.random() - 0.5) * 60; // 寬度拉開
-        const z = -20 - Math.random() * 30;   // 深度：-20 到 -50
-        const y = -2 + Math.random() * 10;    // 高度：-2 到 8 (降低高度)
+        // 修正位置：確保雲朵在背景深處且高度適當
+        const x = (Math.random() - 0.5) * 60; 
+        const z = -20 - Math.random() * 30; // 深度
+        const y = 2 + Math.random() * 1.5;    // 高度，微調一下讓它不會被地面遮住
         
         cloud.position.set(x, y, z);
         cloudsGroup.add(cloud);
