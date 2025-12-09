@@ -830,8 +830,8 @@
       const cloudsGroup = new THREE.Group();
       const white = 0xffffff;
       
-      // 產生 12 朵雲
-      for (let i = 0; i < 12; i++) {
+      // 產生 15 朵雲 (稍微增加數量)
+      for (let i = 0; i < 15; i++) {
         const cloud = new THREE.Group();
         // 每朵雲由 3~6 個方塊組成
         const chunks = 3 + Math.floor(Math.random() * 4);
@@ -853,15 +853,15 @@
           cloud.add(mesh);
         }
         
-        // 將雲朵散佈在天空中 (圓柱座標系分佈)
-        const radius = 25 + Math.random() * 25; // 距離中心 25~50 單位
-        const angle = Math.random() * Math.PI * 2;
-        const x = Math.cos(angle) * radius;
-        const z = Math.sin(angle) * radius;
-        const y = 10 + Math.random() * 8; // 高度 10~18
+        // 修改位置邏輯：放置在攝影機看到的背景方向 (負 Z 軸方向)
+        // 攝影機在 (0, 6, 12)，看向 (0,0,0)
+        // 雲需要放在 Z < 0 的遠處，且高度 Y 要適中，才能出現在畫面上方
+        
+        const x = (Math.random() - 0.5) * 60; // 寬度拉開
+        const z = -20 - Math.random() * 30;   // 深度：-20 到 -50
+        const y = -2 + Math.random() * 10;    // 高度：-2 到 8 (降低高度)
         
         cloud.position.set(x, y, z);
-        cloud.lookAt(0, y, 0); // 稍微面向中心
         cloudsGroup.add(cloud);
       }
       scene.add(cloudsGroup);
