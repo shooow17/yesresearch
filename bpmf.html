@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Play, RotateCcw, Box, CheckCircle, AlertTriangle, BookOpen } from 'lucide-react';
 
-// 注音符號程式冒險 - 史帝夫版 (左右分割 1:2 + 單面符號 + 視角優化 + 自動編碼修正)
+// 注音符號程式冒險 - 史帝夫版 (修復產生器錯誤 + 左右分割 1:2)
 // 1. Three.js: 繪製 Voxel 世界與注音符號
 // 2. Blockly: 拖曳積木控制史帝夫
 // 3. Logic: 順序蒐集機制
@@ -34,16 +34,28 @@ const ZhuyinGame = () => {
 
   // --- Github Pages Encoding Fix ---
   useEffect(() => {
-    // 強制設定網頁編碼為 UTF-8，解決 GitHub Pages 可能出現的亂碼問題
     let metaCharset = document.querySelector("meta[charset]");
     if (!metaCharset) {
         metaCharset = document.createElement("meta");
         metaCharset.setAttribute("charset", "utf-8");
         document.head.insertBefore(metaCharset, document.head.firstChild);
     }
-    
-    // 設定網頁標題
     document.title = "注音符號大冒險 - Minecraft Coding";
+  }, []);
+
+  // --- Helper: Register Generators (關鍵修復：獨立成函式以便重複呼叫) ---
+  const registerGenerators = useCallback(() => {
+    if (window.Blockly && window.Blockly.JavaScript) {
+        window.Blockly.JavaScript['mc_move'] = function(block) {
+            return 'commands.push("MOVE");\n';
+        };
+        window.Blockly.JavaScript['mc_turn_left'] = function(block) {
+            return 'commands.push("LEFT");\n';
+        };
+        window.Blockly.JavaScript['mc_turn_right'] = function(block) {
+            return 'commands.push("RIGHT");\n';
+        };
+    }
   }, []);
 
   // --- Level Design (9x9 Solid Grid) ---
@@ -51,7 +63,6 @@ const ZhuyinGame = () => {
     {
       targetChar: "順",
       targetZhuyin: ["ㄕ", "ㄨ", "ㄣ", "ˋ"],
-      // 9x9 Map (Center is 4,4)
       map: [
         [1, 1, 1, 1, 1, 1, 1, 1, 1],
         [1, 1, 1, 1, 10, 1, 1, 1, 1], // ㄕ
@@ -130,11 +141,8 @@ const ZhuyinGame = () => {
     scene.background = new THREE.Color(0x87CEEB); 
     scene.fog = new THREE.Fog(0x87CEEB, 10, 60);
 
-    // Camera Optimization for Clearer View
     const camera = new THREE.PerspectiveCamera(40, width / height, 0.1, 100);
-    // Adjusted for 1/3 - 2/3 layout. Needs to be high enough to see the grid width.
     camera.position.set(0, 20, 12); 
-    // Look slightly below center to center the grid
     camera.lookAt(0, 0, 1);
     cameraRef.current = camera;
 
@@ -162,11 +170,9 @@ const ZhuyinGame = () => {
         if (!mountRef.current) return;
         requestAnimationFrame(animate);
         
-        // Idle animation for Symbols (Bobbing ONLY)
         itemsRef.current.forEach((item, idx) => {
             if (item.mesh.visible) {
                 item.mesh.position.y = 1.3 + Math.sin(Date.now() * 0.003 + idx) * 0.1;
-                // No rotation on Y, keeps it facing the camera direction fixed
             }
         });
 
@@ -217,35 +223,28 @@ const ZhuyinGame = () => {
   // --- Helper: Create 3D Transparent Symbol (Single Side) ---
   const createZhuyin3D = (char) => {
       const THREE = window.THREE;
-      
       const canvas = document.createElement('canvas');
       canvas.width = 128;
       canvas.height = 128;
       const ctx = canvas.getContext('2d');
       
       ctx.clearRect(0, 0, 128, 128);
-      
-      // Use a font stack that supports Traditional Chinese well
       ctx.font = 'bold 110px "Microsoft JhengHei", "Noto Sans TC", sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      
       ctx.strokeStyle = '#FFFFFF';
       ctx.lineWidth = 10; 
       ctx.strokeText(char, 64, 64);
-      
       ctx.fillStyle = '#00FFFF'; // Cyan Neon
       ctx.fillText(char, 64, 64);
       
       const texture = new THREE.CanvasTexture(canvas);
+      const geometry = new THREE.BoxGeometry(1.3, 1.3, 0.05);
       
-      const geometry = new THREE.BoxGeometry(1.3, 1.3, 0.05); // Thin plate
-      
-      // Use FrontSide to make back invisible
       const material = new THREE.MeshBasicMaterial({ 
           map: texture,
           transparent: true,
-          side: THREE.FrontSide, // SINGLE SIDE FIX
+          side: THREE.FrontSide, 
           depthWrite: false 
       });
       
@@ -268,7 +267,6 @@ const ZhuyinGame = () => {
      const dirLight = new THREE.DirectionalLight(0xffffff, 0.6);
      dirLight.position.set(20, 30, 20);
      dirLight.castShadow = true;
-     // Optimization for shadows
      dirLight.shadow.mapSize.width = 1024;
      dirLight.shadow.mapSize.height = 1024;
      dirLight.shadow.camera.left = -15;
@@ -306,12 +304,8 @@ const ZhuyinGame = () => {
                 const symbolChar = data.itemMapping[cell];
                 const symbolMesh = createZhuyin3D(symbolChar);
                 symbolMesh.position.set(posX, 1.3, posZ); 
-                
-                // Tilt back to face the camera properly
                 symbolMesh.rotation.x = -Math.PI / 2.5; 
-                
                 scene.add(symbolMesh);
-                
                 itemsRef.current.push({
                     mesh: symbolMesh,
                     symbol: symbolChar,
@@ -409,6 +403,8 @@ const ZhuyinGame = () => {
 
     initScene();
     buildLevel(0);
+    // 首次載入也註冊一次產生器
+    registerGenerators();
 
     const Blockly = window.Blockly;
 
@@ -443,11 +439,6 @@ const ZhuyinGame = () => {
             }
         };
     }
-
-    // Initialize Generators
-    Blockly.JavaScript['mc_move'] = () => 'commands.push("MOVE");\n';
-    Blockly.JavaScript['mc_turn_left'] = () => 'commands.push("LEFT");\n';
-    Blockly.JavaScript['mc_turn_right'] = () => 'commands.push("RIGHT");\n';
 
     // Inject Workspace
     if (workspaceRef.current) workspaceRef.current.dispose();
@@ -493,18 +484,16 @@ const ZhuyinGame = () => {
         if (workspaceRef.current) workspaceRef.current.dispose();
         resizeObserver.disconnect();
     }
-  }, [isLibrariesLoaded, initScene, buildLevel]);
+  }, [isLibrariesLoaded, initScene, buildLevel, registerGenerators]);
 
 
   // --- 5. Game Logic Interpreter ---
   const runCode = async () => {
     if (gameState === 'RUNNING') return;
 
-    if (window.Blockly && window.Blockly.JavaScript) {
-        window.Blockly.JavaScript['mc_move'] = () => 'commands.push("MOVE");\n';
-        window.Blockly.JavaScript['mc_turn_left'] = () => 'commands.push("LEFT");\n';
-        window.Blockly.JavaScript['mc_turn_right'] = () => 'commands.push("RIGHT");\n';
-    }
+    // --- CRITICAL FIX: Force Generator Registration before run ---
+    // 解決 "JavaScript generator does not know how to generate code" 錯誤
+    registerGenerators();
     
     if (!window.Blockly || !window.Blockly.JavaScript) {
         setConsoleLog(prev => ["錯誤: 程式碼產生器未初始化。", ...prev]);
@@ -537,6 +526,8 @@ const ZhuyinGame = () => {
         window.Blockly.JavaScript.init(workspaceRef.current);
         code = window.Blockly.JavaScript.workspaceToCode(workspaceRef.current);
     } catch (e) {
+        console.error("Generators failed:", e);
+        setFailReason(`產生程式碼錯誤: ${e.message}`);
         setGameState('FAIL');
         return;
     }
