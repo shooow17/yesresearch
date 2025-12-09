@@ -1,645 +1,954 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>注音符號大冒險</title>
-    
-    <!-- 引入 React 核心 -->
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-    
-    <!-- 引入 Babel -->
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    
-    <!-- 引入 Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- 引入 Three.js -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    
-    <!-- 引入 Blockly -->
-    <script src="https://unpkg.com/blockly@9.3.3/blockly_compressed.js"></script>
-    <script src="https://unpkg.com/blockly@9.3.3/blocks_compressed.js"></script>
-    <script src="https://unpkg.com/blockly@9.3.3/javascript_compressed.js"></script>
-    <script src="https://unpkg.com/blockly@9.3.3/msg/zh-hant.js"></script>
+  <meta charset="utf-8" />
+  <title>注音麥塊小遊戲（Blockly + Three.js）</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <style>
-        body { font-family: "Microsoft JhengHei", "Noto Sans TC", sans-serif; }
-        
-        /* 讓 React Root 填滿螢幕 */
-        #root { width: 100%; height: 100%; }
+  <!-- Tailwind（純排版） -->
+  <script src="https://cdn.tailwindcss.com"></script>
 
-        /* Blockly 容器填滿父層 */
-        #blocklyArea {
-            width: 100%;
-            height: 100%;
-        }
+  <!-- Three.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
-        /* 優化積木區背景顏色 */
-        .blocklyToolboxDiv { 
-            background-color: #f1f5f9 !important;
-            border-bottom: 2px solid #cbd5e1;
-        }
-        
-        /* 工作區背景設為純白 */
-        .blocklySvg {
-            background-color: #ffffff !important;
-        }
-        
-        /* 隱藏垃圾桶 */
-        .blocklyTrash { display: none; }
-        
-        /* 隱藏預設背景圖案 */
-        .blocklyMainBackground {
-            stroke: none !important;
-        }
-    </style>
+  <!-- Blockly -->
+  <script src="https://unpkg.com/blockly@9.3.3/blockly_compressed.js"></script>
+  <script src="https://unpkg.com/blockly@9.3.3/blocks_compressed.js"></script>
+  <script src="https://unpkg.com/blockly@9.3.3/javascript_compressed.js"></script>
+  <script src="https://unpkg.com/blockly@9.3.3/msg/zh-hant.js"></script>
+
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+      font-family: "Microsoft JhengHei", "Noto Sans TC", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    #blocklyDiv {
+      width: 100%;
+      height: 100%;
+    }
+
+    #gameCanvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      outline: none;
+    }
+
+    /* Blockly 外觀微調 */
+    .blocklyToolboxDiv {
+      background-color: #f1f5f9 !important;
+      border-bottom: 1px solid #cbd5f5 !important;
+      box-sizing: border-box;
+    }
+    .blocklySvg {
+      background-color: #ffffff !important;
+    }
+    .blocklyMainBackground {
+      stroke: none !important;
+    }
+  </style>
 </head>
-<body class="bg-gray-900 text-white overflow-hidden h-screen w-screen">
+<body class="bg-slate-900 text-white">
+  <div class="flex h-screen">
+    <!-- 左側：Blockly 控制區 -->
+    <div class="w-full md:w-1/3 min-w-[320px] bg-slate-100 text-slate-900 flex flex-col border-r border-slate-700">
+      <div class="px-4 py-2 border-b border-slate-300 bg-slate-50 flex items-center justify-between">
+        <div class="font-semibold text-slate-700">程式積木</div>
+        <div class="text-xs text-slate-500">拖曳積木來控制麥塊人物</div>
+      </div>
+      <div class="flex-1 relative">
+        <div id="blocklyDiv" class="absolute inset-0"></div>
+      </div>
+      <div class="px-4 py-3 border-t border-slate-300 bg-slate-50 flex gap-2">
+        <button id="runBtn"
+                class="px-4 py-2 rounded-md bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700 transition">
+          ▶ 執行程式
+        </button>
+        <button id="resetBtn"
+                class="px-4 py-2 rounded-md bg-slate-600 text-white text-sm hover:bg-slate-700 transition">
+          ⟳ 重設人物
+        </button>
+      </div>
+    </div>
 
-    <div id="root"></div>
+    <!-- 右側：Three.js 場景 -->
+    <div class="flex-1 relative">
+      <canvas id="gameCanvas"></canvas>
 
-    <script type="text/babel">
-        const { useState, useEffect, useRef, useCallback } = React;
+      <!-- 注音與國字資訊 + 關卡切換 + 編輯 -->
+      <div id="info"
+           class="absolute top-3 left-3 bg-black/60 text-xs md:text-sm px-3 py-2 rounded-md pointer-events-auto z-10">
+        <div class="space-y-1">
+          <div id="wordInfo">國字：</div>
+          <div id="zhuyinInfo">注音：</div>
+          <div id="collectedInfo">目前收集：尚未收集</div>
+        </div>
 
-        // --- 圖示定義 ---
-        const IconPlay = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>;
-        const IconRotate = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>;
-        const IconCheck = () => <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#4ade80" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>;
-        const IconAlert = () => <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#f87171" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>;
-        const IconEdit = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>;
-        const IconClose = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>;
-        const IconCube = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>;
-        const IconCode = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>;
+        <div class="flex items-center gap-2 pt-1 mt-2 border-t border-white/20">
+          <button id="prevLevelBtn"
+                  class="px-2 py-1 rounded bg-white/10 text-[11px] md:text-xs hover:bg-white/20 disabled:opacity-40 disabled:hover:bg-white/10">
+            ◀ 上一關
+          </button>
+          <div id="levelInfo" class="text-[11px] md:text-xs">
+            第 1 關 / 共 1 關
+          </div>
+          <button id="nextLevelBtn"
+                  class="px-2 py-1 rounded bg-white/10 text-[11px] md:text-xs hover:bg-white/20 disabled:opacity-40 disabled:hover:bg-white/10">
+            下一關 ▶
+          </button>
+        </div>
 
-        const INITIAL_LEVELS = [
-            {
-                targetChar: "順",
-                targetZhuyin: ["ㄕ", "ㄨ", "ㄣ", "ˋ"],
-                map: [
-                    [1, 1, 1, 1, 1, 1, 1, 1, 1],
-                    [1, 1, 1, 1, 10, 1, 1, 1, 1], 
-                    [1, 1, 1, 1, 1, 1, 1, 1, 1],
-                    [1, 1, 1, 1, 1, 1, 1, 1, 1],
-                    [1, 11, 1, 1, 1, 1, 1, 12, 1], 
-                    [1, 1, 1, 1, 1, 1, 1, 1, 1],
-                    [1, 1, 1, 1, 1, 1, 1, 1, 1],
-                    [1, 1, 1, 1, 13, 1, 1, 1, 1], 
-                    [1, 1, 1, 1, 1, 1, 1, 1, 1]
-                ],
-                itemMapping: { 10: "ㄕ", 11: "ㄨ", 12: "ㄣ", 13: "ˋ" },
-                start: { x: 4, z: 4, dir: 0 }, 
+        <!-- 編輯關卡面板 -->
+        <details class="mt-2 bg-black/40 rounded px-2 py-1 text-[11px] md:text-xs">
+          <summary class="cursor-pointer select-none">
+            編輯關卡
+          </summary>
+          <div class="mt-2 space-y-1">
+            <div class="flex items-center gap-1">
+              <span class="shrink-0">國字</span>
+              <input id="cfgWordInput"
+                     class="w-24 px-1 py-0.5 rounded bg-white/90 text-slate-900 text-[11px] outline-none" />
+            </div>
+            <div class="flex items-center gap-1">
+              <span class="shrink-0">注音</span>
+              <input id="cfgZhuyinInput"
+                     placeholder="例：ㄕ ㄨ ㄣ ˋ"
+                     class="w-36 px-1 py-0.5 rounded bg-white/90 text-slate-900 text-[11px] outline-none" />
+            </div>
+            <div class="flex gap-1 pt-1">
+              <button id="cfgApplyCurrent"
+                      class="flex-1 px-1 py-0.5 rounded bg-emerald-500 text-white text-[11px] hover:bg-emerald-600">
+                更新本關
+              </button>
+              <button id="cfgAddLevel"
+                      class="flex-1 px-1 py-0.5 rounded bg-sky-500 text-white text-[11px] hover:bg-sky-600">
+                新增關卡
+              </button>
+            </div>
+            <div class="text-[10px] text-white/70 pt-1">
+              注音符號請用空格分開，最多 4 個。
+            </div>
+          </div>
+        </details>
+      </div>
+
+      <!-- 狀態提示 -->
+      <div id="status"
+           class="absolute bottom-3 left-3 bg-black/60 text-xs md:text-sm px-3 py-2 rounded-md pointer-events-none z-10">
+        提示：在左邊組程式，再按「執行程式」。
+      </div>
+
+      <!-- 收集完成對話框 -->
+      <div id="completeDialog"
+           class="hidden fixed inset-0 flex items-center justify-center bg-black/60 z-20">
+        <div class="bg-white text-slate-900 rounded-xl shadow-xl px-6 py-4 w-80 max-w-[90vw] text-center">
+          <div id="dialogTitle" class="text-lg font-semibold mb-2">太棒了！</div>
+          <div id="dialogMessage" class="text-sm mb-4">
+            你完成了關卡。
+          </div>
+          <div class="flex justify-center gap-3">
+            <button id="dialogRestartBtn"
+                    class="px-4 py-2 rounded-md bg-slate-600 text-white text-sm font-semibold hover:bg-slate-700">
+              重玩本關
+            </button>
+            <button id="dialogNextBtn"
+                    class="px-4 py-2 rounded-md bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700">
+              下一關
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ========= 教師預設關卡（載入時用這些當起點） =========
+    // 預設幾關，之後可以在畫面上再新增或修改
+    let levelInputConfig = [
+      { word: "順", zhuyin: "ㄕ ㄨ ㄣ ˋ" },
+      { word: "媽", zhuyin: "ㄇ ㄚ ˊ" },
+      { word: "家", zhuyin: "ㄐ ㄧ ㄚ" }
+    ];
+
+    // ========= 基本常數與關卡生成 =========
+    const GRID_SIZE = 9;
+    const GRID_OFFSET = Math.floor(GRID_SIZE / 2);
+
+    // 注音卡放置位置（最多 4 個）
+    const ITEM_POSITIONS = [
+      { x: 4, z: 1 }, // 上
+      { x: 1, z: 4 }, // 左
+      { x: 7, z: 4 }, // 右
+      { x: 4, z: 7 }  // 下
+    ];
+    const MAX_ITEMS_PER_LEVEL = ITEM_POSITIONS.length;
+
+    const DIR_ROTATIONS = [
+      Math.PI,        // 0: 面向 -z
+      Math.PI / 2,    // 1: 面向 +x
+      0,              // 2: 面向 +z（朝玩家）
+      -Math.PI / 2    // 3: 面向 -x
+    ];
+
+    function buildLevelsFromInput(configList) {
+      const levels = [];
+
+      configList.forEach((cfg, idx) => {
+        if (!cfg) return;
+        const word = cfg.word || ("第" + (idx + 1) + "關");
+        const zhuyinArr = String(cfg.zhuyin || "")
+          .split(/\s+/)
+          .map(s => s.trim())
+          .filter(Boolean);
+
+        if (!zhuyinArr.length) return;
+
+        const usedZhuyin = zhuyinArr.slice(0, MAX_ITEMS_PER_LEVEL);
+
+        const map = Array.from({ length: GRID_SIZE }, () =>
+          Array(GRID_SIZE).fill(1)
+        );
+        const itemMapping = {};
+        usedZhuyin.forEach((sym, i) => {
+          const pos = ITEM_POSITIONS[i];
+          const code = 10 + i;
+          if (!pos) return;
+          map[pos.z][pos.x] = code;
+          itemMapping[code] = sym;
+        });
+
+        levels.push({
+          targetChar: word,
+          targetZhuyin: usedZhuyin,
+          map,
+          itemMapping,
+          start: { x: 4, z: 4, dir: 2 } // 一開始面向 +z（朝玩家）
+        });
+      });
+
+      // 保底：若真的沒設定到，就塞一關預設
+      if (!levels.length) {
+        const map = Array.from({ length: GRID_SIZE }, () =>
+          Array(GRID_SIZE).fill(1)
+        );
+        const itemMapping = {};
+        ["ㄕ", "ㄨ", "ㄣ", "ˋ"].forEach((sym, i) => {
+          const pos = ITEM_POSITIONS[i];
+          const code = 10 + i;
+          map[pos.z][pos.x] = code;
+          itemMapping[code] = sym;
+        });
+        levels.push({
+          targetChar: "順",
+          targetZhuyin: ["ㄕ", "ㄨ", "ㄣ", "ˋ"],
+          map,
+          itemMapping,
+          start: { x: 4, z: 4, dir: 2 }
+        });
+      }
+
+      return levels;
+    }
+
+    let LEVELS = buildLevelsFromInput(levelInputConfig);
+    let currentLevelIndex = 0;
+
+    // ========= 全域變數 =========
+    let workspace = null;
+
+    let scene = null;
+    let camera = null;
+    let renderer = null;
+    let levelGroup = null;
+
+    let player = null;
+    let playerLimbs = {};
+
+    let tiles = [];
+    let items = [];
+    let collectedSymbols = [];
+
+    const playerState = { x: 0, z: 0, dir: 0 };
+
+    // ========= UI 小工具 =========
+    const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+    function updateStatus(text) {
+      const el = document.getElementById('status');
+      if (el) el.textContent = text;
+    }
+
+    function updateCollectedInfo() {
+      const el = document.getElementById('collectedInfo');
+      if (!el) return;
+      if (collectedSymbols.length === 0) {
+        el.textContent = "目前收集：尚未收集";
+      } else {
+        el.textContent = "目前收集：" + collectedSymbols.join(" ");
+      }
+    }
+
+    function updateLevelNavButtons() {
+      const prevBtn = document.getElementById('prevLevelBtn');
+      const nextBtn = document.getElementById('nextLevelBtn');
+      if (prevBtn) prevBtn.disabled = (currentLevelIndex === 0);
+      if (nextBtn) nextBtn.disabled = (currentLevelIndex === LEVELS.length - 1);
+    }
+
+    function fillLevelFormFromConfig() {
+      const wordInput = document.getElementById('cfgWordInput');
+      const zhuyinInput = document.getElementById('cfgZhuyinInput');
+      if (!wordInput || !zhuyinInput) return;
+      const cfg = levelInputConfig[currentLevelIndex];
+      if (!cfg) {
+        wordInput.value = "";
+        zhuyinInput.value = "";
+      } else {
+        wordInput.value = cfg.word || "";
+        zhuyinInput.value = cfg.zhuyin || "";
+      }
+    }
+
+    function updateLevelInfo() {
+      const level = LEVELS[currentLevelIndex];
+      const wEl = document.getElementById('wordInfo');
+      const zEl = document.getElementById('zhuyinInfo');
+      const lEl = document.getElementById('levelInfo');
+
+      if (level) {
+        if (wEl) wEl.textContent = "國字：" + (level.targetChar || "");
+        if (zEl) zEl.textContent = "注音：" + level.targetZhuyin.join(" ");
+      }
+      if (lEl) {
+        lEl.textContent =
+          "第 " + (currentLevelIndex + 1) + " 關 / 共 " + LEVELS.length + " 關";
+      }
+      updateCollectedInfo();
+      updateLevelNavButtons();
+      fillLevelFormFromConfig();
+    }
+
+    function showCompleteDialog(level) {
+      const dialog = document.getElementById('completeDialog');
+      const msgEl  = document.getElementById('dialogMessage');
+      const nextBtn = document.getElementById('dialogNextBtn');
+
+      if (level && msgEl) {
+        msgEl.textContent =
+          "你用 " + level.targetZhuyin.join(" ") +
+          " 組成了「" + level.targetChar + "」！";
+      }
+
+      if (nextBtn) {
+        if (currentLevelIndex === LEVELS.length - 1) {
+          nextBtn.textContent = "關閉";
+        } else {
+          nextBtn.textContent = "下一關";
+        }
+      }
+
+      if (dialog) dialog.classList.remove('hidden');
+    }
+
+    function hideCompleteDialog() {
+      const dialog = document.getElementById('completeDialog');
+      if (dialog) dialog.classList.add('hidden');
+    }
+
+    function setLevel(index) {
+      if (index < 0 || index >= LEVELS.length) return;
+      currentLevelIndex = index;
+      buildLevel(currentLevelIndex);
+      hideCompleteDialog();
+      updateLevelInfo();
+      updateStatus("已切換到第 " + (currentLevelIndex + 1) + " 關。");
+    }
+
+    function rebuildLevelsAndStay(targetIndex) {
+      const oldIndex = (typeof targetIndex === "number") ? targetIndex : currentLevelIndex;
+      LEVELS = buildLevelsFromInput(levelInputConfig);
+      let newIndex = oldIndex;
+      if (newIndex < 0) newIndex = 0;
+      if (newIndex >= LEVELS.length) newIndex = LEVELS.length - 1;
+      currentLevelIndex = newIndex;
+      buildLevel(currentLevelIndex);
+      hideCompleteDialog();
+      updateLevelInfo();
+      updateStatus("關卡設定已更新。");
+    }
+
+    // ========= Blockly 設定 =========
+    function defineBlocks() {
+      Blockly.Blocks['mc_move'] = {
+        init: function () {
+          this.appendDummyInput().appendField("前進一格");
+          this.setPreviousStatement(true, null);
+          this.setNextStatement(true, null);
+          this.setColour(200);
+        }
+      };
+      Blockly.JavaScript['mc_move'] = function (block) {
+        return 'commands.push("MOVE");\n';
+      };
+
+      Blockly.Blocks['mc_turn_left'] = {
+        init: function () {
+          this.appendDummyInput().appendField("向左轉");
+          this.setPreviousStatement(true, null);
+          this.setNextStatement(true, null);
+          this.setColour(180);
+        }
+      };
+      Blockly.JavaScript['mc_turn_left'] = function (block) {
+        return 'commands.push("LEFT");\n';
+      };
+
+      Blockly.Blocks['mc_turn_right'] = {
+        init: function () {
+          this.appendDummyInput().appendField("向右轉");
+          this.setPreviousStatement(true, null);
+          this.setNextStatement(true, null);
+          this.setColour(180);
+        }
+      };
+      Blockly.JavaScript['mc_turn_right'] = function (block) {
+        return 'commands.push("RIGHT");\n';
+      };
+    }
+
+    function initBlockly() {
+      defineBlocks();
+
+      const toolbox = `
+        <xml xmlns="https://developers.google.com/blockly/xml">
+          <block type="mc_move"></block>
+          <block type="mc_turn_left"></block>
+          <block type="mc_turn_right"></block>
+          <block type="controls_repeat_ext">
+            <value name="TIMES">
+              <shadow type="math_number">
+                <field name="NUM">4</field>
+              </shadow>
+            </value>
+          </block>
+        </xml>
+      `;
+
+      workspace = Blockly.inject('blocklyDiv', {
+        toolbox: toolbox,
+        scrollbars: true,
+        trashcan: true,
+        horizontalLayout: true,
+        toolboxPosition: 'top',
+        zoom: {
+          startScale: 1.0,
+          maxScale: 2.5,
+          minScale: 0.5,
+          scaleSpeed: 1.2
+        }
+      });
+
+      window.addEventListener('resize', function () {
+        if (workspace) {
+          Blockly.svgResize(workspace);
+        }
+      });
+    }
+
+    // ========= Steve 人物 =========
+    function createVoxel(color, x, y, z, sx, sy, sz) {
+      const geometry = new THREE.BoxGeometry(sx, sy, sz);
+      const material = new THREE.MeshStandardMaterial({ color: color });
+      const mesh = new THREE.Mesh(geometry, material);
+      mesh.position.set(x, y, z);
+      mesh.castShadow = true;
+      mesh.receiveShadow = true;
+      return mesh;
+    }
+
+    function createSteve() {
+      const steveGroup = new THREE.Group();
+      const skin = 0xCF9E7A;
+      const hair = 0x3A2208;
+
+      // 頭
+      const head = new THREE.Group();
+      head.position.y = 1.5;
+      head.add(createVoxel(skin, 0, 0, 0, 0.4, 0.4, 0.4));
+      head.add(createVoxel(hair, 0, 0.21, 0, 0.42, 0.05, 0.42));
+      head.add(createVoxel(hair, 0, 0.1, -0.21, 0.42, 0.2, 0.05));
+      head.add(createVoxel(hair, -0.21, 0.1, 0, 0.05, 0.2, 0.4));
+      head.add(createVoxel(hair, 0.21, 0.1, 0, 0.05, 0.2, 0.4));
+
+      const fz = 0.205;
+      head.add(createVoxel(0xFFFFFF,  0.1,  0.05, fz,         0.1, 0.05, 0.02));
+      head.add(createVoxel(0x2222FF,  0.12, 0.05, fz + 0.001, 0.05, 0.05, 0.02));
+      head.add(createVoxel(0xFFFFFF, -0.1,  0.05, fz,         0.1, 0.05, 0.02));
+      head.add(createVoxel(0x2222FF, -0.12, 0.05, fz + 0.001, 0.05, 0.05, 0.02));
+      head.add(createVoxel(0xB87E6A, 0, -0.05, fz, 0.08, 0.05, 0.02));
+      head.add(createVoxel(0x9E6A4A, 0, -0.12, fz, 0.2,  0.06, 0.02));
+
+      steveGroup.add(head);
+
+      // 身體
+      steveGroup.add(createVoxel(0x009999, 0, 0.9, 0, 0.4, 0.6, 0.2));
+
+      // 四肢
+      const limbs = {};
+
+      function mkLimb(x, y, color, w, h, d, isLeg) {
+        const g = new THREE.Group();
+        g.position.set(x, y, 0);
+        g.add(createVoxel(color, 0, -h / 2 + (isLeg ? 0 : 0.1), 0, w, h, d));
+        steveGroup.add(g);
+        return g;
+      }
+
+      limbs.armL = mkLimb(-0.3, 1.1, skin,     0.18, 0.6, 0.18, false);
+      limbs.armR = mkLimb( 0.3, 1.1, skin,     0.18, 0.6, 0.18, false);
+      limbs.legL = mkLimb(-0.1, 0.6, 0x0000AA, 0.18, 0.6, 0.18, true);
+      limbs.legR = mkLimb( 0.1, 0.6, 0x0000AA, 0.18, 0.6, 0.18, true);
+
+      return { group: steveGroup, limbs: limbs };
+    }
+
+    function setIdlePose() {
+      if (!playerLimbs.armL) return;
+      playerLimbs.armL.rotation.x = 0;
+      playerLimbs.armR.rotation.x = 0;
+      playerLimbs.legL.rotation.x = 0;
+      playerLimbs.legR.rotation.x = 0;
+    }
+
+    function updateWalkAnimation(progress) {
+      if (!playerLimbs.armL) return;
+      const swing = Math.sin(progress * Math.PI) * 0.7;
+      playerLimbs.armL.rotation.x =  swing;
+      playerLimbs.armR.rotation.x = -swing;
+      playerLimbs.legL.rotation.x = -swing;
+      playerLimbs.legR.rotation.x =  swing;
+    }
+
+    function updatePlayerTransform() {
+      if (!player) return;
+      const worldX = playerState.x - GRID_OFFSET;
+      const worldZ = playerState.z - GRID_OFFSET;
+      player.position.set(worldX, 0, worldZ);
+      player.rotation.y = DIR_ROTATIONS[playerState.dir];
+    }
+
+    function resetPlayer() {
+      const level = LEVELS[currentLevelIndex];
+      playerState.x = level.start.x;
+      playerState.z = level.start.z;
+      playerState.dir = level.start.dir;
+
+      collectedSymbols = [];
+      items.forEach(item => {
+        item.collected = false;
+        item.mesh.visible = true;
+      });
+
+      updatePlayerTransform();
+      setIdlePose();
+      hideCompleteDialog();
+      updateCollectedInfo();
+    }
+
+    // ========= 注音字卡與收集判定 =========
+    function createZhuyinCard(char) {
+      const canvas = document.createElement('canvas');
+      canvas.width = 128;
+      canvas.height = 128;
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, 128, 128);
+      ctx.font = 'bold 110px "Microsoft JhengHei", "Noto Sans TC", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.strokeStyle = '#FFFFFF';
+      ctx.lineWidth = 10;
+      ctx.strokeText(char, 64, 64);
+      ctx.fillStyle = '#00FFFF';
+      ctx.fillText(char, 64, 64);
+
+      const texture = new THREE.CanvasTexture(canvas);
+      const geometry = new THREE.BoxGeometry(1.3, 1.3, 0.05);
+      const material = new THREE.MeshBasicMaterial({
+        map: texture,
+        transparent: true,
+        side: THREE.FrontSide,
+        depthWrite: false
+      });
+      const mesh = new THREE.Mesh(geometry, material);
+      return mesh;
+    }
+
+    function checkPickup() {
+      const level = LEVELS[currentLevelIndex];
+      if (!level) return;
+
+      for (const item of items) {
+        if (!item.collected &&
+            item.gridX === playerState.x &&
+            item.gridZ === playerState.z) {
+
+          if (collectedSymbols.length >= level.targetZhuyin.length) {
+            updateStatus("你已經收集完所有注音了，可以重設或切換關卡。");
+            return;
+          }
+
+          const expected = level.targetZhuyin[collectedSymbols.length];
+          if (item.symbol === expected) {
+            item.collected = true;
+            item.mesh.visible = false;
+            collectedSymbols.push(item.symbol);
+            updateCollectedInfo();
+            updateStatus("收集到：「" + item.symbol + "」，目前：" + collectedSymbols.join(" "));
+
+            if (collectedSymbols.length === level.targetZhuyin.length) {
+              updateStatus("太棒了！你用 " +
+                level.targetZhuyin.join(" ") +
+                " 組成了「" + level.targetChar + "」。");
+              showCompleteDialog(level);
             }
-        ];
+          } else {
+            updateStatus("順序錯誤！應先收集「" +
+              expected + "」，但你踩到「" + item.symbol + "」。");
+          }
+          break;
+        }
+      }
+    }
 
-        const ZhuyinGame = () => {
-            const [isLibrariesLoaded, setIsLibrariesLoaded] = useState(false);
-            const [gameState, setGameState] = useState('IDLE');
-            const [failReason, setFailReason] = useState('');
-            const [levels, setLevels] = useState(INITIAL_LEVELS);
-            const [currentLevel, setCurrentLevel] = useState(0);
-            const [collectedSymbols, setCollectedSymbols] = useState([]);
-            
-            const [showTeacherModal, setShowTeacherModal] = useState(false);
-            const [newLevelChar, setNewLevelChar] = useState('');
-            const [newLevelZhuyin, setNewLevelZhuyin] = useState('');
-            
-            const blocklyDiv = useRef(null);
-            const workspaceRef = useRef(null);
-            const canvasRef = useRef(null);
-            const mountRef = useRef(null);
-            const sceneRef = useRef(null);
-            const playerRef = useRef(null); 
-            const playerLimbsRef = useRef({ armL: null, armR: null, legL: null, legR: null });
-            const cameraRef = useRef(null);
-            const rendererRef = useRef(null);
-            const itemsRef = useRef([]); 
-            const shadowsRef = useRef([]); 
-            const playerState = useRef({ x: 0, z: 0, dir: 0 }); 
-            const levelData = useRef(null);
+    // ========= 移動與轉向動畫 =========
+    async function animateMove() {
+      const dirVecs = [
+        { dx: 0, dz: -1 },
+        { dx: 1, dz:  0 },
+        { dx: 0, dz:  1 },
+        { dx: -1,dz:  0 }
+      ];
+      const v = dirVecs[playerState.dir];
+      const nx = playerState.x + v.dx;
+      const nz = playerState.z + v.dz;
 
-            // 產生隨機地圖
-            const generateRandomLevel = (char, zhuyinStr) => {
-                const zhuyinList = zhuyinStr.trim().split(/\s+/);
-                if (zhuyinList.length === 0 || !char) return null;
-                const newMap = Array(9).fill().map(() => Array(9).fill(1));
-                const itemMapping = {};
-                const availableSpots = [];
-                for(let x=0; x<9; x++){
-                    for(let z=0; z<9; z++){
-                        if(x !== 4 || z !== 4) availableSpots.push({x, z});
-                    }
-                }
-                for (let i = availableSpots.length - 1; i > 0; i--) {
-                    const j = Math.floor(Math.random() * (i + 1));
-                    [availableSpots[i], availableSpots[j]] = [availableSpots[j], availableSpots[i]];
-                }
-                zhuyinList.forEach((z, idx) => {
-                    if(idx < availableSpots.length) {
-                        const spot = availableSpots[idx];
-                        const code = 10 + idx; 
-                        newMap[spot.z][spot.x] = code;
-                        itemMapping[code] = z;
-                    }
-                });
-                return { targetChar: char, targetZhuyin: zhuyinList, map: newMap, itemMapping: itemMapping, start: { x: 4, z: 4, dir: 0 } };
-            };
+      if (nx < 0 || nx >= GRID_SIZE || nz < 0 || nz >= GRID_SIZE) {
+        updateStatus("撞到邊界了，不能再前進！");
+        return;
+      }
 
-            const handleAddLevel = () => {
-                const newLevel = generateRandomLevel(newLevelChar, newLevelZhuyin);
-                if (newLevel) {
-                    const newLevels = [...levels, newLevel];
-                    setLevels(newLevels);
-                    setCurrentLevel(newLevels.length - 1);
-                    setGameState('IDLE');
-                    setShowTeacherModal(false);
-                    setNewLevelChar('');
-                    setNewLevelZhuyin('');
-                } else {
-                    alert("請輸入國字與注音！");
-                }
-            };
+      const startX = player.position.x;
+      const startZ = player.position.z;
+      const endX   = startX + v.dx;
+      const endZ   = startZ + v.dz;
 
-            const registerBlocklyDefinitions = () => {
-                if (!window.Blockly || !window.Blockly.JavaScript) return;
-                const blocks = ['mc_move', 'mc_turn_left', 'mc_turn_right'];
-                const titles = { 'mc_move': '前進一格', 'mc_turn_left': '左轉 ↺', 'mc_turn_right': '右轉 ↻' };
-                blocks.forEach(blockName => {
-                    if (!window.Blockly.Blocks[blockName]) {
-                        window.Blockly.Blocks[blockName] = {
-                            init: function() {
-                                this.appendDummyInput().appendField(titles[blockName]);
-                                this.setPreviousStatement(true, null);
-                                this.setNextStatement(true, null);
-                                this.setColour(160);
-                            }
-                        };
-                    }
-                });
-                const genCode = {
-                    'mc_move': 'commands.push("MOVE");\n',
-                    'mc_turn_left': 'commands.push("LEFT");\n',
-                    'mc_turn_right': 'commands.push("RIGHT");\n'
-                };
-                Object.keys(genCode).forEach(key => {
-                    const func = () => genCode[key];
-                    window.Blockly.JavaScript[key] = func;
-                    if (window.Blockly.JavaScript.forBlock) window.Blockly.JavaScript.forBlock[key] = func;
-                });
-            };
+      const duration = 280;
+      const steps = 14;
 
-            useEffect(() => {
-                const checkLoaded = setInterval(() => {
-                    if (window.THREE && window.Blockly && window.Blockly.JavaScript) {
-                        clearInterval(checkLoaded);
-                        setIsLibrariesLoaded(true);
-                    }
-                }, 100);
-                return () => clearInterval(checkLoaded);
-            }, []);
+      for (let i = 0; i <= steps; i++) {
+        const t = i / steps;
+        player.position.x = startX + (endX - startX) * t;
+        player.position.z = startZ + (endZ - startZ) * t;
+        updateWalkAnimation(t);
+        await delay(duration / steps);
+      }
 
-            const initScene = useCallback(() => {
-                if (!canvasRef.current || !window.THREE) return;
-                const THREE = window.THREE;
-                const width = canvasRef.current.clientWidth;
-                const height = canvasRef.current.clientHeight;
-                const scene = new THREE.Scene();
-                scene.background = new THREE.Color(0x87CEEB); 
-                scene.fog = new THREE.Fog(0x87CEEB, 10, 60);
-                const camera = new THREE.PerspectiveCamera(40, width / height, 0.1, 100);
-                camera.position.set(0, 20, 12); camera.lookAt(0, 0, 1);
-                cameraRef.current = camera;
-                const renderer = new THREE.WebGLRenderer({ canvas: canvasRef.current, antialias: true, alpha: false });
-                renderer.setSize(width, height);
-                renderer.shadowMap.enabled = true;
-                rendererRef.current = renderer;
-                const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
-                scene.add(ambientLight);
-                const dirLight = new THREE.DirectionalLight(0xffffff, 0.5);
-                dirLight.position.set(20, 30, 20);
-                dirLight.castShadow = true;
-                scene.add(dirLight);
-                sceneRef.current = scene;
-                const animate = () => {
-                    if (!mountRef.current) return;
-                    requestAnimationFrame(animate);
-                    itemsRef.current.forEach((item, idx) => {
-                        if (item.mesh.visible) item.mesh.position.y = 1.3 + Math.sin(Date.now() * 0.003 + idx) * 0.1;
-                    });
-                    renderer.render(scene, camera);
-                };
-                mountRef.current = true;
-                animate();
-            }, []);
+      playerState.x = nx;
+      playerState.z = nz;
+      updatePlayerTransform();
+      setIdlePose();
+      checkPickup();
+    }
 
-            const createMultiVoxel = (top, side, bottom, x, y, z) => {
-                const THREE = window.THREE;
-                const geo = new THREE.BoxGeometry(1, 1, 1);
-                const mats = [
-                    new THREE.MeshStandardMaterial({ color: side }), new THREE.MeshStandardMaterial({ color: side }), 
-                    new THREE.MeshStandardMaterial({ color: top }), new THREE.MeshStandardMaterial({ color: bottom }), 
-                    new THREE.MeshStandardMaterial({ color: side }), new THREE.MeshStandardMaterial({ color: side }) 
-                ];
-                const mesh = new THREE.Mesh(geo, mats);
-                mesh.position.set(x, y, z);
-                mesh.castShadow = true; mesh.receiveShadow = true;
-                const edges = new THREE.EdgesGeometry(geo);
-                const line = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: 0x000000, opacity: 0.3, transparent: true }));
-                mesh.add(line);
-                return mesh;
-            };
+    async function animateTurn(deltaDir) {
+      const oldDir = playerState.dir;
+      const newDir = (playerState.dir + deltaDir + 4) % 4;
+      const startRot = DIR_ROTATIONS[oldDir];
+      const endRot   = DIR_ROTATIONS[newDir];
 
-            const createZhuyin3D = (char) => {
-                const THREE = window.THREE;
-                const canvas = document.createElement('canvas');
-                canvas.width = 128; canvas.height = 128;
-                const ctx = canvas.getContext('2d');
-                ctx.clearRect(0, 0, 128, 128);
-                ctx.font = 'bold 110px "Microsoft JhengHei", sans-serif';
-                ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-                ctx.strokeStyle = '#FFFFFF'; ctx.lineWidth = 10; 
-                ctx.strokeText(char, 64, 64);
-                ctx.fillStyle = '#00FFFF'; ctx.fillText(char, 64, 64);
-                const texture = new THREE.CanvasTexture(canvas);
-                const geometry = new THREE.BoxGeometry(1.3, 1.3, 0.05);
-                const material = new THREE.MeshBasicMaterial({ map: texture, transparent: true, side: THREE.FrontSide, depthWrite: false });
-                return new THREE.Mesh(geometry, material);
-            };
+      const duration = 200;
+      const steps = 12;
 
-            const createShadowPlane = () => {
-                const THREE = window.THREE;
-                const geometry = new THREE.PlaneGeometry(0.8, 0.8);
-                const material = new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.4, side: THREE.FrontSide });
-                const mesh = new THREE.Mesh(geometry, material);
-                mesh.rotation.x = -Math.PI / 2;
-                return mesh;
-            };
+      for (let i = 0; i <= steps; i++) {
+        const t = i / steps;
+        const angle = startRot + (endRot - startRot) * t;
+        player.rotation.y = angle;
+        await delay(duration / steps);
+      }
 
-            const createVoxel = (color, x, y, z, sx, sy, sz) => {
-                const THREE = window.THREE;
-                const mesh = new THREE.Mesh(new THREE.BoxGeometry(sx, sy, sz), new THREE.MeshStandardMaterial({ color }));
-                mesh.position.set(x, y, z);
-                mesh.castShadow = true; mesh.receiveShadow = true;
-                return mesh;
-            };
+      playerState.dir = newDir;
+      updatePlayerTransform();
+      setIdlePose();
+    }
 
-            const buildLevel = useCallback((levelIndex) => {
-                if (!sceneRef.current || !window.THREE) return;
-                const THREE = window.THREE;
-                const scene = sceneRef.current;
-                for(let i = scene.children.length - 1; i >= 0; i--) { 
-                    if(scene.children[i].type !== "DirectionalLight" && scene.children[i].type !== "AmbientLight") scene.remove(scene.children[i]); 
-                }
-                const safeIndex = Math.min(levelIndex, levels.length - 1);
-                const data = levels[safeIndex];
-                levelData.current = JSON.parse(JSON.stringify(data)); 
-                playerState.current = { ...data.start };
-                setCollectedSymbols([]);
-                setFailReason('');
-                itemsRef.current = [];
-                shadowsRef.current = [];
-                const mapGroup = new THREE.Group();
-                const offsetX = -(data.map[0].length * 1) / 2;
-                const offsetZ = -(data.map.length * 1) / 2;
-                data.map.forEach((row, z) => {
-                    row.forEach((cell, x) => {
-                        const posX = (x * 1) + offsetX;
-                        const posZ = (z * 1) + offsetZ;
-                        if (cell > 0) {
-                            const grass = createMultiVoxel(0x4C9131, 0x724C30, 0x724C30, posX, -0.5, posZ);
-                            mapGroup.add(grass);
-                        }
-                        if (data.itemMapping && data.itemMapping[cell]) {
-                            const char = data.itemMapping[cell];
-                            const mesh = createZhuyin3D(char);
-                            mesh.position.set(posX, 1.3, posZ); 
-                            mesh.rotation.x = -Math.PI / 3.5; 
-                            scene.add(mesh);
-                            const shadow = createShadowPlane();
-                            shadow.position.set(posX, 0.02, posZ);
-                            scene.add(shadow);
-                            shadowsRef.current.push(shadow);
-                            itemsRef.current.push({ mesh, shadow, symbol: char, gridX: x, gridZ: z, collected: false });
-                        }
-                    });
-                });
-                scene.add(mapGroup);
-                const steveGroup = new THREE.Group();
-                const skin = 0xCF9E7A, hair = 0x3A2208;
-                const head = new THREE.Group();
-                head.position.y = 1.5;
-                head.add(createVoxel(skin, 0, 0, 0, 0.4, 0.4, 0.4));
-                head.add(createVoxel(hair, 0, 0.21, 0, 0.42, 0.05, 0.42)); 
-                head.add(createVoxel(hair, 0, 0.1, -0.21, 0.42, 0.2, 0.05));
-                head.add(createVoxel(hair, -0.21, 0.1, 0, 0.05, 0.2, 0.4));
-                head.add(createVoxel(hair, 0.21, 0.1, 0, 0.05, 0.2, 0.4));
-                const fz = 0.205;
-                head.add(createVoxel(0xFFFFFF, 0.1, 0.05, fz, 0.1, 0.05, 0.02)); 
-                head.add(createVoxel(0x2222FF, 0.12, 0.05, fz+0.001, 0.05, 0.05, 0.02)); 
-                head.add(createVoxel(0xFFFFFF, -0.1, 0.05, fz, 0.1, 0.05, 0.02)); 
-                head.add(createVoxel(0x2222FF, -0.12, 0.05, fz+0.001, 0.05, 0.05, 0.02)); 
-                head.add(createVoxel(0xB87E6A, 0, -0.05, fz, 0.08, 0.05, 0.02)); 
-                head.add(createVoxel(0x9E6A4A, 0, -0.12, fz, 0.2, 0.06, 0.02)); 
-                steveGroup.add(head);
-                steveGroup.add(createVoxel(0x009999, 0, 0.9, 0, 0.4, 0.6, 0.2)); 
-                const mkLimb = (x, y, c, w, h, d, isLeg) => {
-                    const g = new THREE.Group();
-                    g.position.set(x, y, 0);
-                    g.add(createVoxel(c, 0, -h/2 + (isLeg?0:0.1), 0, w, h, d));
-                    steveGroup.add(g);
-                    return g;
-                };
-                playerLimbsRef.current.armL = mkLimb(-0.3, 1.1, skin, 0.18, 0.6, 0.18, false);
-                playerLimbsRef.current.armR = mkLimb(0.3, 1.1, skin, 0.18, 0.6, 0.18, false);
-                playerLimbsRef.current.legL = mkLimb(-0.1, 0.6, 0x0000AA, 0.18, 0.6, 0.18, true);
-                playerLimbsRef.current.legR = mkLimb(0.1, 0.6, 0x0000AA, 0.18, 0.6, 0.18, true);
-                scene.add(steveGroup);
-                playerRef.current = steveGroup;
-                updatePlayerTransform(data.start.x, data.start.z, data.start.dir, offsetX, offsetZ);
-            }, [levels]);
+    // ========= Three.js 場景與關卡建立 =========
+    function initThree() {
+      const canvas = document.getElementById('gameCanvas');
+      renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
+      renderer.setPixelRatio(window.devicePixelRatio || 1);
+      renderer.shadowMap.enabled = true;
 
-            const updatePlayerTransform = (gridX, gridZ, dirIndex, offX, offZ) => {
-                if (!playerRef.current) return;
-                playerRef.current.position.set((gridX * 1) + offX, 0, (gridZ * 1) + offZ);
-                const rots = [Math.PI, Math.PI/2, 0, -Math.PI/2];
-                playerRef.current.rotation.y = rots[dirIndex];
-                Object.values(playerLimbsRef.current).forEach(l => { if(l) l.rotation.x = 0; });
-            };
+      scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x87ceeb);
 
-            useEffect(() => {
-                if (!isLibrariesLoaded || !blocklyDiv.current) return;
-                initScene();
-                buildLevel(currentLevel);
-                registerBlocklyDefinitions();
-                const Blockly = window.Blockly;
-                if (workspaceRef.current) workspaceRef.current.dispose();
-                
-                // 設定水平佈局，積木在上方
-                workspaceRef.current = Blockly.inject(blocklyDiv.current, {
-                    toolbox: `
-                    <xml>
-                        <block type="mc_move"></block>
-                        <block type="mc_turn_left"></block>
-                        <block type="mc_turn_right"></block>
-                        <block type="controls_repeat_ext">
-                            <value name="TIMES"><shadow type="math_number"><field name="NUM">4</field></shadow></value>
-                        </block>
-                    </xml>`,
-                    scrollbars: true, 
-                    trashcan: true,
-                    horizontalLayout: true, // 關鍵設定：水平
-                    toolboxPosition: 'start', // 關鍵設定：上方
-                    zoom: { startScale: 1.0, maxScale: 3, minScale: 0.8, scaleSpeed: 1.2 },
-                    theme: { 'componentStyles': { 'workspaceBackgroundColour': '#ffffff', 'toolboxBackgroundColour': '#f1f5f9' } }
-                });
-                const observer = new ResizeObserver(() => Blockly.svgResize(workspaceRef.current));
-                observer.observe(blocklyDiv.current);
-                return () => observer.disconnect();
-            }, [isLibrariesLoaded, initScene]); 
+      const width = canvas.clientWidth || canvas.offsetWidth || 800;
+      const height = canvas.clientHeight || canvas.offsetHeight || 600;
+      camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
+      camera.position.set(0, 8, 10);
+      camera.lookAt(0, 0, 0);
+      renderer.setSize(width, height, false);
 
-            useEffect(() => {
-                if (isLibrariesLoaded) { buildLevel(currentLevel); }
-            }, [currentLevel, isLibrariesLoaded, buildLevel]);
+      const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 0.8);
+      hemiLight.position.set(0, 20, 0);
+      scene.add(hemiLight);
 
-            const runCode = async () => {
-                if (gameState === 'RUNNING') return;
-                registerBlocklyDefinitions(); 
-                if (!window.Blockly || !window.Blockly.JavaScript) {
-                    alert("Blockly 尚未載入完成"); return;
-                }
-                setGameState('RUNNING');
-                setFailReason('');
-                const data = levelData.current;
-                const offX = -(data.map[0].length)/2;
-                const offZ = -(data.map.length)/2;
-                playerState.current = { ...data.start };
-                updatePlayerTransform(data.start.x, data.start.z, data.start.dir, offX, offZ);
-                setCollectedSymbols([]);
-                itemsRef.current.forEach(i => { 
-                    i.mesh.visible = true; 
-                    i.shadow.visible = true; 
-                    i.collected = false; 
-                    i.mesh.material.color.setHex(0xffffff); 
-                });
-                let code = '';
-                try {
-                    window.Blockly.JavaScript.init(workspaceRef.current);
-                    code = window.Blockly.JavaScript.workspaceToCode(workspaceRef.current);
-                } catch (e) {
-                    setFailReason("程式碼錯誤：" + e.message);
-                    setGameState('FAIL');
-                    return;
-                }
-                const commands = [];
-                try {
-                    new Function('commands', code)(commands);
-                } catch (e) {
-                    setGameState('FAIL');
-                    return;
-                }
-                let currentCollected = [];
-                for (let cmd of commands) {
-                    if (!mountRef.current) break;
-                    let { x, z, dir } = playerState.current;
-                    let fail = false;
-                    if (cmd === 'LEFT') {
-                        dir = (dir + 3) % 4; playerState.current.dir = dir;
-                        await animateTurn(Math.PI / 2);
-                    } else if (cmd === 'RIGHT') {
-                        dir = (dir + 1) % 4; playerState.current.dir = dir;
-                        await animateTurn(-Math.PI / 2);
-                    } else if (cmd === 'MOVE') {
-                        let nx = x, nz = z;
-                        if (dir === 0) nz -= 1; if (dir === 1) nx += 1; if (dir === 2) nz += 1; if (dir === 3) nx -= 1;
-                        if (nz >= 0 && nz < data.map.length && nx >= 0 && nx < data.map[0].length && data.map[nz][nx] !== 0) {
-                            playerState.current.x = nx; playerState.current.z = nz;
-                            await animateMove(nx, nz, offX, offZ);
-                            const idx = itemsRef.current.findIndex(i => i.gridX === nx && i.gridZ === nz && !i.collected);
-                            if (idx !== -1) {
-                                const item = itemsRef.current[idx];
-                                const expected = data.targetZhuyin[currentCollected.length];
-                                if (item.symbol === expected) {
-                                    item.mesh.visible = false; 
-                                    item.shadow.visible = false; 
-                                    item.collected = true;
-                                    currentCollected.push(item.symbol);
-                                    setCollectedSymbols([...currentCollected]);
-                                } else {
-                                    setFailReason(`順序錯誤！應先收集「${expected}」，但你碰到了「${item.symbol}」。`);
-                                    item.mesh.material.color.setHex(0xFF0000);
-                                    fail = true;
-                                }
-                            }
-                        } else {
-                            setFailReason("撞牆了！");
-                            await animateBump();
-                            fail = true;
-                        }
-                    }
-                    if (fail) { setGameState('FAIL'); return; }
-                    await new Promise(r => setTimeout(r, 200));
-                }
-                if (currentCollected.length === data.targetZhuyin.length) {
-                    setGameState('SUCCESS');
-                } else {
-                    if (gameState !== 'FAIL') { setFailReason("尚未收集完所有注音！"); setGameState('FAIL'); }
-                }
-            };
+      const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+      dirLight.position.set(5, 10, 7);
+      dirLight.castShadow = true;
+      scene.add(dirLight);
 
-            const animateTurn = (delta) => new Promise(res => {
-                const start = playerRef.current.rotation.y, target = start + delta;
-                let p = 0;
-                const tick = () => {
-                    p++; playerRef.current.rotation.y = start + delta * (p/20);
-                    if(p<20) requestAnimationFrame(tick); else { playerRef.current.rotation.y = target; res(); }
-                }; tick();
+      buildLevel(currentLevelIndex);
+      animate();
+
+      window.addEventListener('resize', function () {
+        resizeRenderer();
+      });
+    }
+
+    function buildLevel(levelIndex) {
+      const level = LEVELS[levelIndex];
+      if (!level || !scene) return;
+
+      if (levelGroup) {
+        scene.remove(levelGroup);
+      }
+      levelGroup = new THREE.Group();
+      scene.add(levelGroup);
+
+      tiles = [];
+      items = [];
+      player = null;
+      playerLimbs = {};
+
+      const tileSize    = 0.9;
+      const dirtHeight  = 0.6;
+      const grassHeight = 0.2;
+
+      for (let z = 0; z < GRID_SIZE; z++) {
+        for (let x = 0; x < GRID_SIZE; x++) {
+          const cell = level.map[z][x];
+          const hasItem = level.itemMapping && level.itemMapping[cell];
+          const worldX = x - GRID_OFFSET;
+          const worldZ = z - GRID_OFFSET;
+
+          const dirtGeo  = new THREE.BoxGeometry(tileSize, dirtHeight, tileSize);
+          const grassGeo = new THREE.BoxGeometry(tileSize * 0.98, grassHeight, tileSize * 0.98);
+
+          const dirtMat  = new THREE.MeshStandardMaterial({ color: 0x8b5a2b });
+          const grassCol = hasItem ? 0x3d7a3d : 0x55aa55;
+          const grassMat = new THREE.MeshStandardMaterial({ color: grassCol });
+
+          const dirt = new THREE.Mesh(dirtGeo, dirtMat);
+          dirt.position.set(worldX, -grassHeight - dirtHeight / 2, worldZ);
+          dirt.receiveShadow = true;
+          levelGroup.add(dirt);
+
+          const grass = new THREE.Mesh(grassGeo, grassMat);
+          grass.position.set(worldX, -grassHeight / 2, worldZ);
+          grass.receiveShadow = true;
+          grass.castShadow = false;
+          levelGroup.add(grass);
+          tiles.push(grass);
+
+          if (hasItem) {
+            const shadowGeo = new THREE.PlaneGeometry(1.05, 1.05);
+            const shadowMat = new THREE.MeshStandardMaterial({
+              color: 0x000000,
+              transparent: true,
+              opacity: 0.35,
+              side: THREE.DoubleSide
             });
+            const shadow = new THREE.Mesh(shadowGeo, shadowMat);
+            shadow.rotation.x = -Math.PI / 2;
+            shadow.position.set(worldX, 0.01, worldZ);
+            shadow.receiveShadow = true;
+            levelGroup.add(shadow);
 
-            const animateMove = (nx, nz, offX, offZ) => new Promise(res => {
-                const startX = playerRef.current.position.x, startZ = playerRef.current.position.z;
-                const targetX = (nx * 1) + offX, targetZ = (nz * 1) + offZ;
-                let p = 0;
-                const tick = () => {
-                    p++; const t = p/30;
-                    playerRef.current.position.x = startX + (targetX - startX) * t;
-                    playerRef.current.position.z = startZ + (targetZ - startZ) * t;
-                    playerRef.current.position.y = Math.sin(t * Math.PI) * 0.5;
-                    const ang = Math.sin(t * Math.PI * 2) * 0.5;
-                    const { armL, armR, legL, legR } = playerLimbsRef.current;
-                    if(armL) armL.rotation.x = ang; if(armR) armR.rotation.x = -ang;
-                    if(legL) legL.rotation.x = -ang; if(legR) legR.rotation.x = ang;
-                    if(p<30) requestAnimationFrame(tick); else {
-                        playerRef.current.position.set(targetX, 0, targetZ);
-                        Object.values(playerLimbsRef.current).forEach(l => l.rotation.x = 0);
-                        res();
-                    }
-                }; tick();
+            const char = level.itemMapping[cell];
+            const mesh = createZhuyinCard(char);
+            mesh.position.set(worldX, 1.2, worldZ);
+            mesh.rotation.x = -Math.PI / 3.5;
+            levelGroup.add(mesh);
+
+            items.push({
+              mesh,
+              symbol: char,
+              gridX: x,
+              gridZ: z,
+              collected: false
             });
+          }
+        }
+      }
 
-            const animateBump = () => new Promise(res => {
-                let p = 0;
-                const tick = () => {
-                    p++; playerRef.current.rotation.z = Math.sin(p) * 0.1;
-                    if(p<20) requestAnimationFrame(tick); else { playerRef.current.rotation.z = 0; res(); }
-                }; tick();
-            });
+      const steve = createSteve();
+      player = steve.group;
+      playerLimbs = steve.limbs;
+      levelGroup.add(player);
 
-            const currentData = levels[currentLevel] || levels[0];
+      resetPlayer();
+      updateLevelInfo();
+    }
 
-            return (
-                <div className="flex w-full h-full relative">
-                    {/* 左側：操作區 (1/3) */}
-                    <div className="w-1/3 min-w-[320px] h-full flex flex-col border-r border-gray-700 bg-gray-100 relative">
-                        {/* 上方標籤：積木庫 */}
-                        <div className="absolute top-0 left-0 right-0 h-9 bg-gray-100 border-b border-gray-300 flex items-center px-4 z-10 pointer-events-none shadow-sm">
-                            <span className="text-gray-700 font-bold text-sm flex items-center gap-2">
-                                <IconCube /> 積木庫 (從此拖曳)
-                            </span>
-                        </div>
-                        
-                        {/* 這裡不再使用多餘的標籤，讓 Workspace 更乾淨 */}
-                        
-                        <div className="flex-1 relative">
-                            <div ref={blocklyDiv} id="blocklyArea" />
-                            {!isLibrariesLoaded && <div className="absolute inset-0 flex items-center justify-center bg-white/80 z-20 text-black font-bold">資源載入中...</div>}
-                        </div>
-                    </div>
+    function resizeRenderer() {
+      if (!renderer || !camera) return;
+      const canvas = renderer.domElement;
+      const width = canvas.clientWidth || canvas.offsetWidth;
+      const height = canvas.clientHeight || canvas.offsetHeight;
+      if (!width || !height) return;
+      renderer.setSize(width, height, false);
+      camera.aspect = width / height;
+      camera.updateProjectionMatrix();
+    }
 
-                    {/* 右側：遊戲畫面 (2/3) */}
-                    <div className="flex-1 flex flex-col bg-gray-900 relative">
-                        <header className="bg-emerald-600 p-4 shadow-lg flex justify-between items-center z-10 h-16 shrink-0">
-                            <div className="flex items-center gap-4">
-                                <div className="bg-white text-emerald-700 w-12 h-12 flex items-center justify-center rounded-lg font-bold text-3xl shadow">
-                                    {currentData.targetChar}
-                                </div>
-                                <div>
-                                    <h1 className="text-xl font-bold">注音大冒險</h1>
-                                    <div className="flex gap-1 mt-1">
-                                        {currentData.targetZhuyin.map((c, i) => (
-                                            <span key={i} className={`w-8 h-8 flex items-center justify-center rounded border-2 font-bold text-lg ${collectedSymbols.length > i ? 'bg-yellow-400 text-black border-yellow-500' : 'bg-black/20 text-white/30 border-white/20'}`}>{c}</span>
-                                        ))}
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <button onClick={() => setShowTeacherModal(true)} className="flex items-center gap-1 bg-white/10 hover:bg-white/20 text-white px-3 py-1.5 rounded-lg text-sm transition-colors mr-2">
-                                    <IconEdit /> 出題
-                                </button>
-                                <span className="bg-black/20 px-3 py-1 rounded text-sm text-white/80">關卡 {currentLevel + 1}/{levels.length}</span>
-                                <button onClick={runCode} disabled={gameState === 'RUNNING' || !isLibrariesLoaded} className={`flex items-center gap-2 px-6 py-2 rounded-lg font-bold shadow transition-transform active:scale-95 ${gameState === 'RUNNING' ? 'bg-gray-500' : 'bg-orange-500 hover:bg-orange-600'}`}>
-                                    <IconPlay /> {gameState === 'RUNNING' ? '執行中...' : '開始拼音'}
-                                </button>
-                            </div>
-                        </header>
+    function animate() {
+      requestAnimationFrame(animate);
+      renderer.render(scene, camera);
+    }
 
-                        <canvas ref={canvasRef} className="flex-1 block w-full outline-none" />
+    // ========= 執行 Blockly 程式 =========
+    async function executeCommands(commands) {
+      updateStatus("執行中，共 " + commands.length + " 個指令…");
+      for (let i = 0; i < commands.length; i++) {
+        const cmd = commands[i];
+        if (cmd === "MOVE") {
+          await animateMove();
+        } else if (cmd === "LEFT") {
+          await animateTurn(-1);
+        } else if (cmd === "RIGHT") {
+          await animateTurn(1);
+        }
+      }
+      updateStatus("執行完畢，共 " + commands.length + " 個指令。");
+    }
 
-                        {gameState === 'IDLE' && (
-                            <div className="absolute bottom-4 right-4 bg-black/60 p-4 rounded-lg text-right pointer-events-none backdrop-blur-sm">
-                                <p className="text-gray-300 text-sm mb-1">目標：依照順序收集</p>
-                                <div className="flex justify-end gap-2">
-                                    {currentData.targetZhuyin.map((z, i) => <span key={i} className="text-yellow-400 font-bold text-xl">{z}</span>)}
-                                </div>
-                            </div>
-                        )}
+    async function runCode() {
+      if (!workspace) return;
+      let code = "";
+      const commands = [];
+      try {
+        code = Blockly.JavaScript.workspaceToCode(workspace);
+        const wrapped = new Function("commands", code);
+        wrapped(commands);
+      } catch (e) {
+        console.error(e);
+        alert("程式碼產生或執行錯誤：\n" + e);
+        updateStatus("程式錯誤，請檢查積木。");
+        return;
+      }
 
-                        {gameState === 'SUCCESS' && (
-                            <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center z-20">
-                                <IconCheck />
-                                <h2 className="text-4xl font-bold text-white mt-4 mb-2">拼音成功！</h2>
-                                <p className="text-gray-300 mb-8">太棒了！你完成了「{currentData.targetChar}」的拼音。</p>
-                                {currentLevel < levels.length - 1 ? (
-                                    <button onClick={() => { setCurrentLevel(c => c+1); setGameState('IDLE'); }} className="bg-green-600 hover:bg-green-500 text-white px-8 py-3 rounded-xl font-bold text-xl shadow-lg">下一關 ➜</button>
-                                ) : (
-                                    <div className="text-yellow-400 text-2xl font-bold">🎉 全數通關！太厲害了！</div>
-                                )}
-                            </div>
-                        )}
+      if (!commands.length) {
+        updateStatus("目前沒有指令喔，先拖一些積木再按執行。");
+        return;
+      }
 
-                        {gameState === 'FAIL' && (
-                            <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center z-20">
-                                <div className="bg-gray-800 p-8 rounded-2xl border-2 border-red-500 text-center max-w-md shadow-2xl">
-                                    <div className="flex justify-center mb-4"><IconAlert /></div>
-                                    <h3 className="text-2xl font-bold text-white mb-2">失敗了...</h3>
-                                    <p className="text-red-300 mb-6 text-lg">{failReason}</p>
-                                    <button onClick={() => { setGameState('IDLE'); buildLevel(currentLevel); }} className="bg-white/10 hover:bg-white/20 text-white px-6 py-2 rounded-lg flex items-center gap-2 mx-auto">
-                                        <IconRotate /> 再試一次
-                                    </button>
-                                </div>
-                            </div>
-                        )}
-                    </div>
+      await executeCommands(commands);
+    }
 
-                    {showTeacherModal && (
-                        <div className="absolute inset-0 z-50 bg-black/80 flex items-center justify-center">
-                            <div className="bg-white text-gray-900 p-8 rounded-2xl shadow-2xl max-w-md w-full relative">
-                                <button onClick={() => setShowTeacherModal(false)} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
-                                    <IconClose />
-                                </button>
-                                <h2 className="text-2xl font-bold mb-6 text-emerald-700 flex items-center gap-2">
-                                    <IconEdit /> 老師出題模式
-                                </h2>
-                                <div className="space-y-4">
-                                    <div>
-                                        <label className="block text-sm font-bold text-gray-700 mb-1">目標國字</label>
-                                        <input type="text" maxLength="1" placeholder="例如：貓" className="w-full p-3 border border-gray-300 rounded-lg outline-none text-lg" value={newLevelChar} onChange={e => setNewLevelChar(e.target.value)} />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-bold text-gray-700 mb-1">注音符號 (請用空白分開)</label>
-                                        <input type="text" placeholder="例如：ㄇ ㄠ" className="w-full p-3 border border-gray-300 rounded-lg outline-none text-lg" value={newLevelZhuyin} onChange={e => setNewLevelZhuyin(e.target.value)} />
-                                    </div>
-                                    <button onClick={handleAddLevel} className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-lg mt-4">生成並開始遊玩</button>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-                </div>
-            );
-        };
+    // ========= 初始化 =========
+    window.addEventListener('load', function () {
+      initBlockly();
+      initThree();
+      updateLevelInfo();
 
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<ZhuyinGame />);
-    </script>
+      document.getElementById('runBtn').addEventListener('click', function () {
+        runCode();
+      });
+      document.getElementById('resetBtn').addEventListener('click', function () {
+        resetPlayer();
+        updateStatus("人物已重設到中央。");
+      });
+
+      const prevBtn = document.getElementById('prevLevelBtn');
+      const nextBtn = document.getElementById('nextLevelBtn');
+      if (prevBtn) {
+        prevBtn.addEventListener('click', function () {
+          if (currentLevelIndex > 0) {
+            setLevel(currentLevelIndex - 1);
+          }
+        });
+      }
+      if (nextBtn) {
+        nextBtn.addEventListener('click', function () {
+          if (currentLevelIndex < LEVELS.length - 1) {
+            setLevel(currentLevelIndex + 1);
+          }
+        });
+      }
+
+      const restartBtn = document.getElementById('dialogRestartBtn');
+      const dialogNextBtn = document.getElementById('dialogNextBtn');
+      if (restartBtn) {
+        restartBtn.addEventListener('click', function () {
+          resetPlayer();
+          hideCompleteDialog();
+        });
+      }
+      if (dialogNextBtn) {
+        dialogNextBtn.addEventListener('click', function () {
+          if (currentLevelIndex < LEVELS.length - 1) {
+            setLevel(currentLevelIndex + 1);
+          } else {
+            hideCompleteDialog();
+          }
+        });
+      }
+
+      const completeDialog = document.getElementById('completeDialog');
+      if (completeDialog) {
+        completeDialog.addEventListener('click', function (e) {
+          if (e.target.id === 'completeDialog') {
+            hideCompleteDialog();
+          }
+        });
+      }
+
+      // 編輯關卡按鈕：更新本關 / 新增關卡
+      const cfgApplyBtn = document.getElementById('cfgApplyCurrent');
+      const cfgAddBtn   = document.getElementById('cfgAddLevel');
+      const wordInput   = document.getElementById('cfgWordInput');
+      const zhuyinInput = document.getElementById('cfgZhuyinInput');
+
+      if (cfgApplyBtn) {
+        cfgApplyBtn.addEventListener('click', function () {
+          const w = (wordInput.value || "").trim();
+          const z = (zhuyinInput.value || "").trim();
+          if (!w || !z) {
+            alert("請輸入國字和注音（注音中間用空格分開）。");
+            return;
+          }
+          levelInputConfig[currentLevelIndex] = { word: w, zhuyin: z };
+          rebuildLevelsAndStay(currentLevelIndex);
+        });
+      }
+
+      if (cfgAddBtn) {
+        cfgAddBtn.addEventListener('click', function () {
+          const w = (wordInput.value || "").trim();
+          const z = (zhuyinInput.value || "").trim();
+          if (!w || !z) {
+            alert("請輸入國字和注音（注音中間用空格分開）。");
+            return;
+          }
+          levelInputConfig.push({ word: w, zhuyin: z });
+          rebuildLevelsAndStay(levelInputConfig.length - 1);
+        });
+      }
+    });
+  </script>
 </body>
 </html>
