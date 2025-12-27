@@ -1,0 +1,385 @@
+import React, { useState, useEffect } from 'react';
+import { BookOpen, FileText, Mic, Presentation, Search, Upload, Check, Play, Pause, ChevronRight, Star, Zap, Layout, FileSpreadsheet } from 'lucide-react';
+
+const NotebookLMGuide = () => {
+  const [activeTab, setActiveTab] = useState('summary');
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [hasUploaded, setHasUploaded] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [progress, setProgress] = useState(0);
+
+  // Audio player simulation
+  useEffect(() => {
+    let interval;
+    if (isPlaying) {
+      interval = setInterval(() => {
+        setProgress((prev) => (prev >= 100 ? 0 : prev + 1));
+      }, 100);
+    }
+    return () => clearInterval(interval);
+  }, [isPlaying]);
+
+  const handleUpload = () => {
+    setIsProcessing(true);
+    setTimeout(() => {
+      setIsProcessing(false);
+      setHasUploaded(true);
+      setActiveTab('summary');
+    }, 1500);
+  };
+
+  const handleReset = () => {
+    setHasUploaded(false);
+    setProgress(0);
+    setIsPlaying(false);
+  };
+
+  const features = [
+    {
+      icon: <Search className="w-8 h-8 text-blue-500" />,
+      title: "Deep Research 深度研究",
+      desc: "不僅是整理筆記，它能變身「研究員」，主動幫你在網路上找資料、比對來源，甚至產出完整的報告。",
+      tag: "最新功能"
+    },
+    {
+      icon: <Mic className="w-8 h-8 text-pink-500" />,
+      title: "Audio Overview",
+      desc: "不想看文字？AI 會將你的資料變成一段「雙人對話」的 Podcast，用聽的就能吸收重點。",
+      tag: "人氣最高"
+    },
+    {
+      icon: <Presentation className="w-8 h-8 text-orange-500" />,
+      title: "一鍵生成簡報",
+      desc: "雜亂的筆記或長篇論文，一鍵轉換成結構完整的簡報投影片，連設計風格都能自訂。",
+      tag: "上班族必備"
+    },
+    {
+      icon: <FileSpreadsheet className="w-8 h-8 text-green-500" />,
+      title: "支援多種格式",
+      desc: "PDF、Google 文件、網站連結、YouTube 影片，現在連 Excel 試算表和錄音檔都吃得下！",
+      tag: "全面支援"
+    }
+  ];
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 font-sans text-slate-800">
+      {/* Hero Section */}
+      <header className="bg-white shadow-sm sticky top-0 z-50">
+        <div className="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 bg-gradient-to-tr from-blue-600 to-purple-600 rounded-lg flex items-center justify-center text-white font-bold">N</div>
+            <h1 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-700 to-purple-600">NotebookLM 新手指南</h1>
+          </div>
+          <a href="https://notebooklm.google.com/" target="_blank" rel="noreferrer" className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-full text-sm font-medium transition-colors">
+            立即試用
+          </a>
+        </div>
+      </header>
+
+      <main className="max-w-4xl mx-auto px-4 py-12 space-y-20">
+        
+        {/* Introduction */}
+        <section className="text-center space-y-6 animate-fade-in-up">
+          <div className="inline-block px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-medium mb-4">
+            由 Google Gemini 2.0 驅動
+          </div>
+          <h2 className="text-4xl md:text-6xl font-extrabold tracking-tight text-slate-900">
+            最強 AI 筆記神器<br />
+            <span className="text-blue-600">讀不懂的，交給它。</span>
+          </h2>
+          <p className="text-xl text-slate-600 max-w-2xl mx-auto">
+            NotebookLM 不只幫你做筆記，它能閱讀你的文件、影片和錄音，然後變成摘要、Podcast 甚至是簡報。
+            <br/><span className="text-sm text-slate-400 mt-2 block">(Google 承諾：你的資料不會被用來訓練模型)</span>
+          </p>
+        </section>
+
+        {/* Interactive Demo Simulation */}
+        <section className="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden">
+          <div className="bg-slate-100 px-6 py-3 border-b border-slate-200 flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-red-400"></div>
+            <div className="w-3 h-3 rounded-full bg-yellow-400"></div>
+            <div className="w-3 h-3 rounded-full bg-green-400"></div>
+            <span className="ml-2 text-xs text-slate-500 font-mono">NotebookLM 模擬體驗區</span>
+          </div>
+
+          <div className="p-6 md:p-8 min-h-[500px] flex flex-col md:flex-row gap-8">
+            {/* Sidebar / Input Area */}
+            <div className="w-full md:w-1/3 flex flex-col gap-4">
+              <h3 className="font-bold text-slate-700 flex items-center gap-2">
+                <Upload size={18} />
+                步驟 1：輸入資料
+              </h3>
+              
+              {!hasUploaded ? (
+                <div 
+                  onClick={handleUpload}
+                  className="flex-1 border-2 border-dashed border-blue-300 bg-blue-50 rounded-xl flex flex-col items-center justify-center p-6 cursor-pointer hover:bg-blue-100 transition-colors group"
+                >
+                  <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center mb-3 shadow-sm group-hover:scale-110 transition-transform">
+                    {isProcessing ? <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div> : <Upload className="text-blue-600" />}
+                  </div>
+                  <p className="text-sm font-medium text-blue-800">
+                    {isProcessing ? "AI 正在閱讀..." : "點擊上傳範例檔案"}
+                  </p>
+                  <p className="text-xs text-blue-500 mt-1 text-center">
+                    支援 PDF, Google 文件, 網址, 影片...
+                  </p>
+                </div>
+              ) : (
+                <div className="flex-1 bg-slate-50 rounded-xl p-4 border border-slate-200">
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="text-xs font-bold text-slate-500 uppercase">來源資料 (1)</span>
+                    <button onClick={handleReset} className="text-xs text-red-500 hover:underline">重置</button>
+                  </div>
+                  <div className="bg-white p-3 rounded-lg shadow-sm border border-slate-200 flex items-center gap-3">
+                    <div className="w-8 h-8 bg-red-100 text-red-600 rounded flex items-center justify-center">
+                      <FileText size={16} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium truncate">2025 年度趨勢報告.pdf</p>
+                      <p className="text-xs text-slate-400">12.5 MB • 50 頁</p>
+                    </div>
+                    <Check size={16} className="text-green-500" />
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Main Content / Output Area */}
+            <div className="w-full md:w-2/3 flex flex-col gap-4 relative">
+              <h3 className="font-bold text-slate-700 flex items-center gap-2">
+                <Zap size={18} />
+                步驟 2：AI 生成結果
+              </h3>
+
+              {!hasUploaded ? (
+                <div className="flex-1 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-center text-slate-400">
+                  <div className="text-center">
+                    <Layout className="w-12 h-12 mx-auto mb-2 opacity-50" />
+                    <p>請先在左側上傳資料<br/>體驗神奇的 AI 功能</p>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex-1 bg-white rounded-xl shadow-sm border border-slate-200 flex flex-col overflow-hidden animate-fade-in">
+                  {/* Tabs */}
+                  <div className="flex border-b border-slate-100">
+                    <button 
+                      onClick={() => setActiveTab('summary')}
+                      className={`flex-1 py-3 text-sm font-medium flex items-center justify-center gap-2 transition-colors ${activeTab === 'summary' ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50/50' : 'text-slate-500 hover:bg-slate-50'}`}
+                    >
+                      <BookOpen size={16} /> 重點摘要
+                    </button>
+                    <button 
+                      onClick={() => setActiveTab('audio')}
+                      className={`flex-1 py-3 text-sm font-medium flex items-center justify-center gap-2 transition-colors ${activeTab === 'audio' ? 'text-pink-600 border-b-2 border-pink-600 bg-pink-50/50' : 'text-slate-500 hover:bg-slate-50'}`}
+                    >
+                      <Mic size={16} /> Audio Overview
+                    </button>
+                    <button 
+                      onClick={() => setActiveTab('slides')}
+                      className={`flex-1 py-3 text-sm font-medium flex items-center justify-center gap-2 transition-colors ${activeTab === 'slides' ? 'text-orange-600 border-b-2 border-orange-600 bg-orange-50/50' : 'text-slate-500 hover:bg-slate-50'}`}
+                    >
+                      <Presentation size={16} /> 簡報
+                    </button>
+                  </div>
+
+                  {/* Content */}
+                  <div className="p-6 flex-1 overflow-y-auto">
+                    {activeTab === 'summary' && (
+                      <div className="space-y-4 animate-fade-in">
+                        <div className="bg-blue-50 p-4 rounded-lg">
+                          <h4 className="font-bold text-blue-900 mb-2">📄 AI 摘要</h4>
+                          <ul className="space-y-2 text-sm text-blue-800">
+                            <li className="flex gap-2"><span className="text-blue-500">•</span> 本文件主要探討 2025 年 AI 技術在筆記軟體中的應用。</li>
+                            <li className="flex gap-2"><span className="text-blue-500">•</span> 重點強調了多模態模型（Multimodal）的重要性。</li>
+                            <li className="flex gap-2"><span className="text-blue-500">•</span> 提出了「Deep Research」概念：AI 主動進行深度研究。</li>
+                          </ul>
+                        </div>
+                        <h4 className="font-bold text-slate-700">建議提問：</h4>
+                        <div className="flex flex-wrap gap-2">
+                          <span className="px-3 py-1 bg-slate-100 hover:bg-slate-200 rounded-full text-xs text-slate-600 cursor-pointer transition-colors">這份報告的核心論點是什麼？</span>
+                          <span className="px-3 py-1 bg-slate-100 hover:bg-slate-200 rounded-full text-xs text-slate-600 cursor-pointer transition-colors">有哪些具體數據支持？</span>
+                        </div>
+                      </div>
+                    )}
+
+                    {activeTab === 'audio' && (
+                      <div className="flex flex-col items-center justify-center h-full space-y-6 animate-fade-in">
+                        <div className="w-full bg-gradient-to-r from-pink-500 to-purple-500 p-6 rounded-xl text-white shadow-lg">
+                          <div className="flex items-center justify-between mb-4">
+                            <h4 className="font-bold">深度解讀 Podcast</h4>
+                            <span className="text-xs bg-white/20 px-2 py-1 rounded">AI 主持人</span>
+                          </div>
+                          <div className="flex items-center gap-4">
+                            <button 
+                              onClick={() => setIsPlaying(!isPlaying)}
+                              className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-pink-600 shadow-md hover:scale-105 transition-transform"
+                            >
+                              {isPlaying ? <Pause size={24} fill="currentColor" /> : <Play size={24} fill="currentColor" className="ml-1" />}
+                            </button>
+                            <div className="flex-1">
+                              <div className="h-2 bg-black/20 rounded-full overflow-hidden">
+                                <div 
+                                  className="h-full bg-white transition-all duration-100 ease-linear"
+                                  style={{ width: `${progress}%` }}
+                                ></div>
+                              </div>
+                              <div className="flex justify-between text-xs mt-1 opacity-80">
+                                <span>{Math.floor((progress/100)*14)}:{(Math.floor((progress/100)*60*14)%60).toString().padStart(2,'0')}</span>
+                                <span>14:30</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <p className="text-sm text-slate-500 text-center">
+                          戴上耳機，讓兩位 AI 主持人用輕鬆對話的方式，<br/>幫你把整份 50 頁的報告「聊」給你聽。
+                        </p>
+                      </div>
+                    )}
+
+                    {activeTab === 'slides' && (
+                      <div className="space-y-4 animate-fade-in">
+                        <div className="grid grid-cols-2 gap-3">
+                          <div className="aspect-video bg-slate-800 rounded-lg p-3 flex flex-col justify-center items-center text-center text-white shadow-sm hover:scale-105 transition-transform cursor-pointer">
+                            <span className="text-[10px] text-slate-400 mb-1">封面</span>
+                            <h5 className="font-bold text-sm">2025 年度趨勢</h5>
+                            <div className="w-8 h-1 bg-orange-500 mt-2"></div>
+                          </div>
+                          <div className="aspect-video bg-white border border-slate-200 rounded-lg p-3 flex flex-col shadow-sm hover:scale-105 transition-transform cursor-pointer">
+                            <h5 className="font-bold text-xs text-slate-800 mb-2">市場增長數據</h5>
+                            <div className="flex items-end gap-1 h-full pb-2 px-2">
+                              <div className="w-1/4 h-1/2 bg-blue-200 rounded-t"></div>
+                              <div className="w-1/4 h-3/4 bg-blue-400 rounded-t"></div>
+                              <div className="w-1/4 h-full bg-blue-600 rounded-t"></div>
+                            </div>
+                          </div>
+                        </div>
+                        <p className="text-sm text-slate-600 bg-orange-50 p-3 rounded-lg border border-orange-100">
+                          <span className="font-bold text-orange-600">✨ 新功能：</span>
+                          AI 已經將你的筆記自動拆解成簡報大綱，點擊即可下載或編輯。
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
+
+        {/* Features Grid */}
+        <section>
+          <div className="text-center mb-10">
+            <h3 className="text-3xl font-bold text-slate-900">為什麼你需要 NotebookLM？</h3>
+            <p className="text-slate-600 mt-2">不僅是筆記工具，更是你的「第二大腦」</p>
+          </div>
+          <div className="grid md:grid-cols-2 gap-6">
+            {features.map((feature, idx) => (
+              <div key={idx} className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow border border-slate-100 flex gap-4">
+                <div className="shrink-0 pt-1">
+                  {feature.icon}
+                </div>
+                <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <h4 className="text-lg font-bold text-slate-800">{feature.title}</h4>
+                    {feature.tag && <span className="text-[10px] font-bold px-2 py-0.5 bg-slate-900 text-white rounded-full">{feature.tag}</span>}
+                  </div>
+                  <p className="text-slate-600 text-sm leading-relaxed">{feature.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Pricing Comparison */}
+        <section className="bg-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden">
+          <div className="p-8 text-center border-b border-slate-100">
+            <h3 className="text-2xl font-bold text-slate-900">方案選擇</h3>
+            <p className="text-slate-500 mt-2">大多數初學者使用免費版就非常足夠！</p>
+          </div>
+          <div className="grid md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-slate-100">
+            <div className="p-8 hover:bg-slate-50 transition-colors">
+              <h4 className="text-xl font-bold text-slate-700 mb-4">免費版</h4>
+              <ul className="space-y-3 mb-8">
+                <li className="flex items-center gap-2 text-sm text-slate-600">
+                  <Check size={16} className="text-green-500" /> 最多 100 個筆記本
+                </li>
+                <li className="flex items-center gap-2 text-sm text-slate-600">
+                  <Check size={16} className="text-green-500" /> 每個筆記本可存 50 個來源
+                </li>
+                <li className="flex items-center gap-2 text-sm text-slate-600">
+                  <Check size={16} className="text-green-500" /> 支援所有基本 AI 功能
+                </li>
+              </ul>
+              <button className="w-full py-2 bg-slate-200 text-slate-700 font-bold rounded-lg hover:bg-slate-300 transition-colors">
+                目前方案
+              </button>
+            </div>
+            <div className="p-8 bg-gradient-to-b from-blue-50/50 to-white hover:from-blue-50 transition-colors relative overflow-hidden">
+              <div className="absolute top-4 right-4 text-yellow-500 animate-pulse">
+                <Star fill="currentColor" size={24} />
+              </div>
+              <h4 className="text-xl font-bold text-blue-700 mb-1">NotebookLM Plus</h4>
+              <p className="text-sm text-slate-500 mb-4">約 $14 美元 / 月 (需訂閱 Workspace)</p>
+              <ul className="space-y-3 mb-8">
+                <li className="flex items-center gap-2 text-sm text-slate-700 font-medium">
+                  <Check size={16} className="text-blue-500" /> <span className="bg-blue-100 px-1 rounded">5倍容量</span> (500 個筆記本)
+                </li>
+                <li className="flex items-center gap-2 text-sm text-slate-700 font-medium">
+                  <Check size={16} className="text-blue-500" /> 每個筆記本可存 300 個來源
+                </li>
+                <li className="flex items-center gap-2 text-sm text-slate-700 font-medium">
+                  <Check size={16} className="text-blue-500" /> 團隊共用與進階風格設定
+                </li>
+              </ul>
+              <button className="w-full py-2 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition-colors shadow-lg shadow-blue-200">
+                升級方案
+              </button>
+            </div>
+          </div>
+        </section>
+
+        {/* FAQ Accordion (Simplified) */}
+        <section className="space-y-4">
+          <h3 className="text-2xl font-bold text-slate-900 mb-6">常見問題</h3>
+          
+          <div className="bg-white rounded-lg p-5 border border-slate-200">
+            <h5 className="font-bold text-slate-800 mb-2">Q: 我的資料安全嗎？會被拿去訓練 AI 嗎？</h5>
+            <p className="text-sm text-slate-600">Google 明確承諾：你在 NotebookLM 上傳的任何文件、對話，<span className="font-bold text-red-500">都不會</span>被用來訓練模型。這是一個私人的研究空間。</p>
+          </div>
+
+          <div className="bg-white rounded-lg p-5 border border-slate-200">
+            <h5 className="font-bold text-slate-800 mb-2">Q: 可以處理中文內容嗎？</h5>
+            <p className="text-sm text-slate-600">完全沒問題！中文的 PDF、網站甚至是 YouTube 中文影片，它都能精準摘要。Audio Overview (Podcast) 目前主要是英文對話，但可以解讀中文內容。</p>
+          </div>
+        </section>
+
+      </main>
+
+      <footer className="bg-slate-900 text-slate-400 py-12 text-center">
+        <p className="mb-4">準備好開始體驗了嗎？</p>
+        <a href="https://notebooklm.google.com/" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-white hover:text-blue-300 transition-colors text-lg font-bold">
+          前往 NotebookLM 官網 <ChevronRight size={20} />
+        </a>
+        <p className="text-xs mt-8 opacity-50">
+          本頁面為教學示範，非 Google 官方網站。內容取材自天下雜誌報導。
+        </p>
+      </footer>
+
+      <style>{`
+        @keyframes fade-in {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+          animation: fade-in 0.5s ease-out forwards;
+        }
+        .animate-fade-in-up {
+          animation: fade-in 0.8s ease-out forwards;
+        }
+      `}</style>
+    </div>
+  );
+};
+
+export default NotebookLMGuide;
