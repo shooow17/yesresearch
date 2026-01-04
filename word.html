@@ -31,12 +31,14 @@
       margin:0;
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Microsoft JhengHei", monospace;
       color:var(--text);
+
       background:
         linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px) 0 0/12px 12px,
         linear-gradient(0deg, rgba(0,0,0,.04) 1px, transparent 1px) 0 0/12px 12px,
         linear-gradient(180deg, rgba(120,183,255,1) 0%, rgba(88,150,255,1) 52%, rgba(66,116,220,1) 68%),
         linear-gradient(180deg, transparent 0 68%, rgba(61,186,74,1) 68% 76%, rgba(46,143,55,1) 76% 78%, transparent 78%),
         linear-gradient(180deg, transparent 0 78%, rgba(139,90,43,1) 78% 100%);
+
       display:flex;
       align-items:center;
       justify-content:center;
@@ -193,38 +195,54 @@
     .form{
       margin-top:12px;
       display:flex;
-      gap:10px;
+      gap:12px;             /* 稍微拉開按鈕間距 */
       flex-wrap:wrap;
-      align-items:center;
+      align-items:stretch;  /* 讓 input/btn 同高 */
     }
+
+    /* ✅ 輸入框加大 */
     input[type="text"]{
-      flex: 1 1 320px;
-      padding:14px 12px;
+      flex: 1 1 520px;
+      padding: 18px 16px;
       border:4px solid rgba(0,0,0,.45);
-      background: rgba(255,255,255,.08);
+      background: rgba(255,255,255,.10);
       color:var(--text);
-      font-size:18px;
+      font-size: 24px;
+      line-height: 1.2;
       outline:none;
+      height: 72px;
       -webkit-user-select:text;
       user-select:text;
     }
-    input[type="text"]::placeholder{ color: rgba(255,255,255,.55); }
+    input[type="text"]::placeholder{
+      color: rgba(255,255,255,.55);
+      font-size: 18px;
+    }
 
+    /* ✅ 按鈕一起放大 */
     .btn{
-      padding:12px 14px;
+      padding: 18px 18px;
       border:4px solid rgba(0,0,0,.55);
       background: linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.06));
       color:var(--text);
       cursor:pointer;
       font-weight:900;
       letter-spacing:.6px;
-      box-shadow: 0 8px 0 rgba(0,0,0,.25);
+      box-shadow: 0 10px 0 rgba(0,0,0,.25);
       transform: translateY(0);
+      height: 72px;
+      min-width: 110px;     /* 讓按鈕更像方塊 */
+      font-size: 18px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      white-space:nowrap;
     }
     .btn:hover{ filter: brightness(1.07); }
     .btn:active{
-      transform: translateY(6px);
-      box-shadow: 0 2px 0 rgba(0,0,0,.25);
+      transform: translateY(7px);
+      box-shadow: 0 3px 0 rgba(0,0,0,.25);
     }
     .btn.primary{
       background: linear-gradient(180deg, rgba(61,186,74,.95), rgba(46,143,55,.95));
@@ -238,13 +256,22 @@
     .btn.gray{
       background: linear-gradient(180deg, rgba(138,143,152,.95), rgba(94,99,107,.95));
       color:#101214;
+      height:auto;          /* HUD 的全螢幕按鈕不強制同高 */
+      padding:12px 14px;
+      min-width:auto;
+      font-size:14px;
+      box-shadow: 0 8px 0 rgba(0,0,0,.25);
+    }
+    .btn.gray:active{
+      transform: translateY(6px);
+      box-shadow: 0 2px 0 rgba(0,0,0,.25);
     }
     .btn:disabled{
       opacity:.45;
       cursor:not-allowed;
       filter:none;
       transform:none;
-      box-shadow: 0 8px 0 rgba(0,0,0,.25);
+      box-shadow: 0 10px 0 rgba(0,0,0,.25);
     }
 
     .msg{
@@ -332,14 +359,14 @@
           <div class="icon" aria-hidden="true"></div>
           <div class="titleBox">
             <div class="t1">中文詞語闖關（看打）</div>
-            <div class="t2">一次一題｜看著打字｜金幣可跳過當前詞語</div>
+            <div class="t2">一次一題｜看著打字｜🍪可跳過當前詞語</div>
           </div>
         </div>
 
         <div class="hudRight">
           <div class="pill">關卡 <strong id="level">1</strong>/10（<span id="inLevel">1</span>/10）</div>
           <div class="pill">連擊 🔥 <strong id="streak">0</strong></div>
-          <div class="pill">金幣 🪙 <strong class="coin" id="coins">0</strong></div>
+          <div class="pill">餅乾 🍪 <strong class="coin" id="coins">0</strong></div>
           <div class="pill hearts">生命 <strong id="hearts">❤❤❤</strong></div>
           <button class="btn gray" id="fsBtn" title="全螢幕">全螢幕</button>
         </div>
@@ -365,7 +392,7 @@
           <div class="form">
             <input id="answer" type="text" placeholder="在這裡輸入詞語（Enter 送出）" autocomplete="off" />
             <button class="btn primary" id="checkBtn">送出</button>
-            <button class="btn gold" id="skipBtn" title="用金幣跳過當前詞語">跳過</button>
+            <button class="btn gold" id="skipBtn" title="用餅乾跳過當前詞語">跳過</button>
             <button class="btn" id="nextBtn" disabled>下一題</button>
           </div>
 
@@ -390,18 +417,18 @@
               <span>花費 <span class="cost" id="skipCostText">3</span>🪙</span>
             </div>
             <div class="desc">
-              不想卡關？用金幣直接通過這一題（不算正確、也不扣心）。<br/>
+              不想卡關？用餅乾直接通過這一題（不算正確、也不扣心）。<br/>
               會記錄為「略過」，並清空連擊。
             </div>
-            <button class="btn gold" id="buySkipBtn" style="margin-top:10px; width:100%;">使用跳過</button>
+            <button class="btn gold" id="buySkipBtn" style="margin-top:10px; width:100%; height:72px;">使用跳過</button>
           </div>
 
           <div class="shopItem" style="margin-top:12px;">
             <div class="name"><span>📌 規則小抄</span></div>
             <div class="desc">
-              ・答對：+1🪙，連擊 +1，XP 增加（連擊越高加越多）<br/>
+              ・答對：+1，連擊 +1，XP 增加（連擊越高加越多）<br/>
               ・答錯：扣 1 ❤，連擊歸零（同一題繼續）<br/>
-              ・跳過：花 🪙 直接到下一題（不扣 ❤，但連擊歸零）
+              ・跳過：花 🍪 直接到下一題（不扣 ❤，但連擊歸零）
             </div>
           </div>
         </div>
@@ -411,7 +438,7 @@
   </div>
 
 <script>
-  // ====== 100 個詞語 ======
+  // ====== 100 個詞語（可替換成你的辭彙表） ======
   const vocab = [
     "蚊帳","非洲","瘧疾","鼓勵","募集","捐贈","義賣","獎狀","雜誌","基金會",
     "潛力","直笛","吹奏","旋律","樹梢","走廊","熟悉","零亂","和諧","音階",
@@ -425,7 +452,7 @@
     "衡量","契機","糾葛","趨勢","歸納","演繹","瞻仰","追隨","謀略","壟斷"
   ];
 
-  // ====== 洗牌（Fisher–Yates）→ 每輪題目隨機且不重複 ======
+  // ====== 洗牌（隨機且不重複） ======
   function shuffle(arr){
     for (let j = arr.length - 1; j > 0; j--){
       const k = Math.floor(Math.random() * (j + 1));
@@ -433,7 +460,7 @@
     }
     return arr;
   }
-  const deck = shuffle(vocab.slice()); // ← 隨機題庫順序（不改原 vocab）
+  const deck = shuffle(vocab.slice());
 
   // ====== DOM ======
   const wordBox = document.getElementById("wordBox");
@@ -486,8 +513,8 @@
   let hearts = 3;
   let xp = 0;
 
-  let started = true;   // auto start
-  let locked = false;   // after correct/skip => enable next
+  let started = true;
+  let locked = false;
 
   // ====== Helpers ======
   function normalize(s){
@@ -554,12 +581,7 @@
     nextBtn.disabled = true;
     checkBtn.disabled = false;
 
-    if (i < deck.length){
-      wordEl.textContent = deck[i]; // ← 改成用 deck（隨機順序）
-    } else {
-      wordEl.textContent = "—";
-    }
-
+    wordEl.textContent = deck[i] ?? "—";
     updateHUD();
   }
 
@@ -583,7 +605,7 @@
     endPanel.style.display = "block";
     endText.innerHTML = `
       <div>正確：<strong>${correct}</strong>｜錯誤：<strong>${wrong}</strong>｜略過：<strong>${skipped}</strong></div>
-      <div style="margin-top:6px;">正確率：<strong>${acc}%</strong>｜XP：<strong>${xp}</strong>｜金幣：<strong>${coins}</strong></div>
+      <div style="margin-top:6px;">正確率：<strong>${acc}%</strong>｜XP：<strong>${xp}</strong>｜餅乾：<strong>${coins}</strong></div>
       <div style="margin-top:8px;color:rgba(255,255,255,.75);font-size:12px;">想再玩一次：重新整理頁面即可。</div>
     `;
     starsEl.textContent = "★".repeat(stars) + "☆".repeat(5-stars);
@@ -594,7 +616,7 @@
   function check(){
     if (!started || locked || i >= deck.length) return;
 
-    const target = deck[i];               // ← 改成 deck
+    const target = deck[i];
     const input = normalize(answerEl.value);
 
     if (!input){
@@ -647,7 +669,7 @@
   function skipCurrent(){
     if (!started || locked || i >= deck.length) return;
     if (coins < SKIP_COST){
-      setMessage(`金幣不足！需要 ${SKIP_COST} 🪙 才能跳過。`, "bad");
+      setMessage(`餅乾不足！需要 ${SKIP_COST} 🪙 才能跳過。`, "bad");
       shake(wordBox);
       return;
     }
@@ -669,8 +691,6 @@
 
   function next(){
     if (!started) return;
-    if (i >= deck.length) return;
-
     i++;
     if (i >= deck.length){
       finishGame();
