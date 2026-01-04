@@ -39,7 +39,6 @@
       align-items: center;
     }
 
-    /* Minecraft 風格按鈕 */
     .mc-btn {
       font-family: 'VT323', monospace;
       font-size: 1.2rem;
@@ -88,7 +87,11 @@
       border-color: #ffcc00 #774400 #774400 #ffcc00;
     }
 
-    /* Minecraft 風格面板 */
+    .mc-btn.purple {
+      background: linear-gradient(180deg, #9932cc 0%, #7b28a8 50%, #5d1e80 50%, #4a1866 100%);
+      border-color: #bb44ee #4a1866 #4a1866 #bb44ee;
+    }
+
     .mc-panel {
       background: rgba(0, 0, 0, 0.75);
       border: 4px solid;
@@ -98,7 +101,6 @@
       box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
     }
 
-    /* 標題 */
     h1 {
       font-family: 'VT323', monospace;
       font-size: 3rem;
@@ -119,13 +121,11 @@
       margin-bottom: 20px;
     }
 
-    /* 主遊戲容器 */
     .game-container {
       width: 100%;
       max-width: 800px;
     }
 
-    /* 狀態列 */
     .status-bar {
       display: flex;
       flex-wrap: wrap;
@@ -160,7 +160,6 @@
     .stat-value.red { color: var(--mc-red); }
     .stat-value.aqua { color: var(--mc-aqua); }
 
-    /* 生命值（愛心） */
     .hearts {
       display: flex;
       gap: 5px;
@@ -187,7 +186,6 @@
       50% { transform: scale(1.3); filter: brightness(2) drop-shadow(2px 2px 0 #000); }
     }
 
-    /* 經驗條 */
     .xp-bar-container {
       width: 100%;
       height: 30px;
@@ -227,7 +225,6 @@
       z-index: 1;
     }
 
-    /* 題目區 */
     .question-area {
       margin: 30px 0;
       text-align: center;
@@ -255,8 +252,6 @@
       align-items: center;
       justify-content: center;
       animation: float 2s ease-in-out infinite;
-      
-      /* 禁止選取和複製 */
       -webkit-user-select: none;
       -moz-user-select: none;
       -ms-user-select: none;
@@ -270,7 +265,6 @@
       50% { transform: translateY(-10px); }
     }
 
-    /* 輸入區 */
     .input-area {
       display: flex;
       gap: 10px;
@@ -317,7 +311,6 @@
       75% { transform: translateX(10px); }
     }
 
-    /* 按鈕區 */
     .button-area {
       display: flex;
       gap: 15px;
@@ -326,7 +319,6 @@
       flex-wrap: wrap;
     }
 
-    /* 物品欄 */
     .inventory {
       display: flex;
       gap: 5px;
@@ -364,7 +356,6 @@
       text-shadow: 1px 1px 0 #000;
     }
 
-    /* 連擊顯示 */
     .combo-display {
       position: fixed;
       top: 20%;
@@ -382,7 +373,6 @@
       100% { transform: scale(1) translateY(0); opacity: 1; }
     }
 
-    /* 成就/訊息彈窗 */
     .toast {
       position: fixed;
       top: 80px;
@@ -405,7 +395,6 @@
       100% { transform: translateX(-50%) translateY(-100px); opacity: 0; }
     }
 
-    /* 結束畫面 */
     .end-screen {
       text-align: center;
       padding: 40px;
@@ -426,46 +415,19 @@
       margin: 30px auto;
     }
 
-    /* 方塊裝飾 */
-    .block {
-      width: 40px;
-      height: 40px;
-      position: absolute;
-      animation: blockFloat 3s ease-in-out infinite;
-    }
-
-    .block.diamond {
-      background: linear-gradient(135deg, #4aedd9 0%, #2dd4c0 50%, #1fb8a6 100%);
-      border: 2px solid #1a9688;
-    }
-
-    .block.gold {
-      background: linear-gradient(135deg, #ffe566 0%, #ffcc00 50%, #cc9900 100%);
-      border: 2px solid #997700;
-    }
-
-    .block.emerald {
-      background: linear-gradient(135deg, #50c878 0%, #3cb371 50%, #2e8b57 100%);
-      border: 2px solid #228b22;
-    }
-
-    @keyframes blockFloat {
-      0%, 100% { transform: translateY(0) rotate(0deg); }
-      50% { transform: translateY(-20px) rotate(10deg); }
-    }
-
-    /* 商店彈窗 */
     .modal-overlay {
       position: fixed;
       top: 0;
       left: 0;
       right: 0;
       bottom: 0;
-      background: rgba(0, 0, 0, 0.7);
+      background: rgba(0, 0, 0, 0.85);
       display: flex;
       align-items: center;
       justify-content: center;
       z-index: 1000;
+      overflow-y: auto;
+      padding: 20px;
     }
 
     .modal-content {
@@ -505,12 +467,10 @@
       color: var(--mc-gray);
     }
 
-    /* 隱藏的 */
     .hidden {
       display: none !important;
     }
 
-    /* 全螢幕按鈕 */
     .fullscreen-btn {
       position: fixed;
       top: 10px;
@@ -518,24 +478,6 @@
       z-index: 100;
     }
 
-    /* 關卡進度 */
-    .level-info {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 1.5rem;
-      color: var(--mc-white);
-      text-shadow: 2px 2px 0 #000;
-    }
-
-    .level-badge {
-      background: var(--mc-dark);
-      border: 3px solid var(--mc-gold);
-      padding: 5px 15px;
-      color: var(--mc-gold);
-    }
-
-    /* 裝飾性方塊背景 */
     .bg-blocks {
       position: fixed;
       top: 0;
@@ -560,18 +502,6 @@
       50% { transform: translateY(-30px) rotate(180deg); }
     }
 
-    /* 挖礦動畫 */
-    .mining {
-      animation: mining 0.2s ease infinite;
-    }
-
-    @keyframes mining {
-      0%, 100% { transform: rotate(0deg); }
-      25% { transform: rotate(-10deg); }
-      75% { transform: rotate(10deg); }
-    }
-
-    /* 粒子效果 */
     .particle {
       position: fixed;
       pointer-events: none;
@@ -584,7 +514,6 @@
       100% { transform: translateY(-100px) scale(0.5); opacity: 0; }
     }
 
-    /* 道具說明區 - 土地區域 */
     .ground-info {
       width: 100%;
       max-width: 800px;
@@ -653,7 +582,6 @@
       color: var(--mc-green);
     }
 
-    /* 礦石裝飾 */
     .ore-decoration {
       display: flex;
       justify-content: center;
@@ -703,7 +631,533 @@
       50% { box-shadow: 0 0 15px rgba(255,255,255,0.5); }
     }
 
-    /* 響應式 */
+    /* 獎勵里程碑 */
+    .milestones {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin: 15px 0;
+      flex-wrap: wrap;
+    }
+
+    .milestone {
+      width: 50px;
+      height: 50px;
+      background: rgba(0,0,0,0.6);
+      border: 3px solid #555;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      position: relative;
+      opacity: 0.5;
+      transition: all 0.3s;
+    }
+
+    .milestone.unlocked {
+      opacity: 1;
+      border-color: var(--mc-gold);
+      animation: milestoneUnlock 0.5s ease;
+    }
+
+    .milestone.clickable {
+      cursor: pointer;
+    }
+
+    .milestone.clickable:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 15px rgba(255, 170, 0, 0.5);
+    }
+
+    .milestone-label {
+      position: absolute;
+      bottom: -20px;
+      font-size: 0.8rem;
+      color: var(--mc-gray);
+    }
+
+    @keyframes milestoneUnlock {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.3); }
+      100% { transform: scale(1); }
+    }
+
+    /* 獎勵卡片彈窗 */
+    .reward-card-modal {
+      width: 400px;
+      max-width: 95%;
+    }
+
+    .reward-card {
+      background: linear-gradient(180deg, #2d1f4e 0%, #1a1a2e 100%);
+      border: 6px solid;
+      border-image: linear-gradient(180deg, #ffd700, #ff8c00, #ffd700) 1;
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .reward-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+      pointer-events: none;
+    }
+
+    .reward-card-header {
+      text-align: center;
+      margin-bottom: 15px;
+    }
+
+    .reward-card-title {
+      font-size: 1.8rem;
+      color: var(--mc-gold);
+      text-shadow: 2px 2px 0 #000;
+      margin-bottom: 5px;
+    }
+
+    .reward-card-subtitle {
+      font-size: 1rem;
+      color: var(--mc-aqua);
+    }
+
+    .reward-3d-container {
+      width: 200px;
+      height: 200px;
+      margin: 20px auto;
+      perspective: 500px;
+    }
+
+    .reward-3d-model {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      animation: rotate3d 8s linear infinite;
+    }
+
+    @keyframes rotate3d {
+      from { transform: rotateY(0deg); }
+      to { transform: rotateY(360deg); }
+    }
+
+    .reward-stats {
+      background: rgba(0,0,0,0.5);
+      border: 2px solid #444;
+      padding: 15px;
+      margin: 15px 0;
+    }
+
+    .reward-stats-row {
+      display: flex;
+      justify-content: space-between;
+      margin: 8px 0;
+      font-size: 1.2rem;
+    }
+
+    .reward-stats-label {
+      color: var(--mc-gray);
+    }
+
+    .reward-stats-value {
+      color: var(--mc-white);
+    }
+
+    .reward-name-input {
+      width: 100%;
+      font-family: 'VT323', monospace;
+      font-size: 1.5rem;
+      padding: 10px;
+      background: #000;
+      border: 3px solid #555;
+      color: var(--mc-gold);
+      text-align: center;
+      margin: 15px 0;
+    }
+
+    .reward-name-input:focus {
+      border-color: var(--mc-gold);
+      outline: none;
+    }
+
+    .reward-buttons {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    /* 3D 乳牛模型 */
+    .cow-3d {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transform-style: preserve-3d;
+    }
+
+    .cow-body {
+      position: absolute;
+      width: 80px;
+      height: 50px;
+      background: linear-gradient(90deg, #f5f5f5 0%, #e0e0e0 50%, #f5f5f5 100%);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) translateZ(0);
+      border: 2px solid #333;
+    }
+
+    .cow-body::before {
+      content: '';
+      position: absolute;
+      width: 20px;
+      height: 15px;
+      background: #3d3d3d;
+      top: 10px;
+      left: 5px;
+      border-radius: 3px;
+    }
+
+    .cow-body::after {
+      content: '';
+      position: absolute;
+      width: 25px;
+      height: 20px;
+      background: #3d3d3d;
+      bottom: 5px;
+      right: 10px;
+      border-radius: 3px;
+    }
+
+    .cow-head {
+      position: absolute;
+      width: 35px;
+      height: 35px;
+      background: linear-gradient(180deg, #f5f5f5 0%, #e8e8e8 100%);
+      top: 35%;
+      left: 10%;
+      transform: translateZ(20px);
+      border: 2px solid #333;
+    }
+
+    .cow-head::before {
+      content: '';
+      position: absolute;
+      width: 25px;
+      height: 15px;
+      background: #ffcccc;
+      bottom: 2px;
+      left: 5px;
+      border: 1px solid #333;
+    }
+
+    .cow-horn {
+      position: absolute;
+      width: 8px;
+      height: 15px;
+      background: #d4d4d4;
+      border: 1px solid #333;
+    }
+
+    .cow-horn.left {
+      top: -12px;
+      left: 5px;
+      transform: rotate(-10deg);
+    }
+
+    .cow-horn.right {
+      top: -12px;
+      right: 5px;
+      transform: rotate(10deg);
+    }
+
+    .cow-leg {
+      position: absolute;
+      width: 12px;
+      height: 30px;
+      background: linear-gradient(180deg, #f5f5f5 70%, #3d3d3d 70%);
+      border: 1px solid #333;
+      bottom: -30px;
+    }
+
+    /* 3D 苦力怕模型 */
+    .creeper-3d {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transform-style: preserve-3d;
+    }
+
+    .creeper-head {
+      position: absolute;
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, #5fa052 0%, #4a8a3f 50%, #3d7334 100%);
+      top: 20%;
+      left: 50%;
+      transform: translate(-50%, 0) translateZ(10px);
+      border: 2px solid #2d5a26;
+      box-shadow: inset 3px 3px 0 rgba(255,255,255,0.2), inset -3px -3px 0 rgba(0,0,0,0.2);
+    }
+
+    .creeper-face {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .creeper-eye {
+      position: absolute;
+      width: 10px;
+      height: 14px;
+      background: #1a1a1a;
+      top: 5px;
+    }
+
+    .creeper-eye.left { left: -15px; }
+    .creeper-eye.right { right: -15px; }
+
+    .creeper-mouth {
+      position: absolute;
+      width: 8px;
+      height: 16px;
+      background: #1a1a1a;
+      top: 22px;
+      left: -4px;
+    }
+
+    .creeper-mouth::before,
+    .creeper-mouth::after {
+      content: '';
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      background: #1a1a1a;
+    }
+
+    .creeper-mouth::before {
+      left: -8px;
+      top: 8px;
+    }
+
+    .creeper-mouth::after {
+      right: -8px;
+      top: 8px;
+    }
+
+    .creeper-body {
+      position: absolute;
+      width: 40px;
+      height: 50px;
+      background: linear-gradient(135deg, #5fa052 0%, #4a8a3f 100%);
+      top: 55%;
+      left: 50%;
+      transform: translate(-50%, 0) translateZ(0);
+      border: 2px solid #2d5a26;
+    }
+
+    .creeper-foot {
+      position: absolute;
+      width: 16px;
+      height: 20px;
+      background: linear-gradient(180deg, #5fa052 0%, #4a8a3f 100%);
+      bottom: -15px;
+      border: 2px solid #2d5a26;
+    }
+
+    .creeper-foot.left { left: 15%; }
+    .creeper-foot.right { right: 15%; }
+
+    /* 3D 烈焰使者模型 */
+    .blaze-3d {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transform-style: preserve-3d;
+    }
+
+    .blaze-head {
+      position: absolute;
+      width: 50px;
+      height: 50px;
+      background: linear-gradient(135deg, #ffdd44 0%, #ff9900 50%, #cc6600 100%);
+      top: 25%;
+      left: 50%;
+      transform: translate(-50%, 0) translateZ(15px);
+      border: 2px solid #993300;
+      box-shadow: 0 0 20px rgba(255, 150, 0, 0.6);
+    }
+
+    .blaze-eye {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      background: #1a1a1a;
+      top: 15px;
+    }
+
+    .blaze-eye.left { left: 10px; }
+    .blaze-eye.right { right: 10px; }
+
+    .blaze-mouth {
+      position: absolute;
+      width: 20px;
+      height: 6px;
+      background: #1a1a1a;
+      bottom: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .blaze-rod {
+      position: absolute;
+      width: 8px;
+      height: 40px;
+      background: linear-gradient(180deg, #ffee88 0%, #ffaa00 50%, #ff6600 100%);
+      border: 1px solid #cc5500;
+      animation: blazeFloat 1.5s ease-in-out infinite;
+      box-shadow: 0 0 10px rgba(255, 150, 0, 0.5);
+    }
+
+    @keyframes blazeFloat {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-5px) rotate(5deg); }
+    }
+
+    .blaze-smoke {
+      position: absolute;
+      width: 15px;
+      height: 15px;
+      background: rgba(255, 150, 0, 0.3);
+      border-radius: 50%;
+      animation: smokeRise 2s ease-out infinite;
+    }
+
+    @keyframes smokeRise {
+      0% { transform: translateY(0) scale(1); opacity: 0.5; }
+      100% { transform: translateY(-30px) scale(2); opacity: 0; }
+    }
+
+    /* 3D 史帝夫模型 */
+    .steve-3d {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transform-style: preserve-3d;
+    }
+
+    .steve-head {
+      position: absolute;
+      width: 50px;
+      height: 50px;
+      background: linear-gradient(180deg, #c4a57b 0%, #a8835a 100%);
+      top: 15%;
+      left: 50%;
+      transform: translate(-50%, 0) translateZ(15px);
+      border: 2px solid #5a4730;
+    }
+
+    .steve-hair {
+      position: absolute;
+      width: 100%;
+      height: 15px;
+      background: #3d2817;
+      top: 0;
+      left: 0;
+    }
+
+    .steve-eye {
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      background: #3d5afe;
+      top: 20px;
+    }
+
+    .steve-eye.left { left: 12px; }
+    .steve-eye.right { right: 12px; }
+
+    .steve-eye::before {
+      content: '';
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: #fff;
+      top: 1px;
+      left: 1px;
+    }
+
+    .steve-nose {
+      position: absolute;
+      width: 6px;
+      height: 4px;
+      background: #b8946e;
+      top: 28px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .steve-mouth {
+      position: absolute;
+      width: 14px;
+      height: 3px;
+      background: #8b6f4e;
+      bottom: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .steve-body {
+      position: absolute;
+      width: 40px;
+      height: 55px;
+      background: linear-gradient(180deg, #00b7b7 0%, #009999 100%);
+      top: 45%;
+      left: 50%;
+      transform: translate(-50%, 0) translateZ(0);
+      border: 2px solid #006666;
+    }
+
+    .steve-arm {
+      position: absolute;
+      width: 15px;
+      height: 50px;
+      background: linear-gradient(180deg, #00b7b7 50%, #c4a57b 50%);
+      top: 45%;
+      border: 2px solid #006666;
+    }
+
+    .steve-arm.left {
+      left: 18%;
+      transform: translateX(-100%) rotate(10deg);
+    }
+
+    .steve-arm.right {
+      right: 18%;
+      transform: translateX(100%) rotate(-10deg);
+    }
+
+    .steve-leg {
+      position: absolute;
+      width: 18px;
+      height: 45px;
+      background: linear-gradient(180deg, #3d3daa 0%, #2d2d88 100%);
+      bottom: -8%;
+      border: 2px solid #1a1a66;
+    }
+
+    .steve-leg.left { left: 26%; }
+    .steve-leg.right { right: 26%; }
+
+    /* 隱藏的Canvas用於圖片生成 */
+    #cardCanvas {
+      display: none;
+    }
+
     @media (max-width: 600px) {
       h1 { font-size: 2rem; }
       .question-word { font-size: 2.5rem; letter-spacing: 4px; }
@@ -716,24 +1170,20 @@
       .item-icon { font-size: 2rem; min-width: 40px; }
       .item-name { font-size: 1.2rem; }
       .item-desc { font-size: 1rem; }
+      .reward-card { padding: 15px; }
+      .reward-3d-container { width: 150px; height: 150px; }
     }
   </style>
 </head>
 <body>
-  <!-- 背景裝飾方塊 -->
   <div class="bg-blocks" id="bgBlocks"></div>
-
-  <!-- 全螢幕按鈕 -->
   <button class="mc-btn fullscreen-btn" onclick="toggleFullscreen()">⛶ 全螢幕</button>
 
-  <!-- 標題 -->
   <h1>⛏️ Minecraft 詞語挖礦 ⛏️</h1>
   <div class="subtitle">挖掘知識的礦脈！準確打出詞語來獲得經驗值！</div>
 
   <div class="game-container">
-    <!-- 遊戲主面板 -->
     <div class="mc-panel" id="gamePanel">
-      <!-- 狀態列 -->
       <div class="status-bar">
         <div class="stat-box">
           <div class="stat-label">⛏️ 關卡</div>
@@ -757,13 +1207,34 @@
         </div>
       </div>
 
-      <!-- 經驗條 -->
+      <!-- 里程碑獎勵 -->
+      <div style="text-align: center; color: var(--mc-gray); margin-bottom: 10px;">
+        🏆 里程碑獎勵（點擊已解鎖的獎勵查看）
+      </div>
+      <div class="milestones">
+        <div class="milestone" id="milestone30" onclick="showRewardCard('cow')" title="完成30題">
+          <span>🐄</span>
+          <div class="milestone-label">30題</div>
+        </div>
+        <div class="milestone" id="milestone60" onclick="showRewardCard('creeper')" title="完成60題">
+          <span>💚</span>
+          <div class="milestone-label">60題</div>
+        </div>
+        <div class="milestone" id="milestone90" onclick="showRewardCard('blaze')" title="完成90題">
+          <span>🔥</span>
+          <div class="milestone-label">90題</div>
+        </div>
+        <div class="milestone" id="milestone100" onclick="showRewardCard('steve')" title="完成100題">
+          <span>⭐</span>
+          <div class="milestone-label">100題</div>
+        </div>
+      </div>
+
       <div class="xp-bar-container">
         <div class="xp-bar" id="xpBar" style="width: 0%"></div>
         <div class="xp-text">XP: <span id="xpValue">0</span> | 進度: <span id="progress">0</span>%</div>
       </div>
 
-      <!-- 題目統計 -->
       <div style="text-align: center; margin: 15px 0; color: var(--mc-gray);">
         題目 <span id="questionNum">1</span>/<span id="totalQuestionNum">100</span> | 
         <span style="color: var(--mc-green);">正確 <span id="correctCount">0</span></span> | 
@@ -772,25 +1243,21 @@
         正確率 <span id="accuracy">0</span>%
       </div>
 
-      <!-- 題目區 -->
       <div class="question-area">
         <div class="question-label">⛏️ 挖掘這個詞語 ⛏️</div>
         <div class="question-word" id="questionWord" oncopy="return false;" oncut="return false;" onpaste="return false;" oncontextmenu="return false;">—</div>
       </div>
 
-      <!-- 輸入區 -->
       <div class="input-area">
         <input type="text" class="mc-input" id="answerInput" placeholder="輸入答案..." autocomplete="off">
       </div>
 
-      <!-- 按鈕區 -->
       <div class="button-area">
         <button class="mc-btn green" id="submitBtn" onclick="submitAnswer()">⛏️ 挖掘！</button>
         <button class="mc-btn gold" id="skipBtn" onclick="openShop()">🍪 跳過 (花費 3🍪)</button>
         <button class="mc-btn hidden" id="nextBtn" onclick="nextQuestion()">➡️ 下一題</button>
       </div>
 
-      <!-- 物品欄 -->
       <div class="inventory">
         <div class="inv-slot selected">
           <span class="inv-item">⛏️</span>
@@ -815,7 +1282,6 @@
       </div>
     </div>
 
-    <!-- 結束畫面 -->
     <div class="mc-panel hidden" id="endPanel">
       <div class="end-screen">
         <div class="end-title">🎉 挖礦完成！</div>
@@ -848,14 +1314,19 @@
           </div>
         </div>
 
-        <button class="mc-btn green" onclick="restartGame()" style="font-size: 1.5rem; padding: 15px 40px;">
+        <div style="margin: 20px 0; font-size: 1.3rem; color: var(--mc-gold);">
+          🏆 已解鎖的獎勵（點擊查看）：
+        </div>
+        <div class="milestones" id="endMilestones">
+        </div>
+
+        <button class="mc-btn green" onclick="restartGame()" style="font-size: 1.5rem; padding: 15px 40px; margin-top: 20px;">
           🔄 再挖一次！
         </button>
       </div>
     </div>
   </div>
 
-  <!-- 道具說明區 - 土地區域 -->
   <div class="ground-info">
     <div class="ground-title">📦 礦工背包說明</div>
     <div class="item-info-grid">
@@ -892,6 +1363,18 @@
           </div>
         </div>
       </div>
+      <div class="item-info-card">
+        <div class="item-icon">🏆</div>
+        <div class="item-details">
+          <div class="item-name">里程碑獎勵</div>
+          <div class="item-desc">
+            <span class="highlight">30題</span>: 🐄 乳牛<br>
+            <span class="highlight">60題</span>: 💚 苦力怕<br>
+            <span class="highlight">90題</span>: 🔥 烈焰使者<br>
+            <span class="highlight">100題</span>: ⭐ 史帝夫
+          </div>
+        </div>
+      </div>
     </div>
     <div class="ore-decoration">
       <div class="ore coal"></div>
@@ -921,11 +1404,56 @@
     </div>
   </div>
 
-  <!-- 連擊顯示 -->
+  <!-- 獎勵卡片彈窗 -->
+  <div class="modal-overlay hidden" id="rewardModal">
+    <div class="reward-card-modal">
+      <div class="reward-card" id="rewardCardContent">
+        <div class="reward-card-header">
+          <div class="reward-card-title" id="rewardTitle">🏆 里程碑達成！</div>
+          <div class="reward-card-subtitle" id="rewardSubtitle">完成 30 題</div>
+        </div>
+
+        <div class="reward-3d-container">
+          <div class="reward-3d-model" id="reward3dModel">
+            <!-- 3D模型會動態插入 -->
+          </div>
+        </div>
+
+        <div class="reward-stats">
+          <div class="reward-stats-row">
+            <span class="reward-stats-label">正確題數</span>
+            <span class="reward-stats-value" id="rewardCorrect">0</span>
+          </div>
+          <div class="reward-stats-row">
+            <span class="reward-stats-label">正確率</span>
+            <span class="reward-stats-value" id="rewardAccuracy">0%</span>
+          </div>
+          <div class="reward-stats-row">
+            <span class="reward-stats-label">最高連擊</span>
+            <span class="reward-stats-value" id="rewardCombo">0</span>
+          </div>
+          <div class="reward-stats-row">
+            <span class="reward-stats-label">總經驗值</span>
+            <span class="reward-stats-value" id="rewardXP">0</span>
+          </div>
+        </div>
+
+        <input type="text" class="reward-name-input" id="rewardNameInput" placeholder="輸入你的名字..." maxlength="20">
+
+        <div class="reward-buttons">
+          <button class="mc-btn green" onclick="saveCardAsImage()">📷 儲存圖片</button>
+          <button class="mc-btn red" onclick="closeRewardModal()">✖ 關閉</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="combo-display hidden" id="comboDisplay"></div>
 
+  <!-- 隱藏的Canvas用於生成圖片 -->
+  <canvas id="cardCanvas" width="400" height="550"></canvas>
+
   <script>
-    // 新詞語庫 - 二字詞語
     const twoCharWords = [
       "謹慎", "謙虛", "敏捷", "猶豫", "誠信", "憧憬", "尷尬", "慚愧", "剛毅", "寬容",
       "澎湃", "渲染", "枯竭", "細膩", "湛藍", "幽靜", "繁瑣", "遼闊", "顫抖", "陶醉",
@@ -934,7 +1462,6 @@
       "象徵", "永恆", "節奏", "核心", "結構", "起源", "障礙", "侷限", "平衡", "和諧"
     ];
 
-    // 新詞語庫 - 三字詞語
     const threeCharWords = [
       "綠油油", "亮晶晶", "懶洋洋", "亂糟糟", "孤零零", "慢吞吞", "乾巴巴", "皺巴巴", "羞答答", "響噹噹",
       "沉甸甸", "霧濛濛", "濕漉漉", "喜洋洋", "密麻麻", "空盪盪", "軟綿綿", "熱烘烘", "興沖沖", "靜悄悄",
@@ -943,10 +1470,8 @@
       "定心丸", "潑冷水", "炒冷飯", "走過場", "應聲蟲", "鐵飯碗", "耍花招", "指揮棒", "轉折點", "口頭禪"
     ];
 
-    // 合併詞庫
     const wordBank = [...twoCharWords, ...threeCharWords];
 
-    // 遊戲狀態
     let gameState = {
       currentLevel: 1,
       totalLevels: 10,
@@ -966,10 +1491,17 @@
       stars: 0,
       currentWord: "",
       answered: false,
-      shuffledWords: []
+      shuffledWords: [],
+      unlockedRewards: {
+        cow: false,
+        creeper: false,
+        blaze: false,
+        steve: false
+      }
     };
 
-    // 初始化
+    let currentRewardType = '';
+
     function init() {
       gameState.shuffledWords = shuffleArray([...wordBank]);
       gameState.totalQuestions = gameState.shuffledWords.length;
@@ -979,10 +1511,8 @@
       nextQuestion();
       updateDisplay();
       
-      // 更新總題數顯示
       document.getElementById('totalQuestionNum').textContent = gameState.totalQuestions;
       
-      // 禁止在題目區域使用拖曳選取
       const questionWord = document.getElementById('questionWord');
       questionWord.addEventListener('selectstart', function(e) {
         e.preventDefault();
@@ -994,12 +1524,10 @@
         return false;
       });
       
-      // 禁止鍵盤複製快捷鍵（當焦點在題目區域時）
       document.addEventListener('keydown', function(e) {
         const selection = window.getSelection();
         const questionWord = document.getElementById('questionWord');
         
-        // 檢查是否選取了題目文字
         if (selection.toString() && questionWord.contains(selection.anchorNode)) {
           if ((e.ctrlKey || e.metaKey) && (e.key === 'c' || e.key === 'C')) {
             e.preventDefault();
@@ -1019,7 +1547,6 @@
       });
     }
 
-    // 洗牌函數
     function shuffleArray(array) {
       for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -1028,7 +1555,6 @@
       return array;
     }
 
-    // 創建背景方塊
     function createBackgroundBlocks() {
       const container = document.getElementById('bgBlocks');
       const colors = ['#8b6914', '#7a7a7a', '#4a7024', '#3cb371', '#ffcc00'];
@@ -1043,7 +1569,6 @@
       }
     }
 
-    // 下一題
     function nextQuestion() {
       if (gameState.currentQuestion >= gameState.totalQuestions) {
         endGame();
@@ -1069,9 +1594,9 @@
       document.getElementById('nextBtn').classList.add('hidden');
 
       updateDisplay();
+      checkMilestones();
     }
 
-    // 提交答案
     function submitAnswer() {
       const input = document.getElementById('answerInput');
       const answer = input.value.trim();
@@ -1079,26 +1604,22 @@
       if (!answer) return;
 
       if (answer === gameState.currentWord) {
-        // 正確
         gameState.correct++;
         gameState.combo++;
         if (gameState.combo > gameState.maxCombo) {
           gameState.maxCombo = gameState.combo;
         }
 
-        // 計算XP（連擊越高加越多）
         const baseXP = 10;
         const comboBonus = Math.min(gameState.combo, 10) * 2;
         const earnedXP = baseXP + comboBonus;
         gameState.xp += earnedXP;
 
-        // 獲得餅乾（每5次正確獲得1個）
         if (gameState.correct % 5 === 0) {
           gameState.cookies++;
           showToast("🍪 獲得餅乾！");
         }
 
-        // 獲得鑽石（每10次正確）
         if (gameState.correct % 10 === 0) {
           gameState.diamonds++;
           showToast("💎 獲得鑽石！");
@@ -1113,8 +1634,9 @@
         document.getElementById('skipBtn').classList.add('hidden');
         document.getElementById('nextBtn').classList.remove('hidden');
 
+        checkMilestones();
+
       } else {
-        // 錯誤
         gameState.wrong++;
         gameState.lives--;
         gameState.combo = 0;
@@ -1128,7 +1650,6 @@
           return;
         }
 
-        // 錯誤後可以繼續嘗試
         setTimeout(() => {
           input.className = 'mc-input';
           input.value = '';
@@ -1139,7 +1660,387 @@
       updateDisplay();
     }
 
-    // 使用跳過
+    function checkMilestones() {
+      const correctCount = gameState.correct;
+      
+      if (correctCount >= 30 && !gameState.unlockedRewards.cow) {
+        gameState.unlockedRewards.cow = true;
+        document.getElementById('milestone30').classList.add('unlocked', 'clickable');
+        showToast("🐄 解鎖乳牛獎勵！點擊查看！");
+        setTimeout(() => showRewardCard('cow'), 500);
+      }
+      
+      if (correctCount >= 60 && !gameState.unlockedRewards.creeper) {
+        gameState.unlockedRewards.creeper = true;
+        document.getElementById('milestone60').classList.add('unlocked', 'clickable');
+        showToast("💚 解鎖苦力怕獎勵！點擊查看！");
+        setTimeout(() => showRewardCard('creeper'), 500);
+      }
+      
+      if (correctCount >= 90 && !gameState.unlockedRewards.blaze) {
+        gameState.unlockedRewards.blaze = true;
+        document.getElementById('milestone90').classList.add('unlocked', 'clickable');
+        showToast("🔥 解鎖烈焰使者獎勵！點擊查看！");
+        setTimeout(() => showRewardCard('blaze'), 500);
+      }
+      
+      if (correctCount >= 100 && !gameState.unlockedRewards.steve) {
+        gameState.unlockedRewards.steve = true;
+        document.getElementById('milestone100').classList.add('unlocked', 'clickable');
+        showToast("⭐ 解鎖史帝夫獎勵！點擊查看！");
+        setTimeout(() => showRewardCard('steve'), 500);
+      }
+    }
+
+    function showRewardCard(type) {
+      if (!gameState.unlockedRewards[type]) {
+        showToast("❌ 尚未解鎖此獎勵！");
+        return;
+      }
+
+      currentRewardType = type;
+      const modal = document.getElementById('rewardModal');
+      const modelContainer = document.getElementById('reward3dModel');
+      const title = document.getElementById('rewardTitle');
+      const subtitle = document.getElementById('rewardSubtitle');
+
+      const rewardInfo = {
+        cow: { name: '🐄 乳牛', milestone: '完成 30 題', emoji: '🐄' },
+        creeper: { name: '💚 苦力怕', milestone: '完成 60 題', emoji: '💚' },
+        blaze: { name: '🔥 烈焰使者', milestone: '完成 90 題', emoji: '🔥' },
+        steve: { name: '⭐ 史帝夫', milestone: '完成 100 題', emoji: '⭐' }
+      };
+
+      title.textContent = `🏆 獲得 ${rewardInfo[type].name}！`;
+      subtitle.textContent = rewardInfo[type].milestone;
+
+      modelContainer.innerHTML = get3DModelHTML(type);
+
+      const total = gameState.correct + gameState.wrong;
+      const accuracy = total > 0 ? Math.round((gameState.correct / total) * 100) : 0;
+
+      document.getElementById('rewardCorrect').textContent = gameState.correct;
+      document.getElementById('rewardAccuracy').textContent = accuracy + '%';
+      document.getElementById('rewardCombo').textContent = gameState.maxCombo;
+      document.getElementById('rewardXP').textContent = gameState.xp;
+
+      modal.classList.remove('hidden');
+    }
+
+    function get3DModelHTML(type) {
+      switch(type) {
+        case 'cow':
+          return `
+            <div class="cow-3d">
+              <div class="cow-body"></div>
+              <div class="cow-head">
+                <div class="cow-horn left"></div>
+                <div class="cow-horn right"></div>
+              </div>
+              <div class="cow-leg" style="left: 10px;"></div>
+              <div class="cow-leg" style="left: 30px;"></div>
+              <div class="cow-leg" style="right: 30px;"></div>
+              <div class="cow-leg" style="right: 10px;"></div>
+            </div>
+          `;
+        case 'creeper':
+          return `
+            <div class="creeper-3d">
+              <div class="creeper-head">
+                <div class="creeper-face">
+                  <div class="creeper-eye left"></div>
+                  <div class="creeper-eye right"></div>
+                  <div class="creeper-mouth"></div>
+                </div>
+              </div>
+              <div class="creeper-body">
+                <div class="creeper-foot left"></div>
+                <div class="creeper-foot right"></div>
+              </div>
+            </div>
+          `;
+        case 'blaze':
+          return `
+            <div class="blaze-3d">
+              <div class="blaze-head">
+                <div class="blaze-eye left"></div>
+                <div class="blaze-eye right"></div>
+                <div class="blaze-mouth"></div>
+              </div>
+              <div class="blaze-rod" style="top: 30%; left: 15%; animation-delay: 0s;"></div>
+              <div class="blaze-rod" style="top: 35%; right: 15%; animation-delay: 0.3s;"></div>
+              <div class="blaze-rod" style="top: 50%; left: 10%; animation-delay: 0.6s;"></div>
+              <div class="blaze-rod" style="top: 55%; right: 10%; animation-delay: 0.9s;"></div>
+              <div class="blaze-rod" style="top: 70%; left: 20%; animation-delay: 1.2s;"></div>
+              <div class="blaze-rod" style="top: 75%; right: 20%; animation-delay: 1.5s;"></div>
+              <div class="blaze-smoke" style="top: 20%; left: 40%; animation-delay: 0s;"></div>
+              <div class="blaze-smoke" style="top: 25%; left: 55%; animation-delay: 0.5s;"></div>
+              <div class="blaze-smoke" style="top: 30%; left: 45%; animation-delay: 1s;"></div>
+            </div>
+          `;
+        case 'steve':
+          return `
+            <div class="steve-3d">
+              <div class="steve-head">
+                <div class="steve-hair"></div>
+                <div class="steve-eye left"></div>
+                <div class="steve-eye right"></div>
+                <div class="steve-nose"></div>
+                <div class="steve-mouth"></div>
+              </div>
+              <div class="steve-body"></div>
+              <div class="steve-arm left"></div>
+              <div class="steve-arm right"></div>
+              <div class="steve-leg left"></div>
+              <div class="steve-leg right"></div>
+            </div>
+          `;
+        default:
+          return '';
+      }
+    }
+
+    function closeRewardModal() {
+      document.getElementById('rewardModal').classList.add('hidden');
+    }
+
+    function saveCardAsImage() {
+      const canvas = document.getElementById('cardCanvas');
+      const ctx = canvas.getContext('2d');
+      const playerName = document.getElementById('rewardNameInput').value || '匿名礦工';
+
+      // 清除畫布
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // 背景漸層
+      const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+      gradient.addColorStop(0, '#2d1f4e');
+      gradient.addColorStop(1, '#1a1a2e');
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // 邊框
+      ctx.strokeStyle = '#ffd700';
+      ctx.lineWidth = 6;
+      ctx.strokeRect(3, 3, canvas.width - 6, canvas.height - 6);
+
+      // 設置字體
+      ctx.textAlign = 'center';
+
+      // 標題
+      ctx.font = 'bold 28px "VT323", monospace';
+      ctx.fillStyle = '#ffd700';
+      ctx.fillText('🏆 Minecraft 詞語挖礦 🏆', canvas.width / 2, 45);
+
+      // 獎勵名稱
+      const rewardNames = {
+        cow: '🐄 乳牛',
+        creeper: '💚 苦力怕',
+        blaze: '🔥 烈焰使者',
+        steve: '⭐ 史帝夫'
+      };
+      const milestones = {
+        cow: '完成 30 題',
+        creeper: '完成 60 題',
+        blaze: '完成 90 題',
+        steve: '完成 100 題'
+      };
+
+      ctx.font = 'bold 24px "VT323", monospace';
+      ctx.fillStyle = '#55ffff';
+      ctx.fillText(`獲得：${rewardNames[currentRewardType]}`, canvas.width / 2, 85);
+
+      ctx.font = '18px "VT323", monospace';
+      ctx.fillStyle = '#aaaaaa';
+      ctx.fillText(milestones[currentRewardType], canvas.width / 2, 110);
+
+      // 繪製3D角色（簡化版）
+      draw3DCharacter(ctx, currentRewardType, canvas.width / 2, 200);
+
+      // 玩家名稱
+      ctx.font = 'bold 22px "VT323", monospace';
+      ctx.fillStyle = '#ffaa00';
+      ctx.fillText(`礦工：${playerName}`, canvas.width / 2, 320);
+
+      // 統計資料背景
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+      ctx.fillRect(30, 340, canvas.width - 60, 140);
+
+      // 統計資料
+      const total = gameState.correct + gameState.wrong;
+      const accuracy = total > 0 ? Math.round((gameState.correct / total) * 100) : 0;
+
+      ctx.font = '20px "VT323", monospace';
+      ctx.textAlign = 'left';
+      
+      const stats = [
+        { label: '正確題數', value: gameState.correct, color: '#55ff55' },
+        { label: '正確率', value: accuracy + '%', color: '#ffaa00' },
+        { label: '最高連擊', value: gameState.maxCombo, color: '#55ffff' },
+        { label: '總經驗值', value: gameState.xp, color: '#55ff55' }
+      ];
+
+      stats.forEach((stat, index) => {
+        const y = 370 + index * 28;
+        ctx.fillStyle = '#aaaaaa';
+        ctx.fillText(stat.label + ':', 50, y);
+        ctx.fillStyle = stat.color;
+        ctx.textAlign = 'right';
+        ctx.fillText(String(stat.value), canvas.width - 50, y);
+        ctx.textAlign = 'left';
+      });
+
+      // 日期
+      ctx.textAlign = 'center';
+      ctx.font = '16px "VT323", monospace';
+      ctx.fillStyle = '#888888';
+      const date = new Date().toLocaleDateString('zh-TW');
+      ctx.fillText(date, canvas.width / 2, 520);
+
+      // 下載圖片
+      const link = document.createElement('a');
+      link.download = `minecraft-mining-${currentRewardType}-${playerName}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+
+      showToast("📷 圖片已儲存！");
+    }
+
+    function draw3DCharacter(ctx, type, x, y) {
+      ctx.save();
+      ctx.translate(x, y);
+
+      switch(type) {
+        case 'cow':
+          // 身體
+          ctx.fillStyle = '#f5f5f5';
+          ctx.fillRect(-40, -20, 80, 50);
+          ctx.strokeStyle = '#333';
+          ctx.lineWidth = 2;
+          ctx.strokeRect(-40, -20, 80, 50);
+          // 斑點
+          ctx.fillStyle = '#3d3d3d';
+          ctx.fillRect(-30, -10, 20, 15);
+          ctx.fillRect(10, 5, 25, 20);
+          // 頭
+          ctx.fillStyle = '#f5f5f5';
+          ctx.fillRect(-55, -30, 35, 35);
+          ctx.strokeRect(-55, -30, 35, 35);
+          // 鼻子
+          ctx.fillStyle = '#ffcccc';
+          ctx.fillRect(-50, -5, 25, 15);
+          // 角
+          ctx.fillStyle = '#d4d4d4';
+          ctx.fillRect(-50, -45, 8, 15);
+          ctx.fillRect(-30, -45, 8, 15);
+          // 腿
+          ctx.fillStyle = '#f5f5f5';
+          for (let i = 0; i < 4; i++) {
+            const legX = -35 + i * 22;
+            ctx.fillRect(legX, 30, 12, 30);
+            ctx.fillStyle = '#3d3d3d';
+            ctx.fillRect(legX, 50, 12, 10);
+            ctx.fillStyle = '#f5f5f5';
+          }
+          break;
+
+        case 'creeper':
+          // 頭
+          ctx.fillStyle = '#5fa052';
+          ctx.fillRect(-30, -60, 60, 60);
+          ctx.strokeStyle = '#2d5a26';
+          ctx.lineWidth = 2;
+          ctx.strokeRect(-30, -60, 60, 60);
+          // 臉
+          ctx.fillStyle = '#1a1a1a';
+          ctx.fillRect(-20, -50, 10, 14);
+          ctx.fillRect(10, -50, 10, 14);
+          ctx.fillRect(-4, -35, 8, 16);
+          ctx.fillRect(-12, -25, 8, 8);
+          ctx.fillRect(4, -25, 8, 8);
+          // 身體
+          ctx.fillStyle = '#5fa052';
+          ctx.fillRect(-20, 0, 40, 50);
+          ctx.strokeRect(-20, 0, 40, 50);
+          // 腳
+          ctx.fillRect(-20, 50, 16, 20);
+          ctx.fillRect(4, 50, 16, 20);
+          break;
+
+        case 'blaze':
+          // 頭
+          ctx.fillStyle = '#ffdd44';
+          const blazeGradient = ctx.createLinearGradient(-25, -50, 25, 0);
+          blazeGradient.addColorStop(0, '#ffdd44');
+          blazeGradient.addColorStop(0.5, '#ff9900');
+          blazeGradient.addColorStop(1, '#cc6600');
+          ctx.fillStyle = blazeGradient;
+          ctx.fillRect(-25, -50, 50, 50);
+          ctx.strokeStyle = '#993300';
+          ctx.lineWidth = 2;
+          ctx.strokeRect(-25, -50, 50, 50);
+          // 眼睛和嘴
+          ctx.fillStyle = '#1a1a1a';
+          ctx.fillRect(-15, -40, 8, 8);
+          ctx.fillRect(7, -40, 8, 8);
+          ctx.fillRect(-10, -20, 20, 6);
+          // 火焰棒
+          ctx.fillStyle = '#ffaa00';
+          for (let i = 0; i < 6; i++) {
+            const angle = (i / 6) * Math.PI * 2;
+            const rodX = Math.cos(angle) * 45;
+            const rodY = Math.sin(angle) * 30 + 10;
+            ctx.fillRect(rodX - 4, rodY - 20, 8, 40);
+          }
+          // 發光效果
+          ctx.shadowColor = 'rgba(255, 150, 0, 0.5)';
+          ctx.shadowBlur = 20;
+          break;
+
+        case 'steve':
+          // 頭
+          ctx.fillStyle = '#c4a57b';
+          ctx.fillRect(-25, -70, 50, 50);
+          ctx.strokeStyle = '#5a4730';
+          ctx.lineWidth = 2;
+          ctx.strokeRect(-25, -70, 50, 50);
+          // 頭髮
+          ctx.fillStyle = '#3d2817';
+          ctx.fillRect(-25, -70, 50, 15);
+          // 眼睛
+          ctx.fillStyle = '#3d5afe';
+          ctx.fillRect(-15, -50, 6, 6);
+          ctx.fillRect(9, -50, 6, 6);
+          ctx.fillStyle = '#fff';
+          ctx.fillRect(-14, -49, 2, 2);
+          ctx.fillRect(10, -49, 2, 2);
+          // 鼻子
+          ctx.fillStyle = '#b8946e';
+          ctx.fillRect(-3, -42, 6, 4);
+          // 嘴
+          ctx.fillStyle = '#8b6f4e';
+          ctx.fillRect(-7, -32, 14, 3);
+          // 身體
+          ctx.fillStyle = '#00b7b7';
+          ctx.fillRect(-20, -20, 40, 55);
+          ctx.strokeStyle = '#006666';
+          ctx.strokeRect(-20, -20, 40, 55);
+          // 手臂
+          ctx.fillRect(-35, -20, 15, 50);
+          ctx.fillRect(20, -20, 15, 50);
+          ctx.fillStyle = '#c4a57b';
+          ctx.fillRect(-35, 5, 15, 25);
+          ctx.fillRect(20, 5, 15, 25);
+          // 腿
+          ctx.fillStyle = '#3d3daa';
+          ctx.fillRect(-18, 35, 16, 45);
+          ctx.fillRect(2, 35, 16, 45);
+          break;
+      }
+
+      ctx.restore();
+    }
+
     function useSkip() {
       if (gameState.cookies < 3) {
         showToast("❌ 餅乾不足！");
@@ -1162,7 +2063,6 @@
       updateDisplay();
     }
 
-    // 顯示連擊
     function showCombo() {
       if (gameState.combo >= 2) {
         const display = document.getElementById('comboDisplay');
@@ -1175,7 +2075,6 @@
       }
     }
 
-    // 愛心受傷動畫
     function animateHeartDamage() {
       const hearts = document.querySelectorAll('.heart');
       const lostIndex = gameState.maxLives - gameState.lives - 1;
@@ -1187,7 +2086,6 @@
       }
     }
 
-    // 創建粒子效果
     function createParticles(emoji, count) {
       for (let i = 0; i < count; i++) {
         const particle = document.createElement('div');
@@ -1202,7 +2100,6 @@
       }
     }
 
-    // 顯示提示
     function showToast(message) {
       const existing = document.querySelector('.toast');
       if (existing) existing.remove();
@@ -1215,7 +2112,6 @@
       setTimeout(() => toast.remove(), 3000);
     }
 
-    // 更新顯示
     function updateDisplay() {
       document.getElementById('currentLevel').textContent = gameState.currentLevel;
       document.getElementById('combo').textContent = gameState.combo;
@@ -1229,7 +2125,6 @@
       document.getElementById('wrongCount').textContent = gameState.wrong;
       document.getElementById('skipCount').textContent = gameState.skipped;
 
-      // 計算進度和正確率
       const progress = Math.round((gameState.currentQuestion / gameState.totalQuestions) * 100);
       document.getElementById('progress').textContent = progress;
       document.getElementById('xpBar').style.width = progress + '%';
@@ -1238,7 +2133,6 @@
       const accuracy = total > 0 ? Math.round((gameState.correct / total) * 100) : 0;
       document.getElementById('accuracy').textContent = accuracy;
 
-      // 更新愛心
       const heartsContainer = document.getElementById('hearts');
       heartsContainer.innerHTML = '';
       for (let i = 0; i < gameState.maxLives; i++) {
@@ -1247,19 +2141,30 @@
         heart.textContent = '❤️';
         heartsContainer.appendChild(heart);
       }
+
+      // 更新里程碑狀態
+      if (gameState.unlockedRewards.cow) {
+        document.getElementById('milestone30').classList.add('unlocked', 'clickable');
+      }
+      if (gameState.unlockedRewards.creeper) {
+        document.getElementById('milestone60').classList.add('unlocked', 'clickable');
+      }
+      if (gameState.unlockedRewards.blaze) {
+        document.getElementById('milestone90').classList.add('unlocked', 'clickable');
+      }
+      if (gameState.unlockedRewards.steve) {
+        document.getElementById('milestone100').classList.add('unlocked', 'clickable');
+      }
     }
 
-    // 開啟商店
     function openShop() {
       document.getElementById('shopModal').classList.remove('hidden');
     }
 
-    // 關閉商店
     function closeShop() {
       document.getElementById('shopModal').classList.add('hidden');
     }
 
-    // 結束遊戲
     function endGame() {
       document.getElementById('gamePanel').classList.add('hidden');
       document.getElementById('endPanel').classList.remove('hidden');
@@ -1278,9 +2183,33 @@
         document.querySelector('.end-title').textContent = '💀 礦坑崩塌！';
         document.querySelector('.end-screen > div:nth-child(2)').textContent = '你的生命值耗盡了...';
       }
+
+      // 顯示已解鎖的獎勵
+      const endMilestones = document.getElementById('endMilestones');
+      endMilestones.innerHTML = '';
+      
+      const rewards = [
+        { key: 'cow', emoji: '🐄', label: '30題' },
+        { key: 'creeper', emoji: '💚', label: '60題' },
+        { key: 'blaze', emoji: '🔥', label: '90題' },
+        { key: 'steve', emoji: '⭐', label: '100題' }
+      ];
+
+      rewards.forEach(reward => {
+        if (gameState.unlockedRewards[reward.key]) {
+          const div = document.createElement('div');
+          div.className = 'milestone unlocked clickable';
+          div.innerHTML = `<span>${reward.emoji}</span><div class="milestone-label">${reward.label}</div>`;
+          div.onclick = () => showRewardCard(reward.key);
+          endMilestones.appendChild(div);
+        }
+      });
+
+      if (endMilestones.children.length === 0) {
+        endMilestones.innerHTML = '<div style="color: var(--mc-gray);">尚未解鎖任何獎勵</div>';
+      }
     }
 
-    // 重新開始
     function restartGame() {
       gameState = {
         currentLevel: 1,
@@ -1301,8 +2230,19 @@
         stars: 0,
         currentWord: "",
         answered: false,
-        shuffledWords: shuffleArray([...wordBank])
+        shuffledWords: shuffleArray([...wordBank]),
+        unlockedRewards: {
+          cow: false,
+          creeper: false,
+          blaze: false,
+          steve: false
+        }
       };
+
+      // 重置里程碑顯示
+      ['milestone30', 'milestone60', 'milestone90', 'milestone100'].forEach(id => {
+        document.getElementById(id).classList.remove('unlocked', 'clickable');
+      });
 
       document.getElementById('gamePanel').classList.remove('hidden');
       document.getElementById('endPanel').classList.add('hidden');
@@ -1310,7 +2250,6 @@
       updateDisplay();
     }
 
-    // 全螢幕
     function toggleFullscreen() {
       if (!document.fullscreenElement) {
         document.documentElement.requestFullscreen();
@@ -1319,7 +2258,6 @@
       }
     }
 
-    // 初始化遊戲
     init();
   </script>
 </body>
