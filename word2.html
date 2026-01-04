@@ -765,7 +765,7 @@
 
       <!-- 題目統計 -->
       <div style="text-align: center; margin: 15px 0; color: var(--mc-gray);">
-        題目 <span id="questionNum">1</span>/100 | 
+        題目 <span id="questionNum">1</span>/<span id="totalQuestionNum">100</span> | 
         <span style="color: var(--mc-green);">正確 <span id="correctCount">0</span></span> | 
         <span style="color: var(--mc-red);">錯誤 <span id="wrongCount">0</span></span> | 
         <span style="color: var(--mc-gray);">略過 <span id="skipCount">0</span></span> |
@@ -925,19 +925,26 @@
   <div class="combo-display hidden" id="comboDisplay"></div>
 
   <script>
-    // 詞語庫
-    const wordBank = [
-      "蘋果", "香蕉", "西瓜", "草莓", "葡萄", "檸檬", "芒果", "櫻桃", "鳳梨", "橘子",
-      "學校", "老師", "學生", "課本", "黑板", "粉筆", "書包", "鉛筆", "橡皮", "作業",
-      "太陽", "月亮", "星星", "雲朵", "彩虹", "閃電", "雷聲", "大雨", "微風", "晴天",
-      "電腦", "手機", "平板", "鍵盤", "滑鼠", "螢幕", "耳機", "音響", "相機", "電視",
-      "快樂", "悲傷", "生氣", "驚訝", "害怕", "開心", "難過", "興奮", "緊張", "放鬆",
-      "跑步", "游泳", "籃球", "足球", "棒球", "網球", "羽球", "桌球", "排球", "滑板",
-      "早餐", "午餐", "晚餐", "麵包", "牛奶", "果汁", "咖啡", "漢堡", "薯條", "披薩",
-      "醫生", "護士", "警察", "消防", "廚師", "畫家", "歌手", "演員", "作家", "設計",
-      "春天", "夏天", "秋天", "冬天", "季節", "氣候", "溫度", "濕度", "天氣", "預報",
-      "森林", "沙漠", "草原", "海洋", "河流", "湖泊", "山谷", "瀑布", "島嶼", "火山"
+    // 新詞語庫 - 二字詞語
+    const twoCharWords = [
+      "謹慎", "謙虛", "敏捷", "猶豫", "誠信", "憧憬", "尷尬", "慚愧", "剛毅", "寬容",
+      "澎湃", "渲染", "枯竭", "細膩", "湛藍", "幽靜", "繁瑣", "遼闊", "顫抖", "陶醉",
+      "徘徊", "瀏覽", "醞釀", "叮嚀", "妥協", "競爭", "勉勵", "規律", "維護", "關鍵",
+      "邏輯", "判斷", "分析", "靈感", "卓越", "資深", "策略", "敏銳", "預測", "領悟",
+      "象徵", "永恆", "節奏", "核心", "結構", "起源", "障礙", "侷限", "平衡", "和諧"
     ];
+
+    // 新詞語庫 - 三字詞語
+    const threeCharWords = [
+      "綠油油", "亮晶晶", "懶洋洋", "亂糟糟", "孤零零", "慢吞吞", "乾巴巴", "皺巴巴", "羞答答", "響噹噹",
+      "沉甸甸", "霧濛濛", "濕漉漉", "喜洋洋", "密麻麻", "空盪盪", "軟綿綿", "熱烘烘", "興沖沖", "靜悄悄",
+      "絆腳石", "敲門磚", "試金石", "導火線", "里程碑", "保護色", "莫非是", "沒想到", "忍不住", "差不多",
+      "下馬威", "破天荒", "門外漢", "擋箭牌", "馬後炮", "耳邊風", "老掉牙", "桃花源", "閉門羹", "替罪羊",
+      "定心丸", "潑冷水", "炒冷飯", "走過場", "應聲蟲", "鐵飯碗", "耍花招", "指揮棒", "轉折點", "口頭禪"
+    ];
+
+    // 合併詞庫
+    const wordBank = [...twoCharWords, ...threeCharWords];
 
     // 遊戲狀態
     let gameState = {
@@ -945,7 +952,7 @@
       totalLevels: 10,
       questionsPerLevel: 10,
       currentQuestion: 0,
-      totalQuestions: 100,
+      totalQuestions: wordBank.length,
       combo: 0,
       maxCombo: 0,
       cookies: 5,
@@ -965,9 +972,15 @@
     // 初始化
     function init() {
       gameState.shuffledWords = shuffleArray([...wordBank]);
+      gameState.totalQuestions = gameState.shuffledWords.length;
+      gameState.questionsPerLevel = Math.ceil(gameState.totalQuestions / gameState.totalLevels);
+      
       createBackgroundBlocks();
       nextQuestion();
       updateDisplay();
+      
+      // 更新總題數顯示
+      document.getElementById('totalQuestionNum').textContent = gameState.totalQuestions;
       
       // 禁止在題目區域使用拖曳選取
       const questionWord = document.getElementById('questionWord');
@@ -1040,7 +1053,10 @@
       gameState.currentWord = gameState.shuffledWords[gameState.currentQuestion];
       gameState.currentQuestion++;
       gameState.answered = false;
-      gameState.currentLevel = Math.ceil(gameState.currentQuestion / gameState.questionsPerLevel);
+      gameState.currentLevel = Math.min(
+        Math.ceil(gameState.currentQuestion / gameState.questionsPerLevel),
+        gameState.totalLevels
+      );
 
       document.getElementById('questionWord').textContent = gameState.currentWord;
       document.getElementById('answerInput').value = '';
@@ -1269,9 +1285,9 @@
       gameState = {
         currentLevel: 1,
         totalLevels: 10,
-        questionsPerLevel: 10,
+        questionsPerLevel: Math.ceil(wordBank.length / 10),
         currentQuestion: 0,
-        totalQuestions: 100,
+        totalQuestions: wordBank.length,
         combo: 0,
         maxCombo: 0,
         cookies: 5,
