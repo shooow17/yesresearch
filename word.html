@@ -148,6 +148,16 @@
       filter: grayscale(100%);
     }
 
+    .heart.losing {
+      animation: heartBreak 0.5s ease;
+    }
+
+    @keyframes heartBreak {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.3); filter: brightness(2); }
+      100% { transform: scale(0.8); opacity: 0.3; filter: grayscale(100%); }
+    }
+
     .xp-container {
       margin-bottom: 15px;
     }
@@ -346,18 +356,19 @@
     .rewards-preview {
       display: flex;
       justify-content: center;
-      gap: 15px;
+      gap: 10px;
       margin-bottom: 15px;
       flex-wrap: wrap;
     }
 
     .reward-item {
       text-align: center;
-      padding: 8px 12px;
+      padding: 6px 10px;
       background: rgba(0,0,0,0.5);
       border: 3px solid #333;
       opacity: 0.5;
       transition: all 0.3s;
+      min-width: 55px;
     }
 
     .reward-item.unlocked {
@@ -377,14 +388,13 @@
     }
 
     .reward-item .icon {
-      font-size: 1.8rem;
+      font-size: 1.5rem;
       display: block;
-      margin-bottom: 3px;
     }
 
     .reward-item .req {
       font-family: 'VT323', monospace;
-      font-size: 0.9rem;
+      font-size: 0.8rem;
       color: #aaa;
     }
 
@@ -613,11 +623,11 @@
 
     /* 獎勵卡片 */
     .reward-card {
-      width: 400px;
+      width: 380px;
       background: linear-gradient(180deg, #2d5016 0%, #1a3009 100%);
       border: 8px solid #8B6914;
       border-radius: 8px;
-      padding: 25px;
+      padding: 20px;
       position: relative;
       box-shadow: 
         inset 0 0 0 4px #4a7a1c,
@@ -637,46 +647,48 @@
 
     .card-header {
       text-align: center;
-      margin-bottom: 15px;
+      margin-bottom: 10px;
     }
 
     .card-title {
       font-family: 'VT323', monospace;
-      font-size: 1.8rem;
+      font-size: 1.6rem;
       color: #FFD700;
       text-shadow: 2px 2px 0 #8B6914;
     }
 
     .card-subtitle {
       font-family: 'VT323', monospace;
-      font-size: 1rem;
+      font-size: 0.9rem;
       color: #aaa;
     }
 
     /* 3D 角色容器 */
     .character-display {
       width: 100%;
-      height: 200px;
+      height: 180px;
       display: flex;
       justify-content: center;
       align-items: center;
       perspective: 600px;
-      margin-bottom: 15px;
+      margin-bottom: 10px;
+      background: rgba(0,0,0,0.3);
+      border: 3px solid #333;
     }
 
     /* 玩家資訊 */
     .player-info {
       background: rgba(0,0,0,0.4);
-      padding: 12px;
+      padding: 10px;
       border: 3px solid #4a4a4a;
-      margin-bottom: 15px;
+      margin-bottom: 10px;
     }
 
     .player-name-input {
       width: 100%;
-      padding: 10px;
+      padding: 8px;
       font-family: 'VT323', monospace;
-      font-size: 1.3rem;
+      font-size: 1.2rem;
       text-align: center;
       background: #1a1a1a;
       border: 3px solid #555;
@@ -696,42 +708,253 @@
     .score-info {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
-      margin-bottom: 15px;
+      gap: 8px;
+      margin-bottom: 10px;
     }
 
     .score-item {
       background: rgba(0,0,0,0.3);
-      padding: 10px;
+      padding: 8px;
       text-align: center;
       border: 2px solid #444;
     }
 
     .score-item .label {
       font-family: 'VT323', monospace;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       color: #888;
     }
 
     .score-item .value {
       font-family: 'VT323', monospace;
-      font-size: 1.4rem;
+      font-size: 1.3rem;
       color: #55FF55;
     }
 
     .card-footer {
       text-align: center;
       font-family: 'VT323', monospace;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       color: #666;
       border-top: 2px solid #444;
-      padding-top: 10px;
+      padding-top: 8px;
     }
 
     .card-actions {
       display: flex;
       gap: 10px;
       justify-content: center;
+    }
+
+    /* ========================================
+       3D 豬
+       ======================================== */
+    .minecraft-pig {
+      position: relative;
+      transform-style: preserve-3d;
+      transform: rotateX(-15deg) rotateY(-30deg);
+      width: 120px;
+      height: 90px;
+    }
+
+    .pig-body {
+      position: absolute;
+      width: 70px;
+      height: 40px;
+      transform-style: preserve-3d;
+      top: 25px;
+      left: 25px;
+    }
+
+    .pig-body .face {
+      position: absolute;
+      background: #f0a0a0;
+    }
+
+    .pig-body .front {
+      width: 70px;
+      height: 40px;
+      transform: translateZ(20px);
+      background: linear-gradient(180deg, #f5b0b0 0%, #e89090 100%);
+      border: 2px solid #cc7070;
+    }
+
+    .pig-body .back {
+      width: 70px;
+      height: 40px;
+      transform: translateZ(-20px) rotateY(180deg);
+      background: #e08080;
+      border: 2px solid #cc7070;
+    }
+
+    .pig-body .left {
+      width: 40px;
+      height: 40px;
+      transform: rotateY(-90deg) translateZ(0px);
+      background: #e89090;
+      border: 2px solid #cc7070;
+    }
+
+    .pig-body .right {
+      width: 40px;
+      height: 40px;
+      transform: rotateY(90deg) translateZ(70px);
+      background: #e89090;
+      border: 2px solid #cc7070;
+    }
+
+    .pig-body .top {
+      width: 70px;
+      height: 40px;
+      transform: rotateX(90deg) translateZ(0px);
+      background: #f5b8b8;
+      border: 2px solid #cc7070;
+    }
+
+    .pig-body .bottom {
+      width: 70px;
+      height: 40px;
+      transform: rotateX(-90deg) translateZ(40px);
+      background: #d88080;
+      border: 2px solid #cc7070;
+    }
+
+    .pig-head {
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      transform-style: preserve-3d;
+      top: 15px;
+      left: -10px;
+    }
+
+    .pig-head .face {
+      position: absolute;
+      width: 40px;
+      height: 40px;
+    }
+
+    .pig-head .front {
+      transform: translateZ(20px);
+      background: #f5b0b0;
+      border: 2px solid #cc7070;
+      position: relative;
+    }
+
+    .pig-head .front::before {
+      content: '';
+      position: absolute;
+      top: 10px;
+      left: 8px;
+      width: 6px;
+      height: 6px;
+      background: #222;
+      border-radius: 50%;
+      box-shadow: 18px 0 0 #222;
+    }
+
+    .pig-head .front::after {
+      content: '';
+      position: absolute;
+      bottom: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 16px;
+      height: 10px;
+      background: #ffcccc;
+      border: 2px solid #cc9999;
+      border-radius: 3px;
+    }
+
+    .pig-snout-holes {
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 12px;
+      height: 6px;
+      z-index: 10;
+    }
+
+    .pig-snout-holes::before,
+    .pig-snout-holes::after {
+      content: '';
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: #996666;
+      border-radius: 50%;
+      top: 1px;
+    }
+
+    .pig-snout-holes::before { left: 0; }
+    .pig-snout-holes::after { right: 0; }
+
+    .pig-head .back {
+      transform: translateZ(-20px) rotateY(180deg);
+      background: #e08080;
+      border: 2px solid #cc7070;
+    }
+
+    .pig-head .left, .pig-head .right {
+      transform: rotateY(-90deg) translateZ(0px);
+      background: #e89090;
+      border: 2px solid #cc7070;
+    }
+
+    .pig-head .right {
+      transform: rotateY(90deg) translateZ(40px);
+    }
+
+    .pig-head .top {
+      transform: rotateX(90deg) translateZ(0px);
+      background: #f5b8b8;
+      border: 2px solid #cc7070;
+    }
+
+    .pig-ear {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      background: #f0a0a0;
+      border: 2px solid #cc7070;
+      top: -5px;
+    }
+
+    .pig-ear.left-ear {
+      left: 3px;
+      transform: rotateZ(-15deg);
+    }
+
+    .pig-ear.right-ear {
+      right: 3px;
+      transform: rotateZ(15deg);
+    }
+
+    .pig-leg {
+      position: absolute;
+      width: 10px;
+      height: 20px;
+      background: #f0a0a0;
+      border: 2px solid #cc7070;
+      top: 65px;
+    }
+
+    .pig-leg:nth-child(1) { left: 30px; }
+    .pig-leg:nth-child(2) { left: 45px; }
+    .pig-leg:nth-child(3) { left: 65px; }
+    .pig-leg:nth-child(4) { left: 80px; }
+
+    .pig-tail {
+      position: absolute;
+      width: 15px;
+      height: 8px;
+      border: 3px solid #f0a0a0;
+      border-radius: 0 50% 50% 0;
+      border-left: none;
+      top: 40px;
+      right: -8px;
+      transform: rotate(-20deg);
     }
 
     /* ========================================
@@ -921,7 +1144,6 @@
       background: linear-gradient(180deg, #d4d4d4 0%, #d4d4d4 70%, #3a3a3a 70%);
       border: 2px solid #888;
       top: 75px;
-      transform-style: preserve-3d;
     }
 
     .cow-leg:nth-child(1) { left: 25px; }
@@ -949,26 +1171,26 @@
       transform-style: preserve-3d;
       transform: rotateX(-15deg) rotateY(-30deg);
       width: 80px;
-      height: 150px;
+      height: 140px;
     }
 
     .creeper-head {
       position: absolute;
-      width: 60px;
-      height: 60px;
+      width: 50px;
+      height: 50px;
       transform-style: preserve-3d;
       top: 0;
-      left: 10px;
+      left: 15px;
     }
 
     .creeper-head .face {
       position: absolute;
-      width: 60px;
-      height: 60px;
+      width: 50px;
+      height: 50px;
     }
 
     .creeper-head .front {
-      transform: translateZ(30px);
+      transform: translateZ(25px);
       background: #5fa55a;
       border: 2px solid #3d7a38;
       position: relative;
@@ -977,28 +1199,28 @@
     .creeper-head .front::before {
       content: '';
       position: absolute;
-      top: 15px;
-      left: 10px;
-      width: 12px;
-      height: 15px;
+      top: 12px;
+      left: 8px;
+      width: 10px;
+      height: 12px;
       background: #1a1a1a;
-      box-shadow: 28px 0 0 #1a1a1a;
+      box-shadow: 24px 0 0 #1a1a1a;
     }
 
     .creeper-head .front::after {
       content: '';
       position: absolute;
-      bottom: 8px;
+      bottom: 6px;
       left: 50%;
       transform: translateX(-50%);
-      width: 8px;
-      height: 20px;
+      width: 6px;
+      height: 16px;
       background: #1a1a1a;
-      box-shadow: -8px -8px 0 #1a1a1a, 8px -8px 0 #1a1a1a;
+      box-shadow: -6px -6px 0 #1a1a1a, 6px -6px 0 #1a1a1a;
     }
 
     .creeper-head .back {
-      transform: translateZ(-30px) rotateY(180deg);
+      transform: translateZ(-25px) rotateY(180deg);
       background: #4a8a45;
       border: 2px solid #3d7a38;
     }
@@ -1010,7 +1232,7 @@
     }
 
     .creeper-head .right {
-      transform: rotateY(90deg) translateZ(60px);
+      transform: rotateY(90deg) translateZ(50px);
     }
 
     .creeper-head .top {
@@ -1020,18 +1242,18 @@
     }
 
     .creeper-head .bottom {
-      transform: rotateX(-90deg) translateZ(60px);
+      transform: rotateX(-90deg) translateZ(50px);
       background: #4a8a45;
       border: 2px solid #3d7a38;
     }
 
     .creeper-body {
       position: absolute;
-      width: 40px;
-      height: 50px;
+      width: 30px;
+      height: 45px;
       transform-style: preserve-3d;
-      top: 60px;
-      left: 20px;
+      top: 50px;
+      left: 25px;
     }
 
     .creeper-body .face {
@@ -1040,63 +1262,44 @@
     }
 
     .creeper-body .front {
-      width: 40px;
-      height: 50px;
-      transform: translateZ(20px);
-      background: linear-gradient(135deg, #5fa55a 0%, #4a8a45 50%, #5fa55a 100%);
+      width: 30px;
+      height: 45px;
+      transform: translateZ(15px);
+      background: linear-gradient(180deg, #5fa55a 0%, #4a8a45 100%);
       border: 2px solid #3d7a38;
     }
 
     .creeper-body .back {
-      width: 40px;
-      height: 50px;
-      transform: translateZ(-20px) rotateY(180deg);
+      width: 30px;
+      height: 45px;
+      transform: translateZ(-15px) rotateY(180deg);
       background: #4a8a45;
       border: 2px solid #3d7a38;
     }
 
     .creeper-body .left, .creeper-body .right {
-      width: 40px;
-      height: 50px;
+      width: 30px;
+      height: 45px;
       transform: rotateY(-90deg) translateZ(0px);
       background: #4a8a45;
       border: 2px solid #3d7a38;
     }
 
     .creeper-body .right {
-      transform: rotateY(90deg) translateZ(40px);
+      transform: rotateY(90deg) translateZ(30px);
     }
 
     .creeper-leg {
       position: absolute;
-      width: 20px;
-      height: 30px;
-      transform-style: preserve-3d;
-      top: 110px;
-    }
-
-    .creeper-leg .face {
-      position: absolute;
+      width: 15px;
+      height: 25px;
       background: #5fa55a;
       border: 2px solid #3d7a38;
+      top: 95px;
     }
 
-    .creeper-leg.front-left { left: 20px; }
-    .creeper-leg.front-right { left: 45px; }
-    .creeper-leg.back-left { left: 20px; transform: translateZ(-20px); }
-    .creeper-leg.back-right { left: 45px; transform: translateZ(-20px); }
-
-    .creeper-leg .front-face {
-      width: 20px;
-      height: 30px;
-      transform: translateZ(10px);
-    }
-
-    .creeper-leg .side-face {
-      width: 20px;
-      height: 30px;
-      transform: rotateY(90deg) translateZ(20px);
-    }
+    .creeper-leg.front-left { left: 25px; }
+    .creeper-leg.front-right { left: 42px; }
 
     /* ========================================
        3D 烈焰使者
@@ -1106,16 +1309,16 @@
       transform-style: preserve-3d;
       transform: rotateX(-15deg) rotateY(-30deg);
       width: 100px;
-      height: 150px;
+      height: 140px;
     }
 
     .blaze-head {
       position: absolute;
-      width: 50px;
-      height: 50px;
+      width: 45px;
+      height: 45px;
       transform-style: preserve-3d;
       top: 0;
-      left: 25px;
+      left: 27px;
       animation: blazeFloat 2s ease-in-out infinite;
     }
 
@@ -1126,12 +1329,12 @@
 
     .blaze-head .face {
       position: absolute;
-      width: 50px;
-      height: 50px;
+      width: 45px;
+      height: 45px;
     }
 
     .blaze-head .front {
-      transform: translateZ(25px);
+      transform: translateZ(22px);
       background: #f5a623;
       border: 2px solid #cc7a00;
       position: relative;
@@ -1140,12 +1343,12 @@
     .blaze-head .front::before {
       content: '';
       position: absolute;
-      top: 15px;
-      left: 8px;
+      top: 12px;
+      left: 6px;
       width: 10px;
       height: 8px;
       background: #fff700;
-      box-shadow: 24px 0 0 #fff700, 0 0 10px #fff700, 24px 0 10px #fff700;
+      box-shadow: 22px 0 0 #fff700, 0 0 8px #fff700, 22px 0 8px #fff700;
     }
 
     .blaze-head .front::after {
@@ -1154,13 +1357,13 @@
       bottom: 10px;
       left: 50%;
       transform: translateX(-50%);
-      width: 15px;
-      height: 5px;
+      width: 12px;
+      height: 4px;
       background: #cc7a00;
     }
 
     .blaze-head .back {
-      transform: translateZ(-25px) rotateY(180deg);
+      transform: translateZ(-22px) rotateY(180deg);
       background: #cc7a00;
       border: 2px solid #995c00;
     }
@@ -1172,7 +1375,7 @@
     }
 
     .blaze-head .right {
-      transform: rotateY(90deg) translateZ(50px);
+      transform: rotateY(90deg) translateZ(45px);
     }
 
     .blaze-head .top {
@@ -1183,22 +1386,22 @@
 
     .blaze-rod {
       position: absolute;
-      width: 8px;
-      height: 40px;
+      width: 6px;
+      height: 35px;
       background: linear-gradient(180deg, #ffcc00 0%, #f5a623 50%, #cc7a00 100%);
       border: 2px solid #995c00;
-      box-shadow: 0 0 10px #f5a623, 0 0 20px #cc7a00;
+      box-shadow: 0 0 8px #f5a623, 0 0 15px #cc7a00;
     }
 
-    .blaze-rod:nth-child(2) { top: 55px; left: 15px; transform: rotate(-20deg); animation: rodFloat1 1.5s ease-in-out infinite; }
-    .blaze-rod:nth-child(3) { top: 55px; left: 35px; transform: rotate(0deg); animation: rodFloat2 1.5s ease-in-out infinite 0.2s; }
-    .blaze-rod:nth-child(4) { top: 55px; left: 55px; transform: rotate(10deg); animation: rodFloat3 1.5s ease-in-out infinite 0.4s; }
-    .blaze-rod:nth-child(5) { top: 55px; left: 75px; transform: rotate(20deg); animation: rodFloat1 1.5s ease-in-out infinite 0.6s; }
-    .blaze-rod:nth-child(6) { top: 80px; left: 25px; transform: rotate(-10deg); animation: rodFloat2 1.5s ease-in-out infinite 0.3s; }
-    .blaze-rod:nth-child(7) { top: 80px; left: 45px; transform: rotate(5deg); animation: rodFloat3 1.5s ease-in-out infinite 0.5s; }
-    .blaze-rod:nth-child(8) { top: 80px; left: 65px; transform: rotate(15deg); animation: rodFloat1 1.5s ease-in-out infinite 0.7s; }
-    .blaze-rod:nth-child(9) { top: 105px; left: 35px; transform: rotate(-5deg); animation: rodFloat2 1.5s ease-in-out infinite 0.1s; }
-    .blaze-rod:nth-child(10) { top: 105px; left: 55px; transform: rotate(8deg); animation: rodFloat3 1.5s ease-in-out infinite 0.8s; }
+    .blaze-rod:nth-child(2) { top: 50px; left: 12px; transform: rotate(-20deg); animation: rodFloat1 1.5s ease-in-out infinite; }
+    .blaze-rod:nth-child(3) { top: 50px; left: 30px; animation: rodFloat2 1.5s ease-in-out infinite 0.2s; }
+    .blaze-rod:nth-child(4) { top: 50px; left: 48px; transform: rotate(10deg); animation: rodFloat3 1.5s ease-in-out infinite 0.4s; }
+    .blaze-rod:nth-child(5) { top: 50px; left: 66px; transform: rotate(20deg); animation: rodFloat1 1.5s ease-in-out infinite 0.6s; }
+    .blaze-rod:nth-child(6) { top: 75px; left: 22px; transform: rotate(-10deg); animation: rodFloat2 1.5s ease-in-out infinite 0.3s; }
+    .blaze-rod:nth-child(7) { top: 75px; left: 40px; transform: rotate(5deg); animation: rodFloat3 1.5s ease-in-out infinite 0.5s; }
+    .blaze-rod:nth-child(8) { top: 75px; left: 58px; transform: rotate(15deg); animation: rodFloat1 1.5s ease-in-out infinite 0.7s; }
+    .blaze-rod:nth-child(9) { top: 100px; left: 32px; transform: rotate(-5deg); animation: rodFloat2 1.5s ease-in-out infinite 0.1s; }
+    .blaze-rod:nth-child(10) { top: 100px; left: 50px; transform: rotate(8deg); animation: rodFloat3 1.5s ease-in-out infinite 0.8s; }
 
     @keyframes rodFloat1 {
       0%, 100% { transform: rotate(-20deg) translateY(0); }
@@ -1217,20 +1420,20 @@
 
     .blaze-smoke {
       position: absolute;
-      width: 10px;
-      height: 10px;
+      width: 8px;
+      height: 8px;
       background: rgba(255, 200, 0, 0.6);
       border-radius: 50%;
       animation: smokeRise 1s ease-out infinite;
     }
 
-    .blaze-smoke:nth-child(11) { top: 130px; left: 30px; animation-delay: 0s; }
-    .blaze-smoke:nth-child(12) { top: 130px; left: 50px; animation-delay: 0.3s; }
-    .blaze-smoke:nth-child(13) { top: 130px; left: 70px; animation-delay: 0.6s; }
+    .blaze-smoke:nth-child(11) { top: 120px; left: 25px; animation-delay: 0s; }
+    .blaze-smoke:nth-child(12) { top: 120px; left: 45px; animation-delay: 0.3s; }
+    .blaze-smoke:nth-child(13) { top: 120px; left: 65px; animation-delay: 0.6s; }
 
     @keyframes smokeRise {
       0% { opacity: 0.8; transform: translateY(0) scale(1); }
-      100% { opacity: 0; transform: translateY(-30px) scale(0.3); }
+      100% { opacity: 0; transform: translateY(-25px) scale(0.3); }
     }
 
     /* ========================================
@@ -1240,27 +1443,27 @@
       position: relative;
       transform-style: preserve-3d;
       transform: rotateX(-15deg) rotateY(-30deg);
-      width: 80px;
-      height: 180px;
+      width: 70px;
+      height: 160px;
     }
 
     .steve-head {
       position: absolute;
-      width: 48px;
-      height: 48px;
+      width: 40px;
+      height: 40px;
       transform-style: preserve-3d;
       top: 0;
-      left: 16px;
+      left: 15px;
     }
 
     .steve-head .face {
       position: absolute;
-      width: 48px;
-      height: 48px;
+      width: 40px;
+      height: 40px;
     }
 
     .steve-head .front {
-      transform: translateZ(24px);
+      transform: translateZ(20px);
       background: #c69c6d;
       border: 2px solid #8B6914;
       position: relative;
@@ -1272,35 +1475,35 @@
       top: 0;
       left: 0;
       right: 0;
-      height: 16px;
+      height: 14px;
       background: #4a3728;
     }
 
     .steve-head .front::after {
       content: '';
       position: absolute;
-      top: 20px;
-      left: 10px;
-      width: 8px;
-      height: 8px;
+      top: 18px;
+      left: 8px;
+      width: 6px;
+      height: 6px;
       background: #4a3728;
-      box-shadow: 20px 0 0 #4a3728, 4px 0 0 #fff, 24px 0 0 #fff;
+      box-shadow: 18px 0 0 #4a3728, 3px 0 0 #fff, 21px 0 0 #fff;
     }
 
     .steve-head .back {
-      transform: translateZ(-24px) rotateY(180deg);
+      transform: translateZ(-20px) rotateY(180deg);
       background: #4a3728;
       border: 2px solid #3a2718;
     }
 
     .steve-head .left, .steve-head .right {
       transform: rotateY(-90deg) translateZ(0px);
-      background: linear-gradient(180deg, #4a3728 0%, #4a3728 33%, #c69c6d 33%);
+      background: linear-gradient(180deg, #4a3728 0%, #4a3728 35%, #c69c6d 35%);
       border: 2px solid #8B6914;
     }
 
     .steve-head .right {
-      transform: rotateY(90deg) translateZ(48px);
+      transform: rotateY(90deg) translateZ(40px);
     }
 
     .steve-head .top {
@@ -1310,18 +1513,18 @@
     }
 
     .steve-head .bottom {
-      transform: rotateX(-90deg) translateZ(48px);
+      transform: rotateX(-90deg) translateZ(40px);
       background: #c69c6d;
       border: 2px solid #8B6914;
     }
 
     .steve-body {
       position: absolute;
-      width: 48px;
-      height: 60px;
+      width: 40px;
+      height: 50px;
       transform-style: preserve-3d;
-      top: 48px;
-      left: 16px;
+      top: 40px;
+      left: 15px;
     }
 
     .steve-body .face {
@@ -1329,120 +1532,88 @@
     }
 
     .steve-body .front {
-      width: 48px;
-      height: 60px;
-      transform: translateZ(12px);
+      width: 40px;
+      height: 50px;
+      transform: translateZ(10px);
       background: #00a8a8;
       border: 2px solid #007878;
     }
 
     .steve-body .back {
-      width: 48px;
-      height: 60px;
-      transform: translateZ(-12px) rotateY(180deg);
+      width: 40px;
+      height: 50px;
+      transform: translateZ(-10px) rotateY(180deg);
       background: #008888;
       border: 2px solid #006868;
     }
 
     .steve-body .left, .steve-body .right {
-      width: 24px;
-      height: 60px;
+      width: 20px;
+      height: 50px;
       transform: rotateY(-90deg) translateZ(0px);
       background: #008888;
       border: 2px solid #006868;
     }
 
     .steve-body .right {
-      transform: rotateY(90deg) translateZ(48px);
+      transform: rotateY(90deg) translateZ(40px);
     }
 
     .steve-arm {
       position: absolute;
-      width: 24px;
-      height: 60px;
-      transform-style: preserve-3d;
-      top: 48px;
-    }
-
-    .steve-arm .face {
-      position: absolute;
+      width: 20px;
+      height: 50px;
+      top: 40px;
     }
 
     .steve-arm.left-arm {
-      left: -8px;
-    }
-
-    .steve-arm.right-arm {
-      right: -8px;
-    }
-
-    .steve-arm .front {
-      width: 24px;
-      height: 60px;
-      transform: translateZ(6px);
+      left: -5px;
       background: linear-gradient(180deg, #00a8a8 0%, #00a8a8 50%, #c69c6d 50%);
       border: 2px solid #007878;
     }
 
-    .steve-arm .side {
-      width: 12px;
-      height: 60px;
-      transform: rotateY(90deg) translateZ(24px);
-      background: linear-gradient(180deg, #008888 0%, #008888 50%, #b08050 50%);
-      border: 2px solid #006868;
+    .steve-arm.right-arm {
+      right: -5px;
+      background: linear-gradient(180deg, #00a8a8 0%, #00a8a8 50%, #c69c6d 50%);
+      border: 2px solid #007878;
     }
 
     .steve-leg {
       position: absolute;
-      width: 24px;
-      height: 60px;
-      transform-style: preserve-3d;
-      top: 108px;
-    }
-
-    .steve-leg .face {
-      position: absolute;
-    }
-
-    .steve-leg.left-leg {
-      left: 16px;
-    }
-
-    .steve-leg.right-leg {
-      left: 40px;
-    }
-
-    .steve-leg .front {
-      width: 24px;
-      height: 60px;
-      transform: translateZ(6px);
+      width: 20px;
+      height: 50px;
+      top: 90px;
       background: #1e1e78;
       border: 2px solid #0e0e58;
     }
 
-    .steve-leg .side {
-      width: 12px;
-      height: 60px;
-      transform: rotateY(90deg) translateZ(24px);
-      background: #181868;
-      border: 2px solid #080848;
+    .steve-leg.left-leg {
+      left: 15px;
+    }
+
+    .steve-leg.right-leg {
+      left: 35px;
     }
 
     /* 卡片內角色調整 */
+    .character-display .minecraft-pig,
     .character-display .minecraft-cow,
     .character-display .minecraft-creeper,
     .character-display .minecraft-blaze,
     .character-display .minecraft-steve {
-      transform: rotateX(-15deg) rotateY(-30deg) scale(0.9);
+      transform: rotateX(-15deg) rotateY(-30deg) scale(0.85);
     }
 
     @media (max-width: 600px) {
-      h1 { font-size: 1.8rem; }
-      .question-word { font-size: 2.2rem; padding: 12px 18px; }
+      h1 { font-size: 1.6rem; }
+      .question-word { font-size: 2rem; padding: 10px 15px; }
       .mc-input { width: 100%; font-size: 1.2rem; }
-      .stat-item { font-size: 1.1rem; }
-      .reward-card { width: 340px; padding: 20px; }
+      .stat-item { font-size: 1rem; }
+      .reward-card { width: 320px; padding: 15px; }
       .reward-card-panel { padding: 10px; }
+      .reward-item { padding: 5px 8px; min-width: 45px; }
+      .reward-item .icon { font-size: 1.2rem; }
+      .reward-item .req { font-size: 0.7rem; }
     }
   </style>
 </head>
@@ -1475,6 +1646,10 @@
 
       <!-- 獎勵預覽 -->
       <div class="rewards-preview">
+        <div class="reward-item" id="reward10">
+          <span class="icon">🐷</span>
+          <span class="req">10題</span>
+        </div>
         <div class="reward-item" id="reward30">
           <span class="icon">🐄</span>
           <span class="req">30題</span>
@@ -1606,7 +1781,7 @@
     <div class="reward-card-wrapper">
       <div class="reward-card" id="rewardCard">
         <div class="card-header">
-          <div class="card-title" id="cardTitle">🐄 乳牛收藏卡</div>
+          <div class="card-title" id="cardTitle">🐷 豬豬收藏卡</div>
           <div class="card-subtitle">Minecraft 詞語挖礦成就</div>
         </div>
 
@@ -1661,10 +1836,10 @@
 
     const threeCharWords = [
       "綠油油", "亮晶晶", "懶洋洋", "亂糟糟", "慢吞吞", "靜悄悄", "笑嘻嘻", "興沖沖", "冷冰冰", "熱呼呼",
-      "暖洋洋", "冷颼颼", "甜蜜蜜", "酸溜溜", "苦哈哈", "軟綿綿", "大富翁", "輕飄飄", "沉甸甸", "胖嘟嘟",
+      "暖洋洋", "冷颼颼", "甜蜜蜜", "酸溜溜", "苦哈哈", "軟綿綿", "硬邦邦", "輕飄飄", "沉甸甸", "胖嘟嘟",
       "瘦巴巴", "白茫茫", "黑漆漆", "紅通通", "黃澄澄", "毛茸茸", "滑溜溜", "粗糙糙", "髒兮兮", "香噴噴",
       "臭烘烘", "濕答答", "乾巴巴", "亮堂堂", "陰森森", "眼睜睜", "急匆匆", "氣呼呼", "樂陶陶", "哭啼啼",
-      "撲克牌", "光禿禿", "水汪汪", "淚汪汪", "羞答答", "怒沖沖", "喜洋洋", "悲切切", "傻愣愣", "活生生"
+      "血淋淋", "光禿禿", "水汪汪", "淚汪汪", "羞答答", "怒沖沖", "喜洋洋", "悲切切", "傻愣愣", "活生生"
     ];
 
     const wordBank = [...twoCharWords, ...threeCharWords];
@@ -1688,11 +1863,13 @@
       currentWord: "",
       answered: false,
       shuffledWords: [],
-      unlockedRewards: []
+      unlockedRewards: [],
+      completedQuestions: 0 // 答對的題數，用於獎勵判定
     };
 
     // 獎勵設定
     const rewardMilestones = [
+      { questions: 10, type: 'pig', name: '🐷 豬豬收藏卡', icon: '🐷' },
       { questions: 30, type: 'cow', name: '🐄 乳牛收藏卡', icon: '🐄' },
       { questions: 60, type: 'creeper', name: '💚 苦力怕收藏卡', icon: '💚' },
       { questions: 90, type: 'blaze', name: '🔥 烈焰使者收藏卡', icon: '🔥' },
@@ -1701,6 +1878,34 @@
 
     // 3D 角色 HTML
     const characterHTML = {
+      pig: `
+        <div class="minecraft-pig">
+          <div class="pig-head">
+            <div class="face front">
+              <div class="pig-ear left-ear"></div>
+              <div class="pig-ear right-ear"></div>
+              <div class="pig-snout-holes"></div>
+            </div>
+            <div class="face back"></div>
+            <div class="face left"></div>
+            <div class="face right"></div>
+            <div class="face top"></div>
+          </div>
+          <div class="pig-body">
+            <div class="face front"></div>
+            <div class="face back"></div>
+            <div class="face left"></div>
+            <div class="face right"></div>
+            <div class="face top"></div>
+            <div class="face bottom"></div>
+          </div>
+          <div class="pig-leg"></div>
+          <div class="pig-leg"></div>
+          <div class="pig-leg"></div>
+          <div class="pig-leg"></div>
+          <div class="pig-tail"></div>
+        </div>
+      `,
       cow: `
         <div class="minecraft-cow">
           <div class="cow-head">
@@ -1746,14 +1951,8 @@
             <div class="face left"></div>
             <div class="face right"></div>
           </div>
-          <div class="creeper-leg front-left">
-            <div class="face front-face"></div>
-            <div class="face side-face"></div>
-          </div>
-          <div class="creeper-leg front-right">
-            <div class="face front-face"></div>
-            <div class="face side-face"></div>
-          </div>
+          <div class="creeper-leg front-left"></div>
+          <div class="creeper-leg front-right"></div>
         </div>
       `,
       blaze: `
@@ -1795,22 +1994,10 @@
             <div class="face left"></div>
             <div class="face right"></div>
           </div>
-          <div class="steve-arm left-arm">
-            <div class="face front"></div>
-            <div class="face side"></div>
-          </div>
-          <div class="steve-arm right-arm">
-            <div class="face front"></div>
-            <div class="face side"></div>
-          </div>
-          <div class="steve-leg left-leg">
-            <div class="face front"></div>
-            <div class="face side"></div>
-          </div>
-          <div class="steve-leg right-leg">
-            <div class="face front"></div>
-            <div class="face side"></div>
-          </div>
+          <div class="steve-arm left-arm"></div>
+          <div class="steve-arm right-arm"></div>
+          <div class="steve-leg left-leg"></div>
+          <div class="steve-leg right-leg"></div>
         </div>
       `
     };
@@ -1859,7 +2046,7 @@
         return;
       }
 
-      // 檢查里程碑獎勵
+      // 檢查里程碑獎勵（基於正確答對的題數）
       checkRewardMilestones();
 
       gameState.currentWord = gameState.shuffledWords[gameState.currentQuestion];
@@ -1888,7 +2075,9 @@
       if (!answer) return;
 
       if (answer === gameState.currentWord) {
+        // 答對
         gameState.correct++;
+        gameState.completedQuestions++; // 完成題數+1
         gameState.combo++;
         gameState.stars++;
         if (gameState.combo > gameState.maxCombo) gameState.maxCombo = gameState.combo;
@@ -1912,15 +2101,24 @@
         input.disabled = true;
         createParticles('✓', '#55FF55');
 
+        // 檢查是否達成新里程碑
+        checkRewardMilestones();
+
       } else {
+        // 答錯
         gameState.wrong++;
         gameState.combo = 0;
-        gameState.lives--;
+        gameState.lives--; // 每答錯一題扣1顆愛心
+        
         input.className = 'mc-input wrong';
         createParticles('✗', '#FF5555');
+        
+        // 播放愛心破碎動畫
+        updateHeartsWithAnimation();
 
+        // 檢查是否愛心歸零
         if (gameState.lives <= 0) {
-          setTimeout(() => endGame(), 500);
+          setTimeout(() => endGame(), 800);
           return;
         }
 
@@ -1934,8 +2132,23 @@
       updateDisplay();
     }
 
+    function updateHeartsWithAnimation() {
+      const container = document.getElementById('hearts');
+      const hearts = container.querySelectorAll('.heart');
+      
+      // 找到要破碎的愛心（從右到左）
+      const heartIndex = gameState.lives; // lives 已經減1了
+      if (hearts[heartIndex]) {
+        hearts[heartIndex].classList.add('losing');
+        setTimeout(() => {
+          hearts[heartIndex].classList.remove('losing');
+          hearts[heartIndex].classList.add('empty');
+        }, 500);
+      }
+    }
+
     function checkRewardMilestones() {
-      const completed = gameState.currentQuestion;
+      const completed = gameState.completedQuestions;
       rewardMilestones.forEach(reward => {
         if (completed >= reward.questions && !gameState.unlockedRewards.includes(reward.type)) {
           gameState.unlockedRewards.push(reward.type);
@@ -1991,16 +2204,22 @@
     }
 
     function updateRewardPreview() {
-      const completed = gameState.currentQuestion;
+      const completed = gameState.completedQuestions;
       
       rewardMilestones.forEach(reward => {
         const el = document.getElementById(`reward${reward.questions}`);
+        if (!el) return;
+        
         el.classList.remove('unlocked', 'current');
         
         if (completed >= reward.questions) {
           el.classList.add('unlocked');
-        } else if (completed >= reward.questions - 10) {
-          el.classList.add('current');
+        } else {
+          // 找到下一個未解鎖的里程碑
+          const nextMilestone = rewardMilestones.find(r => completed < r.questions);
+          if (nextMilestone && nextMilestone.questions === reward.questions) {
+            el.classList.add('current');
+          }
         }
       });
     }
@@ -2021,7 +2240,7 @@
         resultTitle.classList.remove('fail');
       }
 
-      document.getElementById('finalQuestions').textContent = gameState.currentQuestion;
+      document.getElementById('finalQuestions').textContent = gameState.completedQuestions;
       document.getElementById('finalCorrect').textContent = gameState.correct;
       document.getElementById('finalWrong').textContent = gameState.wrong;
       document.getElementById('finalCombo').textContent = gameState.maxCombo;
@@ -2045,6 +2264,8 @@
           btn.onclick = () => openRewardCard(type);
           buttonsContainer.appendChild(btn);
         });
+      } else {
+        document.getElementById('unlockedRewards').style.display = 'none';
       }
     }
 
@@ -2054,7 +2275,7 @@
       document.getElementById('cardTitle').textContent = reward.name;
       document.getElementById('characterDisplay').innerHTML = characterHTML[type];
       
-      document.getElementById('cardQuestions').textContent = gameState.currentQuestion;
+      document.getElementById('cardQuestions').textContent = gameState.completedQuestions;
       const total = gameState.correct + gameState.wrong;
       const accuracy = total > 0 ? Math.round((gameState.correct / total) * 100) : 0;
       document.getElementById('cardAccuracy').textContent = `${accuracy}%`;
@@ -2148,7 +2369,8 @@
         currentWord: "",
         answered: false,
         shuffledWords: [],
-        unlockedRewards: []
+        unlockedRewards: [],
+        completedQuestions: 0
       };
 
       gameState.shuffledWords = shuffleArray([...wordBank]);
