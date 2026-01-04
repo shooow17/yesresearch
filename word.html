@@ -75,7 +75,7 @@
     }
 
     .game-wrapper {
-      background: rgba(0, 0, 0, 0.8);
+      background: rgba(0, 0, 0, 0.85);
       border: 8px solid #4a4a4a;
       border-top-color: #6a6a6a;
       border-left-color: #6a6a6a;
@@ -356,7 +356,7 @@
     .rewards-preview {
       display: flex;
       justify-content: center;
-      gap: 10px;
+      gap: 8px;
       margin-bottom: 15px;
       flex-wrap: wrap;
     }
@@ -369,12 +369,18 @@
       opacity: 0.5;
       transition: all 0.3s;
       min-width: 55px;
+      cursor: pointer;
     }
 
     .reward-item.unlocked {
       opacity: 1;
       border-color: #FFD700;
       box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+    }
+
+    .reward-item.unlocked:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
     }
 
     .reward-item.current {
@@ -602,7 +608,7 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0,0,0,0.9);
+      background: rgba(0,0,0,0.92);
       z-index: 300;
       justify-content: center;
       align-items: center;
@@ -612,6 +618,12 @@
 
     .reward-card-panel.active {
       display: flex;
+      animation: panelFadeIn 0.5s ease;
+    }
+
+    @keyframes panelFadeIn {
+      0% { opacity: 0; }
+      100% { opacity: 1; }
     }
 
     .reward-card-wrapper {
@@ -619,6 +631,30 @@
       flex-direction: column;
       align-items: center;
       gap: 20px;
+      animation: cardSlideIn 0.6s ease;
+    }
+
+    @keyframes cardSlideIn {
+      0% { transform: scale(0.5) translateY(-50px); opacity: 0; }
+      100% { transform: scale(1) translateY(0); opacity: 1; }
+    }
+
+    .unlock-celebration {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .unlock-celebration h2 {
+      font-family: 'VT323', monospace;
+      font-size: 2rem;
+      color: #FFD700;
+      text-shadow: 0 0 20px #FFD700;
+      animation: celebratePulse 0.5s ease infinite alternate;
+    }
+
+    @keyframes celebratePulse {
+      0% { transform: scale(1); }
+      100% { transform: scale(1.05); }
     }
 
     /* 獎勵卡片 */
@@ -631,7 +667,8 @@
       position: relative;
       box-shadow: 
         inset 0 0 0 4px #4a7a1c,
-        0 10px 30px rgba(0,0,0,0.5);
+        0 10px 30px rgba(0,0,0,0.5),
+        0 0 50px rgba(255, 215, 0, 0.3);
     }
 
     .reward-card::before {
@@ -663,17 +700,31 @@
       color: #aaa;
     }
 
-    /* 3D 角色容器 */
+    /* 角色圖片容器 */
     .character-display {
       width: 100%;
       height: 180px;
       display: flex;
       justify-content: center;
       align-items: center;
-      perspective: 600px;
       margin-bottom: 10px;
       background: rgba(0,0,0,0.3);
       border: 3px solid #333;
+      overflow: hidden;
+    }
+
+    .character-image {
+      max-width: 150px;
+      max-height: 160px;
+      image-rendering: pixelated;
+      image-rendering: -moz-crisp-edges;
+      image-rendering: crisp-edges;
+      animation: characterBounce 2s ease-in-out infinite;
+    }
+
+    @keyframes characterBounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
     }
 
     /* 玩家資訊 */
@@ -744,864 +795,59 @@
       display: flex;
       gap: 10px;
       justify-content: center;
+      flex-wrap: wrap;
     }
 
-    /* ========================================
-       3D 豬
-       ======================================== */
-    .minecraft-pig {
-      position: relative;
-      transform-style: preserve-3d;
-      transform: rotateX(-15deg) rotateY(-30deg);
-      width: 120px;
-      height: 90px;
+    /* 里程碑縮圖列 */
+    .milestone-thumbs {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      margin-top: 10px;
     }
 
-    .pig-body {
-      position: absolute;
-      width: 70px;
-      height: 40px;
-      transform-style: preserve-3d;
-      top: 25px;
-      left: 25px;
-    }
-
-    .pig-body .face {
-      position: absolute;
-      background: #f0a0a0;
-    }
-
-    .pig-body .front {
-      width: 70px;
-      height: 40px;
-      transform: translateZ(20px);
-      background: linear-gradient(180deg, #f5b0b0 0%, #e89090 100%);
-      border: 2px solid #cc7070;
-    }
-
-    .pig-body .back {
-      width: 70px;
-      height: 40px;
-      transform: translateZ(-20px) rotateY(180deg);
-      background: #e08080;
-      border: 2px solid #cc7070;
-    }
-
-    .pig-body .left {
-      width: 40px;
-      height: 40px;
-      transform: rotateY(-90deg) translateZ(0px);
-      background: #e89090;
-      border: 2px solid #cc7070;
-    }
-
-    .pig-body .right {
-      width: 40px;
-      height: 40px;
-      transform: rotateY(90deg) translateZ(70px);
-      background: #e89090;
-      border: 2px solid #cc7070;
-    }
-
-    .pig-body .top {
-      width: 70px;
-      height: 40px;
-      transform: rotateX(90deg) translateZ(0px);
-      background: #f5b8b8;
-      border: 2px solid #cc7070;
-    }
-
-    .pig-body .bottom {
-      width: 70px;
-      height: 40px;
-      transform: rotateX(-90deg) translateZ(40px);
-      background: #d88080;
-      border: 2px solid #cc7070;
-    }
-
-    .pig-head {
-      position: absolute;
-      width: 40px;
-      height: 40px;
-      transform-style: preserve-3d;
-      top: 15px;
-      left: -10px;
-    }
-
-    .pig-head .face {
-      position: absolute;
-      width: 40px;
-      height: 40px;
-    }
-
-    .pig-head .front {
-      transform: translateZ(20px);
-      background: #f5b0b0;
-      border: 2px solid #cc7070;
-      position: relative;
-    }
-
-    .pig-head .front::before {
-      content: '';
-      position: absolute;
-      top: 10px;
-      left: 8px;
-      width: 6px;
-      height: 6px;
-      background: #222;
-      border-radius: 50%;
-      box-shadow: 18px 0 0 #222;
-    }
-
-    .pig-head .front::after {
-      content: '';
-      position: absolute;
-      bottom: 8px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 16px;
-      height: 10px;
-      background: #ffcccc;
-      border: 2px solid #cc9999;
-      border-radius: 3px;
-    }
-
-    .pig-snout-holes {
-      position: absolute;
-      bottom: 10px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 12px;
-      height: 6px;
-      z-index: 10;
-    }
-
-    .pig-snout-holes::before,
-    .pig-snout-holes::after {
-      content: '';
-      position: absolute;
-      width: 4px;
-      height: 4px;
-      background: #996666;
-      border-radius: 50%;
-      top: 1px;
-    }
-
-    .pig-snout-holes::before { left: 0; }
-    .pig-snout-holes::after { right: 0; }
-
-    .pig-head .back {
-      transform: translateZ(-20px) rotateY(180deg);
-      background: #e08080;
-      border: 2px solid #cc7070;
-    }
-
-    .pig-head .left, .pig-head .right {
-      transform: rotateY(-90deg) translateZ(0px);
-      background: #e89090;
-      border: 2px solid #cc7070;
-    }
-
-    .pig-head .right {
-      transform: rotateY(90deg) translateZ(40px);
-    }
-
-    .pig-head .top {
-      transform: rotateX(90deg) translateZ(0px);
-      background: #f5b8b8;
-      border: 2px solid #cc7070;
-    }
-
-    .pig-ear {
-      position: absolute;
-      width: 8px;
-      height: 8px;
-      background: #f0a0a0;
-      border: 2px solid #cc7070;
-      top: -5px;
-    }
-
-    .pig-ear.left-ear {
-      left: 3px;
-      transform: rotateZ(-15deg);
-    }
-
-    .pig-ear.right-ear {
-      right: 3px;
-      transform: rotateZ(15deg);
-    }
-
-    .pig-leg {
-      position: absolute;
-      width: 10px;
-      height: 20px;
-      background: #f0a0a0;
-      border: 2px solid #cc7070;
-      top: 65px;
-    }
-
-    .pig-leg:nth-child(1) { left: 30px; }
-    .pig-leg:nth-child(2) { left: 45px; }
-    .pig-leg:nth-child(3) { left: 65px; }
-    .pig-leg:nth-child(4) { left: 80px; }
-
-    .pig-tail {
-      position: absolute;
-      width: 15px;
-      height: 8px;
-      border: 3px solid #f0a0a0;
-      border-radius: 0 50% 50% 0;
-      border-left: none;
-      top: 40px;
-      right: -8px;
-      transform: rotate(-20deg);
-    }
-
-    /* ========================================
-       3D 乳牛
-       ======================================== */
-    .minecraft-cow {
-      position: relative;
-      transform-style: preserve-3d;
-      transform: rotateX(-15deg) rotateY(-30deg);
-      width: 120px;
-      height: 100px;
-    }
-
-    .cow-body {
-      position: absolute;
-      width: 80px;
-      height: 50px;
-      transform-style: preserve-3d;
-      top: 25px;
-      left: 20px;
-    }
-
-    .cow-body .face {
-      position: absolute;
-      background: #d4d4d4;
-    }
-
-    .cow-body .front {
-      width: 80px;
-      height: 50px;
-      transform: translateZ(25px);
-      background: linear-gradient(135deg, #d4d4d4 0%, #d4d4d4 30%, #3a3a3a 30%, #3a3a3a 40%, #d4d4d4 40%, #d4d4d4 70%, #3a3a3a 70%);
-      border: 2px solid #888;
-    }
-
-    .cow-body .back {
-      width: 80px;
-      height: 50px;
-      transform: translateZ(-25px) rotateY(180deg);
-      background: #c4c4c4;
-      border: 2px solid #888;
-    }
-
-    .cow-body .left {
+    .milestone-thumb {
       width: 50px;
       height: 50px;
-      transform: rotateY(-90deg) translateZ(0px);
-      background: linear-gradient(180deg, #d4d4d4 0%, #d4d4d4 40%, #3a3a3a 40%, #3a3a3a 60%, #d4d4d4 60%);
-      border: 2px solid #888;
+      background: rgba(0,0,0,0.5);
+      border: 3px solid #333;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.5rem;
+      opacity: 0.4;
+      cursor: pointer;
+      transition: all 0.3s;
     }
 
-    .cow-body .right {
-      width: 50px;
-      height: 50px;
-      transform: rotateY(90deg) translateZ(80px);
-      background: linear-gradient(180deg, #d4d4d4 0%, #d4d4d4 40%, #3a3a3a 40%, #3a3a3a 60%, #d4d4d4 60%);
-      border: 2px solid #888;
+    .milestone-thumb.unlocked {
+      opacity: 1;
+      border-color: #FFD700;
     }
 
-    .cow-body .top {
-      width: 80px;
-      height: 50px;
-      transform: rotateX(90deg) translateZ(0px);
-      background: #e4e4e4;
-      border: 2px solid #888;
+    .milestone-thumb.unlocked:hover {
+      transform: scale(1.15);
+      box-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
     }
 
-    .cow-body .bottom {
-      width: 80px;
-      height: 50px;
-      transform: rotateX(-90deg) translateZ(50px);
-      background: #b4b4b4;
-      border: 2px solid #888;
+    .milestone-thumb.active {
+      border-color: #55FF55;
+      box-shadow: 0 0 10px #55FF55;
     }
 
-    .cow-head {
-      position: absolute;
-      width: 40px;
-      height: 40px;
-      transform-style: preserve-3d;
-      top: 15px;
-      left: -15px;
+    /* 慶祝煙火 */
+    .firework {
+      position: fixed;
+      pointer-events: none;
+      font-size: 2rem;
+      animation: fireworkBurst 1.5s ease-out forwards;
+      z-index: 400;
     }
 
-    .cow-head .face {
-      position: absolute;
-      width: 40px;
-      height: 40px;
-    }
-
-    .cow-head .front {
-      transform: translateZ(20px);
-      background: #d4d4d4;
-      border: 2px solid #888;
-      position: relative;
-    }
-
-    .cow-head .front::before {
-      content: '';
-      position: absolute;
-      top: 8px;
-      left: 6px;
-      width: 8px;
-      height: 8px;
-      background: #222;
-      box-shadow: 18px 0 0 #222;
-      border-radius: 50%;
-    }
-
-    .cow-head .front::after {
-      content: '';
-      position: absolute;
-      bottom: 5px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 20px;
-      height: 12px;
-      background: #f5c6a5;
-      border: 2px solid #d4a574;
-      border-radius: 3px;
-    }
-
-    .cow-head .back {
-      transform: translateZ(-20px) rotateY(180deg);
-      background: #c4c4c4;
-      border: 2px solid #888;
-    }
-
-    .cow-head .left, .cow-head .right {
-      transform: rotateY(-90deg) translateZ(0px);
-      background: #c4c4c4;
-      border: 2px solid #888;
-    }
-
-    .cow-head .right {
-      transform: rotateY(90deg) translateZ(40px);
-    }
-
-    .cow-head .top {
-      transform: rotateX(90deg) translateZ(0px);
-      background: #e4e4e4;
-      border: 2px solid #888;
-    }
-
-    .cow-horn {
-      position: absolute;
-      width: 8px;
-      height: 15px;
-      background: #f5f5dc;
-      border: 2px solid #d4c4a4;
-      top: -10px;
-    }
-
-    .cow-horn.left-horn {
-      left: 5px;
-      transform: rotateZ(-15deg);
-    }
-
-    .cow-horn.right-horn {
-      right: 5px;
-      transform: rotateZ(15deg);
-    }
-
-    .cow-ear {
-      position: absolute;
-      width: 12px;
-      height: 10px;
-      background: #d4d4d4;
-      border: 2px solid #888;
-      top: 5px;
-    }
-
-    .cow-ear.left-ear {
-      left: -8px;
-      transform: rotateZ(-20deg);
-    }
-
-    .cow-ear.right-ear {
-      right: -8px;
-      transform: rotateZ(20deg);
-    }
-
-    .cow-leg {
-      position: absolute;
-      width: 12px;
-      height: 30px;
-      background: linear-gradient(180deg, #d4d4d4 0%, #d4d4d4 70%, #3a3a3a 70%);
-      border: 2px solid #888;
-      top: 75px;
-    }
-
-    .cow-leg:nth-child(1) { left: 25px; }
-    .cow-leg:nth-child(2) { left: 45px; }
-    .cow-leg:nth-child(3) { left: 65px; }
-    .cow-leg:nth-child(4) { left: 85px; }
-
-    .cow-udder {
-      position: absolute;
-      width: 20px;
-      height: 15px;
-      background: #f5c6a5;
-      border: 2px solid #d4a574;
-      border-radius: 0 0 5px 5px;
-      bottom: -15px;
-      left: 50%;
-      transform: translateX(-50%);
-    }
-
-    /* ========================================
-       3D 苦力怕
-       ======================================== */
-    .minecraft-creeper {
-      position: relative;
-      transform-style: preserve-3d;
-      transform: rotateX(-15deg) rotateY(-30deg);
-      width: 80px;
-      height: 140px;
-    }
-
-    .creeper-head {
-      position: absolute;
-      width: 50px;
-      height: 50px;
-      transform-style: preserve-3d;
-      top: 0;
-      left: 15px;
-    }
-
-    .creeper-head .face {
-      position: absolute;
-      width: 50px;
-      height: 50px;
-    }
-
-    .creeper-head .front {
-      transform: translateZ(25px);
-      background: #5fa55a;
-      border: 2px solid #3d7a38;
-      position: relative;
-    }
-
-    .creeper-head .front::before {
-      content: '';
-      position: absolute;
-      top: 12px;
-      left: 8px;
-      width: 10px;
-      height: 12px;
-      background: #1a1a1a;
-      box-shadow: 24px 0 0 #1a1a1a;
-    }
-
-    .creeper-head .front::after {
-      content: '';
-      position: absolute;
-      bottom: 6px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 6px;
-      height: 16px;
-      background: #1a1a1a;
-      box-shadow: -6px -6px 0 #1a1a1a, 6px -6px 0 #1a1a1a;
-    }
-
-    .creeper-head .back {
-      transform: translateZ(-25px) rotateY(180deg);
-      background: #4a8a45;
-      border: 2px solid #3d7a38;
-    }
-
-    .creeper-head .left, .creeper-head .right {
-      transform: rotateY(-90deg) translateZ(0px);
-      background: linear-gradient(180deg, #5fa55a 0%, #4a8a45 100%);
-      border: 2px solid #3d7a38;
-    }
-
-    .creeper-head .right {
-      transform: rotateY(90deg) translateZ(50px);
-    }
-
-    .creeper-head .top {
-      transform: rotateX(90deg) translateZ(0px);
-      background: #6fb56a;
-      border: 2px solid #3d7a38;
-    }
-
-    .creeper-head .bottom {
-      transform: rotateX(-90deg) translateZ(50px);
-      background: #4a8a45;
-      border: 2px solid #3d7a38;
-    }
-
-    .creeper-body {
-      position: absolute;
-      width: 30px;
-      height: 45px;
-      transform-style: preserve-3d;
-      top: 50px;
-      left: 25px;
-    }
-
-    .creeper-body .face {
-      position: absolute;
-      background: #5fa55a;
-    }
-
-    .creeper-body .front {
-      width: 30px;
-      height: 45px;
-      transform: translateZ(15px);
-      background: linear-gradient(180deg, #5fa55a 0%, #4a8a45 100%);
-      border: 2px solid #3d7a38;
-    }
-
-    .creeper-body .back {
-      width: 30px;
-      height: 45px;
-      transform: translateZ(-15px) rotateY(180deg);
-      background: #4a8a45;
-      border: 2px solid #3d7a38;
-    }
-
-    .creeper-body .left, .creeper-body .right {
-      width: 30px;
-      height: 45px;
-      transform: rotateY(-90deg) translateZ(0px);
-      background: #4a8a45;
-      border: 2px solid #3d7a38;
-    }
-
-    .creeper-body .right {
-      transform: rotateY(90deg) translateZ(30px);
-    }
-
-    .creeper-leg {
-      position: absolute;
-      width: 15px;
-      height: 25px;
-      background: #5fa55a;
-      border: 2px solid #3d7a38;
-      top: 95px;
-    }
-
-    .creeper-leg.front-left { left: 25px; }
-    .creeper-leg.front-right { left: 42px; }
-
-    /* ========================================
-       3D 烈焰使者
-       ======================================== */
-    .minecraft-blaze {
-      position: relative;
-      transform-style: preserve-3d;
-      transform: rotateX(-15deg) rotateY(-30deg);
-      width: 100px;
-      height: 140px;
-    }
-
-    .blaze-head {
-      position: absolute;
-      width: 45px;
-      height: 45px;
-      transform-style: preserve-3d;
-      top: 0;
-      left: 27px;
-      animation: blazeFloat 2s ease-in-out infinite;
-    }
-
-    @keyframes blazeFloat {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-5px); }
-    }
-
-    .blaze-head .face {
-      position: absolute;
-      width: 45px;
-      height: 45px;
-    }
-
-    .blaze-head .front {
-      transform: translateZ(22px);
-      background: #f5a623;
-      border: 2px solid #cc7a00;
-      position: relative;
-    }
-
-    .blaze-head .front::before {
-      content: '';
-      position: absolute;
-      top: 12px;
-      left: 6px;
-      width: 10px;
-      height: 8px;
-      background: #fff700;
-      box-shadow: 22px 0 0 #fff700, 0 0 8px #fff700, 22px 0 8px #fff700;
-    }
-
-    .blaze-head .front::after {
-      content: '';
-      position: absolute;
-      bottom: 10px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 12px;
-      height: 4px;
-      background: #cc7a00;
-    }
-
-    .blaze-head .back {
-      transform: translateZ(-22px) rotateY(180deg);
-      background: #cc7a00;
-      border: 2px solid #995c00;
-    }
-
-    .blaze-head .left, .blaze-head .right {
-      transform: rotateY(-90deg) translateZ(0px);
-      background: linear-gradient(180deg, #f5a623 0%, #cc7a00 100%);
-      border: 2px solid #995c00;
-    }
-
-    .blaze-head .right {
-      transform: rotateY(90deg) translateZ(45px);
-    }
-
-    .blaze-head .top {
-      transform: rotateX(90deg) translateZ(0px);
-      background: #ffcc00;
-      border: 2px solid #cc7a00;
-    }
-
-    .blaze-rod {
-      position: absolute;
-      width: 6px;
-      height: 35px;
-      background: linear-gradient(180deg, #ffcc00 0%, #f5a623 50%, #cc7a00 100%);
-      border: 2px solid #995c00;
-      box-shadow: 0 0 8px #f5a623, 0 0 15px #cc7a00;
-    }
-
-    .blaze-rod:nth-child(2) { top: 50px; left: 12px; transform: rotate(-20deg); animation: rodFloat1 1.5s ease-in-out infinite; }
-    .blaze-rod:nth-child(3) { top: 50px; left: 30px; animation: rodFloat2 1.5s ease-in-out infinite 0.2s; }
-    .blaze-rod:nth-child(4) { top: 50px; left: 48px; transform: rotate(10deg); animation: rodFloat3 1.5s ease-in-out infinite 0.4s; }
-    .blaze-rod:nth-child(5) { top: 50px; left: 66px; transform: rotate(20deg); animation: rodFloat1 1.5s ease-in-out infinite 0.6s; }
-    .blaze-rod:nth-child(6) { top: 75px; left: 22px; transform: rotate(-10deg); animation: rodFloat2 1.5s ease-in-out infinite 0.3s; }
-    .blaze-rod:nth-child(7) { top: 75px; left: 40px; transform: rotate(5deg); animation: rodFloat3 1.5s ease-in-out infinite 0.5s; }
-    .blaze-rod:nth-child(8) { top: 75px; left: 58px; transform: rotate(15deg); animation: rodFloat1 1.5s ease-in-out infinite 0.7s; }
-    .blaze-rod:nth-child(9) { top: 100px; left: 32px; transform: rotate(-5deg); animation: rodFloat2 1.5s ease-in-out infinite 0.1s; }
-    .blaze-rod:nth-child(10) { top: 100px; left: 50px; transform: rotate(8deg); animation: rodFloat3 1.5s ease-in-out infinite 0.8s; }
-
-    @keyframes rodFloat1 {
-      0%, 100% { transform: rotate(-20deg) translateY(0); }
-      50% { transform: rotate(-15deg) translateY(-8px); }
-    }
-
-    @keyframes rodFloat2 {
-      0%, 100% { transform: rotate(0deg) translateY(0); }
-      50% { transform: rotate(5deg) translateY(-10px); }
-    }
-
-    @keyframes rodFloat3 {
-      0%, 100% { transform: rotate(10deg) translateY(0); }
-      50% { transform: rotate(15deg) translateY(-6px); }
-    }
-
-    .blaze-smoke {
-      position: absolute;
-      width: 8px;
-      height: 8px;
-      background: rgba(255, 200, 0, 0.6);
-      border-radius: 50%;
-      animation: smokeRise 1s ease-out infinite;
-    }
-
-    .blaze-smoke:nth-child(11) { top: 120px; left: 25px; animation-delay: 0s; }
-    .blaze-smoke:nth-child(12) { top: 120px; left: 45px; animation-delay: 0.3s; }
-    .blaze-smoke:nth-child(13) { top: 120px; left: 65px; animation-delay: 0.6s; }
-
-    @keyframes smokeRise {
-      0% { opacity: 0.8; transform: translateY(0) scale(1); }
-      100% { opacity: 0; transform: translateY(-25px) scale(0.3); }
-    }
-
-    /* ========================================
-       3D 史帝夫
-       ======================================== */
-    .minecraft-steve {
-      position: relative;
-      transform-style: preserve-3d;
-      transform: rotateX(-15deg) rotateY(-30deg);
-      width: 70px;
-      height: 160px;
-    }
-
-    .steve-head {
-      position: absolute;
-      width: 40px;
-      height: 40px;
-      transform-style: preserve-3d;
-      top: 0;
-      left: 15px;
-    }
-
-    .steve-head .face {
-      position: absolute;
-      width: 40px;
-      height: 40px;
-    }
-
-    .steve-head .front {
-      transform: translateZ(20px);
-      background: #c69c6d;
-      border: 2px solid #8B6914;
-      position: relative;
-    }
-
-    .steve-head .front::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 14px;
-      background: #4a3728;
-    }
-
-    .steve-head .front::after {
-      content: '';
-      position: absolute;
-      top: 18px;
-      left: 8px;
-      width: 6px;
-      height: 6px;
-      background: #4a3728;
-      box-shadow: 18px 0 0 #4a3728, 3px 0 0 #fff, 21px 0 0 #fff;
-    }
-
-    .steve-head .back {
-      transform: translateZ(-20px) rotateY(180deg);
-      background: #4a3728;
-      border: 2px solid #3a2718;
-    }
-
-    .steve-head .left, .steve-head .right {
-      transform: rotateY(-90deg) translateZ(0px);
-      background: linear-gradient(180deg, #4a3728 0%, #4a3728 35%, #c69c6d 35%);
-      border: 2px solid #8B6914;
-    }
-
-    .steve-head .right {
-      transform: rotateY(90deg) translateZ(40px);
-    }
-
-    .steve-head .top {
-      transform: rotateX(90deg) translateZ(0px);
-      background: #4a3728;
-      border: 2px solid #3a2718;
-    }
-
-    .steve-head .bottom {
-      transform: rotateX(-90deg) translateZ(40px);
-      background: #c69c6d;
-      border: 2px solid #8B6914;
-    }
-
-    .steve-body {
-      position: absolute;
-      width: 40px;
-      height: 50px;
-      transform-style: preserve-3d;
-      top: 40px;
-      left: 15px;
-    }
-
-    .steve-body .face {
-      position: absolute;
-    }
-
-    .steve-body .front {
-      width: 40px;
-      height: 50px;
-      transform: translateZ(10px);
-      background: #00a8a8;
-      border: 2px solid #007878;
-    }
-
-    .steve-body .back {
-      width: 40px;
-      height: 50px;
-      transform: translateZ(-10px) rotateY(180deg);
-      background: #008888;
-      border: 2px solid #006868;
-    }
-
-    .steve-body .left, .steve-body .right {
-      width: 20px;
-      height: 50px;
-      transform: rotateY(-90deg) translateZ(0px);
-      background: #008888;
-      border: 2px solid #006868;
-    }
-
-    .steve-body .right {
-      transform: rotateY(90deg) translateZ(40px);
-    }
-
-    .steve-arm {
-      position: absolute;
-      width: 20px;
-      height: 50px;
-      top: 40px;
-    }
-
-    .steve-arm.left-arm {
-      left: -5px;
-      background: linear-gradient(180deg, #00a8a8 0%, #00a8a8 50%, #c69c6d 50%);
-      border: 2px solid #007878;
-    }
-
-    .steve-arm.right-arm {
-      right: -5px;
-      background: linear-gradient(180deg, #00a8a8 0%, #00a8a8 50%, #c69c6d 50%);
-      border: 2px solid #007878;
-    }
-
-    .steve-leg {
-      position: absolute;
-      width: 20px;
-      height: 50px;
-      top: 90px;
-      background: #1e1e78;
-      border: 2px solid #0e0e58;
-    }
-
-    .steve-leg.left-leg {
-      left: 15px;
-    }
-
-    .steve-leg.right-leg {
-      left: 35px;
-    }
-
-    /* 卡片內角色調整 */
-    .character-display .minecraft-pig,
-    .character-display .minecraft-cow,
-    .character-display .minecraft-creeper,
-    .character-display .minecraft-blaze,
-    .character-display .minecraft-steve {
-      transform: rotateX(-15deg) rotateY(-30deg) scale(0.85);
+    @keyframes fireworkBurst {
+      0% { opacity: 1; transform: scale(0.5); }
+      50% { opacity: 1; transform: scale(1.5); }
+      100% { opacity: 0; transform: scale(2) translateY(-50px); }
     }
 
     @media (max-width: 600px) {
@@ -1614,6 +860,8 @@
       .reward-item { padding: 5px 8px; min-width: 45px; }
       .reward-item .icon { font-size: 1.2rem; }
       .reward-item .req { font-size: 0.7rem; }
+      .milestone-thumb { width: 40px; height: 40px; font-size: 1.2rem; }
+      .character-image { max-width: 120px; max-height: 130px; }
     }
   </style>
 </head>
@@ -1629,7 +877,7 @@
 
       <div class="status-bar">
         <div class="stat-group">
-          <div class="level-badge">關卡 <span id="level">1</span>/10</div>
+          <div class="level-badge">等級 <span id="level">1</span></div>
           <div class="stat-item">🔥 <span id="combo">0</span></div>
         </div>
         <div class="stat-group">
@@ -1644,25 +892,25 @@
         </div>
       </div>
 
-      <!-- 獎勵預覽 -->
+      <!-- 獎勵預覽列 -->
       <div class="rewards-preview">
-        <div class="reward-item" id="reward10">
+        <div class="reward-item" id="reward10" onclick="viewReward('pig')">
           <span class="icon">🐷</span>
           <span class="req">10題</span>
         </div>
-        <div class="reward-item" id="reward30">
+        <div class="reward-item" id="reward30" onclick="viewReward('cow')">
           <span class="icon">🐄</span>
           <span class="req">30題</span>
         </div>
-        <div class="reward-item" id="reward60">
+        <div class="reward-item" id="reward60" onclick="viewReward('creeper')">
           <span class="icon">💚</span>
           <span class="req">60題</span>
         </div>
-        <div class="reward-item" id="reward90">
-          <span class="icon">🔥</span>
+        <div class="reward-item" id="reward90" onclick="viewReward('wolf')">
+          <span class="icon">🐺</span>
           <span class="req">90題</span>
         </div>
-        <div class="reward-item" id="reward100">
+        <div class="reward-item" id="reward100" onclick="viewReward('steve')">
           <span class="icon">⛏️</span>
           <span class="req">100題</span>
         </div>
@@ -1676,7 +924,7 @@
       </div>
 
       <div class="question-area">
-        <div class="question-label">第 <span id="questionNum">1</span> / <span id="totalQuestions">100</span> 題</div>
+        <div class="question-label">第 <span id="questionNum">1</span> / <span id="totalQuestions">100</span> 題 （答對：<span id="correctDisplay">0</span> 題）</div>
         <div class="question-word" id="questionWord">準備開始</div>
       </div>
 
@@ -1708,8 +956,8 @@
 
       <div class="progress-section">
         <div class="progress-label">
-          <span>進度</span>
-          <span id="progressText">0%</span>
+          <span>下個里程碑</span>
+          <span id="progressText">10 題</span>
         </div>
         <div class="progress-bar-container">
           <div class="progress-bar-fill" id="progressBar" style="width: 0%"></div>
@@ -1722,16 +970,8 @@
       <h2 class="result-title" id="resultTitle">🎉 挖礦完成！</h2>
       <div class="result-stats">
         <div class="result-stat">
-          <div class="label">完成題數</div>
+          <div class="label">答對題數</div>
           <div class="value" id="finalQuestions">0</div>
-        </div>
-        <div class="result-stat">
-          <div class="label">正確題數</div>
-          <div class="value" id="finalCorrect">0</div>
-        </div>
-        <div class="result-stat">
-          <div class="label">錯誤題數</div>
-          <div class="value" id="finalWrong">0</div>
         </div>
         <div class="result-stat">
           <div class="label">正確率</div>
@@ -1748,7 +988,7 @@
       </div>
 
       <div class="unlocked-rewards" id="unlockedRewards" style="display: none;">
-        <h3>🏆 已解鎖獎勵</h3>
+        <h3>🏆 已收集的獎勵</h3>
         <div class="reward-buttons" id="rewardButtons"></div>
       </div>
 
@@ -1779,6 +1019,10 @@
   <!-- 獎勵卡片面板 -->
   <div class="reward-card-panel" id="rewardCardPanel">
     <div class="reward-card-wrapper">
+      <div class="unlock-celebration" id="unlockCelebration">
+        <h2>🎉 恭喜解鎖新獎勵！🎉</h2>
+      </div>
+
       <div class="reward-card" id="rewardCard">
         <div class="card-header">
           <div class="card-title" id="cardTitle">🐷 豬豬收藏卡</div>
@@ -1786,7 +1030,7 @@
         </div>
 
         <div class="character-display" id="characterDisplay">
-          <!-- 3D 角色會動態插入 -->
+          <!-- 角色圖片會動態插入 -->
         </div>
 
         <div class="player-info">
@@ -1795,7 +1039,7 @@
 
         <div class="score-info">
           <div class="score-item">
-            <div class="label">完成題數</div>
+            <div class="label">答對題數</div>
             <div class="value" id="cardQuestions">0</div>
           </div>
           <div class="score-item">
@@ -1817,9 +1061,18 @@
         </div>
       </div>
 
+      <!-- 里程碑縮圖列 -->
+      <div class="milestone-thumbs" id="milestoneThumbs">
+        <div class="milestone-thumb" data-type="pig" onclick="switchCardType('pig')">🐷</div>
+        <div class="milestone-thumb" data-type="cow" onclick="switchCardType('cow')">🐄</div>
+        <div class="milestone-thumb" data-type="creeper" onclick="switchCardType('creeper')">💚</div>
+        <div class="milestone-thumb" data-type="wolf" onclick="switchCardType('wolf')">🐺</div>
+        <div class="milestone-thumb" data-type="steve" onclick="switchCardType('steve')">⛏️</div>
+      </div>
+
       <div class="card-actions">
         <button class="mc-btn primary" onclick="downloadCard()">📥 儲存圖片</button>
-        <button class="mc-btn" onclick="closeRewardCard()">返回</button>
+        <button class="mc-btn" onclick="closeRewardCard()">繼續遊戲</button>
       </div>
     </div>
   </div>
@@ -1845,8 +1098,6 @@
     const wordBank = [...twoCharWords, ...threeCharWords];
 
     let gameState = {
-      currentLevel: 1,
-      totalLevels: 10,
       currentQuestion: 0,
       totalQuestions: 100,
       combo: 0,
@@ -1864,143 +1115,48 @@
       answered: false,
       shuffledWords: [],
       unlockedRewards: [],
-      completedQuestions: 0 // 答對的題數，用於獎勵判定
+      pendingReward: null,
+      currentCardType: null
     };
 
-    // 獎勵設定
+    // 獎勵設定 - 使用 Minecraft Wiki 圖片
     const rewardMilestones = [
-      { questions: 10, type: 'pig', name: '🐷 豬豬收藏卡', icon: '🐷' },
-      { questions: 30, type: 'cow', name: '🐄 乳牛收藏卡', icon: '🐄' },
-      { questions: 60, type: 'creeper', name: '💚 苦力怕收藏卡', icon: '💚' },
-      { questions: 90, type: 'blaze', name: '🔥 烈焰使者收藏卡', icon: '🔥' },
-      { questions: 100, type: 'steve', name: '⛏️ 史帝夫收藏卡', icon: '⛏️' }
+      { 
+        questions: 10, 
+        type: 'pig', 
+        name: '🐷 豬豬收藏卡', 
+        icon: '🐷',
+        image: 'https://static.wikia.nocookie.net/minecraft_gamepedia/images/4/4d/Pig_JE3_BE2.png'
+      },
+      { 
+        questions: 30, 
+        type: 'cow', 
+        name: '🐄 乳牛收藏卡', 
+        icon: '🐄',
+        image: 'https://static.wikia.nocookie.net/minecraft_gamepedia/images/8/84/Cow_JE5_BE2.png'
+      },
+      { 
+        questions: 60, 
+        type: 'creeper', 
+        name: '💚 苦力怕收藏卡', 
+        icon: '💚',
+        image: 'https://static.wikia.nocookie.net/minecraft_gamepedia/images/c/cd/Creeper_JE2_BE1.png'
+      },
+      { 
+        questions: 90, 
+        type: 'wolf', 
+        name: '🐺 狼收藏卡', 
+        icon: '🐺',
+        image: 'https://static.wikia.nocookie.net/minecraft_gamepedia/images/5/5a/Wolf_JE2_BE2.png'
+      },
+      { 
+        questions: 100, 
+        type: 'steve', 
+        name: '⛏️ 史帝夫收藏卡', 
+        icon: '⛏️',
+        image: 'https://static.wikia.nocookie.net/minecraft_gamepedia/images/1/17/Steve_JE5.png'
+      }
     ];
-
-    // 3D 角色 HTML
-    const characterHTML = {
-      pig: `
-        <div class="minecraft-pig">
-          <div class="pig-head">
-            <div class="face front">
-              <div class="pig-ear left-ear"></div>
-              <div class="pig-ear right-ear"></div>
-              <div class="pig-snout-holes"></div>
-            </div>
-            <div class="face back"></div>
-            <div class="face left"></div>
-            <div class="face right"></div>
-            <div class="face top"></div>
-          </div>
-          <div class="pig-body">
-            <div class="face front"></div>
-            <div class="face back"></div>
-            <div class="face left"></div>
-            <div class="face right"></div>
-            <div class="face top"></div>
-            <div class="face bottom"></div>
-          </div>
-          <div class="pig-leg"></div>
-          <div class="pig-leg"></div>
-          <div class="pig-leg"></div>
-          <div class="pig-leg"></div>
-          <div class="pig-tail"></div>
-        </div>
-      `,
-      cow: `
-        <div class="minecraft-cow">
-          <div class="cow-head">
-            <div class="face front">
-              <div class="cow-horn left-horn"></div>
-              <div class="cow-horn right-horn"></div>
-              <div class="cow-ear left-ear"></div>
-              <div class="cow-ear right-ear"></div>
-            </div>
-            <div class="face back"></div>
-            <div class="face left"></div>
-            <div class="face right"></div>
-            <div class="face top"></div>
-          </div>
-          <div class="cow-body">
-            <div class="face front"></div>
-            <div class="face back"></div>
-            <div class="face left"></div>
-            <div class="face right"></div>
-            <div class="face top"></div>
-            <div class="face bottom"></div>
-            <div class="cow-udder"></div>
-          </div>
-          <div class="cow-leg"></div>
-          <div class="cow-leg"></div>
-          <div class="cow-leg"></div>
-          <div class="cow-leg"></div>
-        </div>
-      `,
-      creeper: `
-        <div class="minecraft-creeper">
-          <div class="creeper-head">
-            <div class="face front"></div>
-            <div class="face back"></div>
-            <div class="face left"></div>
-            <div class="face right"></div>
-            <div class="face top"></div>
-            <div class="face bottom"></div>
-          </div>
-          <div class="creeper-body">
-            <div class="face front"></div>
-            <div class="face back"></div>
-            <div class="face left"></div>
-            <div class="face right"></div>
-          </div>
-          <div class="creeper-leg front-left"></div>
-          <div class="creeper-leg front-right"></div>
-        </div>
-      `,
-      blaze: `
-        <div class="minecraft-blaze">
-          <div class="blaze-head">
-            <div class="face front"></div>
-            <div class="face back"></div>
-            <div class="face left"></div>
-            <div class="face right"></div>
-            <div class="face top"></div>
-          </div>
-          <div class="blaze-rod"></div>
-          <div class="blaze-rod"></div>
-          <div class="blaze-rod"></div>
-          <div class="blaze-rod"></div>
-          <div class="blaze-rod"></div>
-          <div class="blaze-rod"></div>
-          <div class="blaze-rod"></div>
-          <div class="blaze-rod"></div>
-          <div class="blaze-rod"></div>
-          <div class="blaze-smoke"></div>
-          <div class="blaze-smoke"></div>
-          <div class="blaze-smoke"></div>
-        </div>
-      `,
-      steve: `
-        <div class="minecraft-steve">
-          <div class="steve-head">
-            <div class="face front"></div>
-            <div class="face back"></div>
-            <div class="face left"></div>
-            <div class="face right"></div>
-            <div class="face top"></div>
-            <div class="face bottom"></div>
-          </div>
-          <div class="steve-body">
-            <div class="face front"></div>
-            <div class="face back"></div>
-            <div class="face left"></div>
-            <div class="face right"></div>
-          </div>
-          <div class="steve-arm left-arm"></div>
-          <div class="steve-arm right-arm"></div>
-          <div class="steve-leg left-leg"></div>
-          <div class="steve-leg right-leg"></div>
-        </div>
-      `
-    };
 
     function init() {
       gameState.shuffledWords = shuffleArray([...wordBank]);
@@ -2041,17 +1197,20 @@
     }
 
     function nextQuestion() {
+      // 如果有待領取的獎勵，先顯示
+      if (gameState.pendingReward) {
+        showRewardCard(gameState.pendingReward, true);
+        gameState.pendingReward = null;
+        return;
+      }
+
       if (gameState.currentQuestion >= gameState.totalQuestions) {
         endGame();
         return;
       }
 
-      // 檢查里程碑獎勵（基於正確答對的題數）
-      checkRewardMilestones();
-
       gameState.currentWord = gameState.shuffledWords[gameState.currentQuestion];
       gameState.currentQuestion++;
-      gameState.currentLevel = Math.min(Math.ceil(gameState.currentQuestion / 10), 10);
       gameState.answered = false;
 
       const input = document.getElementById('answerInput');
@@ -2077,7 +1236,6 @@
       if (answer === gameState.currentWord) {
         // 答對
         gameState.correct++;
-        gameState.completedQuestions++; // 完成題數+1
         gameState.combo++;
         gameState.stars++;
         if (gameState.combo > gameState.maxCombo) gameState.maxCombo = gameState.combo;
@@ -2091,7 +1249,6 @@
         }
         if (gameState.correct % 10 === 0) {
           gameState.diamonds++;
-          showToast('💎 獲得鑽石！');
         }
 
         input.className = 'mc-input correct';
@@ -2102,21 +1259,19 @@
         createParticles('✓', '#55FF55');
 
         // 檢查是否達成新里程碑
-        checkRewardMilestones();
+        checkAndTriggerReward();
 
       } else {
         // 答錯
         gameState.wrong++;
         gameState.combo = 0;
-        gameState.lives--; // 每答錯一題扣1顆愛心
+        gameState.lives--;
         
         input.className = 'mc-input wrong';
         createParticles('✗', '#FF5555');
         
-        // 播放愛心破碎動畫
         updateHeartsWithAnimation();
 
-        // 檢查是否愛心歸零
         if (gameState.lives <= 0) {
           setTimeout(() => endGame(), 800);
           return;
@@ -2132,12 +1287,39 @@
       updateDisplay();
     }
 
+    function checkAndTriggerReward() {
+      const correctCount = gameState.correct;
+      
+      for (const reward of rewardMilestones) {
+        if (correctCount === reward.questions && !gameState.unlockedRewards.includes(reward.type)) {
+          gameState.unlockedRewards.push(reward.type);
+          gameState.pendingReward = reward.type;
+          createFireworks();
+          break;
+        }
+      }
+    }
+
+    function createFireworks() {
+      const emojis = ['🎉', '🎊', '✨', '⭐', '🌟', '💫'];
+      for (let i = 0; i < 15; i++) {
+        setTimeout(() => {
+          const firework = document.createElement('div');
+          firework.className = 'firework';
+          firework.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+          firework.style.left = `${20 + Math.random() * 60}%`;
+          firework.style.top = `${20 + Math.random() * 60}%`;
+          document.body.appendChild(firework);
+          setTimeout(() => firework.remove(), 1500);
+        }, i * 100);
+      }
+    }
+
     function updateHeartsWithAnimation() {
       const container = document.getElementById('hearts');
       const hearts = container.querySelectorAll('.heart');
       
-      // 找到要破碎的愛心（從右到左）
-      const heartIndex = gameState.lives; // lives 已經減1了
+      const heartIndex = gameState.lives;
       if (hearts[heartIndex]) {
         hearts[heartIndex].classList.add('losing');
         setTimeout(() => {
@@ -2147,18 +1329,9 @@
       }
     }
 
-    function checkRewardMilestones() {
-      const completed = gameState.completedQuestions;
-      rewardMilestones.forEach(reward => {
-        if (completed >= reward.questions && !gameState.unlockedRewards.includes(reward.type)) {
-          gameState.unlockedRewards.push(reward.type);
-          showToast(`🏆 解鎖：${reward.name}！`);
-        }
-      });
-    }
-
     function updateDisplay() {
-      document.getElementById('level').textContent = gameState.currentLevel;
+      const level = Math.floor(gameState.xp / 100) + 1;
+      document.getElementById('level').textContent = level;
       document.getElementById('combo').textContent = gameState.combo;
       document.getElementById('cookies').textContent = gameState.cookies;
       document.getElementById('diamonds').textContent = gameState.diamonds;
@@ -2167,6 +1340,7 @@
       document.getElementById('questionNum').textContent = gameState.currentQuestion;
       document.getElementById('totalQuestions').textContent = gameState.totalQuestions;
       document.getElementById('correctCount').textContent = gameState.correct;
+      document.getElementById('correctDisplay').textContent = gameState.correct;
       document.getElementById('wrongCount').textContent = gameState.wrong;
       document.getElementById('skippedCount').textContent = gameState.skipped;
 
@@ -2176,9 +1350,8 @@
       const accuracy = total > 0 ? Math.round((gameState.correct / total) * 100) : 0;
       document.getElementById('accuracy').textContent = `${accuracy}%`;
 
-      const progress = Math.round((gameState.currentQuestion / gameState.totalQuestions) * 100);
-      document.getElementById('progressBar').style.width = `${progress}%`;
-      document.getElementById('progressText').textContent = `${progress}%`;
+      // 更新里程碑進度條
+      updateMilestoneProgress();
 
       updateHearts();
       updateRewardPreview();
@@ -2189,6 +1362,29 @@
         comboDisplay.classList.add('active');
       } else {
         comboDisplay.classList.remove('active');
+      }
+    }
+
+    function updateMilestoneProgress() {
+      const correctCount = gameState.correct;
+      let nextMilestone = null;
+      let prevMilestone = 0;
+
+      for (const reward of rewardMilestones) {
+        if (correctCount < reward.questions) {
+          nextMilestone = reward.questions;
+          break;
+        }
+        prevMilestone = reward.questions;
+      }
+
+      if (nextMilestone) {
+        const progress = ((correctCount - prevMilestone) / (nextMilestone - prevMilestone)) * 100;
+        document.getElementById('progressBar').style.width = `${progress}%`;
+        document.getElementById('progressText').textContent = `${correctCount} / ${nextMilestone} 題`;
+      } else {
+        document.getElementById('progressBar').style.width = '100%';
+        document.getElementById('progressText').textContent = '全部完成！';
       }
     }
 
@@ -2204,7 +1400,7 @@
     }
 
     function updateRewardPreview() {
-      const completed = gameState.completedQuestions;
+      const correctCount = gameState.correct;
       
       rewardMilestones.forEach(reward => {
         const el = document.getElementById(`reward${reward.questions}`);
@@ -2212,11 +1408,10 @@
         
         el.classList.remove('unlocked', 'current');
         
-        if (completed >= reward.questions) {
+        if (gameState.unlockedRewards.includes(reward.type)) {
           el.classList.add('unlocked');
         } else {
-          // 找到下一個未解鎖的里程碑
-          const nextMilestone = rewardMilestones.find(r => completed < r.questions);
+          const nextMilestone = rewardMilestones.find(r => !gameState.unlockedRewards.includes(r.type));
           if (nextMilestone && nextMilestone.questions === reward.questions) {
             el.classList.add('current');
           }
@@ -2224,10 +1419,109 @@
       });
     }
 
-    function endGame() {
-      // 最後檢查一次里程碑
-      checkRewardMilestones();
+    function viewReward(type) {
+      if (gameState.unlockedRewards.includes(type)) {
+        showRewardCard(type, false);
+      } else {
+        const reward = rewardMilestones.find(r => r.type === type);
+        showToast(`❌ 需要答對 ${reward.questions} 題才能解鎖！`);
+      }
+    }
 
+    function showRewardCard(type, isNew = false) {
+      const reward = rewardMilestones.find(r => r.type === type);
+      gameState.currentCardType = type;
+      
+      document.getElementById('unlockCelebration').style.display = isNew ? 'block' : 'none';
+      document.getElementById('cardTitle').textContent = reward.name;
+      
+      // 使用圖片替代 3D CSS 角色
+      document.getElementById('characterDisplay').innerHTML = `
+        <img src="${reward.image}" alt="${reward.name}" class="character-image" 
+             onerror="this.style.display='none'; this.parentElement.innerHTML='<div style=\\'font-size:4rem;\\'>${reward.icon}</div>';">
+      `;
+      
+      document.getElementById('cardQuestions').textContent = gameState.correct;
+      const total = gameState.correct + gameState.wrong;
+      const accuracy = total > 0 ? Math.round((gameState.correct / total) * 100) : 0;
+      document.getElementById('cardAccuracy').textContent = `${accuracy}%`;
+      document.getElementById('cardCombo').textContent = gameState.maxCombo;
+      document.getElementById('cardXP').textContent = gameState.xp;
+      
+      const now = new Date();
+      document.getElementById('cardDate').textContent = `${now.getFullYear()}/${now.getMonth()+1}/${now.getDate()}`;
+      
+      // 更新里程碑縮圖
+      updateMilestoneThumbs(type);
+      
+      document.getElementById('rewardCardPanel').classList.add('active');
+    }
+
+    function updateMilestoneThumbs(activeType) {
+      const thumbs = document.querySelectorAll('.milestone-thumb');
+      thumbs.forEach(thumb => {
+        const type = thumb.dataset.type;
+        thumb.classList.remove('unlocked', 'active');
+        
+        if (gameState.unlockedRewards.includes(type)) {
+          thumb.classList.add('unlocked');
+        }
+        if (type === activeType) {
+          thumb.classList.add('active');
+        }
+      });
+    }
+
+    function switchCardType(type) {
+      if (gameState.unlockedRewards.includes(type)) {
+        showRewardCard(type, false);
+      } else {
+        const reward = rewardMilestones.find(r => r.type === type);
+        showToast(`🔒 需要答對 ${reward.questions} 題解鎖`);
+      }
+    }
+
+    function closeRewardCard() {
+      document.getElementById('rewardCardPanel').classList.remove('active');
+      
+      // 繼續遊戲
+      if (gameState.currentQuestion < gameState.totalQuestions && gameState.lives > 0) {
+        const input = document.getElementById('answerInput');
+        input.focus();
+      }
+    }
+
+    async function downloadCard() {
+      const playerName = document.getElementById('playerNameInput').value.trim() || '匿名礦工';
+      document.getElementById('playerNameInput').value = playerName;
+
+      const card = document.getElementById('rewardCard');
+      
+      try {
+        showToast('📸 正在生成圖片...');
+        
+        const canvas = await html2canvas(card, {
+          backgroundColor: '#1a3009',
+          scale: 2,
+          useCORS: true,
+          allowTaint: true,
+          logging: false
+        });
+
+        const link = document.createElement('a');
+        const rewardName = gameState.currentCardType || 'reward';
+        link.download = `minecraft-${rewardName}-${playerName}-${Date.now()}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+
+        showToast('✅ 圖片已儲存！');
+      } catch (error) {
+        console.error('Download error:', error);
+        showToast('❌ 儲存失敗，請重試');
+      }
+    }
+
+    function endGame() {
       document.getElementById('gamePanel').classList.add('hidden');
       document.getElementById('gameOverPanel').classList.add('active');
 
@@ -2240,9 +1534,7 @@
         resultTitle.classList.remove('fail');
       }
 
-      document.getElementById('finalQuestions').textContent = gameState.completedQuestions;
-      document.getElementById('finalCorrect').textContent = gameState.correct;
-      document.getElementById('finalWrong').textContent = gameState.wrong;
+      document.getElementById('finalQuestions').textContent = gameState.correct;
       document.getElementById('finalCombo').textContent = gameState.maxCombo;
       document.getElementById('finalXP').textContent = gameState.xp;
 
@@ -2260,63 +1552,12 @@
           const reward = rewardMilestones.find(r => r.type === type);
           const btn = document.createElement('button');
           btn.className = 'mc-btn primary';
-          btn.innerHTML = `${reward.icon} ${reward.name.split(' ')[1]}`;
-          btn.onclick = () => openRewardCard(type);
+          btn.innerHTML = `${reward.icon} 查看`;
+          btn.onclick = () => showRewardCard(type, false);
           buttonsContainer.appendChild(btn);
         });
       } else {
         document.getElementById('unlockedRewards').style.display = 'none';
-      }
-    }
-
-    function openRewardCard(type) {
-      const reward = rewardMilestones.find(r => r.type === type);
-      
-      document.getElementById('cardTitle').textContent = reward.name;
-      document.getElementById('characterDisplay').innerHTML = characterHTML[type];
-      
-      document.getElementById('cardQuestions').textContent = gameState.completedQuestions;
-      const total = gameState.correct + gameState.wrong;
-      const accuracy = total > 0 ? Math.round((gameState.correct / total) * 100) : 0;
-      document.getElementById('cardAccuracy').textContent = `${accuracy}%`;
-      document.getElementById('cardCombo').textContent = gameState.maxCombo;
-      document.getElementById('cardXP').textContent = gameState.xp;
-      
-      const now = new Date();
-      document.getElementById('cardDate').textContent = `${now.getFullYear()}/${now.getMonth()+1}/${now.getDate()}`;
-      
-      document.getElementById('rewardCardPanel').classList.add('active');
-    }
-
-    function closeRewardCard() {
-      document.getElementById('rewardCardPanel').classList.remove('active');
-    }
-
-    async function downloadCard() {
-      const playerName = document.getElementById('playerNameInput').value.trim() || '匿名礦工';
-      document.getElementById('playerNameInput').value = playerName;
-
-      const card = document.getElementById('rewardCard');
-      
-      try {
-        showToast('📸 正在生成圖片...');
-        
-        const canvas = await html2canvas(card, {
-          backgroundColor: '#1a3009',
-          scale: 2,
-          useCORS: true,
-          logging: false
-        });
-
-        const link = document.createElement('a');
-        link.download = `minecraft-reward-${Date.now()}.png`;
-        link.href = canvas.toDataURL('image/png');
-        link.click();
-
-        showToast('✅ 圖片已儲存！');
-      } catch (error) {
-        console.error('Download error:', error);
-        showToast('❌ 儲存失敗，請重試');
       }
     }
 
@@ -2351,8 +1592,6 @@
 
     function restartGame() {
       gameState = {
-        currentLevel: 1,
-        totalLevels: 10,
         currentQuestion: 0,
         totalQuestions: 100,
         combo: 0,
@@ -2370,7 +1609,8 @@
         answered: false,
         shuffledWords: [],
         unlockedRewards: [],
-        completedQuestions: 0
+        pendingReward: null,
+        currentCardType: null
       };
 
       gameState.shuffledWords = shuffleArray([...wordBank]);
