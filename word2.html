@@ -30,7 +30,7 @@
 
     body {
       font-family: 'VT323', 'Noto Sans TC', monospace;
-      background: linear-gradient(180deg, #87ceeb 0%, #87ceeb 60%, #5d8c2e 60%, #5d8c2e 65%, #8b6914 65%, #8b6914 100%);
+      background: linear-gradient(180deg, #87ceeb 0%, #87ceeb 40%, #5d8c2e 40%, #5d8c2e 45%, #8b6914 45%, #8b6914 100%);
       min-height: 100vh;
       margin: 0;
       padding: 20px;
@@ -255,6 +255,14 @@
       align-items: center;
       justify-content: center;
       animation: float 2s ease-in-out infinite;
+      
+      /* 禁止選取和複製 */
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+      -webkit-touch-callout: none;
+      pointer-events: none;
     }
 
     @keyframes float {
@@ -576,6 +584,125 @@
       100% { transform: translateY(-100px) scale(0.5); opacity: 0; }
     }
 
+    /* 道具說明區 - 土地區域 */
+    .ground-info {
+      width: 100%;
+      max-width: 800px;
+      margin-top: 30px;
+      padding: 25px;
+      background: linear-gradient(180deg, #5d8c2e 0%, #4a7024 5px, #8b6914 5px, #7a5a10 100%);
+      border: 4px solid;
+      border-color: #6d7d14 #3a2a08 #3a2a08 #6d7d14;
+      box-shadow: inset 0 5px 15px rgba(0,0,0,0.3);
+    }
+
+    .ground-title {
+      font-size: 1.8rem;
+      color: var(--mc-gold);
+      text-shadow: 3px 3px 0 #000;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .item-info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 15px;
+    }
+
+    .item-info-card {
+      background: rgba(0, 0, 0, 0.6);
+      border: 3px solid;
+      border-color: #5a5a5a #2a2a2a #2a2a2a #5a5a5a;
+      padding: 15px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .item-icon {
+      font-size: 2.5rem;
+      filter: drop-shadow(2px 2px 0 #000);
+      min-width: 50px;
+      text-align: center;
+    }
+
+    .item-details {
+      flex: 1;
+    }
+
+    .item-name {
+      font-size: 1.4rem;
+      color: var(--mc-aqua);
+      text-shadow: 2px 2px 0 #000;
+      margin-bottom: 5px;
+    }
+
+    .item-desc {
+      font-size: 1.1rem;
+      color: var(--mc-gray);
+      text-shadow: 1px 1px 0 #000;
+      line-height: 1.4;
+    }
+
+    .item-desc .highlight {
+      color: var(--mc-gold);
+    }
+
+    .item-desc .green {
+      color: var(--mc-green);
+    }
+
+    /* 礦石裝飾 */
+    .ore-decoration {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 20px;
+      padding-top: 15px;
+      border-top: 3px solid rgba(255,255,255,0.1);
+    }
+
+    .ore {
+      width: 35px;
+      height: 35px;
+      border-radius: 3px;
+      animation: oreGlow 2s ease-in-out infinite;
+    }
+
+    .ore.coal {
+      background: linear-gradient(135deg, #3a3a3a 0%, #1a1a1a 100%);
+      border: 2px solid #0a0a0a;
+    }
+
+    .ore.iron {
+      background: linear-gradient(135deg, #d4c4a8 0%, #a89888 100%);
+      border: 2px solid #887868;
+    }
+
+    .ore.gold-ore {
+      background: linear-gradient(135deg, #ffe566 0%, #cc9900 100%);
+      border: 2px solid #997700;
+      animation-delay: 0.3s;
+    }
+
+    .ore.diamond-ore {
+      background: linear-gradient(135deg, #4aedd9 0%, #1fb8a6 100%);
+      border: 2px solid #1a9688;
+      animation-delay: 0.6s;
+    }
+
+    .ore.emerald-ore {
+      background: linear-gradient(135deg, #50c878 0%, #2e8b57 100%);
+      border: 2px solid #228b22;
+      animation-delay: 0.9s;
+    }
+
+    @keyframes oreGlow {
+      0%, 100% { box-shadow: 0 0 5px rgba(255,255,255,0.2); }
+      50% { box-shadow: 0 0 15px rgba(255,255,255,0.5); }
+    }
+
     /* 響應式 */
     @media (max-width: 600px) {
       h1 { font-size: 2rem; }
@@ -584,6 +711,11 @@
       .stat-box { min-width: 80px; padding: 8px 10px; }
       .stat-value { font-size: 1.2rem; }
       .hearts { font-size: 1.4rem; }
+      .ground-title { font-size: 1.5rem; }
+      .item-info-grid { grid-template-columns: 1fr; }
+      .item-icon { font-size: 2rem; min-width: 40px; }
+      .item-name { font-size: 1.2rem; }
+      .item-desc { font-size: 1rem; }
     }
   </style>
 </head>
@@ -643,7 +775,7 @@
       <!-- 題目區 -->
       <div class="question-area">
         <div class="question-label">⛏️ 挖掘這個詞語 ⛏️</div>
-        <div class="question-word" id="questionWord">—</div>
+        <div class="question-word" id="questionWord" oncopy="return false;" oncut="return false;" onpaste="return false;" oncontextmenu="return false;">—</div>
       </div>
 
       <!-- 輸入區 -->
@@ -723,6 +855,53 @@
     </div>
   </div>
 
+  <!-- 道具說明區 - 土地區域 -->
+  <div class="ground-info">
+    <div class="ground-title">📦 礦工背包說明</div>
+    <div class="item-info-grid">
+      <div class="item-info-card">
+        <div class="item-icon">🍪</div>
+        <div class="item-details">
+          <div class="item-name">餅乾 Cookie</div>
+          <div class="item-desc">
+            每 <span class="highlight">5 題正確</span> 獲得 1 個<br>
+            可用 <span class="highlight">3 個</span> 跳過困難題目<br>
+            初始擁有 <span class="green">5 個</span>
+          </div>
+        </div>
+      </div>
+      <div class="item-info-card">
+        <div class="item-icon">💎</div>
+        <div class="item-details">
+          <div class="item-name">鑽石 Diamond</div>
+          <div class="item-desc">
+            每 <span class="highlight">10 題正確</span> 獲得 1 個<br>
+            珍貴的收藏品！<br>
+            象徵你的 <span class="green">挖礦實力</span>
+          </div>
+        </div>
+      </div>
+      <div class="item-info-card">
+        <div class="item-icon">⭐</div>
+        <div class="item-details">
+          <div class="item-name">星星 Star</div>
+          <div class="item-desc">
+            每答對 <span class="highlight">1 題</span> 獲得 1 個<br>
+            記錄你的 <span class="green">正確總數</span><br>
+            越多星星代表越強！
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="ore-decoration">
+      <div class="ore coal"></div>
+      <div class="ore iron"></div>
+      <div class="ore gold-ore"></div>
+      <div class="ore diamond-ore"></div>
+      <div class="ore emerald-ore"></div>
+    </div>
+  </div>
+
   <!-- 商店彈窗 -->
   <div class="modal-overlay hidden" id="shopModal">
     <div class="mc-panel modal-content">
@@ -789,6 +968,32 @@
       createBackgroundBlocks();
       nextQuestion();
       updateDisplay();
+      
+      // 禁止在題目區域使用拖曳選取
+      const questionWord = document.getElementById('questionWord');
+      questionWord.addEventListener('selectstart', function(e) {
+        e.preventDefault();
+        return false;
+      });
+      
+      questionWord.addEventListener('dragstart', function(e) {
+        e.preventDefault();
+        return false;
+      });
+      
+      // 禁止鍵盤複製快捷鍵（當焦點在題目區域時）
+      document.addEventListener('keydown', function(e) {
+        const selection = window.getSelection();
+        const questionWord = document.getElementById('questionWord');
+        
+        // 檢查是否選取了題目文字
+        if (selection.toString() && questionWord.contains(selection.anchorNode)) {
+          if ((e.ctrlKey || e.metaKey) && (e.key === 'c' || e.key === 'C')) {
+            e.preventDefault();
+            return false;
+          }
+        }
+      });
       
       document.getElementById('answerInput').addEventListener('keypress', function(e) {
         if (e.key === 'Enter') {
