@@ -1,0 +1,460 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>五年級中文詞語練習（一次一題）</title>
+  <style>
+    :root{
+      --bg:#0b1020;
+      --card:#121a33;
+      --text:#eef2ff;
+      --muted:#a9b2d6;
+      --ok:#22c55e;
+      --bad:#ef4444;
+      --accent:#60a5fa;
+    }
+    *{ box-sizing: border-box; }
+    body{
+      margin:0;
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background: radial-gradient(1200px 800px at 20% 10%, #1b2a6b 0%, var(--bg) 55%, #060816 100%);
+      color:var(--text);
+      font-family: system-ui, -apple-system, "Noto Sans TC", "Microsoft JhengHei", Arial, sans-serif;
+
+      /* 限制反白選取（輸入框會另外放行） */
+      -webkit-user-select: none;
+      user-select: none;
+    }
+    .wrap{
+      width:min(860px, 92vw);
+      padding:22px;
+    }
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:18px;
+      padding:22px;
+      box-shadow: 0 18px 60px rgba(0,0,0,.35);
+      backdrop-filter: blur(8px);
+    }
+    .top{
+      display:flex;
+      gap:12px;
+      align-items:flex-start;
+      justify-content:space-between;
+      flex-wrap:wrap;
+    }
+    .title{
+      font-size:18px;
+      font-weight:700;
+      letter-spacing:.5px;
+      margin:0;
+    }
+    .sub{
+      margin-top:6px;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.5;
+    }
+    .stats{
+      text-align:right;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.6;
+      min-width: 200px;
+    }
+    .bar{
+      height:10px;
+      background: rgba(255,255,255,.08);
+      border-radius:999px;
+      overflow:hidden;
+      margin:14px 0 18px;
+      border:1px solid rgba(255,255,255,.08);
+    }
+    .bar > div{
+      height:100%;
+      width:0%;
+      background: linear-gradient(90deg, var(--accent), #a78bfa);
+      border-radius:999px;
+      transition: width .25s ease;
+    }
+
+    .wordBox{
+      background: rgba(0,0,0,.28);
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:16px;
+      padding:18px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      min-height:130px;
+      position:relative;
+    }
+    .word{
+      font-size:46px;
+      font-weight:900;
+      letter-spacing:2px;
+      text-align:center;
+      line-height:1.2;
+      padding:10px 8px;
+    }
+    .hint{
+      position:absolute;
+      left:14px;
+      top:12px;
+      font-size:12px;
+      color:rgba(255,255,255,.65);
+    }
+
+    .form{
+      margin-top:16px;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+    input[type="text"]{
+      flex: 1 1 360px;
+      padding:14px 14px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      color: var(--text);
+      font-size:18px;
+      outline:none;
+
+      /* 允許在輸入框內選取文字 */
+      -webkit-user-select: text;
+      user-select: text;
+    }
+    input[type="text"]::placeholder{ color: rgba(255,255,255,.45); }
+    button{
+      padding:12px 14px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.08);
+      color: var(--text);
+      cursor:pointer;
+      font-weight:700;
+      letter-spacing:.3px;
+      transition: transform .05s ease, background .2s ease;
+    }
+    button:hover{ background: rgba(255,255,255,.12); }
+    button:active{ transform: translateY(1px); }
+    button.primary{
+      background: linear-gradient(90deg, rgba(96,165,250,.95), rgba(167,139,250,.95));
+      border-color: rgba(255,255,255,.18);
+      color:#0b1020;
+    }
+    button.primary:hover{ filter: brightness(1.05); }
+    button.ghost{
+      background: transparent;
+    }
+    .msg{
+      margin-top:10px;
+      min-height:22px;
+      font-size:14px;
+      color: var(--muted);
+    }
+    .msg.ok{ color: var(--ok); font-weight:800; }
+    .msg.bad{ color: var(--bad); font-weight:800; }
+    .shake{
+      animation: shake .18s linear 0s 2;
+    }
+    @keyframes shake{
+      0%{ transform: translateX(0); }
+      25%{ transform: translateX(-6px); }
+      50%{ transform: translateX(6px); }
+      75%{ transform: translateX(-4px); }
+      100%{ transform: translateX(0); }
+    }
+    .footerRow{
+      margin-top:14px;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:space-between;
+      align-items:center;
+      color: var(--muted);
+      font-size:12px;
+    }
+    .pill{
+      display:inline-flex;
+      gap:8px;
+      align-items:center;
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.06);
+    }
+    .end{
+      margin-top:16px;
+      padding:14px;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.25);
+      display:none;
+    }
+    .end h2{
+      margin:0 0 8px;
+      font-size:18px;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <div class="top">
+        <div>
+          <p class="title">五年級中文詞語練習（一次一題）</p>
+          <div class="sub">
+            規則：每次只看 1 個詞語，請在下方輸入同一個詞語。已限制複製/貼上/右鍵。
+          </div>
+        </div>
+        <div class="stats" id="stats">
+          題數：<span id="idx">1</span>/<span id="total">100</span><br/>
+          正確：<span id="correct">0</span>　錯誤：<span id="wrong">0</span><br/>
+          正確率：<span id="acc">0%</span>
+        </div>
+      </div>
+
+      <div class="bar" aria-hidden="true"><div id="barFill"></div></div>
+
+      <div class="wordBox" id="wordBox">
+        <div class="hint">請輸入下方看到的詞語</div>
+        <div class="word" id="word">（按開始）</div>
+      </div>
+
+      <div class="form">
+        <input id="answer" type="text" placeholder="在這裡輸入詞語（按 Enter 也可送出）" autocomplete="off" />
+        <button class="primary" id="checkBtn">檢查</button>
+        <button class="ghost" id="nextBtn" disabled>下一題</button>
+        <button class="ghost" id="startBtn">開始/重來</button>
+        <button class="ghost" id="fsBtn">全螢幕</button>
+      </div>
+
+      <div class="msg" id="msg"></div>
+
+      <div class="end" id="endPanel">
+        <h2>完成！</h2>
+        <div id="endText"></div>
+      </div>
+
+      <div class="footerRow">
+        <div class="pill">提示：輸入時不用空格；若不小心多打空格會自動忽略。</div>
+        <div class="pill">教師小提醒：此頁面為基本限制，仍可能被進階方式繞過。</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ====== 100 個辭彙（取自附件前 100 個詞語）======
+    const vocab = [
+      "蚊帳","非洲","瘧疾","鼓勵","募集","捐贈","義賣","獎狀","雜誌","基金會",
+      "潛力","直笛","吹奏","旋律","樹梢","走廊","熟悉","零亂","和諧","音階",
+      "花絮","沒關係","隊伍","威力","旗幟","考卷","完璧歸趙","諸侯","大官","將軍",
+      "羞辱","懦弱","羞恥","權勢","攻打","協助","國君","羞愧","荊條","肝膽相照",
+      "蜿蜒","嶙峋","浩瀚","澎湃","蔚藍","屏障","乾涸","陡峭","湍急","遼闊",
+      "滄桑","盎然","凋零","蒼翠","幽靜","磅礴","枯竭","璀璨","深邃","映襯",
+      "連綿","稀疏","繁茂","起伏","交織","謙遜","抑鬱","剛毅","憧憬","懊悔",
+      "寬厚","韌性","企盼","焦慮","豁達","誠摯","靦腆","執著","迷惘","憂戚",
+      "坦然","激昂","怯懦","慷慨","自卑","堅貞","豪邁","羞澀","斟酌","締造",
+      "衡量","契機","糾葛","趨勢","歸納","演繹","瞻仰","追隨","謀略","壟斷"
+    ];
+
+    // ====== DOM ======
+    const wordEl = document.getElementById("word");
+    const wordBox = document.getElementById("wordBox");
+    const answerEl = document.getElementById("answer");
+    const msgEl = document.getElementById("msg");
+    const checkBtn = document.getElementById("checkBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const startBtn = document.getElementById("startBtn");
+    const fsBtn = document.getElementById("fsBtn");
+
+    const idxEl = document.getElementById("idx");
+    const totalEl = document.getElementById("total");
+    const correctEl = document.getElementById("correct");
+    const wrongEl = document.getElementById("wrong");
+    const accEl = document.getElementById("acc");
+    const barFill = document.getElementById("barFill");
+
+    const endPanel = document.getElementById("endPanel");
+    const endText = document.getElementById("endText");
+
+    totalEl.textContent = vocab.length;
+
+    // ====== State ======
+    let i = 0;
+    let correct = 0;
+    let wrong = 0;
+    let started = false;
+    let locked = false; // 答對後鎖住直到下一題
+    let startTime = null;
+
+    function normalize(s){
+      return (s ?? "").replace(/\s+/g,"").trim();
+    }
+
+    function updateStats(){
+      idxEl.textContent = Math.min(i+1, vocab.length);
+      correctEl.textContent = correct;
+      wrongEl.textContent = wrong;
+      const done = correct + wrong;
+      const acc = done === 0 ? 0 : Math.round((correct / done) * 100);
+      accEl.textContent = acc + "%";
+
+      const progress = Math.round(((i) / vocab.length) * 100);
+      barFill.style.width = progress + "%";
+    }
+
+    function setMessage(text, type=""){
+      msgEl.className = "msg" + (type ? (" " + type) : "");
+      msgEl.textContent = text;
+    }
+
+    function showWord(){
+      endPanel.style.display = "none";
+      setMessage("");
+      answerEl.value = "";
+      answerEl.focus();
+      locked = false;
+      nextBtn.disabled = true;
+      checkBtn.disabled = false;
+
+      if (i < vocab.length){
+        wordEl.textContent = vocab[i];
+      }
+      updateStats();
+    }
+
+    function finish(){
+      const usedMs = Date.now() - startTime;
+      const usedSec = Math.max(1, Math.round(usedMs/1000));
+      const mm = String(Math.floor(usedSec/60)).padStart(2,"0");
+      const ss = String(usedSec%60).padStart(2,"0");
+      barFill.style.width = "100%";
+
+      endPanel.style.display = "block";
+      endText.innerHTML = `
+        <div>總題數：${vocab.length}</div>
+        <div>正確：${correct}　錯誤：${wrong}</div>
+        <div>正確率：${accEl.textContent}</div>
+        <div>完成時間：${mm}:${ss}</div>
+        <div style="margin-top:10px;color:rgba(255,255,255,.75);font-size:13px;">
+          你可以按「開始/重來」再練一次。
+        </div>
+      `;
+      wordEl.textContent = "🎉 完成";
+      checkBtn.disabled = true;
+      nextBtn.disabled = true;
+      answerEl.blur();
+    }
+
+    function start(){
+      i = 0;
+      correct = 0;
+      wrong = 0;
+      started = true;
+      locked = false;
+      startTime = Date.now();
+      setMessage("開始！看清楚詞語後輸入一樣的字詞。");
+      showWord();
+    }
+
+    function check(){
+      if (!started || locked || i >= vocab.length) return;
+
+      const target = vocab[i];
+      const input = normalize(answerEl.value);
+
+      if (!input){
+        setMessage("請先輸入詞語。", "bad");
+        wordBox.classList.remove("shake"); void wordBox.offsetWidth; wordBox.classList.add("shake");
+        return;
+      }
+
+      if (input === normalize(target)){
+        correct++;
+        locked = true;
+        setMessage("✅ 正確！可以按「下一題」", "ok");
+        nextBtn.disabled = false;
+        checkBtn.disabled = true;
+        updateStats();
+      } else {
+        wrong++;
+        setMessage("❌ 不對喔，再試一次。", "bad");
+        wordBox.classList.remove("shake"); void wordBox.offsetWidth; wordBox.classList.add("shake");
+        answerEl.value = "";
+        answerEl.focus();
+        updateStats();
+      }
+    }
+
+    function next(){
+      if (!started) return;
+      if (i >= vocab.length) return;
+
+      i++;
+      if (i >= vocab.length){
+        finish();
+      } else {
+        showWord();
+      }
+    }
+
+    // ====== Events ======
+    checkBtn.addEventListener("click", check);
+    nextBtn.addEventListener("click", next);
+    startBtn.addEventListener("click", start);
+
+    answerEl.addEventListener("keydown", (e) => {
+      if (e.key === "Enter"){
+        e.preventDefault();
+        if (!locked) check();
+        else next();
+      }
+    });
+
+    fsBtn.addEventListener("click", async () => {
+      try{
+        if (!document.fullscreenElement){
+          await document.documentElement.requestFullscreen();
+        } else {
+          await document.exitFullscreen();
+        }
+      } catch(err){
+        setMessage("此瀏覽器不支援全螢幕或被限制。");
+      }
+    });
+
+    // ====== 限制複製 / 貼上 / 右鍵 ======
+    document.addEventListener("contextmenu", (e) => e.preventDefault());
+
+    const blockKeys = new Set(["c","x","v","a","p","s"]);
+    document.addEventListener("keydown", (e) => {
+      const k = (e.key || "").toLowerCase();
+      if ((e.ctrlKey || e.metaKey) && blockKeys.has(k)){
+        e.preventDefault();
+        setMessage("已限制複製/貼上/快捷鍵操作。");
+      }
+    });
+
+    // 直接阻擋 copy/cut/paste（尤其貼上）
+    ["copy","cut","paste"].forEach(evt => {
+      document.addEventListener(evt, (e) => {
+        e.preventDefault();
+        setMessage("已限制複製/貼上。");
+      });
+    });
+
+    // 初始狀態
+    updateStats();
+    setMessage("按「開始/重來」開始練習。");
+  </script>
+</body>
+</html>
