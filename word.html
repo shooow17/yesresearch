@@ -3,168 +3,260 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>五年級中文詞語練習（一次一題）</title>
+  <title>中文詞語闖關（看打）</title>
   <style>
     :root{
-      --bg:#0b1020;
-      --card:#121a33;
-      --text:#eef2ff;
-      --muted:#a9b2d6;
-      --ok:#22c55e;
+      --sky:#78B7FF;
+      --grass:#3DBA4A;
+      --grass-dark:#2E8F37;
+      --dirt:#8B5A2B;
+      --dirt-dark:#6B4320;
+
+      --ui:#2b2f36;
+      --ui2:#1f2329;
+      --text:#F4F6FF;
+      --muted:#C7CCD9;
+
+      --good:#22c55e;
       --bad:#ef4444;
-      --accent:#60a5fa;
+      --gold:#fbbf24;
+
+      --shadow2: rgba(0,0,0,.55);
     }
-    *{ box-sizing: border-box; }
+
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
+
     body{
       margin:0;
-      min-height:100vh;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Microsoft JhengHei", monospace;
+      color:var(--text);
+      background:
+        linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px) 0 0/12px 12px,
+        linear-gradient(0deg, rgba(0,0,0,.04) 1px, transparent 1px) 0 0/12px 12px,
+        linear-gradient(180deg, rgba(120,183,255,1) 0%, rgba(88,150,255,1) 52%, rgba(66,116,220,1) 68%),
+        linear-gradient(180deg, transparent 0 68%, rgba(61,186,74,1) 68% 76%, rgba(46,143,55,1) 76% 78%, transparent 78%),
+        linear-gradient(180deg, transparent 0 78%, rgba(139,90,43,1) 78% 100%);
       display:flex;
       align-items:center;
       justify-content:center;
-      background: radial-gradient(1200px 800px at 20% 10%, #1b2a6b 0%, var(--bg) 55%, #060816 100%);
-      color:var(--text);
-      font-family: system-ui, -apple-system, "Noto Sans TC", "Microsoft JhengHei", Arial, sans-serif;
 
-      /* 限制反白選取（輸入框會另外放行） */
-      -webkit-user-select: none;
-      user-select: none;
+      -webkit-user-select:none;
+      user-select:none;
+      -webkit-touch-callout:none;
     }
-    .wrap{
-      width:min(860px, 92vw);
-      padding:22px;
+
+    .wrap{ width:min(1000px, 94vw); padding:18px; }
+
+    .pixel-card{
+      background: linear-gradient(180deg, rgba(43,47,54,.96), rgba(31,35,41,.96));
+      border:4px solid rgba(255,255,255,.10);
+      box-shadow: 0 18px 0 rgba(0,0,0,.20), 0 24px 60px var(--shadow2);
+      border-radius: 0;
+      position:relative;
+      overflow:hidden;
     }
-    .card{
-      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
-      border:1px solid rgba(255,255,255,.10);
-      border-radius:18px;
-      padding:22px;
-      box-shadow: 0 18px 60px rgba(0,0,0,.35);
-      backdrop-filter: blur(8px);
+    .pixel-card:before{
+      content:"";
+      position:absolute;
+      inset:0;
+      border:2px solid rgba(0,0,0,.35);
+      pointer-events:none;
     }
-    .top{
+
+    .hud{
+      padding:14px 14px 10px;
+      border-bottom:4px solid rgba(0,0,0,.25);
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
       display:flex;
-      gap:12px;
-      align-items:flex-start;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
       justify-content:space-between;
+    }
+
+    .brand{ display:flex; gap:10px; align-items:center; min-width: 260px; }
+
+    .icon{
+      width:44px; height:44px;
+      background-color: var(--grass);
+      border:3px solid rgba(0,0,0,.45);
+      box-shadow: 0 6px 0 rgba(0,0,0,.25);
+      position:relative;
+    }
+    .icon:before{
+      content:"";
+      position:absolute; inset:0;
+      background:
+        linear-gradient(#0b0b0b,#0b0b0b) 10px 12px/8px 10px no-repeat,
+        linear-gradient(#0b0b0b,#0b0b0b) 26px 12px/8px 10px no-repeat,
+        linear-gradient(#0b0b0b,#0b0b0b) 18px 24px/8px 8px no-repeat,
+        linear-gradient(#0b0b0b,#0b0b0b) 14px 28px/16px 10px no-repeat;
+      opacity:.95;
+    }
+
+    .titleBox .t1{ font-weight:900; letter-spacing:.8px; font-size:16px; }
+    .titleBox .t2{ margin-top:2px; font-size:12px; color:var(--muted); }
+
+    .hudRight{ display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end; align-items:center; }
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 10px;
+      border:3px solid rgba(0,0,0,.35);
+      background: rgba(255,255,255,.06);
+      box-shadow: 0 5px 0 rgba(0,0,0,.20);
+      font-size:12px;
+      white-space:nowrap;
+    }
+    .pill strong{ font-weight:900; }
+    .coin{ color: var(--gold); font-weight:900; }
+    .hearts{ letter-spacing:1px; }
+
+    .xpRow{
+      padding:10px 14px 14px;
+      border-bottom:4px solid rgba(0,0,0,.25);
+      display:flex;
+      gap:10px;
+      align-items:center;
       flex-wrap:wrap;
     }
-    .title{
-      font-size:18px;
-      font-weight:700;
-      letter-spacing:.5px;
-      margin:0;
-    }
-    .sub{
-      margin-top:6px;
-      color:var(--muted);
-      font-size:13px;
-      line-height:1.5;
-    }
-    .stats{
-      text-align:right;
-      color:var(--muted);
-      font-size:13px;
-      line-height:1.6;
-      min-width: 200px;
-    }
+    .xpLabel{ font-size:12px; color:var(--muted); min-width: 160px; }
     .bar{
-      height:10px;
+      flex:1;
+      height:16px;
+      border:3px solid rgba(0,0,0,.40);
       background: rgba(255,255,255,.08);
-      border-radius:999px;
-      overflow:hidden;
-      margin:14px 0 18px;
-      border:1px solid rgba(255,255,255,.08);
+      box-shadow: inset 0 3px 0 rgba(255,255,255,.06);
     }
     .bar > div{
       height:100%;
       width:0%;
-      background: linear-gradient(90deg, var(--accent), #a78bfa);
-      border-radius:999px;
-      transition: width .25s ease;
+      background: linear-gradient(90deg, var(--grass), #9AE66E);
+      transition: width .18s linear;
     }
 
-    .wordBox{
-      background: rgba(0,0,0,.28);
-      border:1px solid rgba(255,255,255,.10);
-      border-radius:16px;
-      padding:18px;
+    .main{
+      padding:14px;
+      display:grid;
+      grid-template-columns: 1.25fr .75fr;
+      gap:14px;
+    }
+    @media (max-width: 900px){
+      .main{ grid-template-columns: 1fr; }
+    }
+
+    .card{
+      border:4px solid rgba(0,0,0,.35);
+      background: rgba(0,0,0,.22);
+      box-shadow: 0 10px 0 rgba(0,0,0,.18);
+      padding:14px;
+    }
+
+    .statsRow{
       display:flex;
-      align-items:center;
-      justify-content:center;
-      min-height:130px;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+      color:var(--muted);
+      font-size:12px;
+      margin-bottom:10px;
+    }
+    .statsRow strong{ color:var(--text); }
+
+    .wordBox{
+      border:4px solid rgba(0,0,0,.45);
+      background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
+      box-shadow: inset 0 6px 0 rgba(255,255,255,.05);
+      min-height:190px;
+      display:grid;
+      place-items:center;
       position:relative;
+      padding:12px;
+    }
+    .wordHint{
+      position:absolute;
+      left:12px; top:10px;
+      font-size:12px;
+      color:rgba(255,255,255,.75);
     }
     .word{
-      font-size:46px;
-      font-weight:900;
+      font-weight:1000;
       letter-spacing:2px;
+      font-size:56px;
       text-align:center;
-      line-height:1.2;
-      padding:10px 8px;
-    }
-    .hint{
-      position:absolute;
-      left:14px;
-      top:12px;
-      font-size:12px;
-      color:rgba(255,255,255,.65);
+      line-height:1.15;
+      text-shadow: 0 4px 0 rgba(0,0,0,.35);
     }
 
     .form{
-      margin-top:16px;
+      margin-top:12px;
       display:flex;
       gap:10px;
       flex-wrap:wrap;
       align-items:center;
     }
     input[type="text"]{
-      flex: 1 1 360px;
-      padding:14px 14px;
-      border-radius:14px;
-      border:1px solid rgba(255,255,255,.14);
-      background: rgba(255,255,255,.06);
-      color: var(--text);
+      flex: 1 1 320px;
+      padding:14px 12px;
+      border:4px solid rgba(0,0,0,.45);
+      background: rgba(255,255,255,.08);
+      color:var(--text);
       font-size:18px;
       outline:none;
+      -webkit-user-select:text;
+      user-select:text;
+    }
+    input[type="text"]::placeholder{ color: rgba(255,255,255,.55); }
 
-      /* 允許在輸入框內選取文字 */
-      -webkit-user-select: text;
-      user-select: text;
-    }
-    input[type="text"]::placeholder{ color: rgba(255,255,255,.45); }
-    button{
+    .btn{
       padding:12px 14px;
-      border-radius:14px;
-      border:1px solid rgba(255,255,255,.14);
-      background: rgba(255,255,255,.08);
-      color: var(--text);
+      border:4px solid rgba(0,0,0,.55);
+      background: linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.06));
+      color:var(--text);
       cursor:pointer;
-      font-weight:700;
-      letter-spacing:.3px;
-      transition: transform .05s ease, background .2s ease;
+      font-weight:900;
+      letter-spacing:.6px;
+      box-shadow: 0 8px 0 rgba(0,0,0,.25);
+      transform: translateY(0);
     }
-    button:hover{ background: rgba(255,255,255,.12); }
-    button:active{ transform: translateY(1px); }
-    button.primary{
-      background: linear-gradient(90deg, rgba(96,165,250,.95), rgba(167,139,250,.95));
-      border-color: rgba(255,255,255,.18);
-      color:#0b1020;
+    .btn:hover{ filter: brightness(1.07); }
+    .btn:active{
+      transform: translateY(6px);
+      box-shadow: 0 2px 0 rgba(0,0,0,.25);
     }
-    button.primary:hover{ filter: brightness(1.05); }
-    button.ghost{
-      background: transparent;
+    .btn.primary{
+      background: linear-gradient(180deg, rgba(61,186,74,.95), rgba(46,143,55,.95));
+      color:#0b0b0b;
+      border-color: rgba(0,0,0,.65);
     }
+    .btn.gold{
+      background: linear-gradient(180deg, rgba(251,191,36,.95), rgba(245,158,11,.95));
+      color:#1a1206;
+    }
+    .btn.gray{
+      background: linear-gradient(180deg, rgba(138,143,152,.95), rgba(94,99,107,.95));
+      color:#101214;
+    }
+    .btn:disabled{
+      opacity:.45;
+      cursor:not-allowed;
+      filter:none;
+      transform:none;
+      box-shadow: 0 8px 0 rgba(0,0,0,.25);
+    }
+
     .msg{
       margin-top:10px;
-      min-height:22px;
+      min-height:24px;
       font-size:14px;
-      color: var(--muted);
+      color:var(--muted);
     }
-    .msg.ok{ color: var(--ok); font-weight:800; }
-    .msg.bad{ color: var(--bad); font-weight:800; }
-    .shake{
-      animation: shake .18s linear 0s 2;
-    }
+    .msg.ok{ color: var(--good); font-weight:900; }
+    .msg.bad{ color: var(--bad); font-weight:900; }
+
+    .shake{ animation: shake .16s linear 0s 2; }
     @keyframes shake{
       0%{ transform: translateX(0); }
       25%{ transform: translateX(-6px); }
@@ -172,289 +264,464 @@
       75%{ transform: translateX(-4px); }
       100%{ transform: translateX(0); }
     }
-    .footerRow{
-      margin-top:14px;
+
+    .shopTitle{
+      font-weight:900;
+      letter-spacing:.6px;
+      margin-bottom:10px;
       display:flex;
-      gap:10px;
-      flex-wrap:wrap;
       justify-content:space-between;
       align-items:center;
-      color: var(--muted);
-      font-size:12px;
+      gap:10px;
+      flex-wrap:wrap;
     }
-    .pill{
-      display:inline-flex;
-      gap:8px;
+    .shopTitle small{ color:var(--muted); font-weight:700; }
+    .shopItem{
+      border:4px solid rgba(0,0,0,.45);
+      background: rgba(0,0,0,.20);
+      padding:12px;
+      box-shadow: 0 8px 0 rgba(0,0,0,.18);
+    }
+    .shopItem .name{
+      font-weight:1000;
+      letter-spacing:.6px;
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
       align-items:center;
-      padding:8px 10px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.06);
+      flex-wrap:wrap;
     }
-    .end{
-      margin-top:16px;
-      padding:14px;
-      border-radius:16px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(0,0,0,.25);
+    .shopItem .desc{
+      margin-top:6px;
+      color:rgba(255,255,255,.78);
+      font-size:12px;
+      line-height:1.55;
+    }
+    .cost{ color: var(--gold); font-weight:1000; }
+
+    .endPanel{
       display:none;
+      margin-top:12px;
+      border:4px solid rgba(0,0,0,.45);
+      background: rgba(0,0,0,.22);
+      padding:12px;
+      box-shadow: 0 8px 0 rgba(0,0,0,.18);
     }
-    .end h2{
-      margin:0 0 8px;
-      font-size:18px;
+    .stars{ font-size:20px; letter-spacing:3px; color: var(--gold); margin-top:6px; }
+
+    .block{
+      position:absolute;
+      width:10px; height:10px;
+      top:-12px;
+      opacity:.95;
+      animation: fall 900ms linear forwards;
+      pointer-events:none;
+    }
+    @keyframes fall{
+      to { transform: translateY(240px) rotate(540deg); opacity:0.95; }
     }
   </style>
 </head>
+
 <body>
   <div class="wrap">
-    <div class="card">
-      <div class="top">
-        <div>
-          <p class="title">五年級中文詞語練習（一次一題）</p>
-          <div class="sub">
-            規則：每次只看 1 個詞語，請在下方輸入同一個詞語。已限制複製/貼上/右鍵。
+    <div class="pixel-card" id="panel">
+
+      <div class="hud">
+        <div class="brand">
+          <div class="icon" aria-hidden="true"></div>
+          <div class="titleBox">
+            <div class="t1">中文詞語闖關（看打）</div>
+            <div class="t2">一次一題｜看著打字｜金幣可跳過當前詞語</div>
           </div>
         </div>
-        <div class="stats" id="stats">
-          題數：<span id="idx">1</span>/<span id="total">100</span><br/>
-          正確：<span id="correct">0</span>　錯誤：<span id="wrong">0</span><br/>
-          正確率：<span id="acc">0%</span>
+
+        <div class="hudRight">
+          <div class="pill">關卡 <strong id="level">1</strong>/10（<span id="inLevel">1</span>/10）</div>
+          <div class="pill">連擊 🔥 <strong id="streak">0</strong></div>
+          <div class="pill">金幣 🪙 <strong class="coin" id="coins">0</strong></div>
+          <div class="pill hearts">生命 <strong id="hearts">❤❤❤</strong></div>
+          <button class="btn gray" id="fsBtn" title="全螢幕">全螢幕</button>
         </div>
       </div>
 
-      <div class="bar" aria-hidden="true"><div id="barFill"></div></div>
-
-      <div class="wordBox" id="wordBox">
-        <div class="hint">請輸入下方看到的詞語</div>
-        <div class="word" id="word">（按開始）</div>
+      <div class="xpRow">
+        <div class="xpLabel">XP <strong id="xp">0</strong>｜進度 <strong id="pct">0%</strong></div>
+        <div class="bar"><div id="xpFill"></div></div>
       </div>
 
-      <div class="form">
-        <input id="answer" type="text" placeholder="在這裡輸入詞語（按 Enter 也可送出）" autocomplete="off" />
-        <button class="primary" id="checkBtn">檢查</button>
-        <button class="ghost" id="nextBtn" disabled>下一題</button>
-        <button class="ghost" id="startBtn">開始/重來</button>
-        <button class="ghost" id="fsBtn">全螢幕</button>
+      <div class="main">
+        <div class="card">
+          <div class="statsRow">
+            <div>題目 <strong id="idx">1</strong>/<span id="total">100</span></div>
+            <div>正確 <strong id="correct">0</strong>｜錯誤 <strong id="wrong">0</strong>｜略過 <strong id="skipped">0</strong>｜正確率 <strong id="acc">0%</strong></div>
+          </div>
+
+          <div class="wordBox" id="wordBox">
+            <div class="wordHint">看清楚 → 打出同樣的詞語（不用空格）</div>
+            <div class="word" id="word">—</div>
+          </div>
+
+          <div class="form">
+            <input id="answer" type="text" placeholder="在這裡輸入詞語（Enter 送出）" autocomplete="off" />
+            <button class="btn primary" id="checkBtn">送出</button>
+            <button class="btn gold" id="skipBtn" title="用金幣跳過當前詞語">跳過</button>
+            <button class="btn" id="nextBtn" disabled>下一題</button>
+          </div>
+
+          <div class="msg" id="msg"></div>
+
+          <div class="endPanel" id="endPanel">
+            <div style="font-weight:1000; letter-spacing:.6px;">🎉 通關完成！</div>
+            <div id="endText" style="margin-top:6px; color:rgba(255,255,255,.85);"></div>
+            <div class="stars" id="stars"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="shopTitle">
+            <div>🧰 道具商店</div>
+            <small>只有一個功能：跳過當前詞語</small>
+          </div>
+
+          <div class="shopItem">
+            <div class="name">
+              <span>⛏️ 跳過當前詞語</span>
+              <span>花費 <span class="cost" id="skipCostText">3</span>🪙</span>
+            </div>
+            <div class="desc">
+              不想卡關？用金幣直接通過這一題（不算正確、也不扣心）。<br/>
+              會記錄為「略過」，並清空連擊。
+            </div>
+            <button class="btn gold" id="buySkipBtn" style="margin-top:10px; width:100%;">使用跳過</button>
+          </div>
+
+          <div class="shopItem" style="margin-top:12px;">
+            <div class="name"><span>📌 規則小抄</span></div>
+            <div class="desc">
+              ・答對：+1🪙，連擊 +1，XP 增加（連擊越高加越多）<br/>
+              ・答錯：扣 1 ❤，連擊歸零（同一題繼續）<br/>
+              ・跳過：花 🪙 直接到下一題（不扣 ❤，但連擊歸零）
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div class="msg" id="msg"></div>
-
-      <div class="end" id="endPanel">
-        <h2>完成！</h2>
-        <div id="endText"></div>
-      </div>
-
-      <div class="footerRow">
-        <div class="pill">提示：輸入時不用空格；若不小心多打空格會自動忽略。</div>
-        <div class="pill">教師小提醒：此頁面為基本限制，仍可能被進階方式繞過。</div>
-      </div>
     </div>
   </div>
 
-  <script>
-    // ====== 100 個辭彙（取自附件前 100 個詞語）======
-    const vocab = [
-      "蚊帳","非洲","瘧疾","鼓勵","募集","捐贈","義賣","獎狀","雜誌","基金會",
-      "潛力","直笛","吹奏","旋律","樹梢","走廊","熟悉","零亂","和諧","音階",
-      "花絮","沒關係","隊伍","威力","旗幟","考卷","完璧歸趙","諸侯","大官","將軍",
-      "羞辱","懦弱","羞恥","權勢","攻打","協助","國君","羞愧","荊條","肝膽相照",
-      "蜿蜒","嶙峋","浩瀚","澎湃","蔚藍","屏障","乾涸","陡峭","湍急","遼闊",
-      "滄桑","盎然","凋零","蒼翠","幽靜","磅礴","枯竭","璀璨","深邃","映襯",
-      "連綿","稀疏","繁茂","起伏","交織","謙遜","抑鬱","剛毅","憧憬","懊悔",
-      "寬厚","韌性","企盼","焦慮","豁達","誠摯","靦腆","執著","迷惘","憂戚",
-      "坦然","激昂","怯懦","慷慨","自卑","堅貞","豪邁","羞澀","斟酌","締造",
-      "衡量","契機","糾葛","趨勢","歸納","演繹","瞻仰","追隨","謀略","壟斷"
-    ];
+<script>
+  // ====== 100 個詞語 ======
+  const vocab = [
+    "蚊帳","非洲","瘧疾","鼓勵","募集","捐贈","義賣","獎狀","雜誌","基金會",
+    "潛力","直笛","吹奏","旋律","樹梢","走廊","熟悉","零亂","和諧","音階",
+    "花絮","沒關係","隊伍","威力","旗幟","考卷","完璧歸趙","諸侯","大官","將軍",
+    "羞辱","懦弱","羞恥","權勢","攻打","協助","國君","羞愧","荊條","肝膽相照",
+    "蜿蜒","嶙峋","浩瀚","澎湃","蔚藍","屏障","乾涸","陡峭","湍急","遼闊",
+    "滄桑","盎然","凋零","蒼翠","幽靜","磅礴","枯竭","璀璨","深邃","映襯",
+    "連綿","稀疏","繁茂","起伏","交織","謙遜","抑鬱","剛毅","憧憬","懊悔",
+    "寬厚","韌性","企盼","焦慮","豁達","誠摯","靦腆","執著","迷惘","憂戚",
+    "坦然","激昂","怯懦","慷慨","自卑","堅貞","豪邁","羞澀","斟酌","締造",
+    "衡量","契機","糾葛","趨勢","歸納","演繹","瞻仰","追隨","謀略","壟斷"
+  ];
 
-    // ====== DOM ======
-    const wordEl = document.getElementById("word");
-    const wordBox = document.getElementById("wordBox");
-    const answerEl = document.getElementById("answer");
-    const msgEl = document.getElementById("msg");
-    const checkBtn = document.getElementById("checkBtn");
-    const nextBtn = document.getElementById("nextBtn");
-    const startBtn = document.getElementById("startBtn");
-    const fsBtn = document.getElementById("fsBtn");
+  // ====== 洗牌（Fisher–Yates）→ 每輪題目隨機且不重複 ======
+  function shuffle(arr){
+    for (let j = arr.length - 1; j > 0; j--){
+      const k = Math.floor(Math.random() * (j + 1));
+      [arr[j], arr[k]] = [arr[k], arr[j]];
+    }
+    return arr;
+  }
+  const deck = shuffle(vocab.slice()); // ← 隨機題庫順序（不改原 vocab）
 
-    const idxEl = document.getElementById("idx");
-    const totalEl = document.getElementById("total");
-    const correctEl = document.getElementById("correct");
-    const wrongEl = document.getElementById("wrong");
-    const accEl = document.getElementById("acc");
-    const barFill = document.getElementById("barFill");
+  // ====== DOM ======
+  const wordBox = document.getElementById("wordBox");
+  const wordEl = document.getElementById("word");
+  const answerEl = document.getElementById("answer");
+  const msgEl = document.getElementById("msg");
 
-    const endPanel = document.getElementById("endPanel");
-    const endText = document.getElementById("endText");
+  const checkBtn = document.getElementById("checkBtn");
+  const nextBtn = document.getElementById("nextBtn");
+  const skipBtn = document.getElementById("skipBtn");
 
-    totalEl.textContent = vocab.length;
+  const buySkipBtn = document.getElementById("buySkipBtn");
+  const skipCostText = document.getElementById("skipCostText");
+  const fsBtn = document.getElementById("fsBtn");
 
-    // ====== State ======
-    let i = 0;
-    let correct = 0;
-    let wrong = 0;
-    let started = false;
-    let locked = false; // 答對後鎖住直到下一題
-    let startTime = null;
+  const idxEl = document.getElementById("idx");
+  const totalEl = document.getElementById("total");
+  const correctEl = document.getElementById("correct");
+  const wrongEl = document.getElementById("wrong");
+  const skippedEl = document.getElementById("skipped");
+  const accEl = document.getElementById("acc");
 
-    function normalize(s){
-      return (s ?? "").replace(/\s+/g,"").trim();
+  const levelEl = document.getElementById("level");
+  const inLevelEl = document.getElementById("inLevel");
+  const streakEl = document.getElementById("streak");
+  const coinsEl = document.getElementById("coins");
+  const heartsEl = document.getElementById("hearts");
+
+  const xpEl = document.getElementById("xp");
+  const xpFill = document.getElementById("xpFill");
+  const pctEl = document.getElementById("pct");
+
+  const endPanel = document.getElementById("endPanel");
+  const endText = document.getElementById("endText");
+  const starsEl = document.getElementById("stars");
+
+  totalEl.textContent = deck.length;
+
+  // ====== Game state ======
+  const SKIP_COST = 3;
+  skipCostText.textContent = SKIP_COST;
+
+  let i = 0;
+  let correct = 0;
+  let wrong = 0;
+  let skipped = 0;
+
+  let streak = 0;
+  let coins = 0;
+  let hearts = 3;
+  let xp = 0;
+
+  let started = true;   // auto start
+  let locked = false;   // after correct/skip => enable next
+
+  // ====== Helpers ======
+  function normalize(s){
+    return (s ?? "").replace(/\s+/g,"").trim();
+  }
+  function setMessage(text, type=""){
+    msgEl.className = "msg" + (type ? (" " + type) : "");
+    msgEl.textContent = text;
+  }
+  function shake(el){
+    el.classList.remove("shake");
+    void el.offsetWidth;
+    el.classList.add("shake");
+  }
+  function blockBurst(){
+    const colors = ["#3DBA4A","#2E8F37","#8B5A2B","#6B4320","#fbbf24","#8A8F98"];
+    for (let n=0; n<18; n++){
+      const b = document.createElement("div");
+      b.className = "block";
+      b.style.left = (6 + Math.random()*88) + "%";
+      b.style.background = colors[Math.floor(Math.random()*colors.length)];
+      b.style.animationDuration = (650 + Math.random()*400) + "ms";
+      wordBox.appendChild(b);
+      setTimeout(()=>b.remove(), 1100);
+    }
+  }
+
+  function updateHUD(){
+    idxEl.textContent = Math.min(i+1, deck.length);
+    correctEl.textContent = correct;
+    wrongEl.textContent = wrong;
+    skippedEl.textContent = skipped;
+
+    const attempted = correct + wrong;
+    const acc = attempted === 0 ? 0 : Math.round((correct / attempted)*100);
+    accEl.textContent = acc + "%";
+
+    const level = Math.min(10, Math.floor(i/10) + 1);
+    const inLevel = (i % 10) + 1;
+    levelEl.textContent = level;
+    inLevelEl.textContent = inLevel;
+
+    streakEl.textContent = streak;
+    coinsEl.textContent = coins;
+    heartsEl.textContent = "❤".repeat(hearts) + "♡".repeat(Math.max(0, 3-hearts));
+
+    xpEl.textContent = xp;
+
+    const progress = Math.round((i / deck.length) * 100);
+    pctEl.textContent = progress + "%";
+    xpFill.style.width = progress + "%";
+
+    const canSkip = started && !locked && coins >= SKIP_COST && i < deck.length;
+    skipBtn.disabled = !canSkip;
+    buySkipBtn.disabled = !canSkip;
+  }
+
+  function showWord(){
+    endPanel.style.display = "none";
+    answerEl.value = "";
+    answerEl.focus();
+
+    locked = false;
+    nextBtn.disabled = true;
+    checkBtn.disabled = false;
+
+    if (i < deck.length){
+      wordEl.textContent = deck[i]; // ← 改成用 deck（隨機順序）
+    } else {
+      wordEl.textContent = "—";
     }
 
-    function updateStats(){
-      idxEl.textContent = Math.min(i+1, vocab.length);
-      correctEl.textContent = correct;
-      wrongEl.textContent = wrong;
-      const done = correct + wrong;
-      const acc = done === 0 ? 0 : Math.round((correct / done) * 100);
-      accEl.textContent = acc + "%";
+    updateHUD();
+  }
 
-      const progress = Math.round(((i) / vocab.length) * 100);
-      barFill.style.width = progress + "%";
+  function finishGame(){
+    started = false;
+    locked = true;
+    nextBtn.disabled = true;
+    checkBtn.disabled = true;
+    skipBtn.disabled = true;
+    buySkipBtn.disabled = true;
+
+    const attempted = correct + wrong;
+    const acc = attempted === 0 ? 0 : Math.round((correct / attempted)*100);
+
+    let stars = 1;
+    if (acc >= 60) stars = 2;
+    if (acc >= 75) stars = 3;
+    if (acc >= 88) stars = 4;
+    if (acc >= 95) stars = 5;
+
+    endPanel.style.display = "block";
+    endText.innerHTML = `
+      <div>正確：<strong>${correct}</strong>｜錯誤：<strong>${wrong}</strong>｜略過：<strong>${skipped}</strong></div>
+      <div style="margin-top:6px;">正確率：<strong>${acc}%</strong>｜XP：<strong>${xp}</strong>｜金幣：<strong>${coins}</strong></div>
+      <div style="margin-top:8px;color:rgba(255,255,255,.75);font-size:12px;">想再玩一次：重新整理頁面即可。</div>
+    `;
+    starsEl.textContent = "★".repeat(stars) + "☆".repeat(5-stars);
+    wordEl.textContent = "🎉 通關完成";
+    setMessage("完成！", "ok");
+  }
+
+  function check(){
+    if (!started || locked || i >= deck.length) return;
+
+    const target = deck[i];               // ← 改成 deck
+    const input = normalize(answerEl.value);
+
+    if (!input){
+      setMessage("請先輸入詞語。","bad");
+      shake(wordBox);
+      return;
     }
 
-    function setMessage(text, type=""){
-      msgEl.className = "msg" + (type ? (" " + type) : "");
-      msgEl.textContent = text;
-    }
+    if (input === normalize(target)){
+      correct++;
+      streak++;
 
-    function showWord(){
-      endPanel.style.display = "none";
-      setMessage("");
-      answerEl.value = "";
-      answerEl.focus();
-      locked = false;
-      nextBtn.disabled = true;
-      checkBtn.disabled = false;
+      coins += 1;
+      const bonusXP = Math.min(12, streak * 2);
+      xp += 10 + bonusXP;
 
-      if (i < vocab.length){
-        wordEl.textContent = vocab[i];
-      }
-      updateStats();
-    }
+      setMessage(`✅ 正確！連擊（${streak}）`, "ok");
+      blockBurst();
 
-    function finish(){
-      const usedMs = Date.now() - startTime;
-      const usedSec = Math.max(1, Math.round(usedMs/1000));
-      const mm = String(Math.floor(usedSec/60)).padStart(2,"0");
-      const ss = String(usedSec%60).padStart(2,"0");
-      barFill.style.width = "100%";
-
-      endPanel.style.display = "block";
-      endText.innerHTML = `
-        <div>總題數：${vocab.length}</div>
-        <div>正確：${correct}　錯誤：${wrong}</div>
-        <div>正確率：${accEl.textContent}</div>
-        <div>完成時間：${mm}:${ss}</div>
-        <div style="margin-top:10px;color:rgba(255,255,255,.75);font-size:13px;">
-          你可以按「開始/重來」再練一次。
-        </div>
-      `;
-      wordEl.textContent = "🎉 完成";
+      locked = true;
+      nextBtn.disabled = false;
       checkBtn.disabled = true;
-      nextBtn.disabled = true;
-      answerEl.blur();
-    }
 
-    function start(){
-      i = 0;
-      correct = 0;
-      wrong = 0;
-      started = true;
-      locked = false;
-      startTime = Date.now();
-      setMessage("開始！看清楚詞語後輸入一樣的字詞。");
-      showWord();
-    }
+      updateHUD();
+    } else {
+      wrong++;
+      streak = 0;
+      hearts = Math.max(0, hearts - 1);
 
-    function check(){
-      if (!started || locked || i >= vocab.length) return;
+      setMessage("❌ 不對喔！扣 1 ❤，再試一次。","bad");
+      shake(wordBox);
 
-      const target = vocab[i];
-      const input = normalize(answerEl.value);
-
-      if (!input){
-        setMessage("請先輸入詞語。", "bad");
-        wordBox.classList.remove("shake"); void wordBox.offsetWidth; wordBox.classList.add("shake");
+      if (hearts <= 0){
+        started = false;
+        checkBtn.disabled = true;
+        nextBtn.disabled = true;
+        skipBtn.disabled = true;
+        buySkipBtn.disabled = true;
+        setMessage("生命用完！請重新整理頁面再試一次。","bad");
+        updateHUD();
         return;
       }
 
-      if (input === normalize(target)){
-        correct++;
-        locked = true;
-        setMessage("✅ 正確！可以按「下一題」", "ok");
-        nextBtn.disabled = false;
-        checkBtn.disabled = true;
-        updateStats();
-      } else {
-        wrong++;
-        setMessage("❌ 不對喔，再試一次。", "bad");
-        wordBox.classList.remove("shake"); void wordBox.offsetWidth; wordBox.classList.add("shake");
-        answerEl.value = "";
-        answerEl.focus();
-        updateStats();
-      }
+      answerEl.value = "";
+      answerEl.focus();
+      updateHUD();
+    }
+  }
+
+  function skipCurrent(){
+    if (!started || locked || i >= deck.length) return;
+    if (coins < SKIP_COST){
+      setMessage(`金幣不足！需要 ${SKIP_COST} 🪙 才能跳過。`, "bad");
+      shake(wordBox);
+      return;
     }
 
-    function next(){
-      if (!started) return;
-      if (i >= vocab.length) return;
+    coins -= SKIP_COST;
+    skipped++;
+    streak = 0;
+    xp += 4;
 
-      i++;
-      if (i >= vocab.length){
-        finish();
-      } else {
-        showWord();
-      }
+    setMessage(`⛏️ 已跳過（-${SKIP_COST}🪙）`, "");
+    blockBurst();
+
+    locked = true;
+    nextBtn.disabled = false;
+    checkBtn.disabled = true;
+
+    updateHUD();
+  }
+
+  function next(){
+    if (!started) return;
+    if (i >= deck.length) return;
+
+    i++;
+    if (i >= deck.length){
+      finishGame();
+      return;
     }
+    showWord();
+  }
 
-    // ====== Events ======
-    checkBtn.addEventListener("click", check);
-    nextBtn.addEventListener("click", next);
-    startBtn.addEventListener("click", start);
+  // ====== Events ======
+  checkBtn.addEventListener("click", check);
+  nextBtn.addEventListener("click", next);
+  skipBtn.addEventListener("click", skipCurrent);
+  buySkipBtn.addEventListener("click", skipCurrent);
 
-    answerEl.addEventListener("keydown", (e) => {
-      if (e.key === "Enter"){
-        e.preventDefault();
-        if (!locked) check();
-        else next();
-      }
+  answerEl.addEventListener("keydown", (e) => {
+    if (e.key === "Enter"){
+      e.preventDefault();
+      if (!locked) check();
+      else next();
+    }
+  });
+
+  fsBtn.addEventListener("click", async () => {
+    try{
+      if (!document.fullscreenElement) await document.documentElement.requestFullscreen();
+      else await document.exitFullscreen();
+    } catch (err){
+      setMessage("此瀏覽器不支援全螢幕或被限制。");
+    }
+  });
+
+  // ====== Copy/Paste/ContextMenu restrictions ======
+  document.addEventListener("contextmenu", (e) => e.preventDefault());
+  const blockKeys = new Set(["c","x","v","a"]);
+  document.addEventListener("keydown", (e) => {
+    const k = (e.key || "").toLowerCase();
+    if ((e.ctrlKey || e.metaKey) && blockKeys.has(k)){
+      e.preventDefault();
+      setMessage("已限制複製/貼上。");
+    }
+  });
+  ["copy","cut","paste","dragstart","drop"].forEach(evt => {
+    document.addEventListener(evt, (e) => {
+      e.preventDefault();
+      if (evt === "paste") setMessage("已限制貼上。");
     });
+  });
 
-    fsBtn.addEventListener("click", async () => {
-      try{
-        if (!document.fullscreenElement){
-          await document.documentElement.requestFullscreen();
-        } else {
-          await document.exitFullscreen();
-        }
-      } catch(err){
-        setMessage("此瀏覽器不支援全螢幕或被限制。");
-      }
-    });
-
-    // ====== 限制複製 / 貼上 / 右鍵 ======
-    document.addEventListener("contextmenu", (e) => e.preventDefault());
-
-    const blockKeys = new Set(["c","x","v","a","p","s"]);
-    document.addEventListener("keydown", (e) => {
-      const k = (e.key || "").toLowerCase();
-      if ((e.ctrlKey || e.metaKey) && blockKeys.has(k)){
-        e.preventDefault();
-        setMessage("已限制複製/貼上/快捷鍵操作。");
-      }
-    });
-
-    // 直接阻擋 copy/cut/paste（尤其貼上）
-    ["copy","cut","paste"].forEach(evt => {
-      document.addEventListener(evt, (e) => {
-        e.preventDefault();
-        setMessage("已限制複製/貼上。");
-      });
-    });
-
-    // 初始狀態
-    updateStats();
-    setMessage("按「開始/重來」開始練習。");
-  </script>
+  // ====== Auto start ======
+  setMessage("直接開始：看著上方詞語輸入，按 Enter 送出。");
+  showWord();
+</script>
 </body>
 </html>
