@@ -4,7 +4,7 @@
   <base target="_top">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Minecraft 詞語挖礦</title>
+  <title>Minecraft 詞語挖礦V4</title>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&family=VT323&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -680,23 +680,25 @@
   </div>
 
 <script>
- // ============ 詞庫 ============
-    const twoCharWords = [
-      "謹慎", "謙虛", "敏捷", "猶豫", "誠信", "勤勉", "堅韌", "溫馨", "燦爛", "憂鬱",
-      "熱忱", "冷漠", "善良", "邪惡", "勇敢", "膽怯", "聰穎", "愚昧", "優雅", "粗魯",
-      "寧靜", "喧鬧", "繁華", "蕭條", "歡欣", "哀傷", "明亮", "陰暗", "甜蜜", "苦澀",
-      "輕盈", "沉重", "迅速", "緩慢", "寬廣", "狹窄", "高聳", "低矮", "堅固", "脆弱",
-      "豐富", "貧乏", "新穎", "陳舊", "精緻", "粗糙", "清澈", "渾濁", "芬芳", "惡臭"
-    ];
+// ============ API 網址 ============
+const API_URL = 'https://script.google.com/macros/s/AKfycbxlwEAC_qy6oRjNbhY3PIjbqJKz50PuPJuOhj-JtGWP6Ok0DoDcgubgIk2Nku58Y333QQ/exec';
 
-    const threeCharWords = [
-      "藝術家", "碰運氣", "判斷力", "延長線", "家鄉味", "疊羅漢", "笑嘻嘻", "鐵欄杆", "基金會", "鬧彆扭",
-      "大富翁", "吹鬍子", "白帝城", "大將軍", "老百姓", "預告片", "紡織業", "綠繡眼", "花圃裡", "大西洋",
-      "南美洲", "大丈夫", "蒲公英", "連身裙", "黃澄澄", "笑咪咪", "閒置中", "敲門磚", "導火線", "莫須有",
-      "副作用", "同理心", "鬧情緒", "發脾氣", "陰森森", "慘兮兮", "挫折感", "玻璃心", "悶葫蘆", "定心丸",
-      "光明磊落", "世界遺產", "張牙舞爪", "目不暇給", "鬼斧神工", "目眩神迷", "一擁而上", "判斷力", "星羅棋布", "全力以赴"
-    ];
+// ============ 詞庫 ============
+const twoCharWords = [
+  "謹慎", "謙虛", "敏捷", "猶豫", "誠信", "勤勉", "堅韌", "溫馨", "燦爛", "憂鬱",
+  "熱忱", "冷漠", "善良", "邪惡", "勇敢", "膽怯", "聰穎", "愚昧", "優雅", "粗魯",
+  "寧靜", "喧鬧", "繁華", "蕭條", "歡欣", "哀傷", "明亮", "陰暗", "甜蜜", "苦澀",
+  "輕盈", "沉重", "迅速", "緩慢", "寬廣", "狹窄", "高聳", "低矮", "堅固", "脆弱",
+  "豐富", "貧乏", "新穎", "陳舊", "精緻", "粗糙", "清澈", "渾濁", "芬芳", "惡臭"
+];
 
+const threeCharWords = [
+  "藝術家", "碰運氣", "判斷力", "延長線", "家鄉味", "疊羅漢", "笑嘻嘻", "鐵欄杆", "基金會", "鬧彆扭",
+  "大富翁", "吹鬍子", "白帝城", "大將軍", "老百姓", "預告片", "紡織業", "綠繡眼", "花圃裡", "大西洋",
+  "南美洲", "大丈夫", "蒲公英", "連身裙", "黃澄澄", "笑咪咪", "閒置中", "敲門磚", "導火線", "莫須有",
+  "副作用", "同理心", "鬧情緒", "發脾氣", "陰森森", "慘兮兮", "挫折感", "玻璃心", "悶葫蘆", "定心丸",
+  "光明磊落", "世界遺產", "張牙舞爪", "目不暇給", "鬼斧神工", "目眩神迷", "一擁而上", "星羅棋布", "全力以赴"
+];
 
 const wordBank = [...twoCharWords, ...threeCharWords];
 
@@ -734,7 +736,7 @@ const rewardMilestones = [
 // ============ API 呼叫 ============
 function callAPI(action, params) {
   return new Promise((resolve, reject) => {
-    const url = new URL(window.location.href);
+    const url = new URL(API_URL);
     const allParams = { action, ...params };
     
     Object.keys(allParams).forEach(key => url.searchParams.append(key, allParams[key]));
