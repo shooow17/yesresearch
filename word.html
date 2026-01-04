@@ -1,404 +1,1702 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="zh-TW">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>⛏️ Minecraft 詞語挖礦 - 五年級進階版</title>
-  <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Minecraft 詞語挖礦</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&family=VT323&display=swap" rel="stylesheet">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&display=swap');
-    
     * {
+      margin: 0;
+      padding: 0;
       box-sizing: border-box;
       image-rendering: pixelated;
     }
 
-    :root {
-      --mc-dark: #1a1a1a;
-      --mc-stone: #7a7a7a;
-      --mc-dirt: #8b6914;
-      --mc-grass: #5d8c2e;
-      --mc-green: #55ff55;
-      --mc-red: #ff5555;
-      --mc-gold: #ffaa00;
-      --mc-aqua: #55ffff;
-      --mc-white: #ffffff;
-      --mc-gray: #aaaaaa;
-      --mc-dark-gray: #555555;
-    }
-
     body {
-      font-family: 'VT323', 'Noto Sans TC', monospace;
-      background: linear-gradient(180deg, #1e1e1e 0%, #000000 100%);
-      color: var(--mc-white);
-      margin: 0;
+      font-family: 'Noto Sans TC', sans-serif;
+      min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      min-height: 100vh;
-      overflow-x: hidden;
+      overflow: hidden;
+      position: relative;
     }
 
-    #game-container {
-      width: 95%;
-      max-width: 600px;
-      background: #c6c6c6;
-      border: 6px solid;
-      border-color: #ffffff #555555 #555555 #ffffff;
-      padding: 20px;
-      color: #373737;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    /* 漸層背景 */
+    .gradient-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(180deg, 
+        #87CEEB 0%,
+        #98D8E8 20%,
+        #7EC8E3 40%,
+        #5BA3C6 70%,
+        #3D8B6F 85%,
+        #2D6B4F 100%
+      );
+      z-index: -3;
+    }
+
+    /* 裝飾方塊容器 */
+    .background-blocks {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: -2;
+      overflow: hidden;
+    }
+
+    .floating-block {
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      opacity: 0.6;
+      animation: floatBlock 8s ease-in-out infinite;
+    }
+
+    .floating-block.dirt {
+      background: linear-gradient(135deg, #8B6914 0%, #6B4E0A 50%, #5A3D08 100%);
+      border: 2px solid #4A2D05;
+    }
+
+    .floating-block.stone {
+      background: linear-gradient(135deg, #9A9A9A 0%, #7A7A7A 50%, #5A5A5A 100%);
+      border: 2px solid #3A3A3A;
+    }
+
+    .floating-block.grass {
+      background: linear-gradient(180deg, #7CFC00 0%, #5D8A00 30%, #8B6914 30%, #6B4E0A 100%);
+      border: 2px solid #4A2D05;
+    }
+
+    .floating-block.ore {
+      background: linear-gradient(135deg, #7A7A7A 0%, #5A5A5A 100%);
+      border: 2px solid #3A3A3A;
       position: relative;
+    }
+
+    .floating-block.ore::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 12px;
+      height: 12px;
+      background: #5DADE2;
+      box-shadow: 0 0 8px #5DADE2;
+      animation: oreGlow 2s ease-in-out infinite;
+    }
+
+    @keyframes floatBlock {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      25% { transform: translateY(-20px) rotate(5deg); }
+      50% { transform: translateY(-10px) rotate(0deg); }
+      75% { transform: translateY(-25px) rotate(-5deg); }
+    }
+
+    @keyframes oreGlow {
+      0%, 100% { opacity: 0.8; box-shadow: 0 0 8px #5DADE2; }
+      50% { opacity: 1; box-shadow: 0 0 15px #5DADE2, 0 0 25px #5DADE2; }
+    }
+
+    .game-wrapper {
+      background: rgba(0, 0, 0, 0.75);
+      border: 8px solid #4a4a4a;
+      border-top-color: #6a6a6a;
+      border-left-color: #6a6a6a;
+      border-radius: 4px;
+      padding: 30px;
+      max-width: 800px;
+      width: 95%;
+      box-shadow: 
+        inset 0 0 0 4px #2a2a2a,
+        0 10px 40px rgba(0,0,0,0.5);
     }
 
     h1 {
+      font-family: 'VT323', monospace;
+      color: #55FF55;
       text-align: center;
-      color: #373737;
-      text-shadow: 2px 2px #fff;
-      margin-top: 0;
-      font-size: 2rem;
+      font-size: 2.5rem;
+      text-shadow: 4px 4px 0px #003300, 0 0 20px #55FF55;
+      margin-bottom: 20px;
+      letter-spacing: 2px;
     }
 
-    /* 經驗條與狀態 */
+    /* 狀態列 */
     .status-bar {
-      background: #373737;
-      border: 3px solid #000;
-      height: 24px;
-      margin: 10px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-bottom: 20px;
+      padding: 15px;
+      background: rgba(0,0,0,0.5);
+      border: 4px solid #3a3a3a;
+    }
+
+    .stat-group {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .stat-item {
+      font-family: 'VT323', monospace;
+      font-size: 1.4rem;
+      color: white;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .stat-item .icon {
+      font-size: 1.5rem;
+    }
+
+    .level-badge {
+      background: linear-gradient(180deg, #FFD700 0%, #FFA500 100%);
+      color: #000;
+      padding: 5px 15px;
+      font-family: 'VT323', monospace;
+      font-size: 1.3rem;
+      border: 3px solid #8B6914;
+      font-weight: bold;
+    }
+
+    /* 愛心顯示 */
+    .hearts-container {
+      display: flex;
+      gap: 5px;
+    }
+
+    .heart {
+      font-size: 1.8rem;
+      filter: drop-shadow(0 0 3px #ff0000);
+      transition: all 0.3s;
+    }
+
+    .heart.empty {
+      opacity: 0.3;
+      filter: grayscale(100%);
+    }
+
+    .heart.damage {
+      animation: heartDamage 0.5s ease;
+    }
+
+    @keyframes heartDamage {
+      0%, 100% { transform: scale(1); }
+      25% { transform: scale(1.3); filter: brightness(2); }
+      50% { transform: scale(0.8); }
+      75% { transform: scale(1.1); }
+    }
+
+    /* XP 條 */
+    .xp-container {
+      margin-bottom: 20px;
+    }
+
+    .xp-bar-bg {
+      background: #1a1a1a;
+      border: 4px solid #0a0a0a;
+      height: 30px;
       position: relative;
       overflow: hidden;
     }
-    .xp-fill {
+
+    .xp-bar {
       height: 100%;
-      background: linear-gradient(180deg, #7dff7d 0%, #55cc55 50%, #338833 100%);
-      width: 0%;
-      transition: width 0.3s ease;
+      background: linear-gradient(180deg, #7dff7d 0%, #55cc55 50%, #44aa44 50%, #338833 100%);
+      transition: width 0.5s ease;
+      box-shadow: inset 0 2px 0 rgba(255,255,255,0.3);
     }
 
-    /* 核心題目區 */
-    .question-box {
-      background: rgba(0,0,0,0.1);
-      border: 4px inset #fff;
-      padding: 30px 10px;
+    .xp-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: 'VT323', monospace;
+      font-size: 1.2rem;
+      color: white;
+      text-shadow: 2px 2px 0 #000;
+    }
+
+    /* 題目區域 */
+    .question-area {
       text-align: center;
-      margin: 20px 0;
-      min-height: 120px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
+      margin-bottom: 25px;
+    }
+
+    .question-label {
+      font-family: 'VT323', monospace;
+      color: #aaaaaa;
+      font-size: 1.2rem;
+      margin-bottom: 10px;
     }
 
     .question-word {
       font-size: 3.5rem;
-      font-weight: bold;
-      letter-spacing: 5px;
-      color: #000;
+      font-weight: 900;
+      color: #FFFF55;
+      text-shadow: 4px 4px 0px #8B8B00, 0 0 30px rgba(255,255,85,0.5);
+      padding: 20px;
+      background: rgba(0,0,0,0.3);
+      border: 4px solid #555;
+      display: inline-block;
+      min-width: 200px;
+      animation: float 3s ease-in-out infinite;
+      /* 防止選取 */
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
       user-select: none;
+      -webkit-touch-callout: none;
       pointer-events: none;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
     }
 
     /* 輸入區 */
     .input-area {
       display: flex;
       gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
       margin-bottom: 20px;
     }
 
-    input[type="text"] {
-      flex: 1;
-      padding: 12px;
+    .mc-input {
+      font-family: 'Noto Sans TC', sans-serif;
       font-size: 1.5rem;
-      font-family: 'Noto Sans TC';
-      border: 4px solid #373737;
-      background: #fff;
+      padding: 12px 20px;
+      width: 280px;
+      background: #1a1a1a;
+      border: 4px solid;
+      border-color: #0a0a0a #3a3a3a #3a3a3a #0a0a0a;
+      color: white;
+      text-align: center;
       outline: none;
     }
 
-    /* Minecraft 按鈕風格 */
+    .mc-input:focus {
+      border-color: #55FF55;
+      box-shadow: 0 0 15px rgba(85, 255, 85, 0.3);
+    }
+
+    .mc-input.correct {
+      border-color: #55FF55;
+      animation: correctPulse 0.5s ease;
+    }
+
+    .mc-input.wrong {
+      border-color: #FF5555;
+      animation: wrongShake 0.5s ease;
+    }
+
+    @keyframes correctPulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    @keyframes wrongShake {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-10px); }
+      40% { transform: translateX(10px); }
+      60% { transform: translateX(-10px); }
+      80% { transform: translateX(10px); }
+    }
+
+    /* Minecraft 風格按鈕 */
     .mc-btn {
-      padding: 10px 20px;
+      font-family: 'VT323', monospace;
+      font-size: 1.3rem;
+      padding: 12px 25px;
       border: 4px solid;
       border-color: #8b8b8b #373737 #373737 #8b8b8b;
-      background: #7a7a7a;
+      background: linear-gradient(180deg, #7a7a7a 0%, #5a5a5a 50%, #4a4a4a 50%, #3a3a3a 100%);
       color: white;
       cursor: pointer;
-      font-family: 'VT323', 'Noto Sans TC';
-      font-size: 1.2rem;
-      text-shadow: 2px 2px #000;
+      text-shadow: 2px 2px 0 #2a2a2a;
+      transition: all 0.1s;
+      text-transform: uppercase;
+      letter-spacing: 1px;
     }
+
+    .mc-btn:hover {
+      background: linear-gradient(180deg, #8a8a8a 0%, #6a6a6a 50%, #5a5a5a 50%, #4a4a4a 100%);
+    }
+
     .mc-btn:active {
       border-color: #373737 #8b8b8b #8b8b8b #373737;
       transform: translateY(2px);
     }
-    .mc-btn.green { background: #55aa55; }
-    .mc-btn.blue { background: #5555aa; }
 
-    /* 靜態 3D 獎勵圖卡樣式 */
-    .milestone-container {
-      display: flex;
-      justify-content: space-around;
-      margin-top: 20px;
-      background: #8b8b8b;
-      padding: 15px;
-      border: 4px inset #373737;
+    .mc-btn.primary {
+      border-color: #6daa3c #2d5a1c #2d5a1c #6daa3c;
+      background: linear-gradient(180deg, #5d9a2c 0%, #4d8a1c 50%, #3d7a0c 50%, #2d6a00 100%);
     }
 
-    .milestone-item {
-      width: 70px;
-      height: 70px;
-      background: rgba(0,0,0,0.2);
-      border: 3px solid #555;
+    .mc-btn.primary:hover {
+      background: linear-gradient(180deg, #6daa3c 0%, #5d9a2c 50%, #4d8a1c 50%, #3d7a0c 100%);
+    }
+
+    .mc-btn.danger {
+      border-color: #aa6d3c #5a2d1c #5a2d1c #aa6d3c;
+      background: linear-gradient(180deg, #c44 0%, #a33 50%, #922 50%, #811 100%);
+    }
+
+    .mc-btn.skip-btn {
+      border-color: #b8860b #6b4e0a #6b4e0a #b8860b;
+      background: linear-gradient(180deg, #d4a017 0%, #b8860b 50%, #9a7209 50%, #7c5c07 100%);
+    }
+
+    /* 統計資訊 */
+    .stats-row {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .stat-box {
+      text-align: center;
+      padding: 10px 20px;
+      background: rgba(0,0,0,0.4);
+      border: 3px solid #444;
+    }
+
+    .stat-box .label {
+      font-family: 'VT323', monospace;
+      color: #888;
+      font-size: 1rem;
+    }
+
+    .stat-box .value {
+      font-family: 'VT323', monospace;
+      color: #fff;
+      font-size: 1.8rem;
+    }
+
+    .stat-box .value.correct { color: #55FF55; }
+    .stat-box .value.wrong { color: #FF5555; }
+    .stat-box .value.skipped { color: #FFAA00; }
+
+    /* 連擊顯示 */
+    .combo-display {
+      position: absolute;
+      top: 50%;
+      right: 30px;
+      transform: translateY(-50%);
+      font-family: 'VT323', monospace;
+      font-size: 3rem;
+      color: #FF5555;
+      text-shadow: 0 0 20px #FF5555;
+      display: none;
+    }
+
+    .combo-display.active {
+      display: block;
+      animation: comboFloat 0.5s ease;
+    }
+
+    @keyframes comboFloat {
+      0% { transform: translateY(-50%) scale(0.5); opacity: 0; }
+      50% { transform: translateY(-50%) scale(1.2); }
+      100% { transform: translateY(-50%) scale(1); opacity: 1; }
+    }
+
+    /* 結算畫面 */
+    .game-over-panel {
+      display: none;
+      text-align: center;
+    }
+
+    .game-over-panel.active {
+      display: block;
+    }
+
+    .game-panel {
+      display: block;
+    }
+
+    .game-panel.hidden {
+      display: none;
+    }
+
+    .result-title {
+      font-family: 'VT323', monospace;
+      font-size: 3rem;
+      color: #55FF55;
+      text-shadow: 4px 4px 0 #003300;
+      margin-bottom: 30px;
+    }
+
+    .result-title.fail {
+      color: #FF5555;
+      text-shadow: 4px 4px 0 #330000;
+    }
+
+    .result-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+
+    .result-stat {
+      background: rgba(0,0,0,0.5);
+      padding: 15px;
+      border: 3px solid #444;
+    }
+
+    .result-stat .label {
+      font-family: 'VT323', monospace;
+      color: #888;
+      font-size: 1rem;
+    }
+
+    .result-stat .value {
+      font-family: 'VT323', monospace;
+      font-size: 2rem;
+      color: #FFD700;
+    }
+
+    /* 粒子效果 */
+    .particle {
+      position: fixed;
+      pointer-events: none;
+      font-size: 1.5rem;
+      animation: particleFly 1s ease-out forwards;
+      z-index: 100;
+    }
+
+    @keyframes particleFly {
+      0% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+      100% {
+        opacity: 0;
+        transform: translateY(-100px) scale(0.5);
+      }
+    }
+
+    /* Toast 通知 */
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.9);
+      color: #55FF55;
+      padding: 15px 30px;
+      border: 4px solid #55FF55;
+      font-family: 'VT323', monospace;
+      font-size: 1.3rem;
+      z-index: 100;
+      animation: toastSlide 0.3s ease;
+    }
+
+    @keyframes toastSlide {
+      0% { transform: translateX(-50%) translateY(50px); opacity: 0; }
+      100% { transform: translateX(-50%) translateY(0); opacity: 1; }
+    }
+
+    /* 全螢幕按鈕 */
+    .fullscreen-btn {
+      position: fixed;
+      top: 15px;
+      right: 15px;
+      background: rgba(0,0,0,0.7);
+      border: 3px solid #55FF55;
+      color: #55FF55;
+      width: 45px;
+      height: 45px;
+      font-size: 1.3rem;
+      cursor: pointer;
+      z-index: 50;
       display: flex;
       align-items: center;
       justify-content: center;
-      position: relative;
+      transition: all 0.2s;
     }
 
-    .milestone-item.unlocked {
-      background: radial-gradient(circle, #55ff5533 0%, #00000044 100%);
-      border-color: var(--mc-gold);
+    .fullscreen-btn:hover {
+      background: #55FF55;
+      color: #000;
     }
 
-    /* 靜態 3D 模型渲染器 */
-    .model-3d-static {
-      width: 30px;
-      height: 30px;
-      position: relative;
-      transform: rotateX(-20deg) rotateY(30deg);
-      transform-style: preserve-3d;
-      transition: transform 0.3s;
+    /* 商店面板 */
+    .shop-panel {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.8);
+      z-index: 200;
+      justify-content: center;
+      align-items: center;
     }
 
-    .cube-face {
-      position: absolute;
-      width: 30px;
-      height: 30px;
-      border: 1px solid rgba(0,0,0,0.1);
+    .shop-panel.active {
+      display: flex;
     }
 
-    /* 正面 */
-    .face-front { transform: translateZ(15px); }
-    /* 頂面 */
-    .face-top { transform: rotateX(90deg) translateZ(15px); filter: brightness(1.2); }
-    /* 側面 */
-    .face-right { transform: rotateY(90deg) translateZ(15px); filter: brightness(0.7); }
-
-    .locked-icon {
-      font-size: 1.5rem;
-      color: #555;
-    }
-
-    /* 隱藏面板 */
-    .hidden { display: none !important; }
-
-    #end-panel {
+    .shop-content {
+      background: #2a2a2a;
+      border: 8px solid #4a4a4a;
+      border-top-color: #6a6a6a;
+      border-left-color: #6a6a6a;
+      padding: 30px;
       text-align: center;
+      max-width: 400px;
+    }
+
+    .shop-title {
+      font-family: 'VT323', monospace;
+      font-size: 2rem;
+      color: #FFD700;
+      margin-bottom: 20px;
+    }
+
+    .shop-item {
+      background: rgba(0,0,0,0.5);
+      padding: 20px;
+      margin-bottom: 15px;
+      border: 3px solid #444;
+    }
+
+    .shop-item-name {
+      font-family: 'VT323', monospace;
+      font-size: 1.5rem;
+      color: #fff;
+      margin-bottom: 10px;
+    }
+
+    .shop-item-cost {
+      font-family: 'VT323', monospace;
+      font-size: 1.2rem;
+      color: #FFAA00;
+      margin-bottom: 15px;
+    }
+
+    .shop-buttons {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
+
+    /* 里程碑面板 */
+    .milestone-panel {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.85);
+      z-index: 300;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .milestone-panel.active {
+      display: flex;
+    }
+
+    .milestone-card {
+      background: linear-gradient(180deg, #3a3a3a 0%, #2a2a2a 100%);
+      border: 8px solid;
+      border-color: #6a6a6a #3a3a3a #3a3a3a #6a6a6a;
+      padding: 40px;
+      text-align: center;
+      max-width: 450px;
+      position: relative;
+      animation: milestoneAppear 0.5s ease;
+    }
+
+    @keyframes milestoneAppear {
+      0% { transform: scale(0.5) rotateY(90deg); opacity: 0; }
+      100% { transform: scale(1) rotateY(0deg); opacity: 1; }
+    }
+
+    .milestone-badge {
+      font-size: 4rem;
+      margin-bottom: 15px;
+      animation: milestoneBounce 0.6s ease infinite alternate;
+    }
+
+    @keyframes milestoneBounce {
+      0% { transform: scale(1); }
+      100% { transform: scale(1.1); }
+    }
+
+    .milestone-title {
+      font-family: 'VT323', monospace;
+      font-size: 2.5rem;
+      color: #FFD700;
+      text-shadow: 3px 3px 0 #8B6914;
+      margin-bottom: 10px;
+    }
+
+    .milestone-desc {
+      font-family: 'VT323', monospace;
+      font-size: 1.5rem;
+      color: #AAAAAA;
+      margin-bottom: 25px;
+    }
+
+    .milestone-reward {
+      font-family: 'VT323', monospace;
+      font-size: 1.3rem;
+      color: #55FF55;
+      background: rgba(0,0,0,0.5);
+      padding: 10px 20px;
+      margin-bottom: 25px;
+      border: 3px solid #55FF55;
+    }
+
+    /* 3D 等距方塊容器 */
+    .isometric-block-container {
+      width: 150px;
+      height: 150px;
+      margin: 0 auto 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* 3D 等距方塊基礎 */
+    .isometric-block {
+      position: relative;
+      width: 80px;
+      height: 80px;
+      transform-style: preserve-3d;
+      transform: rotateX(-30deg) rotateY(45deg);
+    }
+
+    .iso-face {
+      position: absolute;
+      width: 80px;
+      height: 80px;
+      border: 3px solid rgba(0,0,0,0.3);
+    }
+
+    .iso-top {
+      transform: rotateX(90deg) translateZ(40px);
+    }
+
+    .iso-front {
+      transform: translateZ(40px);
+    }
+
+    .iso-right {
+      transform: rotateY(90deg) translateZ(40px);
+    }
+
+    /* 餅乾方塊 */
+    .cookie-block .iso-top {
+      background: linear-gradient(135deg, #D4A574 0%, #C49464 50%, #B48454 100%);
+    }
+    .cookie-block .iso-front {
+      background: linear-gradient(180deg, #C49464 0%, #A47444 100%);
+    }
+    .cookie-block .iso-right {
+      background: linear-gradient(180deg, #B48454 0%, #946434 100%);
+    }
+    .cookie-block .iso-top::before,
+    .cookie-block .iso-front::before {
+      content: '';
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      background: #5D4037;
+      border-radius: 50%;
+    }
+    .cookie-block .iso-top::before {
+      top: 15px;
+      left: 20px;
+      box-shadow: 30px 10px 0 #5D4037, 15px 35px 0 #5D4037, 45px 40px 0 #5D4037;
+    }
+    .cookie-block .iso-front::before {
+      top: 20px;
+      left: 15px;
+      box-shadow: 35px 5px 0 #5D4037, 20px 35px 0 #5D4037;
+    }
+
+    /* 鑽石方塊 */
+    .diamond-block .iso-top {
+      background: linear-gradient(135deg, #7FDBFF 0%, #4FC3F7 30%, #29B6F6 70%, #0288D1 100%);
+    }
+    .diamond-block .iso-front {
+      background: linear-gradient(180deg, #4FC3F7 0%, #0288D1 50%, #01579B 100%);
+    }
+    .diamond-block .iso-right {
+      background: linear-gradient(180deg, #29B6F6 0%, #0277BD 50%, #01579B 100%);
+    }
+    .diamond-block .iso-top::before,
+    .diamond-block .iso-front::before,
+    .diamond-block .iso-right::before {
+      content: '';
+      position: absolute;
+      background: rgba(255,255,255,0.6);
+    }
+    .diamond-block .iso-top::before {
+      top: 10px;
+      left: 10px;
+      width: 25px;
+      height: 8px;
+      transform: rotate(-45deg);
+    }
+    .diamond-block .iso-front::before {
+      top: 15px;
+      left: 12px;
+      width: 20px;
+      height: 6px;
+    }
+    .diamond-block .iso-right::before {
+      top: 20px;
+      left: 15px;
+      width: 15px;
+      height: 5px;
+    }
+    /* 鑽石閃光 */
+    .diamond-block::after {
+      content: '✦';
+      position: absolute;
+      top: -20px;
+      right: -10px;
+      font-size: 1.5rem;
+      color: #fff;
+      text-shadow: 0 0 10px #7FDBFF;
+      animation: sparkle 1s ease-in-out infinite;
+    }
+    @keyframes sparkle {
+      0%, 100% { opacity: 0.5; transform: scale(0.8); }
+      50% { opacity: 1; transform: scale(1.2); }
+    }
+
+    /* 星星方塊 */
+    .star-block .iso-top {
+      background: linear-gradient(135deg, #FFE135 0%, #FFD700 50%, #FFC107 100%);
+    }
+    .star-block .iso-front {
+      background: linear-gradient(180deg, #FFD700 0%, #FFA000 50%, #FF8F00 100%);
+    }
+    .star-block .iso-right {
+      background: linear-gradient(180deg, #FFC107 0%, #FF8F00 50%, #E65100 100%);
+    }
+    .star-block::before {
+      content: '★';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) rotateX(30deg) rotateY(-45deg);
+      font-size: 3rem;
+      color: #FFF8E1;
+      text-shadow: 0 0 15px #FFD700;
+      z-index: 10;
+    }
+
+    /* 火焰方塊（連擊用） */
+    .fire-block .iso-top {
+      background: linear-gradient(135deg, #FFAB00 0%, #FF6F00 50%, #E65100 100%);
+    }
+    .fire-block .iso-front {
+      background: linear-gradient(180deg, #FF6F00 0%, #E65100 50%, #BF360C 100%);
+    }
+    .fire-block .iso-right {
+      background: linear-gradient(180deg, #F4511E 0%, #BF360C 50%, #870000 100%);
+    }
+    .fire-block::before {
+      content: '🔥';
+      position: absolute;
+      top: -35px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 2.5rem;
+      animation: fireFlicker 0.3s ease-in-out infinite alternate;
+      z-index: 10;
+    }
+    @keyframes fireFlicker {
+      0% { transform: translateX(-50%) scale(1) rotate(-5deg); }
+      100% { transform: translateX(-50%) scale(1.1) rotate(5deg); }
+    }
+
+    /* 綠寶石方塊（經驗值用） */
+    .emerald-block .iso-top {
+      background: linear-gradient(135deg, #69F0AE 0%, #00E676 50%, #00C853 100%);
+    }
+    .emerald-block .iso-front {
+      background: linear-gradient(180deg, #00E676 0%, #00C853 50%, #00A040 100%);
+    }
+    .emerald-block .iso-right {
+      background: linear-gradient(180deg, #00C853 0%, #00A040 50%, #007030 100%);
+    }
+    .emerald-block .iso-top::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) rotate(45deg);
+      width: 30px;
+      height: 30px;
+      background: rgba(255,255,255,0.3);
+      border: 2px solid rgba(255,255,255,0.5);
+    }
+
+    /* 紅石方塊（完美正確率用） */
+    .redstone-block .iso-top {
+      background: linear-gradient(135deg, #FF5252 0%, #F44336 50%, #D32F2F 100%);
+    }
+    .redstone-block .iso-front {
+      background: linear-gradient(180deg, #F44336 0%, #D32F2F 50%, #B71C1C 100%);
+    }
+    .redstone-block .iso-right {
+      background: linear-gradient(180deg, #E53935 0%, #C62828 50%, #8B0000 100%);
+    }
+    .redstone-block::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 40px;
+      height: 40px;
+      background: radial-gradient(circle, #FF0000 0%, transparent 70%);
+      transform: translate(-50%, -50%);
+      animation: redstoneGlow 1s ease-in-out infinite;
+      z-index: 5;
+    }
+    @keyframes redstoneGlow {
+      0%, 100% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
+      50% { opacity: 1; transform: translate(-50%, -50%) scale(1.3); }
+    }
+
+    /* 青金石方塊（總題數用） */
+    .lapis-block .iso-top {
+      background: linear-gradient(135deg, #5C6BC0 0%, #3F51B5 50%, #303F9F 100%);
+    }
+    .lapis-block .iso-front {
+      background: linear-gradient(180deg, #3F51B5 0%, #303F9F 50%, #1A237E 100%);
+    }
+    .lapis-block .iso-right {
+      background: linear-gradient(180deg, #3949AB 0%, #283593 50%, #1A237E 100%);
+    }
+    .lapis-block .iso-top::before,
+    .lapis-block .iso-front::before {
+      content: '';
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background: #7986CB;
+      border-radius: 2px;
+    }
+    .lapis-block .iso-top::before {
+      top: 12px;
+      left: 18px;
+      box-shadow: 25px 8px 0 #9FA8DA, 10px 30px 0 #7986CB, 38px 28px 0 #9FA8DA;
+    }
+    .lapis-block .iso-front::before {
+      top: 15px;
+      left: 22px;
+      box-shadow: 20px 15px 0 #9FA8DA, 8px 38px 0 #7986CB;
+    }
+
+    /* 完成所有題目用 - 信標方塊 */
+    .beacon-block .iso-top {
+      background: linear-gradient(135deg, #E0F7FA 0%, #80DEEA 50%, #4DD0E1 100%);
+    }
+    .beacon-block .iso-front {
+      background: linear-gradient(180deg, #4DD0E1 0%, #00ACC1 50%, #00838F 100%);
+    }
+    .beacon-block .iso-right {
+      background: linear-gradient(180deg, #26C6DA 0%, #0097A7 50%, #006064 100%);
+    }
+    .beacon-block::before {
+      content: '';
+      position: absolute;
+      top: -60px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 20px;
+      height: 80px;
+      background: linear-gradient(180deg, transparent 0%, #80DEEA 50%, #4DD0E1 100%);
+      opacity: 0.8;
+      animation: beaconBeam 1.5s ease-in-out infinite;
+    }
+    @keyframes beaconBeam {
+      0%, 100% { opacity: 0.5; height: 80px; }
+      50% { opacity: 0.9; height: 100px; }
+    }
+    .beacon-block::after {
+      content: '✧';
+      position: absolute;
+      top: -70px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 1.5rem;
+      color: #fff;
+      text-shadow: 0 0 10px #80DEEA;
+      animation: sparkle 0.8s ease-in-out infinite;
+    }
+
+    /* 進度條 */
+    .progress-section {
+      margin-top: 20px;
+    }
+
+    .progress-bar-container {
+      background: #1a1a1a;
+      border: 3px solid #0a0a0a;
+      height: 20px;
+      position: relative;
+      margin-top: 10px;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(180deg, #55FF55 0%, #33AA33 50%, #228822 50%, #116611 100%);
+      transition: width 0.3s ease;
+    }
+
+    .progress-label {
+      font-family: 'VT323', monospace;
+      color: #888;
+      font-size: 1.1rem;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    /* 按鈕容器 */
+    .button-row {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .next-btn {
+      display: none;
+    }
+
+    .next-btn.visible {
+      display: inline-block;
+    }
+
+    @media (max-width: 600px) {
+      h1 { font-size: 2rem; }
+      .question-word { font-size: 2.5rem; }
+      .mc-input { width: 100%; }
+      .stat-item { font-size: 1.1rem; }
+      .milestone-card { padding: 25px; margin: 15px; }
+      .isometric-block-container { width: 120px; height: 120px; }
+      .isometric-block { width: 60px; height: 60px; }
+      .iso-face { width: 60px; height: 60px; }
+      .iso-top { transform: rotateX(90deg) translateZ(30px); }
+      .iso-front { transform: translateZ(30px); }
+      .iso-right { transform: rotateY(90deg) translateZ(30px); }
     }
   </style>
 </head>
 <body>
+  <!-- 漸層背景 -->
+  <div class="gradient-bg"></div>
+  
+  <!-- 裝飾方塊 -->
+  <div class="background-blocks" id="bgBlocks"></div>
 
-<div id="game-container">
-  <div id="game-panel">
-    <h1>⛏️ 詞語挖礦 (五年級)</h1>
-    
-    <div style="display: flex; justify-content: space-between; font-size: 1.2rem;">
-      <span id="level-display">關卡: 1/10</span>
-      <span id="hp-display">❤️ ❤️ ❤️</span>
-    </div>
+  <!-- 全螢幕按鈕 -->
+  <button class="fullscreen-btn" onclick="toggleFullscreen()" title="全螢幕">⛶</button>
 
-    <div class="status-bar">
-      <div id="xp-fill" class="xp-fill"></div>
-    </div>
+  <!-- 主遊戲容器 -->
+  <div class="game-wrapper">
+    <!-- 遊戲面板 -->
+    <div class="game-panel" id="gamePanel">
+      <h1>⛏️ Minecraft 詞語挖礦 ⛏️</h1>
 
-    <div class="question-box">
-      <div id="target-word" class="question-word">載入中...</div>
-    </div>
-
-    <div class="input-area">
-      <input type="text" id="user-input" placeholder="請輸入對應詞語..." autocomplete="off">
-      <button class="mc-btn green" onclick="checkAnswer()">挖掘!</button>
-    </div>
-
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-      <div>
-        🍪 餅乾: <span id="cookie-count">5</span> 
-        (連擊 <span id="combo-count">0</span>)
+      <!-- 狀態列 -->
+      <div class="status-bar">
+        <div class="stat-group">
+          <div class="level-badge">關卡 <span id="level">1</span>/10</div>
+          <div class="stat-item">
+            <span class="icon">🔥</span>
+            <span id="combo">0</span> 連擊
+          </div>
+        </div>
+        <div class="stat-group">
+          <div class="stat-item">
+            <span class="icon">🍪</span>
+            <span id="cookies">5</span>
+          </div>
+          <div class="stat-item">
+            <span class="icon">💎</span>
+            <span id="diamonds">0</span>
+          </div>
+          <div class="stat-item">
+            <span class="icon">⭐</span>
+            <span id="stars">0</span>
+          </div>
+        </div>
+        <div class="hearts-container" id="hearts">
+          <span class="heart">❤️</span>
+          <span class="heart">❤️</span>
+          <span class="heart">❤️</span>
+        </div>
       </div>
-      <button class="mc-btn blue" id="skip-btn" onclick="useSkip()">使用餅乾跳過 (-3)</button>
+
+      <!-- XP 條 -->
+      <div class="xp-container">
+        <div class="xp-bar-bg">
+          <div class="xp-bar" id="xpBar" style="width: 0%"></div>
+          <div class="xp-text">XP: <span id="xpText">0</span></div>
+        </div>
+      </div>
+
+      <!-- 題目區 -->
+      <div class="question-area">
+        <div class="question-label">第 <span id="questionNum">1</span> / <span id="totalQuestions">100</span> 題</div>
+        <div class="question-word" id="questionWord">準備開始</div>
+      </div>
+
+      <!-- 輸入區 -->
+      <div class="input-area">
+        <input type="text" class="mc-input" id="answerInput" placeholder="輸入詞語..." autocomplete="off">
+        <button class="mc-btn primary" id="submitBtn" onclick="submitAnswer()">⛏️ 挖掘！</button>
+        <button class="mc-btn skip-btn" onclick="openShop()">🍪 跳過</button>
+        <button class="mc-btn primary next-btn" id="nextBtn" onclick="nextQuestion()">➡️ 下一題</button>
+      </div>
+
+      <!-- 統計資訊 -->
+      <div class="stats-row">
+        <div class="stat-box">
+          <div class="label">正確</div>
+          <div class="value correct" id="correctCount">0</div>
+        </div>
+        <div class="stat-box">
+          <div class="label">錯誤</div>
+          <div class="value wrong" id="wrongCount">0</div>
+        </div>
+        <div class="stat-box">
+          <div class="label">略過</div>
+          <div class="value skipped" id="skippedCount">0</div>
+        </div>
+        <div class="stat-box">
+          <div class="label">正確率</div>
+          <div class="value" id="accuracy">0%</div>
+        </div>
+      </div>
+
+      <!-- 進度條 -->
+      <div class="progress-section">
+        <div class="progress-label">
+          <span>進度</span>
+          <span id="progressText">0%</span>
+        </div>
+        <div class="progress-bar-container">
+          <div class="progress-bar-fill" id="progressBar" style="width: 0%"></div>
+        </div>
+      </div>
+
+      <!-- 連擊顯示 -->
+      <div class="combo-display" id="comboDisplay"></div>
     </div>
 
-    <div class="milestone-container" id="milestone-row">
+    <!-- 結算面板 -->
+    <div class="game-over-panel" id="gameOverPanel">
+      <h2 class="result-title" id="resultTitle">🎉 挖礦完成！</h2>
+      <div class="result-stats">
+        <div class="result-stat">
+          <div class="label">正確題數</div>
+          <div class="value" id="finalCorrect">0</div>
+        </div>
+        <div class="result-stat">
+          <div class="label">錯誤題數</div>
+          <div class="value" id="finalWrong">0</div>
+        </div>
+        <div class="result-stat">
+          <div class="label">略過題數</div>
+          <div class="value" id="finalSkipped">0</div>
+        </div>
+        <div class="result-stat">
+          <div class="label">正確率</div>
+          <div class="value" id="finalAccuracy">0%</div>
+        </div>
+        <div class="result-stat">
+          <div class="label">最高連擊</div>
+          <div class="value" id="finalCombo">0</div>
+        </div>
+        <div class="result-stat">
+          <div class="label">總經驗值</div>
+          <div class="value" id="finalXP">0</div>
+        </div>
       </div>
+      <button class="mc-btn primary" onclick="restartGame()">🔄 再玩一次</button>
+    </div>
   </div>
 
-  <div id="end-panel" class="hidden">
-    <h1>挖掘結束!</h1>
-    <p id="final-stats" style="font-size: 1.2rem;"></p>
-    <div class="milestone-container" id="final-rewards"></div>
-    <br>
-    <button class="mc-btn green" onclick="location.reload()">重新挑戰</button>
-  </div>
-</div>
-
-<script>
-// --- 詞庫資料 (100個) ---
-const twoCharWords = [
-  "謹慎", "謙虛", "敏捷", "猶豫", "誠信", "憧憬", "尷尬", "慚愧", "剛毅", "寬容",
-  "澎湃", "渲染", "枯竭", "細膩", "湛藍", "幽靜", "繁瑣", "遼闊", "顫抖", "陶醉",
-  "徘徊", "瀏覽", "醞釀", "叮嚀", "妥協", "競爭", "勉勵", "規律", "維護", "關鍵",
-  "邏輯", "判斷", "分析", "靈感", "卓越", "資深", "策略", "敏銳", "預測", "領悟",
-  "象徵", "永恆", "節奏", "核心", "結構", "起源", "障礙", "侷限", "平衡", "和諧"
-];
-const threeCharWords = [
-  "綠油油", "亮晶晶", "懶洋洋", "亂糟糟", "孤零零", "慢吞吞", "乾巴巴", "皺巴巴", "羞答答", "響噹噹",
-  "沉甸甸", "霧濛濛", "濕漉漉", "喜洋洋", "密麻麻", "空盪盪", "軟綿綿", "熱烘烘", "興沖沖", "靜悄悄",
-  "絆腳石", "敲門磚", "試金石", "導火線", "里程碑", "保護色", "莫非是", "沒想到", "忍不住", "差不多",
-  "下馬威", "破天荒", "門外漢", "擋箭牌", "馬後炮", "耳邊風", "老掉牙", "桃花源", "閉門羹", "替罪羊",
-  "定心丸", "潑冷水", "炒冷飯", "走過場", "應聲蟲", "鐵飯碗", "耍花招", "指揮棒", "轉折點", "口頭禪"
-];
-const wordBank = [...twoCharWords, ...threeCharWords];
-
-// --- 遊戲狀態 ---
-let gameState = {
-  shuffledWords: [],
-  currentIndex: 0,
-  hp: 3,
-  cookies: 5,
-  combo: 0,
-  xp: 0,
-  correctCount: 0,
-  rewards: [
-    { threshold: 30, type: 'cow', color: '#4b3b2f', name: '乳牛', unlocked: false },
-    { threshold: 60, type: 'creeper', color: '#55aa55', name: '苦力怕', unlocked: false },
-    { threshold: 90, type: 'steve', color: '#2b90ff', name: '史提夫', unlocked: false },
-    { threshold: 100, type: 'diamond', color: '#55ffff', name: '鑽石方塊', unlocked: false }
-  ]
-};
-
-// --- 初始化 ---
-function init() {
-  gameState.shuffledWords = shuffle([...wordBank]);
-  updateDisplay();
-  renderMilestones();
-  
-  document.getElementById('user-input').addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') checkAnswer();
-  });
-}
-
-function shuffle(array) {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
-  }
-  return array;
-}
-
-// --- 核心邏輯 ---
-function checkAnswer() {
-  const input = document.getElementById('user-input');
-  const target = gameState.shuffledWords[gameState.currentIndex];
-  
-  if (input.value.trim() === target) {
-    // 正確
-    gameState.correctCount++;
-    gameState.combo++;
-    gameState.xp += (10 + gameState.combo * 2);
-    if (gameState.combo % 5 === 0) gameState.cookies++;
-    
-    // 檢查獎勵解鎖
-    const progress = (gameState.correctCount / wordBank.length) * 100;
-    gameState.rewards.forEach(r => {
-      if (progress >= r.threshold) r.unlocked = true;
-    });
-
-    nextQuestion();
-  } else {
-    // 錯誤
-    gameState.hp--;
-    gameState.combo = 0;
-    input.classList.add('wrong-shake');
-    setTimeout(() => input.classList.remove('wrong-shake'), 400);
-    if (gameState.hp <= 0) endGame();
-  }
-  
-  input.value = "";
-  updateDisplay();
-}
-
-function useSkip() {
-  if (gameState.cookies >= 3) {
-    gameState.cookies -= 3;
-    nextQuestion();
-    updateDisplay();
-  }
-}
-
-function nextQuestion() {
-  gameState.currentIndex++;
-  if (gameState.currentIndex >= wordBank.length) {
-    endGame();
-  } else {
-    document.getElementById('target-word').innerText = gameState.shuffledWords[gameState.currentIndex];
-  }
-}
-
-// --- 畫面更新 ---
-function updateDisplay() {
-  document.getElementById('level-display').innerText = `進度: ${gameState.currentIndex + 1}/${wordBank.length}`;
-  document.getElementById('target-word').innerText = gameState.shuffledWords[gameState.currentIndex];
-  document.getElementById('hp-display').innerText = "❤️ ".repeat(gameState.hp);
-  document.getElementById('cookie-count').innerText = gameState.cookies;
-  document.getElementById('combo-count').innerText = gameState.combo;
-  
-  const xpPercent = (gameState.currentIndex / wordBank.length) * 100;
-  document.getElementById('xp-fill').style.width = xpPercent + "%";
-  
-  renderMilestones();
-}
-
-// 生成 3D 獎勵 HTML
-function get3DModelHtml(config) {
-  if (!config.unlocked) return `<div class="locked-icon">🔒</div>`;
-  
-  return `
-    <div class="model-3d-static" title="${config.name}">
-      <div class="cube-face face-front" style="background: ${config.color}"></div>
-      <div class="cube-face face-top" style="background: ${config.color}"></div>
-      <div class="cube-face face-right" style="background: ${config.color}"></div>
+  <!-- 商店面板 -->
+  <div class="shop-panel" id="shopPanel">
+    <div class="shop-content">
+      <div class="shop-title">🏪 礦工商店</div>
+      <div class="shop-item">
+        <div class="shop-item-name">⏭️ 跳過此題</div>
+        <div class="shop-item-cost">花費：🍪 × 3</div>
+        <div class="shop-buttons">
+          <button class="mc-btn primary" onclick="useSkip()">確認購買</button>
+          <button class="mc-btn" onclick="closeShop()">取消</button>
+        </div>
+      </div>
+      <p style="color: #888; margin-top: 15px; font-family: 'VT323', monospace;">
+        目前擁有：🍪 × <span id="shopCookies">5</span>
+      </p>
     </div>
-  `;
-}
+  </div>
 
-function renderMilestones() {
-  const row = document.getElementById('milestone-row');
-  row.innerHTML = "";
-  gameState.rewards.forEach(reward => {
-    const div = document.createElement('div');
-    div.className = `milestone-item ${reward.unlocked ? 'unlocked' : ''}`;
-    div.innerHTML = get3DModelHtml(reward);
-    row.appendChild(div);
-  });
-}
+  <!-- 里程碑面板 -->
+  <div class="milestone-panel" id="milestonePanel">
+    <div class="milestone-card">
+      <div class="isometric-block-container" id="milestoneBlockContainer">
+        <!-- 3D 方塊會動態插入這裡 -->
+      </div>
+      <div class="milestone-title" id="milestoneTitle">里程碑達成！</div>
+      <div class="milestone-desc" id="milestoneDesc">描述</div>
+      <div class="milestone-reward" id="milestoneReward">獎勵內容</div>
+      <button class="mc-btn primary" onclick="closeMilestone()">繼續挖礦！</button>
+    </div>
+  </div>
 
-function endGame() {
-  document.getElementById('game-panel').classList.add('hidden');
-  document.getElementById('end-panel').classList.remove('hidden');
-  document.getElementById('final-stats').innerText = `正確挖到: ${gameState.correctCount} 個詞語`;
-  
-  const finalRow = document.getElementById('final-rewards');
-  finalRow.innerHTML = "";
-  gameState.rewards.forEach(reward => {
-    const div = document.createElement('div');
-    div.className = `milestone-item ${reward.unlocked ? 'unlocked' : ''}`;
-    div.innerHTML = get3DModelHtml(reward);
-    finalRow.appendChild(div);
-  });
-}
+  <script>
+    // 詞庫 - 50個二字詞語
+    const twoCharWords = [
+      "謹慎", "謙虛", "敏捷", "猶豫", "誠信",
+      "勤勉", "堅韌", "溫馨", "燦爛", "憂鬱",
+      "熱忱", "冷漠", "善良", "邪惡", "勇敢",
+      "膽怯", "聰穎", "愚昧", "優雅", "粗魯",
+      "寧靜", "喧鬧", "繁華", "蕭條", "歡欣",
+      "哀傷", "明亮", "陰暗", "甜蜜", "苦澀",
+      "輕盈", "沉重", "迅速", "緩慢", "寬廣",
+      "狹窄", "高聳", "低矮", "堅固", "脆弱",
+      "豐富", "貧乏", "新穎", "陳舊", "精緻",
+      "粗糙", "清澈", "渾濁", "芬芳", "惡臭"
+    ];
 
-window.onload = init;
-</script>
+    // 詞庫 - 50個三字詞語
+    const threeCharWords = [
+      "綠油油", "亮晶晶", "懶洋洋", "亂糟糟", "慢吞吞",
+      "靜悄悄", "笑嘻嘻", "興沖沖", "冷冰冰", "熱呼呼",
+      "暖洋洋", "冷颼颼", "甜蜜蜜", "酸溜溜", "苦哈哈",
+      "軟綿綿", "硬邦邦", "輕飄飄", "沉甸甸", "胖嘟嘟",
+      "瘦巴巴", "白茫茫", "黑漆漆", "紅通通", "黃澄澄",
+      "毛茸茸", "滑溜溜", "粗糙糙", "髒兮兮", "香噴噴",
+      "臭烘烘", "濕答答", "乾巴巴", "亮堂堂", "陰森森",
+      "眼睜睜", "急匆匆", "氣呼呼", "樂陶陶", "哭啼啼",
+      "血淋淋", "光禿禿", "水汪汪", "淚汪汪", "羞答答",
+      "怒沖沖", "喜洋洋", "悲切切", "傻愣愣", "活生生"
+    ];
 
+    // 合併詞庫
+    const wordBank = [...twoCharWords, ...threeCharWords];
+
+    // 遊戲狀態
+    let gameState = {
+      currentLevel: 1,
+      totalLevels: 10,
+      questionsPerLevel: 10,
+      currentQuestion: 0,
+      totalQuestions: 100,
+      combo: 0,
+      maxCombo: 0,
+      cookies: 5,
+      lives: 3,
+      maxLives: 3,
+      xp: 0,
+      correct: 0,
+      wrong: 0,
+      skipped: 0,
+      diamonds: 0,
+      stars: 0,
+      currentWord: "",
+      answered: false,
+      shuffledWords: []
+    };
+
+    // 里程碑設定
+    const milestones = {
+      cookies: [10, 25, 50],
+      diamonds: [3, 6, 10],
+      stars: [20, 50, 80],
+      combo: [5, 10, 20]
+    };
+
+    let achievedMilestones = {
+      cookies: [],
+      diamonds: [],
+      stars: [],
+      combo: []
+    };
+
+    // 初始化
+    function init() {
+      // 洗牌詞庫
+      gameState.shuffledWords = shuffleArray([...wordBank]);
+      gameState.totalQuestions = gameState.shuffledWords.length;
+      gameState.questionsPerLevel = Math.ceil(gameState.totalQuestions / gameState.totalLevels);
+      
+      createBackgroundBlocks();
+      nextQuestion();
+
+      // Enter 鍵提交
+      document.getElementById('answerInput').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          if (gameState.answered) {
+            nextQuestion();
+          } else {
+            submitAnswer();
+          }
+        }
+      });
+
+      // 防止複製題目
+      document.addEventListener('copy', (e) => e.preventDefault());
+      document.addEventListener('cut', (e) => e.preventDefault());
+      document.addEventListener('contextmenu', (e) => {
+        if (e.target.classList.contains('question-word')) {
+          e.preventDefault();
+        }
+      });
+
+      // 禁止拖曳選取
+      document.getElementById('questionWord').addEventListener('selectstart', (e) => e.preventDefault());
+      document.getElementById('questionWord').addEventListener('dragstart', (e) => e.preventDefault());
+
+      // 禁止 Ctrl+C
+      document.addEventListener('keydown', (e) => {
+        if (e.ctrlKey && e.key === 'c') {
+          const selection = window.getSelection().toString();
+          if (selection && document.getElementById('questionWord').textContent.includes(selection)) {
+            e.preventDefault();
+          }
+        }
+      });
+    }
+
+    // Fisher-Yates 洗牌
+    function shuffleArray(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
+    // 創建背景裝飾方塊
+    function createBackgroundBlocks() {
+      const container = document.getElementById('bgBlocks');
+      const blockTypes = ['dirt', 'stone', 'grass', 'ore'];
+      
+      for (let i = 0; i < 15; i++) {
+        const block = document.createElement('div');
+        block.className = `floating-block ${blockTypes[Math.floor(Math.random() * blockTypes.length)]}`;
+        block.style.left = `${Math.random() * 100}%`;
+        block.style.top = `${Math.random() * 100}%`;
+        block.style.animationDelay = `${Math.random() * 5}s`;
+        block.style.transform = `scale(${0.5 + Math.random() * 0.8})`;
+        container.appendChild(block);
+      }
+    }
+
+    // 下一題
+    function nextQuestion() {
+      if (gameState.currentQuestion >= gameState.totalQuestions) {
+        endGame();
+        return;
+      }
+
+      gameState.currentWord = gameState.shuffledWords[gameState.currentQuestion];
+      gameState.currentQuestion++;
+      gameState.currentLevel = Math.min(
+        Math.ceil(gameState.currentQuestion / gameState.questionsPerLevel),
+        gameState.totalLevels
+      );
+      gameState.answered = false;
+
+      // 重置輸入框
+      const input = document.getElementById('answerInput');
+      input.value = '';
+      input.className = 'mc-input';
+      input.disabled = false;
+      input.focus();
+
+      // 更新按鈕顯示
+      document.getElementById('submitBtn').style.display = 'inline-block';
+      document.getElementById('nextBtn').classList.remove('visible');
+
+      updateDisplay();
+      document.getElementById('questionWord').textContent = gameState.currentWord;
+    }
+
+    // 提交答案
+    function submitAnswer() {
+      if (gameState.answered) return;
+
+      const input = document.getElementById('answerInput');
+      const answer = input.value.trim();
+
+      if (!answer) return;
+
+      if (answer === gameState.currentWord) {
+        // 正確
+        gameState.correct++;
+        gameState.combo++;
+        gameState.stars++;
+        if (gameState.combo > gameState.maxCombo) {
+          gameState.maxCombo = gameState.combo;
+        }
+
+        // 計算 XP
+        const comboBonus = Math.min(gameState.combo, 10) * 2;
+        const xpGain = 10 + comboBonus;
+        gameState.xp += xpGain;
+
+        // 獎勵餅乾（每5題正確）
+        if (gameState.correct % 5 === 0) {
+          gameState.cookies++;
+          showToast(`🍪 獲得餅乾！`);
+        }
+
+        // 獎勵鑽石（每10題正確）
+        if (gameState.correct % 10 === 0) {
+          gameState.diamonds++;
+          showToast(`💎 獲得鑽石！`);
+        }
+
+        input.className = 'mc-input correct';
+        gameState.answered = true;
+
+        // 顯示下一題按鈕
+        document.getElementById('submitBtn').style.display = 'none';
+        document.getElementById('nextBtn').classList.add('visible');
+        input.disabled = true;
+
+        // 粒子效果
+        createParticles('✓', '#55FF55');
+
+        // 檢查里程碑
+        checkMilestones();
+
+      } else {
+        // 錯誤
+        gameState.wrong++;
+        gameState.combo = 0;
+        gameState.lives--;
+
+        input.className = 'mc-input wrong';
+        createParticles('✗', '#FF5555');
+
+        // 愛心動畫
+        const hearts = document.querySelectorAll('.heart');
+        if (hearts[gameState.lives]) {
+          hearts[gameState.lives].classList.add('damage');
+          setTimeout(() => hearts[gameState.lives].classList.remove('damage'), 500);
+        }
+
+        // 檢查遊戲結束
+        if (gameState.lives <= 0) {
+          setTimeout(() => endGame(), 500);
+          return;
+        }
+
+        // 錯誤後清空輸入框讓玩家重試
+        setTimeout(() => {
+          input.className = 'mc-input';
+          input.value = '';
+          input.focus();
+        }, 500);
+      }
+
+      updateDisplay();
+    }
+
+    // 更新顯示
+    function updateDisplay() {
+      document.getElementById('level').textContent = gameState.currentLevel;
+      document.getElementById('combo').textContent = gameState.combo;
+      document.getElementById('cookies').textContent = gameState.cookies;
+      document.getElementById('diamonds').textContent = gameState.diamonds;
+      document.getElementById('stars').textContent = gameState.stars;
+      document.getElementById('xpText').textContent = gameState.xp;
+      document.getElementById('questionNum').textContent = gameState.currentQuestion;
+      document.getElementById('totalQuestions').textContent = gameState.totalQuestions;
+      document.getElementById('correctCount').textContent = gameState.correct;
+      document.getElementById('wrongCount').textContent = gameState.wrong;
+      document.getElementById('skippedCount').textContent = gameState.skipped;
+
+      // XP 條（每100XP一個循環）
+      const xpPercent = (gameState.xp % 100);
+      document.getElementById('xpBar').style.width = `${xpPercent}%`;
+
+      // 正確率
+      const total = gameState.correct + gameState.wrong;
+      const accuracy = total > 0 ? Math.round((gameState.correct / total) * 100) : 0;
+      document.getElementById('accuracy').textContent = `${accuracy}%`;
+
+      // 進度條
+      const progress = Math.round((gameState.currentQuestion / gameState.totalQuestions) * 100);
+      document.getElementById('progressBar').style.width = `${progress}%`;
+      document.getElementById('progressText').textContent = `${progress}%`;
+
+      // 愛心更新
+      updateHearts();
+
+      // 連擊顯示
+      const comboDisplay = document.getElementById('comboDisplay');
+      if (gameState.combo >= 2) {
+        comboDisplay.textContent = `🔥 ${gameState.combo} 連擊！`;
+        comboDisplay.classList.add('active');
+      } else {
+        comboDisplay.classList.remove('active');
+      }
+    }
+
+    // 更新愛心
+    function updateHearts() {
+      const container = document.getElementById('hearts');
+      container.innerHTML = '';
+      for (let i = 0; i < gameState.maxLives; i++) {
+        const heart = document.createElement('span');
+        heart.className = `heart ${i < gameState.lives ? '' : 'empty'}`;
+        heart.textContent = '❤️';
+        container.appendChild(heart);
+      }
+    }
+
+    // 建立 3D 方塊 HTML
+    function create3DBlock(type) {
+      return `
+        <div class="isometric-block ${type}-block">
+          <div class="iso-face iso-top"></div>
+          <div class="iso-face iso-front"></div>
+          <div class="iso-face iso-right"></div>
+        </div>
+      `;
+    }
+
+    // 檢查里程碑
+    function checkMilestones() {
+      // 餅乾里程碑
+      milestones.cookies.forEach(threshold => {
+        if (gameState.cookies >= threshold && !achievedMilestones.cookies.includes(threshold)) {
+          achievedMilestones.cookies.push(threshold);
+          showMilestone('cookie', `🍪 餅乾收藏家`, `收集了 ${threshold} 個餅乾！`, `+${threshold} XP 獎勵`);
+          gameState.xp += threshold;
+        }
+      });
+
+      // 鑽石里程碑
+      milestones.diamonds.forEach(threshold => {
+        if (gameState.diamonds >= threshold && !achievedMilestones.diamonds.includes(threshold)) {
+          achievedMilestones.diamonds.push(threshold);
+          showMilestone('diamond', `💎 鑽石礦工`, `收集了 ${threshold} 顆鑽石！`, `+${threshold * 10} XP 獎勵`);
+          gameState.xp += threshold * 10;
+        }
+      });
+
+      // 星星里程碑
+      milestones.stars.forEach(threshold => {
+        if (gameState.stars >= threshold && !achievedMilestones.stars.includes(threshold)) {
+          achievedMilestones.stars.push(threshold);
+          showMilestone('star', `⭐ 星星達人`, `獲得 ${threshold} 顆星星！`, `+${threshold} XP 獎勵`);
+          gameState.xp += threshold;
+        }
+      });
+
+      // 連擊里程碑
+      milestones.combo.forEach(threshold => {
+        if (gameState.combo >= threshold && !achievedMilestones.combo.includes(threshold)) {
+          achievedMilestones.combo.push(threshold);
+          showMilestone('fire', `🔥 連擊大師`, `達成 ${threshold} 連擊！`, `+${threshold * 5} XP 獎勵`);
+          gameState.xp += threshold * 5;
+        }
+      });
+    }
+
+    // 顯示里程碑
+    function showMilestone(blockType, title, desc, reward) {
+      const panel = document.getElementById('milestonePanel');
+      const blockContainer = document.getElementById('milestoneBlockContainer');
+      
+      // 插入對應的 3D 方塊
+      blockContainer.innerHTML = create3DBlock(blockType);
+      
+      document.getElementById('milestoneTitle').textContent = title;
+      document.getElementById('milestoneDesc').textContent = desc;
+      document.getElementById('milestoneReward').textContent = reward;
+      panel.classList.add('active');
+    }
+
+    // 關閉里程碑
+    function closeMilestone() {
+      document.getElementById('milestonePanel').classList.remove('active');
+      updateDisplay();
+    }
+
+    // 開啟商店
+    function openShop() {
+      document.getElementById('shopCookies').textContent = gameState.cookies;
+      document.getElementById('shopPanel').classList.add('active');
+    }
+
+    // 關閉商店
+    function closeShop() {
+      document.getElementById('shopPanel').classList.remove('active');
+    }
+
+    // 使用跳過
+    function useSkip() {
+      if (gameState.cookies < 3) {
+        showToast('❌ 餅乾不足！需要 3 個餅乾');
+        return;
+      }
+
+      gameState.cookies -= 3;
+      gameState.skipped++;
+      gameState.combo = 0;
+      closeShop();
+      updateDisplay();
+      
+      // 標記為已回答，進入下一題
+      gameState.answered = true;
+      document.getElementById('submitBtn').style.display = 'none';
+      document.getElementById('nextBtn').classList.add('visible');
+      document.getElementById('answerInput').disabled = true;
+      
+      showToast('⏭️ 已跳過此題');
+    }
+
+    // 遊戲結束
+    function endGame() {
+      document.getElementById('gamePanel').classList.add('hidden');
+      document.getElementById('gameOverPanel').classList.add('active');
+
+      const resultTitle = document.getElementById('resultTitle');
+      if (gameState.lives <= 0) {
+        resultTitle.textContent = '💀 遊戲結束';
+        resultTitle.classList.add('fail');
+      } else {
+        resultTitle.textContent = '🎉 挖礦完成！';
+        resultTitle.classList.remove('fail');
+      }
+
+      document.getElementById('finalCorrect').textContent = gameState.correct;
+      document.getElementById('finalWrong').textContent = gameState.wrong;
+      document.getElementById('finalSkipped').textContent = gameState.skipped;
+      document.getElementById('finalCombo').textContent = gameState.maxCombo;
+      document.getElementById('finalXP').textContent = gameState.xp;
+
+      const total = gameState.correct + gameState.wrong;
+      const accuracy = total > 0 ? Math.round((gameState.correct / total) * 100) : 0;
+      document.getElementById('finalAccuracy').textContent = `${accuracy}%`;
+    }
+
+    // 重新開始
+    function restartGame() {
+      gameState = {
+        currentLevel: 1,
+        totalLevels: 10,
+        questionsPerLevel: 10,
+        currentQuestion: 0,
+        totalQuestions: 100,
+        combo: 0,
+        maxCombo: 0,
+        cookies: 5,
+        lives: 3,
+        maxLives: 3,
+        xp: 0,
+        correct: 0,
+        wrong: 0,
+        skipped: 0,
+        diamonds: 0,
+        stars: 0,
+        currentWord: "",
+        answered: false,
+        shuffledWords: []
+      };
+
+      achievedMilestones = {
+        cookies: [],
+        diamonds: [],
+        stars: [],
+        combo: []
+      };
+
+      // 重新洗牌
+      gameState.shuffledWords = shuffleArray([...wordBank]);
+      gameState.totalQuestions = gameState.shuffledWords.length;
+      gameState.questionsPerLevel = Math.ceil(gameState.totalQuestions / gameState.totalLevels);
+
+      document.getElementById('gamePanel').classList.remove('hidden');
+      document.getElementById('gameOverPanel').classList.remove('active');
+      
+      nextQuestion();
+    }
+
+    // 粒子效果
+    function createParticles(symbol, color) {
+      for (let i = 0; i < 6; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        particle.textContent = symbol;
+        particle.style.color = color;
+        particle.style.left = `${50 + (Math.random() - 0.5) * 30}%`;
+        particle.style.top = `${40 + (Math.random() - 0.5) * 20}%`;
+        particle.style.animationDuration = `${0.8 + Math.random() * 0.4}s`;
+        document.body.appendChild(particle);
+
+        setTimeout(() => particle.remove(), 1200);
+      }
+    }
+
+    // Toast 通知
+    function showToast(message) {
+      const existing = document.querySelector('.toast');
+      if (existing) existing.remove();
+
+      const toast = document.createElement('div');
+      toast.className = 'toast';
+      toast.textContent = message;
+      document.body.appendChild(toast);
+
+      setTimeout(() => toast.remove(), 2500);
+    }
+
+    // 全螢幕切換
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen();
+      } else {
+        document.exitFullscreen();
+      }
+    }
+
+    // 啟動遊戲
+    init();
+  </script>
 </body>
 </html>
