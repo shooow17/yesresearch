@@ -1,17 +1,13 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
+  <base target="_top">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Minecraft 詞語挖礦4</title>
-  <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+  <title>Minecraft 詞語挖礦</title>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&family=VT323&display=swap" rel="stylesheet">
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
       font-family: 'Noto Sans TC', sans-serif;
@@ -20,27 +16,20 @@
       justify-content: center;
       align-items: center;
       overflow-x: hidden;
-      position: relative;
     }
 
     .gradient-bg {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(180deg, 
-        #87CEEB 0%, #7EC8E3 40%, #5BA3C6 70%, #3D8B6F 85%, #2D6B4F 100%
-      );
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: linear-gradient(180deg, #87CEEB 0%, #7EC8E3 40%, #5BA3C6 70%, #3D8B6F 85%, #2D6B4F 100%);
       z-index: -3;
     }
 
     .background-blocks {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
       pointer-events: none;
       z-index: -2;
       overflow: hidden;
@@ -48,26 +37,14 @@
 
     .floating-block {
       position: absolute;
-      width: 40px;
-      height: 40px;
+      width: 40px; height: 40px;
       opacity: 0.5;
       animation: floatBlock 8s ease-in-out infinite;
     }
 
-    .floating-block.dirt {
-      background: linear-gradient(135deg, #8B6914 0%, #5A3D08 100%);
-      border: 2px solid #4A2D05;
-    }
-
-    .floating-block.stone {
-      background: linear-gradient(135deg, #9A9A9A 0%, #5A5A5A 100%);
-      border: 2px solid #3A3A3A;
-    }
-
-    .floating-block.grass {
-      background: linear-gradient(180deg, #7CFC00 0%, #5D8A00 30%, #8B6914 30%, #6B4E0A 100%);
-      border: 2px solid #4A2D05;
-    }
+    .floating-block.dirt { background: linear-gradient(135deg, #8B6914 0%, #5A3D08 100%); border: 2px solid #4A2D05; }
+    .floating-block.stone { background: linear-gradient(135deg, #9A9A9A 0%, #5A5A5A 100%); border: 2px solid #3A3A3A; }
+    .floating-block.grass { background: linear-gradient(180deg, #7CFC00 0%, #5D8A00 30%, #8B6914 30%, #6B4E0A 100%); border: 2px solid #4A2D05; }
 
     @keyframes floatBlock {
       0%, 100% { transform: translateY(0) rotate(0deg); }
@@ -94,6 +71,121 @@
       margin-bottom: 15px;
     }
 
+    .login-panel { text-align: center; padding: 20px; }
+
+    .login-panel h2 {
+      font-family: 'VT323', monospace;
+      color: #FFD700;
+      font-size: 2rem;
+      margin-bottom: 20px;
+      text-shadow: 3px 3px 0 #8B6914;
+    }
+
+    .login-form { max-width: 300px; margin: 0 auto; }
+
+    .form-group { margin-bottom: 15px; text-align: left; }
+
+    .form-group label {
+      display: block;
+      font-family: 'VT323', monospace;
+      color: #aaa;
+      font-size: 1.2rem;
+      margin-bottom: 5px;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 12px;
+      font-family: 'Noto Sans TC', sans-serif;
+      font-size: 1.2rem;
+      background: #1a1a1a;
+      border: 4px solid;
+      border-color: #0a0a0a #3a3a3a #3a3a3a #0a0a0a;
+      color: white;
+      outline: none;
+    }
+
+    .form-input:focus { border-color: #55FF55; }
+
+    .mc-btn {
+      font-family: 'VT323', monospace;
+      font-size: 1.2rem;
+      padding: 10px 20px;
+      border: 4px solid;
+      border-color: #8b8b8b #373737 #373737 #8b8b8b;
+      background: linear-gradient(180deg, #7a7a7a 0%, #4a4a4a 50%, #3a3a3a 100%);
+      color: white;
+      cursor: pointer;
+      text-shadow: 2px 2px 0 #2a2a2a;
+      transition: all 0.1s;
+    }
+
+    .mc-btn:hover { background: linear-gradient(180deg, #8a8a8a 0%, #5a5a5a 50%, #4a4a4a 100%); }
+    .mc-btn:active { border-color: #373737 #8b8b8b #8b8b8b #373737; transform: translateY(2px); }
+    .mc-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .mc-btn.primary {
+      border-color: #6daa3c #2d5a1c #2d5a1c #6daa3c;
+      background: linear-gradient(180deg, #5d9a2c 0%, #3d7a0c 50%, #2d6a00 100%);
+    }
+
+    .mc-btn.skip-btn {
+      border-color: #b8860b #6b4e0a #6b4e0a #b8860b;
+      background: linear-gradient(180deg, #d4a017 0%, #9a7209 50%, #7c5c07 100%);
+    }
+
+    .login-btn { width: 100%; margin-top: 10px; }
+
+    .login-error, .login-loading {
+      font-family: 'VT323', monospace;
+      font-size: 1.1rem;
+      margin-top: 10px;
+      display: none;
+    }
+    .login-error { color: #FF5555; }
+    .login-loading { color: #FFFF55; }
+    .login-error.show, .login-loading.show { display: block; }
+
+    .player-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(0,0,0,0.5);
+      padding: 8px 12px;
+      margin-bottom: 10px;
+      border: 3px solid #444;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .player-info-display {
+      font-family: 'VT323', monospace;
+      color: #FFD700;
+      font-size: 1.1rem;
+    }
+
+    .player-actions { display: flex; gap: 8px; }
+
+    .small-btn {
+      font-family: 'VT323', monospace;
+      font-size: 0.9rem;
+      padding: 5px 10px;
+      border: 3px solid;
+      cursor: pointer;
+    }
+
+    .save-btn {
+      border-color: #55FF55 #227722 #227722 #55FF55;
+      background: linear-gradient(180deg, #44aa44 0%, #228822 100%);
+      color: white;
+    }
+
+    .logout-btn {
+      border-color: #FF5555 #772222 #772222 #FF5555;
+      background: linear-gradient(180deg, #aa4444 0%, #882222 100%);
+      color: white;
+    }
+
     .status-bar {
       display: flex;
       justify-content: space-between;
@@ -106,12 +198,7 @@
       border: 4px solid #3a3a3a;
     }
 
-    .stat-group {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
+    .stat-group { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 
     .stat-item {
       font-family: 'VT323', monospace;
@@ -132,35 +219,11 @@
       font-weight: bold;
     }
 
-    .hearts-container {
-      display: flex;
-      gap: 3px;
-    }
+    .hearts-container { display: flex; gap: 3px; }
+    .heart { font-size: 1.5rem; filter: drop-shadow(0 0 3px #ff0000); transition: all 0.3s; }
+    .heart.empty { opacity: 0.3; filter: grayscale(100%); }
 
-    .heart {
-      font-size: 1.5rem;
-      filter: drop-shadow(0 0 3px #ff0000);
-      transition: all 0.3s;
-    }
-
-    .heart.empty {
-      opacity: 0.3;
-      filter: grayscale(100%);
-    }
-
-    .heart.losing {
-      animation: heartBreak 0.5s ease;
-    }
-
-    @keyframes heartBreak {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.3); filter: brightness(2); }
-      100% { transform: scale(0.8); opacity: 0.3; filter: grayscale(100%); }
-    }
-
-    .xp-container {
-      margin-bottom: 15px;
-    }
+    .xp-container { margin-bottom: 15px; }
 
     .xp-bar-bg {
       background: #1a1a1a;
@@ -177,8 +240,7 @@
 
     .xp-text {
       position: absolute;
-      top: 50%;
-      left: 50%;
+      top: 50%; left: 50%;
       transform: translate(-50%, -50%);
       font-family: 'VT323', monospace;
       font-size: 1rem;
@@ -186,10 +248,7 @@
       text-shadow: 2px 2px 0 #000;
     }
 
-    .question-area {
-      text-align: center;
-      margin-bottom: 20px;
-    }
+    .question-area { text-align: center; margin-bottom: 20px; }
 
     .question-label {
       font-family: 'VT323', monospace;
@@ -211,7 +270,6 @@
       animation: float 3s ease-in-out infinite;
       -webkit-user-select: none;
       user-select: none;
-      pointer-events: none;
     }
 
     @keyframes float {
@@ -240,63 +298,12 @@
       outline: none;
     }
 
-    .mc-input:focus {
-      border-color: #55FF55;
-      box-shadow: 0 0 15px rgba(85, 255, 85, 0.3);
-    }
+    .mc-input:focus { border-color: #55FF55; box-shadow: 0 0 15px rgba(85, 255, 85, 0.3); }
+    .mc-input.correct { border-color: #55FF55; animation: correctPulse 0.5s ease; }
+    .mc-input.wrong { border-color: #FF5555; animation: wrongShake 0.5s ease; }
 
-    .mc-input.correct {
-      border-color: #55FF55;
-      animation: correctPulse 0.5s ease;
-    }
-
-    .mc-input.wrong {
-      border-color: #FF5555;
-      animation: wrongShake 0.5s ease;
-    }
-
-    @keyframes correctPulse {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.03); }
-    }
-
-    @keyframes wrongShake {
-      0%, 100% { transform: translateX(0); }
-      25% { transform: translateX(-8px); }
-      75% { transform: translateX(8px); }
-    }
-
-    .mc-btn {
-      font-family: 'VT323', monospace;
-      font-size: 1.2rem;
-      padding: 10px 20px;
-      border: 4px solid;
-      border-color: #8b8b8b #373737 #373737 #8b8b8b;
-      background: linear-gradient(180deg, #7a7a7a 0%, #4a4a4a 50%, #3a3a3a 100%);
-      color: white;
-      cursor: pointer;
-      text-shadow: 2px 2px 0 #2a2a2a;
-      transition: all 0.1s;
-    }
-
-    .mc-btn:hover {
-      background: linear-gradient(180deg, #8a8a8a 0%, #5a5a5a 50%, #4a4a4a 100%);
-    }
-
-    .mc-btn:active {
-      border-color: #373737 #8b8b8b #8b8b8b #373737;
-      transform: translateY(2px);
-    }
-
-    .mc-btn.primary {
-      border-color: #6daa3c #2d5a1c #2d5a1c #6daa3c;
-      background: linear-gradient(180deg, #5d9a2c 0%, #3d7a0c 50%, #2d6a00 100%);
-    }
-
-    .mc-btn.skip-btn {
-      border-color: #b8860b #6b4e0a #6b4e0a #b8860b;
-      background: linear-gradient(180deg, #d4a017 0%, #9a7209 50%, #7c5c07 100%);
-    }
+    @keyframes correctPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.03); } }
+    @keyframes wrongShake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
 
     .stats-row {
       display: flex;
@@ -313,44 +320,10 @@
       border: 3px solid #444;
     }
 
-    .stat-box .label {
-      font-family: 'VT323', monospace;
-      color: #888;
-      font-size: 0.9rem;
-    }
-
-    .stat-box .value {
-      font-family: 'VT323', monospace;
-      color: #fff;
-      font-size: 1.5rem;
-    }
-
+    .stat-box .label { font-family: 'VT323', monospace; color: #888; font-size: 0.9rem; }
+    .stat-box .value { font-family: 'VT323', monospace; color: #fff; font-size: 1.5rem; }
     .stat-box .value.correct { color: #55FF55; }
     .stat-box .value.wrong { color: #FF5555; }
-    .stat-box .value.skipped { color: #FFAA00; }
-
-    .combo-display {
-      position: fixed;
-      top: 50%;
-      right: 20px;
-      transform: translateY(-50%);
-      font-family: 'VT323', monospace;
-      font-size: 2.5rem;
-      color: #FF5555;
-      text-shadow: 0 0 20px #FF5555;
-      display: none;
-      z-index: 50;
-    }
-
-    .combo-display.active {
-      display: block;
-      animation: comboFloat 0.5s ease;
-    }
-
-    @keyframes comboFloat {
-      0% { transform: translateY(-50%) scale(0.5); opacity: 0; }
-      100% { transform: translateY(-50%) scale(1); opacity: 1; }
-    }
 
     .rewards-preview {
       display: flex;
@@ -377,11 +350,6 @@
       box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
     }
 
-    .reward-item.unlocked:hover {
-      transform: scale(1.1);
-      box-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
-    }
-
     .reward-item.current {
       border-color: #55FF55;
       animation: currentReward 1s ease-in-out infinite;
@@ -392,20 +360,10 @@
       50% { box-shadow: 0 0 15px #55FF55; }
     }
 
-    .reward-item .icon {
-      font-size: 1.5rem;
-      display: block;
-    }
+    .reward-item .icon { font-size: 1.5rem; display: block; }
+    .reward-item .req { font-family: 'VT323', monospace; font-size: 0.8rem; color: #aaa; }
 
-    .reward-item .req {
-      font-family: 'VT323', monospace;
-      font-size: 0.8rem;
-      color: #aaa;
-    }
-
-    .progress-section {
-      margin-top: 15px;
-    }
+    .progress-section { margin-top: 15px; }
 
     .progress-bar-container {
       background: #1a1a1a;
@@ -429,22 +387,37 @@
       justify-content: space-between;
     }
 
-    .next-btn {
-      display: none;
-    }
+    .next-btn { display: none; }
+    .next-btn.visible { display: inline-block; }
 
-    .next-btn.visible {
-      display: inline-block;
-    }
+    .panel { display: none; }
+    .panel.active { display: block; }
 
-    .game-panel.hidden, .game-over-panel:not(.active) {
-      display: none;
-    }
-
-    .game-over-panel.active {
-      display: block;
+    .continue-prompt {
+      background: rgba(0,0,0,0.5);
+      padding: 15px;
+      margin-top: 15px;
+      border: 3px solid #FFD700;
       text-align: center;
     }
+
+    .continue-prompt h3 {
+      font-family: 'VT323', monospace;
+      color: #FFD700;
+      font-size: 1.3rem;
+      margin-bottom: 10px;
+    }
+
+    .continue-prompt p {
+      font-family: 'VT323', monospace;
+      color: #aaa;
+      font-size: 1rem;
+      margin-bottom: 10px;
+    }
+
+    .continue-buttons { display: flex; gap: 10px; justify-content: center; }
+
+    .game-over-panel.active { display: block; text-align: center; }
 
     .result-title {
       font-family: 'VT323', monospace;
@@ -454,10 +427,7 @@
       margin-bottom: 20px;
     }
 
-    .result-title.fail {
-      color: #FF5555;
-      text-shadow: 4px 4px 0 #330000;
-    }
+    .result-title.fail { color: #FF5555; text-shadow: 4px 4px 0 #330000; }
 
     .result-stats {
       display: grid;
@@ -472,51 +442,40 @@
       border: 3px solid #444;
     }
 
-    .result-stat .label {
-      font-family: 'VT323', monospace;
-      color: #888;
-      font-size: 0.9rem;
-    }
+    .result-stat .label { font-family: 'VT323', monospace; color: #888; font-size: 0.9rem; }
+    .result-stat .value { font-family: 'VT323', monospace; font-size: 1.6rem; color: #FFD700; }
 
-    .result-stat .value {
-      font-family: 'VT323', monospace;
-      font-size: 1.6rem;
-      color: #FFD700;
-    }
-
-    .unlocked-rewards {
-      margin: 20px 0;
-      padding: 15px;
-      background: rgba(0,0,0,0.5);
-      border: 3px solid #FFD700;
-    }
-
-    .unlocked-rewards h3 {
-      font-family: 'VT323', monospace;
-      color: #FFD700;
-      font-size: 1.5rem;
-      margin-bottom: 10px;
-    }
-
-    .reward-buttons {
-      display: flex;
-      gap: 10px;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-
-    .particle {
+    .shop-panel {
+      display: none;
       position: fixed;
-      pointer-events: none;
-      font-size: 1.5rem;
-      animation: particleFly 1s ease-out forwards;
-      z-index: 100;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.8);
+      z-index: 200;
+      justify-content: center;
+      align-items: center;
     }
 
-    @keyframes particleFly {
-      0% { opacity: 1; transform: translateY(0) scale(1); }
-      100% { opacity: 0; transform: translateY(-80px) scale(0.5); }
+    .shop-panel.active { display: flex; }
+
+    .shop-content {
+      background: #2a2a2a;
+      border: 8px solid #4a4a4a;
+      padding: 25px;
+      text-align: center;
+      max-width: 350px;
     }
+
+    .shop-title { font-family: 'VT323', monospace; font-size: 1.8rem; color: #FFD700; margin-bottom: 15px; }
+
+    .shop-item {
+      background: rgba(0,0,0,0.5);
+      padding: 15px;
+      margin-bottom: 12px;
+      border: 3px solid #444;
+    }
+
+    .shop-buttons { display: flex; gap: 8px; justify-content: center; }
 
     .toast {
       position: fixed;
@@ -538,329 +497,95 @@
       100% { transform: translateX(-50%) translateY(0); opacity: 1; }
     }
 
-    .fullscreen-btn {
+    .particle {
+      position: fixed;
+      pointer-events: none;
+      font-size: 1.5rem;
+      animation: particleFly 1s ease-out forwards;
+      z-index: 100;
+    }
+
+    @keyframes particleFly {
+      0% { opacity: 1; transform: translateY(0) scale(1); }
+      100% { opacity: 0; transform: translateY(-80px) scale(0.5); }
+    }
+
+    .auto-save-indicator {
       position: fixed;
       top: 10px;
-      right: 10px;
-      background: rgba(0,0,0,0.7);
-      border: 3px solid #55FF55;
+      left: 10px;
+      font-family: 'VT323', monospace;
+      font-size: 1rem;
       color: #55FF55;
-      width: 40px;
-      height: 40px;
-      font-size: 1.2rem;
-      cursor: pointer;
+      background: rgba(0,0,0,0.7);
+      padding: 5px 10px;
+      border: 2px solid #55FF55;
+      display: none;
       z-index: 50;
     }
 
-    .shop-panel {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.8);
-      z-index: 200;
-      justify-content: center;
-      align-items: center;
-    }
+    .auto-save-indicator.show { display: block; animation: saveFlash 1s ease; }
 
-    .shop-panel.active {
-      display: flex;
-    }
-
-    .shop-content {
-      background: #2a2a2a;
-      border: 8px solid #4a4a4a;
-      padding: 25px;
-      text-align: center;
-      max-width: 350px;
-    }
-
-    .shop-title {
-      font-family: 'VT323', monospace;
-      font-size: 1.8rem;
-      color: #FFD700;
-      margin-bottom: 15px;
-    }
-
-    .shop-item {
-      background: rgba(0,0,0,0.5);
-      padding: 15px;
-      margin-bottom: 12px;
-      border: 3px solid #444;
-    }
-
-    .shop-buttons {
-      display: flex;
-      gap: 8px;
-      justify-content: center;
-    }
-
-    .reward-card-panel {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.92);
-      z-index: 300;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
-      overflow-y: auto;
-    }
-
-    .reward-card-panel.active {
-      display: flex;
-      animation: panelFadeIn 0.5s ease;
-    }
-
-    @keyframes panelFadeIn {
-      0% { opacity: 0; }
-      100% { opacity: 1; }
-    }
-
-    .reward-card-wrapper {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 20px;
-      animation: cardSlideIn 0.6s ease;
-    }
-
-    @keyframes cardSlideIn {
-      0% { transform: scale(0.5) translateY(-50px); opacity: 0; }
-      100% { transform: scale(1) translateY(0); opacity: 1; }
-    }
-
-    .unlock-celebration {
-      text-align: center;
-      margin-bottom: 10px;
-    }
-
-    .unlock-celebration h2 {
-      font-family: 'VT323', monospace;
-      font-size: 2rem;
-      color: #FFD700;
-      text-shadow: 0 0 20px #FFD700;
-      animation: celebratePulse 0.5s ease infinite alternate;
-    }
-
-    @keyframes celebratePulse {
-      0% { transform: scale(1); }
-      100% { transform: scale(1.05); }
-    }
-
-    .reward-card {
-      width: 380px;
-      background: linear-gradient(180deg, #2d5016 0%, #1a3009 100%);
-      border: 8px solid #8B6914;
-      border-radius: 8px;
-      padding: 20px;
-      position: relative;
-      box-shadow: 
-        inset 0 0 0 4px #4a7a1c,
-        0 10px 30px rgba(0,0,0,0.5),
-        0 0 50px rgba(255, 215, 0, 0.3);
-    }
-
-    .reward-card::before {
-      content: '';
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      right: 10px;
-      bottom: 10px;
-      border: 2px dashed rgba(255,255,255,0.2);
-      pointer-events: none;
-    }
-
-    .card-header {
-      text-align: center;
-      margin-bottom: 10px;
-    }
-
-    .card-title {
-      font-family: 'VT323', monospace;
-      font-size: 1.6rem;
-      color: #FFD700;
-      text-shadow: 2px 2px 0 #8B6914;
-    }
-
-    .card-subtitle {
-      font-family: 'VT323', monospace;
-      font-size: 0.9rem;
-      color: #aaa;
-    }
-
-    .character-display {
-      width: 100%;
-      height: 160px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      margin-bottom: 10px;
-      background: rgba(0,0,0,0.3);
-      border: 3px solid #333;
-      overflow: hidden;
-    }
-
-    .character-display svg {
-      max-width: 140px;
-      max-height: 140px;
-      animation: characterBounce 2s ease-in-out infinite;
-    }
-
-    @keyframes characterBounce {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-8px); }
-    }
-
-    .player-info {
-      background: rgba(0,0,0,0.4);
-      padding: 10px;
-      border: 3px solid #4a4a4a;
-      margin-bottom: 10px;
-    }
-
-    .player-name-input {
-      width: 100%;
-      padding: 8px;
-      font-family: 'VT323', monospace;
-      font-size: 1.2rem;
-      text-align: center;
-      background: #1a1a1a;
-      border: 3px solid #555;
-      color: #FFD700;
-      outline: none;
-    }
-
-    .player-name-input:focus {
-      border-color: #FFD700;
-    }
-
-    .player-name-input::placeholder {
-      color: #666;
-    }
-
-    .score-info {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 8px;
-      margin-bottom: 10px;
-    }
-
-    .score-item {
-      background: rgba(0,0,0,0.3);
-      padding: 8px;
-      text-align: center;
-      border: 2px solid #444;
-    }
-
-    .score-item .label {
-      font-family: 'VT323', monospace;
-      font-size: 0.85rem;
-      color: #888;
-    }
-
-    .score-item .value {
-      font-family: 'VT323', monospace;
-      font-size: 1.3rem;
-      color: #55FF55;
-    }
-
-    .card-footer {
-      text-align: center;
-      font-family: 'VT323', monospace;
-      font-size: 0.85rem;
-      color: #666;
-      border-top: 2px solid #444;
-      padding-top: 8px;
-    }
-
-    .card-actions {
-      display: flex;
-      gap: 10px;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-
-    .milestone-thumbs {
-      display: flex;
-      gap: 8px;
-      justify-content: center;
-      margin-top: 10px;
-    }
-
-    .milestone-thumb {
-      width: 50px;
-      height: 50px;
-      background: rgba(0,0,0,0.5);
-      border: 3px solid #333;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 1.5rem;
-      opacity: 0.4;
-      cursor: pointer;
-      transition: all 0.3s;
-    }
-
-    .milestone-thumb.unlocked {
-      opacity: 1;
-      border-color: #FFD700;
-    }
-
-    .milestone-thumb.unlocked:hover {
-      transform: scale(1.15);
-      box-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
-    }
-
-    .milestone-thumb.active {
-      border-color: #55FF55;
-      box-shadow: 0 0 10px #55FF55;
-    }
-
-    .firework {
-      position: fixed;
-      pointer-events: none;
-      font-size: 2rem;
-      animation: fireworkBurst 1.5s ease-out forwards;
-      z-index: 400;
-    }
-
-    @keyframes fireworkBurst {
-      0% { opacity: 1; transform: scale(0.5); }
-      50% { opacity: 1; transform: scale(1.5); }
-      100% { opacity: 0; transform: scale(2) translateY(-50px); }
-    }
+    @keyframes saveFlash { 0% { opacity: 0; } 50% { opacity: 1; } 100% { opacity: 0; } }
 
     @media (max-width: 600px) {
       h1 { font-size: 1.6rem; }
       .question-word { font-size: 2rem; padding: 10px 15px; }
       .mc-input { width: 100%; font-size: 1.2rem; }
       .stat-item { font-size: 1rem; }
-      .reward-card { width: 320px; padding: 15px; }
-      .reward-card-panel { padding: 10px; }
-      .reward-item { padding: 5px 8px; min-width: 45px; }
-      .reward-item .icon { font-size: 1.2rem; }
-      .reward-item .req { font-size: 0.7rem; }
-      .milestone-thumb { width: 40px; height: 40px; font-size: 1.2rem; }
-      .character-display { height: 130px; }
-      .character-display svg { max-width: 110px; max-height: 110px; }
+      .player-bar { flex-direction: column; }
     }
   </style>
 </head>
 <body>
   <div class="gradient-bg"></div>
   <div class="background-blocks" id="bgBlocks"></div>
-  <button class="fullscreen-btn" onclick="toggleFullscreen()">⛶</button>
+  <div class="auto-save-indicator" id="autoSaveIndicator">💾 儲存中...</div>
 
   <div class="game-wrapper">
-    <div class="game-panel" id="gamePanel">
+    <!-- 登入面板 -->
+    <div class="panel active" id="loginPanel">
       <h1>⛏️ Minecraft 詞語挖礦 ⛏️</h1>
+      <div class="login-panel">
+        <h2>🎮 礦工登入</h2>
+        <div class="login-form">
+          <div class="form-group">
+            <label>👤 姓名（中文）</label>
+            <input type="text" class="form-input" id="loginName" placeholder="請輸入姓名">
+          </div>
+          <div class="form-group">
+            <label>🔑 密碼（學號）</label>
+            <input type="password" class="form-input" id="loginPassword" placeholder="請輸入學號">
+          </div>
+          <button class="mc-btn primary login-btn" id="loginBtn" onclick="login()">⛏️ 開始挖礦</button>
+          <div class="login-error" id="loginError"></div>
+          <div class="login-loading" id="loginLoading">⏳ 登入中...</div>
+        </div>
+
+        <div class="continue-prompt" id="continuePrompt" style="display: none;">
+          <h3>📂 發現上次進度</h3>
+          <p id="continueInfo"></p>
+          <div class="continue-buttons">
+            <button class="mc-btn primary" onclick="continueProgress()">繼續遊戲</button>
+            <button class="mc-btn" onclick="startNew()">重新開始</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 遊戲面板 -->
+    <div class="panel" id="gamePanel">
+      <h1>⛏️ Minecraft 詞語挖礦 ⛏️</h1>
+
+      <div class="player-bar">
+        <div class="player-info-display">
+          👤 <span id="playerName">-</span> | 📚 <span id="playerClass">-</span>
+        </div>
+        <div class="player-actions">
+          <button class="small-btn save-btn" onclick="manualSave()">💾 儲存</button>
+          <button class="small-btn logout-btn" onclick="logout()">🚪 登出</button>
+        </div>
+      </div>
 
       <div class="status-bar">
         <div class="stat-group">
@@ -880,26 +605,11 @@
       </div>
 
       <div class="rewards-preview">
-        <div class="reward-item" id="reward10" onclick="viewReward('pig')">
-          <span class="icon">🐷</span>
-          <span class="req">10題</span>
-        </div>
-        <div class="reward-item" id="reward30" onclick="viewReward('cow')">
-          <span class="icon">🐄</span>
-          <span class="req">30題</span>
-        </div>
-        <div class="reward-item" id="reward60" onclick="viewReward('creeper')">
-          <span class="icon">💚</span>
-          <span class="req">60題</span>
-        </div>
-        <div class="reward-item" id="reward90" onclick="viewReward('wolf')">
-          <span class="icon">🐺</span>
-          <span class="req">90題</span>
-        </div>
-        <div class="reward-item" id="reward100" onclick="viewReward('steve')">
-          <span class="icon">⛏️</span>
-          <span class="req">100題</span>
-        </div>
+        <div class="reward-item" id="reward10" onclick="viewReward('pig')"><span class="icon">🐷</span><span class="req">10題</span></div>
+        <div class="reward-item" id="reward30" onclick="viewReward('cow')"><span class="icon">🐄</span><span class="req">30題</span></div>
+        <div class="reward-item" id="reward60" onclick="viewReward('creeper')"><span class="icon">💚</span><span class="req">60題</span></div>
+        <div class="reward-item" id="reward90" onclick="viewReward('wolf')"><span class="icon">🐺</span><span class="req">90題</span></div>
+        <div class="reward-item" id="reward100" onclick="viewReward('steve')"><span class="icon">⛏️</span><span class="req">100題</span></div>
       </div>
 
       <div class="xp-container">
@@ -922,22 +632,9 @@
       </div>
 
       <div class="stats-row">
-        <div class="stat-box">
-          <div class="label">正確</div>
-          <div class="value correct" id="correctCount">0</div>
-        </div>
-        <div class="stat-box">
-          <div class="label">錯誤</div>
-          <div class="value wrong" id="wrongCount">0</div>
-        </div>
-        <div class="stat-box">
-          <div class="label">略過</div>
-          <div class="value skipped" id="skippedCount">0</div>
-        </div>
-        <div class="stat-box">
-          <div class="label">正確率</div>
-          <div class="value" id="accuracy">0%</div>
-        </div>
+        <div class="stat-box"><div class="label">正確</div><div class="value correct" id="correctCount">0</div></div>
+        <div class="stat-box"><div class="label">錯誤</div><div class="value wrong" id="wrongCount">0</div></div>
+        <div class="stat-box"><div class="label">正確率</div><div class="value" id="accuracy">0%</div></div>
       </div>
 
       <div class="progress-section">
@@ -951,37 +648,21 @@
       </div>
     </div>
 
-    <div class="game-over-panel" id="gameOverPanel">
+    <!-- 結算面板 -->
+    <div class="panel game-over-panel" id="gameOverPanel">
       <h2 class="result-title" id="resultTitle">🎉 挖礦完成！</h2>
       <div class="result-stats">
-        <div class="result-stat">
-          <div class="label">答對題數</div>
-          <div class="value" id="finalQuestions">0</div>
-        </div>
-        <div class="result-stat">
-          <div class="label">正確率</div>
-          <div class="value" id="finalAccuracy">0%</div>
-        </div>
-        <div class="result-stat">
-          <div class="label">最高連擊</div>
-          <div class="value" id="finalCombo">0</div>
-        </div>
-        <div class="result-stat">
-          <div class="label">總經驗值</div>
-          <div class="value" id="finalXP">0</div>
-        </div>
+        <div class="result-stat"><div class="label">答對題數</div><div class="value" id="finalQuestions">0</div></div>
+        <div class="result-stat"><div class="label">正確率</div><div class="value" id="finalAccuracy">0%</div></div>
+        <div class="result-stat"><div class="label">最高連擊</div><div class="value" id="finalCombo">0</div></div>
+        <div class="result-stat"><div class="label">總經驗值</div><div class="value" id="finalXP">0</div></div>
       </div>
-
-      <div class="unlocked-rewards" id="unlockedRewards" style="display: none;">
-        <h3>🏆 已收集的獎勵</h3>
-        <div class="reward-buttons" id="rewardButtons"></div>
+      <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+        <button class="mc-btn primary" onclick="restartGame()">🔄 再玩一次</button>
+        <button class="mc-btn" onclick="logout()">🚪 登出</button>
       </div>
-
-      <button class="mc-btn primary" onclick="restartGame()" style="margin-top: 15px;">🔄 再玩一次</button>
     </div>
   </div>
-
-  <div class="combo-display" id="comboDisplay"></div>
 
   <div class="shop-panel" id="shopPanel">
     <div class="shop-content">
@@ -994,70 +675,12 @@
           <button class="mc-btn" onclick="closeShop()">取消</button>
         </div>
       </div>
-      <p style="color: #888; margin-top: 12px; font-family: 'VT323', monospace;">
-        目前擁有：🍪 × <span id="shopCookies">5</span>
-      </p>
+      <p style="color: #888; margin-top: 12px; font-family: 'VT323', monospace;">目前擁有：🍪 × <span id="shopCookies">5</span></p>
     </div>
   </div>
 
-  <div class="reward-card-panel" id="rewardCardPanel">
-    <div class="reward-card-wrapper">
-      <div class="unlock-celebration" id="unlockCelebration">
-        <h2>🎉 恭喜解鎖新獎勵！🎉</h2>
-      </div>
-
-      <div class="reward-card" id="rewardCard">
-        <div class="card-header">
-          <div class="card-title" id="cardTitle">🐷 豬豬收藏卡</div>
-          <div class="card-subtitle">Minecraft 詞語挖礦成就</div>
-        </div>
-
-        <div class="character-display" id="characterDisplay"></div>
-
-        <div class="player-info">
-          <input type="text" class="player-name-input" id="playerNameInput" placeholder="輸入你的名字..." maxlength="20">
-        </div>
-
-        <div class="score-info">
-          <div class="score-item">
-            <div class="label">答對題數</div>
-            <div class="value" id="cardQuestions">0</div>
-          </div>
-          <div class="score-item">
-            <div class="label">正確率</div>
-            <div class="value" id="cardAccuracy">0%</div>
-          </div>
-          <div class="score-item">
-            <div class="label">最高連擊</div>
-            <div class="value" id="cardCombo">0</div>
-          </div>
-          <div class="score-item">
-            <div class="label">總經驗值</div>
-            <div class="value" id="cardXP">0</div>
-          </div>
-        </div>
-
-        <div class="card-footer">
-          📅 <span id="cardDate"></span> | Minecraft 詞語挖礦
-        </div>
-      </div>
-
-      <div class="milestone-thumbs" id="milestoneThumbs">
-        <div class="milestone-thumb" data-type="pig" onclick="switchCardType('pig')">🐷</div>
-        <div class="milestone-thumb" data-type="cow" onclick="switchCardType('cow')">🐄</div>
-        <div class="milestone-thumb" data-type="creeper" onclick="switchCardType('creeper')">💚</div>
-        <div class="milestone-thumb" data-type="wolf" onclick="switchCardType('wolf')">🐺</div>
-        <div class="milestone-thumb" data-type="steve" onclick="switchCardType('steve')">⛏️</div>
-      </div>
-
-      <div class="card-actions">
-        <button class="mc-btn primary" onclick="downloadCard()">📥 儲存圖片</button>
-        <button class="mc-btn" onclick="closeRewardCard()">繼續遊戲</button>
-      </div>
-    </div>
-  </div>
-
-  <script>
+<script>
+   // ============ 詞庫 ============
     const twoCharWords = [
       "謹慎", "謙虛", "敏捷", "猶豫", "誠信", "勤勉", "堅韌", "溫馨", "燦爛", "憂鬱",
       "熱忱", "冷漠", "善良", "邪惡", "勇敢", "膽怯", "聰穎", "愚昧", "優雅", "粗魯",
@@ -1067,623 +690,509 @@
     ];
 
     const threeCharWords = [
-      "綠油油", "亮晶晶", "懶洋洋", "亂糟糟", "慢吞吞", "靜悄悄", "笑嘻嘻", "興沖沖", "冷冰冰", "熱呼呼",
-      "暖洋洋", "冷颼颼", "甜蜜蜜", "酸溜溜", "苦哈哈", "軟綿綿", "硬邦邦", "輕飄飄", "沉甸甸", "胖嘟嘟",
-      "瘦巴巴", "白茫茫", "黑漆漆", "紅通通", "黃澄澄", "毛茸茸", "滑溜溜", "粗糙糙", "髒兮兮", "香噴噴",
-      "臭烘烘", "濕答答", "乾巴巴", "亮堂堂", "陰森森", "眼睜睜", "急匆匆", "氣呼呼", "樂陶陶", "哭啼啼",
-      "血淋淋", "光禿禿", "水汪汪", "淚汪汪", "羞答答", "怒沖沖", "喜洋洋", "悲切切", "傻愣愣", "活生生"
+      "藝術家", "碰運氣", "判斷力", "延長線", "家鄉味", "疊羅漢", "笑嘻嘻", "鐵欄杆", "基金會", "鬧彆扭",
+      "大富翁", "吹鬍子", "白帝城", "大將軍", "老百姓", "預告片", "紡織業", "綠繡眼", "花圃裡", "大西洋",
+      "南美洲", "大丈夫", "蒲公英", "連身裙", "黃澄澄", "笑咪咪", "閒置中", "敲門磚", "導火線", "莫須有",
+      "副作用", "同理心", "鬧情緒", "發脾氣", "陰森森", "慘兮兮", "挫折感", "玻璃心", "悶葫蘆", "定心丸",
+      "光明磊落", "世界遺產", "張牙舞爪", "目不暇給", "鬼斧神工", "目眩神迷", "一擁而上", "判斷力", "星羅棋布", "全力以赴"
     ];
 
-    const wordBank = [...twoCharWords, ...threeCharWords];
 
-    // 像素風格 SVG 角色
-    const characterSVG = {
-      pig: `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-        <rect x="16" y="20" width="32" height="24" fill="#f5a0a0"/>
-        <rect x="16" y="20" width="32" height="4" fill="#f5b8b8"/>
-        <rect x="12" y="24" width="8" height="16" fill="#f5a0a0"/>
-        <rect x="44" y="24" width="8" height="16" fill="#f5a0a0"/>
-        <rect x="20" y="28" width="4" height="4" fill="#222"/>
-        <rect x="36" y="28" width="4" height="4" fill="#222"/>
-        <rect x="24" y="36" width="12" height="8" fill="#ffcccc"/>
-        <rect x="28" y="38" width="2" height="4" fill="#996666"/>
-        <rect x="34" y="38" width="2" height="4" fill="#996666"/>
-        <rect x="8" y="20" width="6" height="6" fill="#f5a0a0"/>
-        <rect x="50" y="20" width="6" height="6" fill="#f5a0a0"/>
-        <rect x="16" y="44" width="6" height="12" fill="#f5a0a0"/>
-        <rect x="26" y="44" width="6" height="12" fill="#f5a0a0"/>
-        <rect x="32" y="44" width="6" height="12" fill="#f5a0a0"/>
-        <rect x="42" y="44" width="6" height="12" fill="#f5a0a0"/>
-        <path d="M52 32 Q58 34 54 38" stroke="#f5a0a0" stroke-width="3" fill="none"/>
-      </svg>`,
+const wordBank = [...twoCharWords, ...threeCharWords];
+
+// ============ 遊戲狀態 ============
+let currentUser = null;
+let savedProgress = null;
+
+let gameState = {
+  currentQuestion: 0,
+  totalQuestions: 100,
+  combo: 0,
+  maxCombo: 0,
+  cookies: 5,
+  lives: 3,
+  maxLives: 3,
+  xp: 0,
+  correct: 0,
+  wrong: 0,
+  diamonds: 0,
+  stars: 0,
+  currentWord: "",
+  answered: false,
+  shuffledWords: [],
+  unlockedRewards: []
+};
+
+const rewardMilestones = [
+  { questions: 10, type: 'pig', name: '🐷 豬豬', icon: '🐷' },
+  { questions: 30, type: 'cow', name: '🐄 乳牛', icon: '🐄' },
+  { questions: 60, type: 'creeper', name: '💚 苦力怕', icon: '💚' },
+  { questions: 90, type: 'wolf', name: '🐺 狼', icon: '🐺' },
+  { questions: 100, type: 'steve', name: '⛏️ 史帝夫', icon: '⛏️' }
+];
+
+// ============ API 呼叫 ============
+function callAPI(action, params) {
+  return new Promise((resolve, reject) => {
+    const url = new URL(window.location.href);
+    const allParams = { action, ...params };
+    
+    Object.keys(allParams).forEach(key => url.searchParams.append(key, allParams[key]));
+    
+    fetch(url.toString())
+      .then(res => res.json())
+      .then(data => resolve(data))
+      .catch(err => reject(err));
+  });
+}
+
+// ============ 登入 ============
+async function login() {
+  const name = document.getElementById('loginName').value.trim();
+  const password = document.getElementById('loginPassword').value.trim();
+  
+  if (!name || !password) {
+    showLoginError('請輸入姓名和學號');
+    return;
+  }
+
+  showLoginLoading(true);
+  hideLoginError();
+
+  try {
+    const result = await callAPI('login', { name, password });
+    showLoginLoading(false);
+
+    if (result.success) {
+      currentUser = result.student;
       
-      cow: `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-        <rect x="14" y="22" width="36" height="26" fill="#d4d4d4"/>
-        <rect x="20" y="28" width="10" height="12" fill="#3a3a3a"/>
-        <rect x="34" y="24" width="8" height="10" fill="#3a3a3a"/>
-        <rect x="10" y="26" width="10" height="14" fill="#d4d4d4"/>
-        <rect x="18" y="30" width="4" height="4" fill="#222"/>
-        <rect x="6" y="30" width="4" height="4" fill="#222"/>
-        <rect x="8" y="38" width="12" height="6" fill="#f5c6a5"/>
-        <rect x="4" y="18" width="4" height="10" fill="#f5f5dc"/>
-        <rect x="18" y="18" width="4" height="10" fill="#f5f5dc"/>
-        <rect x="0" y="24" width="6" height="6" fill="#d4d4d4"/>
-        <rect x="20" y="24" width="6" height="6" fill="#d4d4d4"/>
-        <rect x="14" y="48" width="6" height="12" fill="#d4d4d4"/>
-        <rect x="14" y="56" width="6" height="4" fill="#3a3a3a"/>
-        <rect x="24" y="48" width="6" height="12" fill="#d4d4d4"/>
-        <rect x="24" y="56" width="6" height="4" fill="#3a3a3a"/>
-        <rect x="34" y="48" width="6" height="12" fill="#d4d4d4"/>
-        <rect x="34" y="56" width="6" height="4" fill="#3a3a3a"/>
-        <rect x="44" y="48" width="6" height="12" fill="#d4d4d4"/>
-        <rect x="44" y="56" width="6" height="4" fill="#3a3a3a"/>
-      </svg>`,
-      
-      creeper: `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-        <rect x="12" y="4" width="40" height="40" fill="#5fa55a"/>
-        <rect x="12" y="4" width="40" height="6" fill="#6fb56a"/>
-        <rect x="16" y="14" width="10" height="12" fill="#1a1a1a"/>
-        <rect x="38" y="14" width="10" height="12" fill="#1a1a1a"/>
-        <rect x="26" y="22" width="12" height="6" fill="#1a1a1a"/>
-        <rect x="20" y="28" width="6" height="12" fill="#1a1a1a"/>
-        <rect x="38" y="28" width="6" height="12" fill="#1a1a1a"/>
-        <rect x="26" y="28" width="12" height="16" fill="#1a1a1a"/>
-        <rect x="20" y="44" width="10" height="16" fill="#5fa55a"/>
-        <rect x="34" y="44" width="10" height="16" fill="#5fa55a"/>
-      </svg>`,
-      
-      wolf: `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-        <rect x="16" y="24" width="32" height="20" fill="#c4c4c4"/>
-        <rect x="16" y="24" width="32" height="4" fill="#d8d8d8"/>
-        <rect x="8" y="16" width="16" height="20" fill="#c4c4c4"/>
-        <rect x="8" y="16" width="16" height="4" fill="#d8d8d8"/>
-        <rect x="4" y="8" width="6" height="10" fill="#c4c4c4"/>
-        <rect x="18" y="8" width="6" height="10" fill="#c4c4c4"/>
-        <rect x="10" y="22" width="4" height="4" fill="#222"/>
-        <rect x="18" y="22" width="4" height="4" fill="#222"/>
-        <rect x="12" y="30" width="8" height="4" fill="#444"/>
-        <rect x="14" y="32" width="4" height="2" fill="#ff6666"/>
-        <rect x="16" y="44" width="6" height="12" fill="#c4c4c4"/>
-        <rect x="26" y="44" width="6" height="12" fill="#c4c4c4"/>
-        <rect x="32" y="44" width="6" height="12" fill="#c4c4c4"/>
-        <rect x="42" y="44" width="6" height="12" fill="#c4c4c4"/>
-        <rect x="48" y="28" width="12" height="4" fill="#c4c4c4"/>
-        <rect x="56" y="24" width="6" height="4" fill="#d8d8d8"/>
-      </svg>`,
-      
-      steve: `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-        <rect x="16" y="4" width="32" height="32" fill="#c69c6d"/>
-        <rect x="16" y="4" width="32" height="12" fill="#4a3728"/>
-        <rect x="16" y="16" width="4" height="8" fill="#4a3728"/>
-        <rect x="44" y="16" width="4" height="8" fill="#4a3728"/>
-        <rect x="22" y="18" width="6" height="6" fill="#fff"/>
-        <rect x="24" y="20" width="4" height="4" fill="#4a3728"/>
-        <rect x="36" y="18" width="6" height="6" fill="#fff"/>
-        <rect x="36" y="20" width="4" height="4" fill="#4a3728"/>
-        <rect x="28" y="28" width="8" height="4" fill="#c69c6d"/>
-        <rect x="16" y="36" width="32" height="20" fill="#00a8a8"/>
-        <rect x="8" y="36" width="8" height="16" fill="#00a8a8"/>
-        <rect x="8" y="52" width="8" height="8" fill="#c69c6d"/>
-        <rect x="48" y="36" width="8" height="16" fill="#00a8a8"/>
-        <rect x="48" y="52" width="8" height="8" fill="#c69c6d"/>
-        <rect x="16" y="56" width="14" height="8" fill="#1e1e78"/>
-        <rect x="34" y="56" width="14" height="8" fill="#1e1e78"/>
-      </svg>`
-    };
+      if (result.progress && result.progress.completedQuestions > 0) {
+        savedProgress = result.progress;
+        showContinuePrompt(result.progress);
+      } else {
+        startGame();
+      }
+    } else {
+      showLoginError(result.message || '登入失敗');
+    }
+  } catch (error) {
+    showLoginLoading(false);
+    showLoginError('網路錯誤，請重試');
+  }
+}
 
-    let gameState = {
-      currentQuestion: 0,
-      totalQuestions: 100,
-      combo: 0,
-      maxCombo: 0,
-      cookies: 5,
-      lives: 3,
-      maxLives: 3,
-      xp: 0,
-      correct: 0,
-      wrong: 0,
-      skipped: 0,
-      diamonds: 0,
-      stars: 0,
-      currentWord: "",
-      answered: false,
-      shuffledWords: [],
-      unlockedRewards: [],
-      pendingReward: null,
-      currentCardType: null
-    };
+function showLoginError(msg) {
+  const el = document.getElementById('loginError');
+  el.textContent = '❌ ' + msg;
+  el.classList.add('show');
+}
 
-    const rewardMilestones = [
-      { questions: 10, type: 'pig', name: '🐷 豬豬收藏卡', icon: '🐷' },
-      { questions: 30, type: 'cow', name: '🐄 乳牛收藏卡', icon: '🐄' },
-      { questions: 60, type: 'creeper', name: '💚 苦力怕收藏卡', icon: '💚' },
-      { questions: 90, type: 'wolf', name: '🐺 狼收藏卡', icon: '🐺' },
-      { questions: 100, type: 'steve', name: '⛏️ 史帝夫收藏卡', icon: '⛏️' }
-    ];
+function hideLoginError() {
+  document.getElementById('loginError').classList.remove('show');
+}
 
-    function init() {
-      gameState.shuffledWords = shuffleArray([...wordBank]);
-      gameState.totalQuestions = gameState.shuffledWords.length;
-      createBackgroundBlocks();
-      nextQuestion();
+function showLoginLoading(show) {
+  document.getElementById('loginLoading').classList.toggle('show', show);
+  document.getElementById('loginBtn').disabled = show;
+}
 
-      document.getElementById('answerInput').addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-          if (gameState.answered) {
-            nextQuestion();
-          } else {
-            submitAnswer();
-          }
-        }
-      });
+function showContinuePrompt(progress) {
+  const info = document.getElementById('continueInfo');
+  info.innerHTML = `完成題數：${progress.completedQuestions} 題<br>正確率：${progress.accuracy}%<br>經驗值：${progress.xp}`;
+  document.getElementById('continuePrompt').style.display = 'block';
+}
+
+function continueProgress() {
+  if (savedProgress) {
+    gameState.correct = savedProgress.correctCount || 0;
+    gameState.wrong = savedProgress.wrongCount || 0;
+    gameState.xp = savedProgress.xp || 0;
+    gameState.cookies = savedProgress.cookies || 5;
+    gameState.diamonds = savedProgress.diamonds || 0;
+    gameState.stars = savedProgress.stars || 0;
+    gameState.maxCombo = savedProgress.maxCombo || 0;
+    gameState.currentQuestion = savedProgress.completedQuestions || 0;
+    if (savedProgress.unlockedRewards) {
+      gameState.unlockedRewards = savedProgress.unlockedRewards.split(',').filter(r => r);
+    }
+  }
+  startGame();
+}
+
+function startNew() {
+  savedProgress = null;
+  startGame();
+}
+
+function startGame() {
+  document.getElementById('continuePrompt').style.display = 'none';
+  document.getElementById('loginPanel').classList.remove('active');
+  document.getElementById('gamePanel').classList.add('active');
+  
+  document.getElementById('playerName').textContent = currentUser.name;
+  document.getElementById('playerClass').textContent = currentUser.className || '';
+  
+  gameState.shuffledWords = shuffleArray([...wordBank]);
+  gameState.totalQuestions = gameState.shuffledWords.length;
+  
+  createBackgroundBlocks();
+  setupAutoSave();
+  nextQuestion();
+
+  document.getElementById('answerInput').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+      if (gameState.answered) nextQuestion();
+      else submitAnswer();
+    }
+  });
+}
+
+// ============ 自動儲存 ============
+let autoSaveInterval;
+
+function setupAutoSave() {
+  autoSaveInterval = setInterval(() => saveProgress(true), 30000);
+  window.addEventListener('beforeunload', () => saveProgress(false));
+}
+
+async function saveProgress(showIndicator) {
+  if (!currentUser) return;
+  if (showIndicator) showAutoSaveIndicator();
+
+  const total = gameState.correct + gameState.wrong;
+  const accuracy = total > 0 ? Math.round((gameState.correct / total) * 100) : 0;
+  const level = Math.floor(gameState.xp / 100) + 1;
+
+  await callAPI('save', {
+    studentId: currentUser.studentId,
+    name: currentUser.name,
+    className: currentUser.className,
+    completedQuestions: gameState.currentQuestion,
+    correctCount: gameState.correct,
+    wrongCount: gameState.wrong,
+    accuracy: accuracy,
+    level: level,
+    cookies: gameState.cookies,
+    diamonds: gameState.diamonds,
+    stars: gameState.stars,
+    maxCombo: gameState.maxCombo,
+    xp: gameState.xp,
+    unlockedRewards: gameState.unlockedRewards.join(',')
+  });
+}
+
+function showAutoSaveIndicator() {
+  const el = document.getElementById('autoSaveIndicator');
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 1500);
+}
+
+async function manualSave() {
+  showToast('💾 儲存中...');
+  await saveProgress(false);
+  showToast('✅ 儲存成功！');
+}
+
+function logout() {
+  saveProgress(false);
+  clearInterval(autoSaveInterval);
+  currentUser = null;
+  savedProgress = null;
+  
+  gameState = {
+    currentQuestion: 0, totalQuestions: 100, combo: 0, maxCombo: 0,
+    cookies: 5, lives: 3, maxLives: 3, xp: 0, correct: 0, wrong: 0,
+    diamonds: 0, stars: 0, currentWord: "", answered: false,
+    shuffledWords: [], unlockedRewards: []
+  };
+  
+  document.getElementById('gamePanel').classList.remove('active');
+  document.getElementById('gameOverPanel').classList.remove('active');
+  document.getElementById('loginPanel').classList.add('active');
+  document.getElementById('loginName').value = '';
+  document.getElementById('loginPassword').value = '';
+}
+
+// ============ 遊戲邏輯 ============
+function shuffleArray(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function createBackgroundBlocks() {
+  const container = document.getElementById('bgBlocks');
+  container.innerHTML = '';
+  const types = ['dirt', 'stone', 'grass'];
+  for (let i = 0; i < 12; i++) {
+    const block = document.createElement('div');
+    block.className = `floating-block ${types[Math.floor(Math.random() * types.length)]}`;
+    block.style.left = `${Math.random() * 100}%`;
+    block.style.top = `${Math.random() * 100}%`;
+    block.style.animationDelay = `${Math.random() * 5}s`;
+    container.appendChild(block);
+  }
+}
+
+function nextQuestion() {
+  if (gameState.currentQuestion >= gameState.totalQuestions || gameState.lives <= 0) {
+    endGame();
+    return;
+  }
+
+  gameState.currentWord = gameState.shuffledWords[gameState.currentQuestion];
+  gameState.currentQuestion++;
+  gameState.answered = false;
+
+  const input = document.getElementById('answerInput');
+  input.value = '';
+  input.className = 'mc-input';
+  input.disabled = false;
+  input.focus();
+
+  document.getElementById('submitBtn').style.display = 'inline-block';
+  document.getElementById('nextBtn').classList.remove('visible');
+
+  updateDisplay();
+  document.getElementById('questionWord').textContent = gameState.currentWord;
+}
+
+function submitAnswer() {
+  if (gameState.answered) return;
+
+  const input = document.getElementById('answerInput');
+  const answer = input.value.trim();
+  if (!answer) return;
+
+  if (answer === gameState.currentWord) {
+    gameState.correct++;
+    gameState.combo++;
+    gameState.stars++;
+    if (gameState.combo > gameState.maxCombo) gameState.maxCombo = gameState.combo;
+
+    const xpGain = 10 + Math.min(gameState.combo, 10) * 2;
+    gameState.xp += xpGain;
+
+    if (gameState.correct % 5 === 0) gameState.cookies++;
+    if (gameState.correct % 10 === 0) gameState.diamonds++;
+
+    input.className = 'mc-input correct';
+    gameState.answered = true;
+    document.getElementById('submitBtn').style.display = 'none';
+    document.getElementById('nextBtn').classList.add('visible');
+    input.disabled = true;
+    createParticles('✓', '#55FF55');
+
+    checkRewardUnlock();
+  } else {
+    gameState.wrong++;
+    gameState.combo = 0;
+    gameState.lives--;
+    
+    input.className = 'mc-input wrong';
+    createParticles('✗', '#FF5555');
+
+    if (gameState.lives <= 0) {
+      setTimeout(() => endGame(), 800);
+      return;
     }
 
-    function shuffleArray(array) {
-      for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-      }
-      return array;
-    }
-
-    function createBackgroundBlocks() {
-      const container = document.getElementById('bgBlocks');
-      const types = ['dirt', 'stone', 'grass'];
-      for (let i = 0; i < 12; i++) {
-        const block = document.createElement('div');
-        block.className = `floating-block ${types[Math.floor(Math.random() * types.length)]}`;
-        block.style.left = `${Math.random() * 100}%`;
-        block.style.top = `${Math.random() * 100}%`;
-        block.style.animationDelay = `${Math.random() * 5}s`;
-        container.appendChild(block);
-      }
-    }
-
-    function nextQuestion() {
-      if (gameState.pendingReward) {
-        showRewardCard(gameState.pendingReward, true);
-        gameState.pendingReward = null;
-        return;
-      }
-
-      if (gameState.currentQuestion >= gameState.totalQuestions) {
-        endGame();
-        return;
-      }
-
-      gameState.currentWord = gameState.shuffledWords[gameState.currentQuestion];
-      gameState.currentQuestion++;
-      gameState.answered = false;
-
-      const input = document.getElementById('answerInput');
-      input.value = '';
+    setTimeout(() => {
       input.className = 'mc-input';
-      input.disabled = false;
+      input.value = '';
       input.focus();
+    }, 500);
+  }
 
-      document.getElementById('submitBtn').style.display = 'inline-block';
-      document.getElementById('nextBtn').classList.remove('visible');
+  updateDisplay();
+}
 
-      updateDisplay();
-      document.getElementById('questionWord').textContent = gameState.currentWord;
+function checkRewardUnlock() {
+  for (const reward of rewardMilestones) {
+    if (gameState.correct === reward.questions && !gameState.unlockedRewards.includes(reward.type)) {
+      gameState.unlockedRewards.push(reward.type);
+      showToast(`🎉 解鎖獎勵：${reward.name}！`);
+      break;
     }
+  }
+}
 
-    function submitAnswer() {
-      if (gameState.answered) return;
+function viewReward(type) {
+  if (gameState.unlockedRewards.includes(type)) {
+    const reward = rewardMilestones.find(r => r.type === type);
+    showToast(`${reward.icon} ${reward.name} - 已收集！`);
+  } else {
+    const reward = rewardMilestones.find(r => r.type === type);
+    showToast(`🔒 需要答對 ${reward.questions} 題才能解鎖`);
+  }
+}
 
-      const input = document.getElementById('answerInput');
-      const answer = input.value.trim();
-      if (!answer) return;
+function updateDisplay() {
+  const level = Math.floor(gameState.xp / 100) + 1;
+  document.getElementById('level').textContent = level;
+  document.getElementById('combo').textContent = gameState.combo;
+  document.getElementById('cookies').textContent = gameState.cookies;
+  document.getElementById('diamonds').textContent = gameState.diamonds;
+  document.getElementById('stars').textContent = gameState.stars;
+  document.getElementById('xpText').textContent = gameState.xp;
+  document.getElementById('questionNum').textContent = gameState.currentQuestion;
+  document.getElementById('totalQuestions').textContent = gameState.totalQuestions;
+  document.getElementById('correctCount').textContent = gameState.correct;
+  document.getElementById('correctDisplay').textContent = gameState.correct;
+  document.getElementById('wrongCount').textContent = gameState.wrong;
 
-      if (answer === gameState.currentWord) {
-        gameState.correct++;
-        gameState.combo++;
-        gameState.stars++;
-        if (gameState.combo > gameState.maxCombo) gameState.maxCombo = gameState.combo;
+  document.getElementById('xpBar').style.width = `${gameState.xp % 100}%`;
 
-        const xpGain = 10 + Math.min(gameState.combo, 10) * 2;
-        gameState.xp += xpGain;
+  const total = gameState.correct + gameState.wrong;
+  const accuracy = total > 0 ? Math.round((gameState.correct / total) * 100) : 0;
+  document.getElementById('accuracy').textContent = `${accuracy}%`;
 
-        if (gameState.correct % 5 === 0) {
-          gameState.cookies++;
-          showToast('🍪 獲得餅乾！');
-        }
-        if (gameState.correct % 10 === 0) {
-          gameState.diamonds++;
-        }
+  updateMilestoneProgress();
+  updateHearts();
+  updateRewardPreview();
+}
 
-        input.className = 'mc-input correct';
-        gameState.answered = true;
-        document.getElementById('submitBtn').style.display = 'none';
-        document.getElementById('nextBtn').classList.add('visible');
-        input.disabled = true;
-        createParticles('✓', '#55FF55');
-
-        checkAndTriggerReward();
-
-      } else {
-        gameState.wrong++;
-        gameState.combo = 0;
-        gameState.lives--;
-        
-        input.className = 'mc-input wrong';
-        createParticles('✗', '#FF5555');
-        
-        updateHeartsWithAnimation();
-
-        if (gameState.lives <= 0) {
-          setTimeout(() => endGame(), 800);
-          return;
-        }
-
-        setTimeout(() => {
-          input.className = 'mc-input';
-          input.value = '';
-          input.focus();
-        }, 500);
-      }
-
-      updateDisplay();
+function updateMilestoneProgress() {
+  let nextMilestone = null, prevMilestone = 0;
+  for (const reward of rewardMilestones) {
+    if (gameState.correct < reward.questions) {
+      nextMilestone = reward.questions;
+      break;
     }
+    prevMilestone = reward.questions;
+  }
 
-    function checkAndTriggerReward() {
-      const correctCount = gameState.correct;
-      
-      for (const reward of rewardMilestones) {
-        if (correctCount === reward.questions && !gameState.unlockedRewards.includes(reward.type)) {
-          gameState.unlockedRewards.push(reward.type);
-          gameState.pendingReward = reward.type;
-          createFireworks();
-          break;
-        }
-      }
+  if (nextMilestone) {
+    const progress = ((gameState.correct - prevMilestone) / (nextMilestone - prevMilestone)) * 100;
+    document.getElementById('progressBar').style.width = `${progress}%`;
+    document.getElementById('progressText').textContent = `${gameState.correct} / ${nextMilestone} 題`;
+  } else {
+    document.getElementById('progressBar').style.width = '100%';
+    document.getElementById('progressText').textContent = '全部完成！';
+  }
+}
+
+function updateHearts() {
+  const container = document.getElementById('hearts');
+  container.innerHTML = '';
+  for (let i = 0; i < gameState.maxLives; i++) {
+    const heart = document.createElement('span');
+    heart.className = `heart ${i < gameState.lives ? '' : 'empty'}`;
+    heart.textContent = '❤️';
+    container.appendChild(heart);
+  }
+}
+
+function updateRewardPreview() {
+  rewardMilestones.forEach(reward => {
+    const el = document.getElementById(`reward${reward.questions}`);
+    if (!el) return;
+    el.classList.remove('unlocked', 'current');
+    if (gameState.unlockedRewards.includes(reward.type)) {
+      el.classList.add('unlocked');
+    } else {
+      const next = rewardMilestones.find(r => !gameState.unlockedRewards.includes(r.type));
+      if (next && next.questions === reward.questions) el.classList.add('current');
     }
+  });
+}
 
-    function createFireworks() {
-      const emojis = ['🎉', '🎊', '✨', '⭐', '🌟', '💫'];
-      for (let i = 0; i < 15; i++) {
-        setTimeout(() => {
-          const firework = document.createElement('div');
-          firework.className = 'firework';
-          firework.textContent = emojis[Math.floor(Math.random() * emojis.length)];
-          firework.style.left = `${20 + Math.random() * 60}%`;
-          firework.style.top = `${20 + Math.random() * 60}%`;
-          document.body.appendChild(firework);
-          setTimeout(() => firework.remove(), 1500);
-        }, i * 100);
-      }
-    }
+async function endGame() {
+  await saveProgress(false);
+  
+  document.getElementById('gamePanel').classList.remove('active');
+  document.getElementById('gameOverPanel').classList.add('active');
 
-    function updateHeartsWithAnimation() {
-      const container = document.getElementById('hearts');
-      const hearts = container.querySelectorAll('.heart');
-      
-      const heartIndex = gameState.lives;
-      if (hearts[heartIndex]) {
-        hearts[heartIndex].classList.add('losing');
-        setTimeout(() => {
-          hearts[heartIndex].classList.remove('losing');
-          hearts[heartIndex].classList.add('empty');
-        }, 500);
-      }
-    }
+  const resultTitle = document.getElementById('resultTitle');
+  if (gameState.lives <= 0) {
+    resultTitle.textContent = '💀 遊戲結束';
+    resultTitle.classList.add('fail');
+  } else {
+    resultTitle.textContent = '🎉 挖礦完成！';
+    resultTitle.classList.remove('fail');
+  }
 
-    function updateDisplay() {
-      const level = Math.floor(gameState.xp / 100) + 1;
-      document.getElementById('level').textContent = level;
-      document.getElementById('combo').textContent = gameState.combo;
-      document.getElementById('cookies').textContent = gameState.cookies;
-      document.getElementById('diamonds').textContent = gameState.diamonds;
-      document.getElementById('stars').textContent = gameState.stars;
-      document.getElementById('xpText').textContent = gameState.xp;
-      document.getElementById('questionNum').textContent = gameState.currentQuestion;
-      document.getElementById('totalQuestions').textContent = gameState.totalQuestions;
-      document.getElementById('correctCount').textContent = gameState.correct;
-      document.getElementById('correctDisplay').textContent = gameState.correct;
-      document.getElementById('wrongCount').textContent = gameState.wrong;
-      document.getElementById('skippedCount').textContent = gameState.skipped;
+  document.getElementById('finalQuestions').textContent = gameState.correct;
+  document.getElementById('finalCombo').textContent = gameState.maxCombo;
+  document.getElementById('finalXP').textContent = gameState.xp;
 
-      document.getElementById('xpBar').style.width = `${gameState.xp % 100}%`;
+  const total = gameState.correct + gameState.wrong;
+  const accuracy = total > 0 ? Math.round((gameState.correct / total) * 100) : 0;
+  document.getElementById('finalAccuracy').textContent = `${accuracy}%`;
+}
 
-      const total = gameState.correct + gameState.wrong;
-      const accuracy = total > 0 ? Math.round((gameState.correct / total) * 100) : 0;
-      document.getElementById('accuracy').textContent = `${accuracy}%`;
+function openShop() {
+  document.getElementById('shopCookies').textContent = gameState.cookies;
+  document.getElementById('shopPanel').classList.add('active');
+}
 
-      updateMilestoneProgress();
-      updateHearts();
-      updateRewardPreview();
+function closeShop() {
+  document.getElementById('shopPanel').classList.remove('active');
+}
 
-      const comboDisplay = document.getElementById('comboDisplay');
-      if (gameState.combo >= 2) {
-        comboDisplay.textContent = `🔥 ${gameState.combo}`;
-        comboDisplay.classList.add('active');
-      } else {
-        comboDisplay.classList.remove('active');
-      }
-    }
+function useSkip() {
+  if (gameState.cookies < 3) {
+    showToast('❌ 餅乾不足！');
+    return;
+  }
+  gameState.cookies -= 3;
+  gameState.combo = 0;
+  closeShop();
+  
+  gameState.answered = true;
+  document.getElementById('submitBtn').style.display = 'none';
+  document.getElementById('nextBtn').classList.add('visible');
+  document.getElementById('answerInput').disabled = true;
+  
+  updateDisplay();
+  showToast('⏭️ 已跳過此題');
+}
 
-    function updateMilestoneProgress() {
-      const correctCount = gameState.correct;
-      let nextMilestone = null;
-      let prevMilestone = 0;
+function restartGame() {
+  gameState = {
+    currentQuestion: 0, totalQuestions: 100, combo: 0, maxCombo: 0,
+    cookies: 5, lives: 3, maxLives: 3, xp: 0, correct: 0, wrong: 0,
+    diamonds: 0, stars: 0, currentWord: "", answered: false,
+    shuffledWords: [], unlockedRewards: []
+  };
 
-      for (const reward of rewardMilestones) {
-        if (correctCount < reward.questions) {
-          nextMilestone = reward.questions;
-          break;
-        }
-        prevMilestone = reward.questions;
-      }
+  gameState.shuffledWords = shuffleArray([...wordBank]);
+  gameState.totalQuestions = gameState.shuffledWords.length;
 
-      if (nextMilestone) {
-        const progress = ((correctCount - prevMilestone) / (nextMilestone - prevMilestone)) * 100;
-        document.getElementById('progressBar').style.width = `${progress}%`;
-        document.getElementById('progressText').textContent = `${correctCount} / ${nextMilestone} 題`;
-      } else {
-        document.getElementById('progressBar').style.width = '100%';
-        document.getElementById('progressText').textContent = '全部完成！';
-      }
-    }
+  document.getElementById('gamePanel').classList.add('active');
+  document.getElementById('gameOverPanel').classList.remove('active');
+  
+  nextQuestion();
+}
 
-    function updateHearts() {
-      const container = document.getElementById('hearts');
-      container.innerHTML = '';
-      for (let i = 0; i < gameState.maxLives; i++) {
-        const heart = document.createElement('span');
-        heart.className = `heart ${i < gameState.lives ? '' : 'empty'}`;
-        heart.textContent = '❤️';
-        container.appendChild(heart);
-      }
-    }
+function createParticles(symbol, color) {
+  for (let i = 0; i < 5; i++) {
+    const particle = document.createElement('div');
+    particle.className = 'particle';
+    particle.textContent = symbol;
+    particle.style.color = color;
+    particle.style.left = `${45 + Math.random() * 10}%`;
+    particle.style.top = `${35 + Math.random() * 10}%`;
+    document.body.appendChild(particle);
+    setTimeout(() => particle.remove(), 1000);
+  }
+}
 
-    function updateRewardPreview() {
-      rewardMilestones.forEach(reward => {
-        const el = document.getElementById(`reward${reward.questions}`);
-        if (!el) return;
-        
-        el.classList.remove('unlocked', 'current');
-        
-        if (gameState.unlockedRewards.includes(reward.type)) {
-          el.classList.add('unlocked');
-        } else {
-          const nextMilestone = rewardMilestones.find(r => !gameState.unlockedRewards.includes(r.type));
-          if (nextMilestone && nextMilestone.questions === reward.questions) {
-            el.classList.add('current');
-          }
-        }
-      });
-    }
+function showToast(message) {
+  const existing = document.querySelector('.toast');
+  if (existing) existing.remove();
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.textContent = message;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 2500);
+}
 
-    function viewReward(type) {
-      if (gameState.unlockedRewards.includes(type)) {
-        showRewardCard(type, false);
-      } else {
-        const reward = rewardMilestones.find(r => r.type === type);
-        showToast(`❌ 需要答對 ${reward.questions} 題才能解鎖！`);
-      }
-    }
-
-    function showRewardCard(type, isNew = false) {
-      const reward = rewardMilestones.find(r => r.type === type);
-      gameState.currentCardType = type;
-      
-      document.getElementById('unlockCelebration').style.display = isNew ? 'block' : 'none';
-      document.getElementById('cardTitle').textContent = reward.name;
-      
-      // 使用內嵌 SVG
-      document.getElementById('characterDisplay').innerHTML = characterSVG[type];
-      
-      document.getElementById('cardQuestions').textContent = gameState.correct;
-      const total = gameState.correct + gameState.wrong;
-      const accuracy = total > 0 ? Math.round((gameState.correct / total) * 100) : 0;
-      document.getElementById('cardAccuracy').textContent = `${accuracy}%`;
-      document.getElementById('cardCombo').textContent = gameState.maxCombo;
-      document.getElementById('cardXP').textContent = gameState.xp;
-      
-      const now = new Date();
-      document.getElementById('cardDate').textContent = `${now.getFullYear()}/${now.getMonth()+1}/${now.getDate()}`;
-      
-      updateMilestoneThumbs(type);
-      
-      document.getElementById('rewardCardPanel').classList.add('active');
-    }
-
-    function updateMilestoneThumbs(activeType) {
-      const thumbs = document.querySelectorAll('.milestone-thumb');
-      thumbs.forEach(thumb => {
-        const type = thumb.dataset.type;
-        thumb.classList.remove('unlocked', 'active');
-        
-        if (gameState.unlockedRewards.includes(type)) {
-          thumb.classList.add('unlocked');
-        }
-        if (type === activeType) {
-          thumb.classList.add('active');
-        }
-      });
-    }
-
-    function switchCardType(type) {
-      if (gameState.unlockedRewards.includes(type)) {
-        showRewardCard(type, false);
-      } else {
-        const reward = rewardMilestones.find(r => r.type === type);
-        showToast(`🔒 需要答對 ${reward.questions} 題解鎖`);
-      }
-    }
-
-    function closeRewardCard() {
-      document.getElementById('rewardCardPanel').classList.remove('active');
-      
-      if (gameState.currentQuestion < gameState.totalQuestions && gameState.lives > 0) {
-        const input = document.getElementById('answerInput');
-        input.focus();
-      }
-    }
-
-    async function downloadCard() {
-      const playerName = document.getElementById('playerNameInput').value.trim() || '匿名礦工';
-      document.getElementById('playerNameInput').value = playerName;
-
-      const card = document.getElementById('rewardCard');
-      
-      try {
-        showToast('📸 正在生成圖片...');
-        
-        const canvas = await html2canvas(card, {
-          backgroundColor: '#1a3009',
-          scale: 2,
-          useCORS: true,
-          logging: false
-        });
-
-        const link = document.createElement('a');
-        const rewardName = gameState.currentCardType || 'reward';
-        link.download = `minecraft-${rewardName}-${playerName}-${Date.now()}.png`;
-        link.href = canvas.toDataURL('image/png');
-        link.click();
-
-        showToast('✅ 圖片已儲存！');
-      } catch (error) {
-        console.error('Download error:', error);
-        showToast('❌ 儲存失敗，請重試');
-      }
-    }
-
-    function endGame() {
-      document.getElementById('gamePanel').classList.add('hidden');
-      document.getElementById('gameOverPanel').classList.add('active');
-
-      const resultTitle = document.getElementById('resultTitle');
-      if (gameState.lives <= 0) {
-        resultTitle.textContent = '💀 遊戲結束';
-        resultTitle.classList.add('fail');
-      } else {
-        resultTitle.textContent = '🎉 挖礦完成！';
-        resultTitle.classList.remove('fail');
-      }
-
-      document.getElementById('finalQuestions').textContent = gameState.correct;
-      document.getElementById('finalCombo').textContent = gameState.maxCombo;
-      document.getElementById('finalXP').textContent = gameState.xp;
-
-      const total = gameState.correct + gameState.wrong;
-      const accuracy = total > 0 ? Math.round((gameState.correct / total) * 100) : 0;
-      document.getElementById('finalAccuracy').textContent = `${accuracy}%`;
-
-      if (gameState.unlockedRewards.length > 0) {
-        document.getElementById('unlockedRewards').style.display = 'block';
-        const buttonsContainer = document.getElementById('rewardButtons');
-        buttonsContainer.innerHTML = '';
-
-        gameState.unlockedRewards.forEach(type => {
-          const reward = rewardMilestones.find(r => r.type === type);
-          const btn = document.createElement('button');
-          btn.className = 'mc-btn primary';
-          btn.innerHTML = `${reward.icon} 查看`;
-          btn.onclick = () => showRewardCard(type, false);
-          buttonsContainer.appendChild(btn);
-        });
-      } else {
-        document.getElementById('unlockedRewards').style.display = 'none';
-      }
-    }
-
-    function openShop() {
-      document.getElementById('shopCookies').textContent = gameState.cookies;
-      document.getElementById('shopPanel').classList.add('active');
-    }
-
-    function closeShop() {
-      document.getElementById('shopPanel').classList.remove('active');
-    }
-
-    function useSkip() {
-      if (gameState.cookies < 3) {
-        showToast('❌ 餅乾不足！');
-        return;
-      }
-
-      gameState.cookies -= 3;
-      gameState.skipped++;
-      gameState.combo = 0;
-      closeShop();
-      
-      gameState.answered = true;
-      document.getElementById('submitBtn').style.display = 'none';
-      document.getElementById('nextBtn').classList.add('visible');
-      document.getElementById('answerInput').disabled = true;
-      
-      updateDisplay();
-      showToast('⏭️ 已跳過此題');
-    }
-
-    function restartGame() {
-      gameState = {
-        currentQuestion: 0,
-        totalQuestions: 100,
-        combo: 0,
-        maxCombo: 0,
-        cookies: 5,
-        lives: 3,
-        maxLives: 3,
-        xp: 0,
-        correct: 0,
-        wrong: 0,
-        skipped: 0,
-        diamonds: 0,
-        stars: 0,
-        currentWord: "",
-        answered: false,
-        shuffledWords: [],
-        unlockedRewards: [],
-        pendingReward: null,
-        currentCardType: null
-      };
-
-      gameState.shuffledWords = shuffleArray([...wordBank]);
-      gameState.totalQuestions = gameState.shuffledWords.length;
-
-      document.getElementById('gamePanel').classList.remove('hidden');
-      document.getElementById('gameOverPanel').classList.remove('active');
-      document.getElementById('unlockedRewards').style.display = 'none';
-      
-      nextQuestion();
-    }
-
-    function createParticles(symbol, color) {
-      for (let i = 0; i < 5; i++) {
-        const particle = document.createElement('div');
-        particle.className = 'particle';
-        particle.textContent = symbol;
-        particle.style.color = color;
-        particle.style.left = `${45 + Math.random() * 10}%`;
-        particle.style.top = `${35 + Math.random() * 10}%`;
-        document.body.appendChild(particle);
-        setTimeout(() => particle.remove(), 1000);
-      }
-    }
-
-    function showToast(message) {
-      const existing = document.querySelector('.toast');
-      if (existing) existing.remove();
-
-      const toast = document.createElement('div');
-      toast.className = 'toast';
-      toast.textContent = message;
-      document.body.appendChild(toast);
-      setTimeout(() => toast.remove(), 2500);
-    }
-
-    function toggleFullscreen() {
-      if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen();
-      } else {
-        document.exitFullscreen();
-      }
-    }
-
-    init();
-  </script>
+// 初始化
+createBackgroundBlocks();
+document.getElementById('loginPassword').addEventListener('keypress', e => { if (e.key === 'Enter') login(); });
+</script>
 </body>
 </html>
