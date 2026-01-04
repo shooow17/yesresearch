@@ -1,0 +1,1105 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>⛏️ Minecraft 詞語挖礦</title>
+  <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&display=swap');
+    
+    * {
+      box-sizing: border-box;
+      image-rendering: pixelated;
+    }
+
+    :root {
+      --mc-dark: #1a1a1a;
+      --mc-stone: #7a7a7a;
+      --mc-dirt: #8b6914;
+      --mc-grass: #5d8c2e;
+      --mc-green: #55ff55;
+      --mc-red: #ff5555;
+      --mc-gold: #ffaa00;
+      --mc-aqua: #55ffff;
+      --mc-white: #ffffff;
+      --mc-gray: #aaaaaa;
+      --mc-dark-gray: #555555;
+      --mc-brown: #654321;
+    }
+
+    body {
+      font-family: 'VT323', 'Noto Sans TC', monospace;
+      background: linear-gradient(180deg, #87ceeb 0%, #87ceeb 60%, #5d8c2e 60%, #5d8c2e 65%, #8b6914 65%, #8b6914 100%);
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* Minecraft 風格按鈕 */
+    .mc-btn {
+      font-family: 'VT323', monospace;
+      font-size: 1.2rem;
+      padding: 8px 20px;
+      border: 4px solid;
+      border-color: #8b8b8b #373737 #373737 #8b8b8b;
+      background: linear-gradient(180deg, #7a7a7a 0%, #5a5a5a 50%, #4a4a4a 50%, #3a3a3a 100%);
+      color: var(--mc-white);
+      cursor: pointer;
+      text-shadow: 2px 2px 0 #3f3f3f;
+      transition: all 0.1s;
+      position: relative;
+    }
+
+    .mc-btn:hover {
+      background: linear-gradient(180deg, #9a9a9a 0%, #7a7a7a 50%, #6a6a6a 50%, #5a5a5a 100%);
+      color: #ffffaa;
+    }
+
+    .mc-btn:active {
+      border-color: #373737 #8b8b8b #8b8b8b #373737;
+      transform: translateY(2px);
+    }
+
+    .mc-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .mc-btn.green {
+      background: linear-gradient(180deg, #5d8c2e 0%, #4a7024 50%, #3d5c1e 50%, #2d4416 100%);
+      border-color: #7ab03a #2d4416 #2d4416 #7ab03a;
+    }
+
+    .mc-btn.green:hover {
+      background: linear-gradient(180deg, #7ab03a 0%, #5d8c2e 50%, #4a7024 50%, #3d5c1e 100%);
+    }
+
+    .mc-btn.red {
+      background: linear-gradient(180deg, #aa3333 0%, #882222 50%, #661919 50%, #441111 100%);
+      border-color: #cc4444 #441111 #441111 #cc4444;
+    }
+
+    .mc-btn.gold {
+      background: linear-gradient(180deg, #ddaa00 0%, #bb8800 50%, #996600 50%, #774400 100%);
+      border-color: #ffcc00 #774400 #774400 #ffcc00;
+    }
+
+    /* Minecraft 風格面板 */
+    .mc-panel {
+      background: rgba(0, 0, 0, 0.75);
+      border: 4px solid;
+      border-color: #5a5a5a #1a1a1a #1a1a1a #5a5a5a;
+      padding: 20px;
+      color: var(--mc-white);
+      box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+    }
+
+    /* 標題 */
+    h1 {
+      font-family: 'VT323', monospace;
+      font-size: 3rem;
+      color: var(--mc-white);
+      text-shadow: 
+        4px 4px 0 #3f3f3f,
+        -2px -2px 0 #000,
+        2px -2px 0 #000,
+        -2px 2px 0 #000;
+      margin: 20px 0;
+      letter-spacing: 2px;
+    }
+
+    .subtitle {
+      font-size: 1.2rem;
+      color: var(--mc-gray);
+      text-shadow: 2px 2px 0 #000;
+      margin-bottom: 20px;
+    }
+
+    /* 主遊戲容器 */
+    .game-container {
+      width: 100%;
+      max-width: 800px;
+    }
+
+    /* 狀態列 */
+    .status-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .stat-box {
+      background: rgba(0, 0, 0, 0.8);
+      border: 3px solid;
+      border-color: #5a5a5a #2a2a2a #2a2a2a #5a5a5a;
+      padding: 10px 15px;
+      min-width: 100px;
+      text-align: center;
+    }
+
+    .stat-label {
+      font-size: 0.9rem;
+      color: var(--mc-gray);
+      text-shadow: 1px 1px 0 #000;
+    }
+
+    .stat-value {
+      font-size: 1.5rem;
+      color: var(--mc-white);
+      text-shadow: 2px 2px 0 #000;
+    }
+
+    .stat-value.gold { color: var(--mc-gold); }
+    .stat-value.green { color: var(--mc-green); }
+    .stat-value.red { color: var(--mc-red); }
+    .stat-value.aqua { color: var(--mc-aqua); }
+
+    /* 生命值（愛心） */
+    .hearts {
+      display: flex;
+      gap: 5px;
+      justify-content: center;
+      font-size: 1.8rem;
+    }
+
+    .heart {
+      filter: drop-shadow(2px 2px 0 #000);
+      transition: transform 0.2s;
+    }
+
+    .heart.lost {
+      filter: grayscale(1) drop-shadow(2px 2px 0 #000);
+      opacity: 0.4;
+    }
+
+    .heart.damage {
+      animation: heartDamage 0.3s ease;
+    }
+
+    @keyframes heartDamage {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.3); filter: brightness(2) drop-shadow(2px 2px 0 #000); }
+    }
+
+    /* 經驗條 */
+    .xp-bar-container {
+      width: 100%;
+      height: 30px;
+      background: #1a1a1a;
+      border: 3px solid;
+      border-color: #0a0a0a #3a3a3a #3a3a3a #0a0a0a;
+      margin: 15px 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .xp-bar {
+      height: 100%;
+      background: linear-gradient(180deg, #7dff7d 0%, #55cc55 50%, #44aa44 50%, #338833 100%);
+      transition: width 0.5s ease;
+      position: relative;
+    }
+
+    .xp-bar::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 50%;
+      background: rgba(255,255,255,0.2);
+    }
+
+    .xp-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 1.2rem;
+      color: var(--mc-white);
+      text-shadow: 2px 2px 0 #000;
+      z-index: 1;
+    }
+
+    /* 題目區 */
+    .question-area {
+      margin: 30px 0;
+      text-align: center;
+    }
+
+    .question-label {
+      font-size: 1.2rem;
+      color: var(--mc-gray);
+      margin-bottom: 10px;
+      text-shadow: 2px 2px 0 #000;
+    }
+
+    .question-word {
+      font-size: 4rem;
+      color: var(--mc-gold);
+      text-shadow: 
+        4px 4px 0 #553300,
+        -2px -2px 0 #000,
+        2px -2px 0 #000,
+        -2px 2px 0 #000;
+      margin: 20px 0;
+      letter-spacing: 8px;
+      min-height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: float 2s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    /* 輸入區 */
+    .input-area {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .mc-input {
+      font-family: 'VT323', 'Noto Sans TC', monospace;
+      font-size: 2rem;
+      padding: 10px 20px;
+      background: #000;
+      border: 3px solid;
+      border-color: #1a1a1a #5a5a5a #5a5a5a #1a1a1a;
+      color: var(--mc-white);
+      text-align: center;
+      width: 300px;
+      outline: none;
+    }
+
+    .mc-input:focus {
+      border-color: #3a3a3a #7a7a7a #7a7a7a #3a3a3a;
+      box-shadow: 0 0 10px rgba(85, 255, 85, 0.5);
+    }
+
+    .mc-input.correct {
+      color: var(--mc-green);
+      animation: correctPulse 0.5s ease;
+    }
+
+    .mc-input.wrong {
+      color: var(--mc-red);
+      animation: wrongShake 0.5s ease;
+    }
+
+    @keyframes correctPulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    @keyframes wrongShake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-10px); }
+      75% { transform: translateX(10px); }
+    }
+
+    /* 按鈕區 */
+    .button-area {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+
+    /* 物品欄 */
+    .inventory {
+      display: flex;
+      gap: 5px;
+      justify-content: center;
+      margin: 20px 0;
+    }
+
+    .inv-slot {
+      width: 50px;
+      height: 50px;
+      background: #555;
+      border: 3px solid;
+      border-color: #333 #777 #777 #333;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .inv-slot.selected {
+      border-color: #fff;
+      background: #666;
+    }
+
+    .inv-item {
+      font-size: 1.8rem;
+    }
+
+    .inv-count {
+      position: absolute;
+      bottom: 2px;
+      right: 4px;
+      font-size: 0.9rem;
+      color: var(--mc-white);
+      text-shadow: 1px 1px 0 #000;
+    }
+
+    /* 連擊顯示 */
+    .combo-display {
+      position: fixed;
+      top: 20%;
+      right: 10%;
+      font-size: 2.5rem;
+      color: var(--mc-gold);
+      text-shadow: 3px 3px 0 #000;
+      animation: comboFloat 0.5s ease;
+      pointer-events: none;
+    }
+
+    @keyframes comboFloat {
+      0% { transform: scale(0.5) translateY(20px); opacity: 0; }
+      50% { transform: scale(1.2) translateY(-10px); }
+      100% { transform: scale(1) translateY(0); opacity: 1; }
+    }
+
+    /* 成就/訊息彈窗 */
+    .toast {
+      position: fixed;
+      top: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.9);
+      border: 3px solid var(--mc-gold);
+      padding: 15px 30px;
+      color: var(--mc-white);
+      font-size: 1.5rem;
+      text-shadow: 2px 2px 0 #000;
+      animation: toastSlide 3s ease forwards;
+      z-index: 1000;
+    }
+
+    @keyframes toastSlide {
+      0% { transform: translateX(-50%) translateY(-100px); opacity: 0; }
+      10% { transform: translateX(-50%) translateY(0); opacity: 1; }
+      80% { transform: translateX(-50%) translateY(0); opacity: 1; }
+      100% { transform: translateX(-50%) translateY(-100px); opacity: 0; }
+    }
+
+    /* 結束畫面 */
+    .end-screen {
+      text-align: center;
+      padding: 40px;
+    }
+
+    .end-title {
+      font-size: 3rem;
+      color: var(--mc-gold);
+      text-shadow: 4px 4px 0 #553300;
+      margin-bottom: 30px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      max-width: 400px;
+      margin: 30px auto;
+    }
+
+    /* 方塊裝飾 */
+    .block {
+      width: 40px;
+      height: 40px;
+      position: absolute;
+      animation: blockFloat 3s ease-in-out infinite;
+    }
+
+    .block.diamond {
+      background: linear-gradient(135deg, #4aedd9 0%, #2dd4c0 50%, #1fb8a6 100%);
+      border: 2px solid #1a9688;
+    }
+
+    .block.gold {
+      background: linear-gradient(135deg, #ffe566 0%, #ffcc00 50%, #cc9900 100%);
+      border: 2px solid #997700;
+    }
+
+    .block.emerald {
+      background: linear-gradient(135deg, #50c878 0%, #3cb371 50%, #2e8b57 100%);
+      border: 2px solid #228b22;
+    }
+
+    @keyframes blockFloat {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-20px) rotate(10deg); }
+    }
+
+    /* 商店彈窗 */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .modal-content {
+      max-width: 90%;
+      width: 450px;
+    }
+
+    .modal-title {
+      font-size: 2rem;
+      color: var(--mc-gold);
+      text-shadow: 2px 2px 0 #000;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .shop-item {
+      background: rgba(50, 50, 50, 0.8);
+      border: 2px solid #555;
+      padding: 15px;
+      margin: 10px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .shop-item-info {
+      flex: 1;
+    }
+
+    .shop-item-name {
+      font-size: 1.3rem;
+      color: var(--mc-aqua);
+    }
+
+    .shop-item-desc {
+      font-size: 1rem;
+      color: var(--mc-gray);
+    }
+
+    /* 隱藏的 */
+    .hidden {
+      display: none !important;
+    }
+
+    /* 全螢幕按鈕 */
+    .fullscreen-btn {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      z-index: 100;
+    }
+
+    /* 關卡進度 */
+    .level-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.5rem;
+      color: var(--mc-white);
+      text-shadow: 2px 2px 0 #000;
+    }
+
+    .level-badge {
+      background: var(--mc-dark);
+      border: 3px solid var(--mc-gold);
+      padding: 5px 15px;
+      color: var(--mc-gold);
+    }
+
+    /* 裝飾性方塊背景 */
+    .bg-blocks {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: -1;
+    }
+
+    .floating-block {
+      position: absolute;
+      width: 30px;
+      height: 30px;
+      opacity: 0.3;
+      animation: floatBlock 8s ease-in-out infinite;
+    }
+
+    @keyframes floatBlock {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-30px) rotate(180deg); }
+    }
+
+    /* 挖礦動畫 */
+    .mining {
+      animation: mining 0.2s ease infinite;
+    }
+
+    @keyframes mining {
+      0%, 100% { transform: rotate(0deg); }
+      25% { transform: rotate(-10deg); }
+      75% { transform: rotate(10deg); }
+    }
+
+    /* 粒子效果 */
+    .particle {
+      position: fixed;
+      pointer-events: none;
+      font-size: 1.5rem;
+      animation: particleFly 1s ease forwards;
+    }
+
+    @keyframes particleFly {
+      0% { transform: translateY(0) scale(1); opacity: 1; }
+      100% { transform: translateY(-100px) scale(0.5); opacity: 0; }
+    }
+
+    /* 響應式 */
+    @media (max-width: 600px) {
+      h1 { font-size: 2rem; }
+      .question-word { font-size: 2.5rem; letter-spacing: 4px; }
+      .mc-input { width: 100%; font-size: 1.5rem; }
+      .stat-box { min-width: 80px; padding: 8px 10px; }
+      .stat-value { font-size: 1.2rem; }
+      .hearts { font-size: 1.4rem; }
+    }
+  </style>
+</head>
+<body>
+  <!-- 背景裝飾方塊 -->
+  <div class="bg-blocks" id="bgBlocks"></div>
+
+  <!-- 全螢幕按鈕 -->
+  <button class="mc-btn fullscreen-btn" onclick="toggleFullscreen()">⛶ 全螢幕</button>
+
+  <!-- 標題 -->
+  <h1>⛏️ Minecraft 詞語挖礦 ⛏️</h1>
+  <div class="subtitle">挖掘知識的礦脈！準確打出詞語來獲得經驗值！</div>
+
+  <div class="game-container">
+    <!-- 遊戲主面板 -->
+    <div class="mc-panel" id="gamePanel">
+      <!-- 狀態列 -->
+      <div class="status-bar">
+        <div class="stat-box">
+          <div class="stat-label">⛏️ 關卡</div>
+          <div class="stat-value aqua"><span id="currentLevel">1</span>/10</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">🔥 連擊</div>
+          <div class="stat-value gold" id="combo">0</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">🍪 餅乾</div>
+          <div class="stat-value" id="cookies">0</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">❤️ 生命</div>
+          <div class="hearts" id="hearts">
+            <span class="heart">❤️</span>
+            <span class="heart">❤️</span>
+            <span class="heart">❤️</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 經驗條 -->
+      <div class="xp-bar-container">
+        <div class="xp-bar" id="xpBar" style="width: 0%"></div>
+        <div class="xp-text">XP: <span id="xpValue">0</span> | 進度: <span id="progress">0</span>%</div>
+      </div>
+
+      <!-- 題目統計 -->
+      <div style="text-align: center; margin: 15px 0; color: var(--mc-gray);">
+        題目 <span id="questionNum">1</span>/100 | 
+        <span style="color: var(--mc-green);">正確 <span id="correctCount">0</span></span> | 
+        <span style="color: var(--mc-red);">錯誤 <span id="wrongCount">0</span></span> | 
+        <span style="color: var(--mc-gray);">略過 <span id="skipCount">0</span></span> |
+        正確率 <span id="accuracy">0</span>%
+      </div>
+
+      <!-- 題目區 -->
+      <div class="question-area">
+        <div class="question-label">⛏️ 挖掘這個詞語 ⛏️</div>
+        <div class="question-word" id="questionWord">—</div>
+      </div>
+
+      <!-- 輸入區 -->
+      <div class="input-area">
+        <input type="text" class="mc-input" id="answerInput" placeholder="輸入答案..." autocomplete="off">
+      </div>
+
+      <!-- 按鈕區 -->
+      <div class="button-area">
+        <button class="mc-btn green" id="submitBtn" onclick="submitAnswer()">⛏️ 挖掘！</button>
+        <button class="mc-btn gold" id="skipBtn" onclick="openShop()">🍪 跳過 (花費 3🍪)</button>
+        <button class="mc-btn hidden" id="nextBtn" onclick="nextQuestion()">➡️ 下一題</button>
+      </div>
+
+      <!-- 物品欄 -->
+      <div class="inventory">
+        <div class="inv-slot selected">
+          <span class="inv-item">⛏️</span>
+        </div>
+        <div class="inv-slot">
+          <span class="inv-item">🍪</span>
+          <span class="inv-count" id="invCookies">0</span>
+        </div>
+        <div class="inv-slot">
+          <span class="inv-item">💎</span>
+          <span class="inv-count" id="invDiamonds">0</span>
+        </div>
+        <div class="inv-slot">
+          <span class="inv-item">⭐</span>
+          <span class="inv-count" id="invStars">0</span>
+        </div>
+        <div class="inv-slot"></div>
+        <div class="inv-slot"></div>
+        <div class="inv-slot"></div>
+        <div class="inv-slot"></div>
+        <div class="inv-slot"></div>
+      </div>
+    </div>
+
+    <!-- 結束畫面 -->
+    <div class="mc-panel hidden" id="endPanel">
+      <div class="end-screen">
+        <div class="end-title">🎉 挖礦完成！</div>
+        <div style="font-size: 1.5rem; color: var(--mc-aqua);">你成功挖掘了所有詞語！</div>
+        
+        <div class="stats-grid">
+          <div class="stat-box">
+            <div class="stat-label">正確</div>
+            <div class="stat-value green" id="endCorrect">0</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">錯誤</div>
+            <div class="stat-value red" id="endWrong">0</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">略過</div>
+            <div class="stat-value" id="endSkip">0</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">正確率</div>
+            <div class="stat-value gold" id="endAccuracy">0%</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">最高連擊</div>
+            <div class="stat-value aqua" id="endMaxCombo">0</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">總XP</div>
+            <div class="stat-value green" id="endXP">0</div>
+          </div>
+        </div>
+
+        <button class="mc-btn green" onclick="restartGame()" style="font-size: 1.5rem; padding: 15px 40px;">
+          🔄 再挖一次！
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 商店彈窗 -->
+  <div class="modal-overlay hidden" id="shopModal">
+    <div class="mc-panel modal-content">
+      <div class="modal-title">🧰 礦工商店</div>
+      
+      <div class="shop-item">
+        <div class="shop-item-info">
+          <div class="shop-item-name">⛏️ 跳過當前詞語</div>
+          <div class="shop-item-desc">不想卡關？用餅乾直接通過這一題<br>（不算正確、不扣心，記錄為略過）</div>
+        </div>
+        <button class="mc-btn gold" onclick="useSkip()">花費 3🍪</button>
+      </div>
+
+      <div style="text-align: center; margin-top: 20px;">
+        <button class="mc-btn red" onclick="closeShop()">✖ 關閉</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 連擊顯示 -->
+  <div class="combo-display hidden" id="comboDisplay"></div>
+
+  <script>
+    // 詞語庫
+    const wordBank = [
+      "蘋果", "香蕉", "西瓜", "草莓", "葡萄", "檸檬", "芒果", "櫻桃", "鳳梨", "橘子",
+      "學校", "老師", "學生", "課本", "黑板", "粉筆", "書包", "鉛筆", "橡皮", "作業",
+      "太陽", "月亮", "星星", "雲朵", "彩虹", "閃電", "雷聲", "大雨", "微風", "晴天",
+      "電腦", "手機", "平板", "鍵盤", "滑鼠", "螢幕", "耳機", "音響", "相機", "電視",
+      "快樂", "悲傷", "生氣", "驚訝", "害怕", "開心", "難過", "興奮", "緊張", "放鬆",
+      "跑步", "游泳", "籃球", "足球", "棒球", "網球", "羽球", "桌球", "排球", "滑板",
+      "早餐", "午餐", "晚餐", "麵包", "牛奶", "果汁", "咖啡", "漢堡", "薯條", "披薩",
+      "醫生", "護士", "警察", "消防", "廚師", "畫家", "歌手", "演員", "作家", "設計",
+      "春天", "夏天", "秋天", "冬天", "季節", "氣候", "溫度", "濕度", "天氣", "預報",
+      "森林", "沙漠", "草原", "海洋", "河流", "湖泊", "山谷", "瀑布", "島嶼", "火山"
+    ];
+
+    // 遊戲狀態
+    let gameState = {
+      currentLevel: 1,
+      totalLevels: 10,
+      questionsPerLevel: 10,
+      currentQuestion: 0,
+      totalQuestions: 100,
+      combo: 0,
+      maxCombo: 0,
+      cookies: 5,
+      lives: 3,
+      maxLives: 3,
+      xp: 0,
+      correct: 0,
+      wrong: 0,
+      skipped: 0,
+      diamonds: 0,
+      stars: 0,
+      currentWord: "",
+      answered: false,
+      shuffledWords: []
+    };
+
+    // 初始化
+    function init() {
+      gameState.shuffledWords = shuffleArray([...wordBank]);
+      createBackgroundBlocks();
+      nextQuestion();
+      updateDisplay();
+      
+      document.getElementById('answerInput').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          if (!gameState.answered) {
+            submitAnswer();
+          } else {
+            nextQuestion();
+          }
+        }
+      });
+    }
+
+    // 洗牌函數
+    function shuffleArray(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
+    // 創建背景方塊
+    function createBackgroundBlocks() {
+      const container = document.getElementById('bgBlocks');
+      const colors = ['#8b6914', '#7a7a7a', '#4a7024', '#3cb371', '#ffcc00'];
+      for (let i = 0; i < 15; i++) {
+        const block = document.createElement('div');
+        block.className = 'floating-block';
+        block.style.left = Math.random() * 100 + '%';
+        block.style.top = Math.random() * 100 + '%';
+        block.style.background = colors[Math.floor(Math.random() * colors.length)];
+        block.style.animationDelay = Math.random() * 5 + 's';
+        container.appendChild(block);
+      }
+    }
+
+    // 下一題
+    function nextQuestion() {
+      if (gameState.currentQuestion >= gameState.totalQuestions) {
+        endGame();
+        return;
+      }
+
+      gameState.currentWord = gameState.shuffledWords[gameState.currentQuestion];
+      gameState.currentQuestion++;
+      gameState.answered = false;
+      gameState.currentLevel = Math.ceil(gameState.currentQuestion / gameState.questionsPerLevel);
+
+      document.getElementById('questionWord').textContent = gameState.currentWord;
+      document.getElementById('answerInput').value = '';
+      document.getElementById('answerInput').className = 'mc-input';
+      document.getElementById('answerInput').disabled = false;
+      document.getElementById('answerInput').focus();
+
+      document.getElementById('submitBtn').classList.remove('hidden');
+      document.getElementById('skipBtn').classList.remove('hidden');
+      document.getElementById('nextBtn').classList.add('hidden');
+
+      updateDisplay();
+    }
+
+    // 提交答案
+    function submitAnswer() {
+      const input = document.getElementById('answerInput');
+      const answer = input.value.trim();
+
+      if (!answer) return;
+
+      if (answer === gameState.currentWord) {
+        // 正確
+        gameState.correct++;
+        gameState.combo++;
+        if (gameState.combo > gameState.maxCombo) {
+          gameState.maxCombo = gameState.combo;
+        }
+
+        // 計算XP（連擊越高加越多）
+        const baseXP = 10;
+        const comboBonus = Math.min(gameState.combo, 10) * 2;
+        const earnedXP = baseXP + comboBonus;
+        gameState.xp += earnedXP;
+
+        // 獲得餅乾（每5次正確獲得1個）
+        if (gameState.correct % 5 === 0) {
+          gameState.cookies++;
+          showToast("🍪 獲得餅乾！");
+        }
+
+        // 獲得鑽石（每10次正確）
+        if (gameState.correct % 10 === 0) {
+          gameState.diamonds++;
+          showToast("💎 獲得鑽石！");
+        }
+
+        input.className = 'mc-input correct';
+        showCombo();
+        createParticles('⭐', 5);
+        gameState.answered = true;
+
+        document.getElementById('submitBtn').classList.add('hidden');
+        document.getElementById('skipBtn').classList.add('hidden');
+        document.getElementById('nextBtn').classList.remove('hidden');
+
+      } else {
+        // 錯誤
+        gameState.wrong++;
+        gameState.lives--;
+        gameState.combo = 0;
+
+        input.className = 'mc-input wrong';
+        animateHeartDamage();
+        createParticles('💔', 3);
+
+        if (gameState.lives <= 0) {
+          endGame();
+          return;
+        }
+
+        // 錯誤後可以繼續嘗試
+        setTimeout(() => {
+          input.className = 'mc-input';
+          input.value = '';
+          input.focus();
+        }, 500);
+      }
+
+      updateDisplay();
+    }
+
+    // 使用跳過
+    function useSkip() {
+      if (gameState.cookies < 3) {
+        showToast("❌ 餅乾不足！");
+        return;
+      }
+
+      gameState.cookies -= 3;
+      gameState.skipped++;
+      gameState.combo = 0;
+      gameState.answered = true;
+
+      closeShop();
+      showToast("⏭️ 已跳過此題");
+
+      document.getElementById('submitBtn').classList.add('hidden');
+      document.getElementById('skipBtn').classList.add('hidden');
+      document.getElementById('nextBtn').classList.remove('hidden');
+      document.getElementById('answerInput').disabled = true;
+
+      updateDisplay();
+    }
+
+    // 顯示連擊
+    function showCombo() {
+      if (gameState.combo >= 2) {
+        const display = document.getElementById('comboDisplay');
+        display.textContent = `🔥 ${gameState.combo} 連擊！`;
+        display.classList.remove('hidden');
+        
+        setTimeout(() => {
+          display.classList.add('hidden');
+        }, 1500);
+      }
+    }
+
+    // 愛心受傷動畫
+    function animateHeartDamage() {
+      const hearts = document.querySelectorAll('.heart');
+      const lostIndex = gameState.maxLives - gameState.lives - 1;
+      if (hearts[lostIndex]) {
+        hearts[lostIndex].classList.add('damage');
+        setTimeout(() => {
+          hearts[lostIndex].classList.remove('damage');
+        }, 300);
+      }
+    }
+
+    // 創建粒子效果
+    function createParticles(emoji, count) {
+      for (let i = 0; i < count; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        particle.textContent = emoji;
+        particle.style.left = (40 + Math.random() * 20) + '%';
+        particle.style.top = '40%';
+        particle.style.animationDelay = (i * 0.1) + 's';
+        document.body.appendChild(particle);
+        
+        setTimeout(() => particle.remove(), 1000);
+      }
+    }
+
+    // 顯示提示
+    function showToast(message) {
+      const existing = document.querySelector('.toast');
+      if (existing) existing.remove();
+
+      const toast = document.createElement('div');
+      toast.className = 'toast';
+      toast.textContent = message;
+      document.body.appendChild(toast);
+
+      setTimeout(() => toast.remove(), 3000);
+    }
+
+    // 更新顯示
+    function updateDisplay() {
+      document.getElementById('currentLevel').textContent = gameState.currentLevel;
+      document.getElementById('combo').textContent = gameState.combo;
+      document.getElementById('cookies').textContent = gameState.cookies;
+      document.getElementById('invCookies').textContent = gameState.cookies;
+      document.getElementById('invDiamonds').textContent = gameState.diamonds;
+      document.getElementById('invStars').textContent = gameState.correct;
+      document.getElementById('xpValue').textContent = gameState.xp;
+      document.getElementById('questionNum').textContent = gameState.currentQuestion;
+      document.getElementById('correctCount').textContent = gameState.correct;
+      document.getElementById('wrongCount').textContent = gameState.wrong;
+      document.getElementById('skipCount').textContent = gameState.skipped;
+
+      // 計算進度和正確率
+      const progress = Math.round((gameState.currentQuestion / gameState.totalQuestions) * 100);
+      document.getElementById('progress').textContent = progress;
+      document.getElementById('xpBar').style.width = progress + '%';
+
+      const total = gameState.correct + gameState.wrong;
+      const accuracy = total > 0 ? Math.round((gameState.correct / total) * 100) : 0;
+      document.getElementById('accuracy').textContent = accuracy;
+
+      // 更新愛心
+      const heartsContainer = document.getElementById('hearts');
+      heartsContainer.innerHTML = '';
+      for (let i = 0; i < gameState.maxLives; i++) {
+        const heart = document.createElement('span');
+        heart.className = 'heart' + (i >= gameState.lives ? ' lost' : '');
+        heart.textContent = '❤️';
+        heartsContainer.appendChild(heart);
+      }
+    }
+
+    // 開啟商店
+    function openShop() {
+      document.getElementById('shopModal').classList.remove('hidden');
+    }
+
+    // 關閉商店
+    function closeShop() {
+      document.getElementById('shopModal').classList.add('hidden');
+    }
+
+    // 結束遊戲
+    function endGame() {
+      document.getElementById('gamePanel').classList.add('hidden');
+      document.getElementById('endPanel').classList.remove('hidden');
+
+      const total = gameState.correct + gameState.wrong;
+      const accuracy = total > 0 ? Math.round((gameState.correct / total) * 100) : 0;
+
+      document.getElementById('endCorrect').textContent = gameState.correct;
+      document.getElementById('endWrong').textContent = gameState.wrong;
+      document.getElementById('endSkip').textContent = gameState.skipped;
+      document.getElementById('endAccuracy').textContent = accuracy + '%';
+      document.getElementById('endMaxCombo').textContent = gameState.maxCombo;
+      document.getElementById('endXP').textContent = gameState.xp;
+
+      if (gameState.lives <= 0) {
+        document.querySelector('.end-title').textContent = '💀 礦坑崩塌！';
+        document.querySelector('.end-screen > div:nth-child(2)').textContent = '你的生命值耗盡了...';
+      }
+    }
+
+    // 重新開始
+    function restartGame() {
+      gameState = {
+        currentLevel: 1,
+        totalLevels: 10,
+        questionsPerLevel: 10,
+        currentQuestion: 0,
+        totalQuestions: 100,
+        combo: 0,
+        maxCombo: 0,
+        cookies: 5,
+        lives: 3,
+        maxLives: 3,
+        xp: 0,
+        correct: 0,
+        wrong: 0,
+        skipped: 0,
+        diamonds: 0,
+        stars: 0,
+        currentWord: "",
+        answered: false,
+        shuffledWords: shuffleArray([...wordBank])
+      };
+
+      document.getElementById('gamePanel').classList.remove('hidden');
+      document.getElementById('endPanel').classList.add('hidden');
+      nextQuestion();
+      updateDisplay();
+    }
+
+    // 全螢幕
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen();
+      } else {
+        document.exitFullscreen();
+      }
+    }
+
+    // 初始化遊戲
+    init();
+  </script>
+</body>
+</html>
