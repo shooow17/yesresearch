@@ -60,19 +60,11 @@
             box-shadow: 0 0 15px rgba(76, 175, 80, 0.6);
         }
 
-        /* 讀取中遮罩 */
-        .loading-overlay {
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(255,255,255,0.7);
-            display: none;
-            border-radius: 8px;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.8rem;
-            color: #333;
+        /* 如果正在背景處理中，給一個微微的透明度變化或其他提示(可選) */
+        .class-card.processing {
+            opacity: 0.8;
+            cursor: wait;
         }
-        .loading-overlay.active { display: flex; }
 
         .controls {
             margin-top: 40px;
@@ -136,6 +128,9 @@
 
         const gridContainer = document.getElementById('classGrid');
         const statusSpan = document.getElementById('connection-status');
+        
+        // 用來記錄哪些班級正在「背景更新中」，避免被自動同步蓋過去
+        const pendingUpdates = new Set();
 
         // 1. 初始化畫面
         function initUI() {
@@ -144,13 +139,11 @@
                 const btn = document.createElement('div');
                 btn.className = 'class-card';
                 btn.id = `btn-${className}`;
-                btn.innerHTML = `
-                    ${className}
-                    <div class="loading-overlay" id="load-${className}">處理中...</div>
-                `;
+                btn.textContent = className;
                 
                 btn.addEventListener('click', () => {
-                    if(!btn.querySelector('.loading-overlay.active')) {
+                    // 只有當不在處理中時才允許點擊
+                    if(!pendingUpdates.has(className)) {
                         toggleStatus(className);
                     }
                 });
@@ -160,23 +153,46 @@
             fetchData(); // 立即抓取一次資料
         }
 
-        // 2. 切換班級狀態 (發送指令給 Google Sheet)
+        // 2. 切換班級狀態 (樂觀更新：先變色，再送出)
         function toggleStatus(className) {
-            // 顯示該按鈕的讀取圈圈，避免重複點擊
-            document.getElementById(`load-${className}`).classList.add('active');
+            const btn = document.getElementById(`btn-${className}`);
+            
+            // A. 判斷目前的狀態 (看是否有 arrived class)
+            const isCurrentlyArrived = btn.classList.contains('arrived');
+            const newStatusIsArrived = !isCurrentlyArrived; // 反轉狀態
 
-            // 發送 update 請求
+            // B. 【重點】立刻更新畫面 (騙過眼睛，不等伺服器)
+            if (newStatusIsArrived) {
+                btn.classList.add('arrived');
+            } else {
+                btn.classList.remove('arrived');
+            }
+
+            // C. 標記這個班級正在更新中 (防止自動同步把它改回來)
+            pendingUpdates.add(className);
+            btn.classList.add('processing');
+
+            // D. 背景發送請求
             fetch(`${SCRIPT_URL}?action=update&class=${className}`)
                 .then(response => response.json())
                 .then(data => {
-                    console.log("更新成功", data);
-                    // 更新完畢後，立刻重新抓取最新狀態
-                    fetchData();
+                    console.log("背景更新成功", data);
+                    // 移除標記，恢復正常同步
+                    pendingUpdates.delete(className);
+                    btn.classList.remove('processing');
                 })
                 .catch(err => {
-                    console.error("更新失敗", err);
-                    alert("網路連線錯誤，請稍後再試");
-                    document.getElementById(`load-${className}`).classList.remove('active');
+                    console.error("背景更新失敗", err);
+                    alert("網路不穩，請重新點擊！");
+                    
+                    // E. 如果失敗，要偷偷把顏色改回去 (復原)
+                    if (isCurrentlyArrived) {
+                        btn.classList.add('arrived');
+                    } else {
+                        btn.classList.remove('arrived');
+                    }
+                    pendingUpdates.delete(className);
+                    btn.classList.remove('processing');
                 });
         }
 
@@ -186,12 +202,12 @@
                 .then(response => response.json())
                 .then(data => {
                     updateGrid(data);
-                    statusSpan.textContent = "🟢 已連線同步";
+                    statusSpan.textContent = "🟢 系統運作中";
                     statusSpan.style.color = "green";
                 })
                 .catch(err => {
                     console.error("讀取失敗", err);
-                    statusSpan.textContent = "🔴 連線中斷...";
+                    statusSpan.textContent = "🔴 連線緩慢...";
                     statusSpan.style.color = "red";
                 });
         }
@@ -199,12 +215,13 @@
         // 4. 更新畫面顏色
         function updateGrid(data) {
             classList.forEach(className => {
-                const btn = document.getElementById(`btn-${className}`);
-                const loader = document.getElementById(`load-${className}`);
-                
-                // 移除讀取遮罩
-                loader.classList.remove('active');
+                // 如果這個班級使用者剛剛才按過，正在背景傳輸中，就不要更新它
+                // 避免「按下去變綠 -> 系統讀到舊資料變回灰 -> 寫入完成變綠」的閃爍
+                if (pendingUpdates.has(className)) {
+                    return; 
+                }
 
+                const btn = document.getElementById(`btn-${className}`);
                 if (data[className] === true) {
                     btn.classList.add('arrived');
                 } else {
@@ -218,7 +235,13 @@
             if(confirm("確定要重置所有班級狀態嗎？")) {
                 statusSpan.textContent = "重置中...";
                 fetch(`${SCRIPT_URL}?action=reset`)
-                    .then(() => fetchData())
+                    .then(() => {
+                        // 重置後強制重新整理一次畫面
+                        classList.forEach(cls => {
+                             document.getElementById(`btn-${cls}`).classList.remove('arrived');
+                        });
+                        fetchData();
+                    })
                     .catch(err => alert("重置失敗"));
             }
         }
