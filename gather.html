@@ -3,111 +3,160 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>課後照顧 - 班級集合確認系統</title>
+    <title>課後照顧 - 班級集合戰情中心</title>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
     <style>
+        /* 全域設定：深色背景與科技感字體 */
         body {
-            font-family: "Microsoft JhengHei", Arial, sans-serif;
-            background-color: #f0f2f5;
+            font-family: 'Rajdhani', 'Microsoft JhengHei', sans-serif;
+            background: linear-gradient(135deg, #0d1117 0%, #161b22 100%); /* 深色漸層背景 */
+            color: #00fff2; /* 預設青色文字 */
             margin: 0;
             padding: 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
+            min-height: 100vh;
+            /* 背景網格線效果 */
+            background-image: 
+                linear-gradient(rgba(0, 255, 242, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 242, 0.05) 1px, transparent 1px);
+            background-size: 30px 30px;
         }
 
-        h1 { color: #333; margin-bottom: 10px; text-align: center; }
-
-        .status-bar {
-            background-color: #fff;
-            padding: 10px 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
+        h1 {
+            margin-bottom: 15px;
             text-align: center;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            /* 文字霓虹發光效果 */
+            text-shadow: 0 0 10px rgba(0, 255, 242, 0.7), 0 0 20px rgba(0, 255, 242, 0.5);
+        }
+
+        /* 狀態列：半透明玻璃質感 */
+        .status-bar {
+            background: rgba(13, 17, 23, 0.8); /* 半透明深色 */
+            border: 1px solid rgba(0, 255, 242, 0.3);
+            padding: 12px 25px;
+            border-radius: 4px;
+            box-shadow: 0 0 15px rgba(0, 255, 242, 0.1) inset;
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 1.1rem;
+            backdrop-filter: blur(5px); /* 毛玻璃效果 */
         }
 
         .grid-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-            gap: 15px;
+            grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+            gap: 20px;
             width: 100%;
-            max-width: 800px;
+            max-width: 900px;
         }
 
+        /* 班級卡片：核心科技感設計 */
         .class-card {
-            background-color: #e0e0e0;
-            color: #555;
-            border: 2px solid #ccc;
-            border-radius: 10px;
-            padding: 20px;
+            /* 預設狀態：未到達 (暗青色) */
+            background: rgba(22, 27, 34, 0.8);
+            color: rgba(0, 255, 242, 0.6); /*稍微暗一點的文字*/
+            border: 2px solid rgba(0, 255, 242, 0.3); /* 微光邊框 */
+            border-radius: 8px;
+            padding: 25px 10px;
             text-align: center;
-            font-size: 1.5rem;
-            font-weight: bold;
+            font-size: 1.8rem;
+            font-weight: 700;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); /* 更有彈性的過渡 */
             user-select: none;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             position: relative;
+            overflow: hidden;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
 
-        .class-card:active { transform: scale(0.95); }
+        /* 滑鼠懸停效果 */
+        .class-card:hover {
+            border-color: rgba(0, 255, 242, 0.8);
+            box-shadow: 0 0 20px rgba(0, 255, 242, 0.4);
+            color: rgba(0, 255, 242, 1);
+            transform: translateY(-2px);
+        }
 
-        /* 到達樣式 */
+        .class-card:active { transform: scale(0.97); }
+
+        /* --- 到達狀態 (Arrived)：強烈螢光綠 --- */
         .class-card.arrived {
-            background-color: #4CAF50;
-            color: white;
-            border-color: #388E3C;
-            box-shadow: 0 0 15px rgba(76, 175, 80, 0.6);
+            background: rgba(46, 204, 113, 0.15); /* 淡淡的綠色背景 */
+            color: #39ff14; /* 螢光綠文字 */
+            border-color: #39ff14; /* 螢光綠邊框 */
+            /* 強烈的綠色發光特效 */
+            box-shadow: 
+                0 0 10px rgba(57, 255, 20, 0.6), 
+                0 0 30px rgba(57, 255, 20, 0.4) inset;
+            text-shadow: 0 0 10px rgba(57, 255, 20, 0.8);
         }
 
-        /* 如果正在背景處理中，給一個微微的透明度變化或其他提示(可選) */
+        /* --- 處理中狀態 (Processing)：脈衝動畫 --- */
         .class-card.processing {
-            opacity: 0.8;
             cursor: wait;
+            animation: pulse-cyan 1.5s infinite ease-in-out;
         }
 
+        /* 定義脈衝動畫 */
+        @keyframes pulse-cyan {
+            0% { box-shadow: 0 0 5px rgba(0, 255, 242, 0.3); opacity: 1; }
+            50% { box-shadow: 0 0 25px rgba(0, 255, 242, 0.6); opacity: 0.7; }
+            100% { box-shadow: 0 0 5px rgba(0, 255, 242, 0.3); opacity: 1; }
+        }
+
+        /* 底部控制區 */
         .controls {
-            margin-top: 40px;
-            padding-top: 20px;
-            border-top: 1px solid #ddd;
+            margin-top: 50px;
+            padding-top: 25px;
+            border-top: 1px solid rgba(0, 255, 242, 0.2);
             width: 100%;
-            max-width: 800px;
+            max-width: 900px;
             text-align: right;
         }
 
+        /* 重置按鈕：紅色警戒風格 */
         .reset-btn {
-            background-color: #ff5252;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
+            background: transparent;
+            color: #ff3860; /* 螢光紅 */
+            border: 2px solid #ff3860;
+            padding: 12px 30px;
+            border-radius: 4px;
             cursor: pointer;
-            font-size: 1rem;
+            font-size: 1.1rem;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+
+        .reset-btn:hover {
+            background: #ff3860;
+            color: #161b22;
+            box-shadow: 0 0 20px rgba(255, 56, 96, 0.6);
         }
         
-        #system-msg {
-            margin-top: 10px;
-            height: 20px;
-            color: #666;
-            font-size: 0.9rem;
-        }
     </style>
 </head>
 <body>
 
-    <h1>🏫 課後照顧班級集合看板</h1>
+    <h1>🚀 課後照顧 - 班級集合戰情中心</h1>
     
     <div class="status-bar">
-        系統狀態：<span id="connection-status">連線中...</span>
+        系統連線狀態：<span id="connection-status" style="color: #ff3860;">連線初始化...</span>
     </div>
 
     <div class="grid-container" id="classGrid">
         </div>
 
-    <div id="system-msg"></div>
-
     <div class="controls">
-        <button onclick="resetSystem()" class="reset-btn">🔄 重置系統 (新的一天)</button>
+        <button onclick="resetSystem()" class="reset-btn">⚠️ 手動重置系統</button>
     </div>
 
     <script>
@@ -128,8 +177,6 @@
 
         const gridContainer = document.getElementById('classGrid');
         const statusSpan = document.getElementById('connection-status');
-        
-        // 用來記錄哪些班級正在「背景更新中」，避免被自動同步蓋過去
         const pendingUpdates = new Set();
 
         // 1. 初始化畫面
@@ -142,7 +189,6 @@
                 btn.textContent = className;
                 
                 btn.addEventListener('click', () => {
-                    // 只有當不在處理中時才允許點擊
                     if(!pendingUpdates.has(className)) {
                         toggleStatus(className);
                     }
@@ -150,42 +196,32 @@
 
                 gridContainer.appendChild(btn);
             });
-            fetchData(); // 立即抓取一次資料
+            fetchData(); 
         }
 
-        // 2. 切換班級狀態 (樂觀更新：先變色，再送出)
+        // 2. 切換班級狀態 (樂觀模式)
         function toggleStatus(className) {
             const btn = document.getElementById(`btn-${className}`);
-            
-            // A. 判斷目前的狀態 (看是否有 arrived class)
             const isCurrentlyArrived = btn.classList.contains('arrived');
-            const newStatusIsArrived = !isCurrentlyArrived; // 反轉狀態
+            const newStatusIsArrived = !isCurrentlyArrived;
 
-            // B. 【重點】立刻更新畫面 (騙過眼睛，不等伺服器)
             if (newStatusIsArrived) {
                 btn.classList.add('arrived');
             } else {
                 btn.classList.remove('arrived');
             }
 
-            // C. 標記這個班級正在更新中 (防止自動同步把它改回來)
             pendingUpdates.add(className);
             btn.classList.add('processing');
 
-            // D. 背景發送請求
             fetch(`${SCRIPT_URL}?action=update&class=${className}`)
                 .then(response => response.json())
                 .then(data => {
-                    console.log("背景更新成功", data);
-                    // 移除標記，恢復正常同步
                     pendingUpdates.delete(className);
                     btn.classList.remove('processing');
                 })
                 .catch(err => {
-                    console.error("背景更新失敗", err);
-                    alert("網路不穩，請重新點擊！");
-                    
-                    // E. 如果失敗，要偷偷把顏色改回去 (復原)
+                    console.error("更新失敗", err);
                     if (isCurrentlyArrived) {
                         btn.classList.add('arrived');
                     } else {
@@ -193,33 +229,29 @@
                     }
                     pendingUpdates.delete(className);
                     btn.classList.remove('processing');
+                    alert("連線失敗，請重試");
                 });
         }
 
-        // 3. 讀取資料 (同步畫面)
+        // 3. 讀取資料
         function fetchData() {
             fetch(`${SCRIPT_URL}?action=read`)
                 .then(response => response.json())
                 .then(data => {
                     updateGrid(data);
-                    statusSpan.textContent = "🟢 系統運作中";
-                    statusSpan.style.color = "green";
+                    statusSpan.textContent = "🟢 系統運作中 (SYSTEM ONLINE)";
+                    statusSpan.style.color = "#39ff14"; // 螢光綠
                 })
                 .catch(err => {
-                    console.error("讀取失敗", err);
-                    statusSpan.textContent = "🔴 連線緩慢...";
-                    statusSpan.style.color = "red";
+                    statusSpan.textContent = "🔴 連線中斷 (CONNECTION LOST)";
+                    statusSpan.style.color = "#ff3860"; // 螢光紅
                 });
         }
 
-        // 4. 更新畫面顏色
+        // 4. 更新 Grid
         function updateGrid(data) {
             classList.forEach(className => {
-                // 如果這個班級使用者剛剛才按過，正在背景傳輸中，就不要更新它
-                // 避免「按下去變綠 -> 系統讀到舊資料變回灰 -> 寫入完成變綠」的閃爍
-                if (pendingUpdates.has(className)) {
-                    return; 
-                }
+                if (pendingUpdates.has(className)) return; 
 
                 const btn = document.getElementById(`btn-${className}`);
                 if (data[className] === true) {
@@ -230,26 +262,23 @@
             });
         }
 
-        // 5. 重置系統
+        // 5. 手動重置
         window.resetSystem = function() {
-            if(confirm("確定要重置所有班級狀態嗎？")) {
-                statusSpan.textContent = "重置中...";
-                fetch(`${SCRIPT_URL}?action=reset`)
-                    .then(() => {
-                        // 重置後強制重新整理一次畫面
-                        classList.forEach(cls => {
-                             document.getElementById(`btn-${cls}`).classList.remove('arrived');
-                        });
-                        fetchData();
-                    })
-                    .catch(err => alert("重置失敗"));
-            }
+            if(!confirm("【警告】確定要執行全系統重置嗎？所有班級狀態將歸零。")) return;
+
+            statusSpan.textContent = "⚠️ 系統重置執行中...";
+            statusSpan.style.color = "#ff3860";
+            fetch(`${SCRIPT_URL}?action=reset`)
+                .then(() => {
+                    classList.forEach(cls => {
+                            document.getElementById(`btn-${cls}`).classList.remove('arrived');
+                    });
+                    fetchData();
+                })
+                .catch(err => alert("重置失敗"));
         }
 
-        // 啟動 UI
         initUI();
-
-        // 設定自動更新 (每 3 秒向 Google Sheet 要一次資料)
         setInterval(fetchData, 3000);
 
     </script>
