@@ -2,162 +2,131 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>課後照顧 - 班級集合戰情中心</title>
-    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>課後照顧集合回報系統</title>
     <style>
-        /* 全域設定：深色背景與科技感字體 */
+        /* 全域設定：固定一頁，禁止捲動 */
         body {
-            font-family: 'Rajdhani', 'Microsoft JhengHei', sans-serif;
-            background: linear-gradient(135deg, #0d1117 0%, #161b22 100%); /* 深色漸層背景 */
-            color: #00fff2; /* 預設青色文字 */
+            font-family: "Microsoft JhengHei", "Heiti TC", sans-serif;
+            background-color: #1a1a2e; /* 深藍黑色背景 */
+            color: #ffffff;
             margin: 0;
-            padding: 20px;
+            padding: 10px; /* 縮小邊距 */
+            box-sizing: border-box;
+            height: 100vh; /* 強制與螢幕等高 */
+            overflow: hidden; /* 禁止出現卷軸 */
             display: flex;
             flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-            /* 背景網格線效果 */
-            background-image: 
-                linear-gradient(rgba(0, 255, 242, 0.05) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 255, 242, 0.05) 1px, transparent 1px);
-            background-size: 30px 30px;
+        }
+
+        /* 標題區：盡量縮小以留空間給按鈕 */
+        header {
+            flex: 0 0 auto; /* 高度自動，不伸縮 */
+            text-align: center;
+            margin-bottom: 10px;
         }
 
         h1 {
-            margin-bottom: 15px;
-            text-align: center;
-            font-weight: 700;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            /* 文字霓虹發光效果 */
-            text-shadow: 0 0 10px rgba(0, 255, 242, 0.7), 0 0 20px rgba(0, 255, 242, 0.5);
+            margin: 0;
+            font-size: 1.5rem; /* 字體稍微縮小 */
+            font-weight: bold;
+            color: #ffffff;
         }
 
-        /* 狀態列：半透明玻璃質感 */
+        /* 狀態列 */
         .status-bar {
-            background: rgba(13, 17, 23, 0.8); /* 半透明深色 */
-            border: 1px solid rgba(0, 255, 242, 0.3);
-            padding: 12px 25px;
-            border-radius: 4px;
-            box-shadow: 0 0 15px rgba(0, 255, 242, 0.1) inset;
-            margin-bottom: 30px;
-            text-align: center;
-            font-size: 1.1rem;
-            backdrop-filter: blur(5px); /* 毛玻璃效果 */
+            font-size: 0.9rem;
+            color: #a4b0be;
+            margin-top: 5px;
         }
 
+        /* 格狀容器：佔據所有剩餘空間 */
         .grid-container {
+            flex: 1 1 auto; /* 自動填滿剩餘高度 */
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
-            gap: 20px;
+            /* 手機版：3欄 | 電腦版：自動調整 */
+            grid-template-columns: repeat(3, 1fr); 
+            grid-gap: 10px; /* 按鈕間距 */
             width: 100%;
-            max-width: 900px;
+            max-width: 800px;
+            margin: 0 auto;
+            /* 讓 grid 充滿高度 */
+            align-content: stretch; 
         }
 
-        /* 班級卡片：核心科技感設計 */
+        /* 當螢幕較寬時 (平板/電腦)，改成 4 欄或更多，避免按鈕太扁 */
+        @media (min-width: 600px) {
+            .grid-container {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        /* 班級卡片：自動伸縮 */
         .class-card {
-            /* 預設狀態：未到達 (暗青色) */
-            background: rgba(22, 27, 34, 0.8);
-            color: rgba(0, 255, 242, 0.6); /*稍微暗一點的文字*/
-            border: 2px solid rgba(0, 255, 242, 0.3); /* 微光邊框 */
+            background-color: #3e4152; /* 未到達：深灰色 */
+            color: #e0e0e0;
+            border: 2px solid #555;
             border-radius: 8px;
-            padding: 25px 10px;
-            text-align: center;
-            font-size: 1.8rem;
-            font-weight: 700;
+            
+            /* 讓文字絕對置中 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            
+            font-size: 1.5rem; /* 字體大小 */
+            font-weight: bold;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); /* 更有彈性的過渡 */
-            user-select: none;
-            position: relative;
-            overflow: hidden;
-            letter-spacing: 1px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            user-select: none; /* 防止選取文字 */
+            transition: transform 0.1s, background-color 0.2s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.4);
+            
+            /* 觸控優化 */
+            touch-action: manipulation;
         }
 
-        /* 滑鼠懸停效果 */
-        .class-card:hover {
-            border-color: rgba(0, 255, 242, 0.8);
-            box-shadow: 0 0 20px rgba(0, 255, 242, 0.4);
-            color: rgba(0, 255, 242, 1);
-            transform: translateY(-2px);
-        }
-
-        .class-card:active { transform: scale(0.97); }
-
-        /* --- 到達狀態 (Arrived)：強烈螢光綠 --- */
+        /* 到達狀態 (Arrived)：實心綠色 */
         .class-card.arrived {
-            background: rgba(46, 204, 113, 0.15); /* 淡淡的綠色背景 */
-            color: #39ff14; /* 螢光綠文字 */
-            border-color: #39ff14; /* 螢光綠邊框 */
-            /* 強烈的綠色發光特效 */
-            box-shadow: 
-                0 0 10px rgba(57, 255, 20, 0.6), 
-                0 0 30px rgba(57, 255, 20, 0.4) inset;
-            text-shadow: 0 0 10px rgba(57, 255, 20, 0.8);
+            background-color: #00b894; 
+            color: #ffffff;
+            border-color: #00cec9;
+            box-shadow: 0 0 15px rgba(0, 184, 148, 0.4);
         }
 
-        /* --- 處理中狀態 (Processing)：脈衝動畫 --- */
+        /* 處理中狀態 */
         .class-card.processing {
+            opacity: 0.7;
+            background-color: #636e72;
             cursor: wait;
-            animation: pulse-cyan 1.5s infinite ease-in-out;
         }
 
-        /* 定義脈衝動畫 */
-        @keyframes pulse-cyan {
-            0% { box-shadow: 0 0 5px rgba(0, 255, 242, 0.3); opacity: 1; }
-            50% { box-shadow: 0 0 25px rgba(0, 255, 242, 0.6); opacity: 0.7; }
-            100% { box-shadow: 0 0 5px rgba(0, 255, 242, 0.3); opacity: 1; }
+        /* 滑鼠懸停 (僅電腦版) */
+        @media (hover: hover) {
+            .class-card:hover {
+                background-color: #4e5266;
+                transform: translateY(-2px);
+            }
+            .class-card.arrived:hover {
+                background-color: #00b894;
+            }
         }
 
-        /* 底部控制區 */
-        .controls {
-            margin-top: 50px;
-            padding-top: 25px;
-            border-top: 1px solid rgba(0, 255, 242, 0.2);
-            width: 100%;
-            max-width: 900px;
-            text-align: right;
+        .class-card:active {
+            transform: scale(0.96);
         }
 
-        /* 重置按鈕：紅色警戒風格 */
-        .reset-btn {
-            background: transparent;
-            color: #ff3860; /* 螢光紅 */
-            border: 2px solid #ff3860;
-            padding: 12px 30px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 1.1rem;
-            font-family: 'Rajdhani', sans-serif;
-            font-weight: 700;
-            letter-spacing: 1px;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-        }
-
-        .reset-btn:hover {
-            background: #ff3860;
-            color: #161b22;
-            box-shadow: 0 0 20px rgba(255, 56, 96, 0.6);
-        }
-        
     </style>
 </head>
 <body>
 
-    <h1>🚀 課後照顧 - 班級集合戰情中心</h1>
-    
-    <div class="status-bar">
-        系統連線狀態：<span id="connection-status" style="color: #ff3860;">連線初始化...</span>
-    </div>
+    <header>
+        <h1>集合回報系統</h1>
+        <div class="status-bar">
+            系統狀態：<span id="connection-status" style="color: #ffeaa7;">連線中...</span>
+        </div>
+    </header>
 
     <div class="grid-container" id="classGrid">
         </div>
-
-    <div class="controls">
-        <button onclick="resetSystem()" class="reset-btn">⚠️ 手動重置系統</button>
-    </div>
 
     <script>
         // -----------------------------------------------------------
@@ -239,12 +208,12 @@
                 .then(response => response.json())
                 .then(data => {
                     updateGrid(data);
-                    statusSpan.textContent = "🟢 系統運作中 (SYSTEM ONLINE)";
-                    statusSpan.style.color = "#39ff14"; // 螢光綠
+                    statusSpan.textContent = "🟢 線上同步中";
+                    statusSpan.style.color = "#55efc4"; 
                 })
                 .catch(err => {
-                    statusSpan.textContent = "🔴 連線中斷 (CONNECTION LOST)";
-                    statusSpan.style.color = "#ff3860"; // 螢光紅
+                    statusSpan.textContent = "🔴 連線中斷";
+                    statusSpan.style.color = "#ff7675"; 
                 });
         }
 
@@ -262,23 +231,10 @@
             });
         }
 
-        // 5. 手動重置
-        window.resetSystem = function() {
-            if(!confirm("【警告】確定要執行全系統重置嗎？所有班級狀態將歸零。")) return;
-
-            statusSpan.textContent = "⚠️ 系統重置執行中...";
-            statusSpan.style.color = "#ff3860";
-            fetch(`${SCRIPT_URL}?action=reset`)
-                .then(() => {
-                    classList.forEach(cls => {
-                            document.getElementById(`btn-${cls}`).classList.remove('arrived');
-                    });
-                    fetchData();
-                })
-                .catch(err => alert("重置失敗"));
-        }
-
+        // 啟動 UI
         initUI();
+
+        // 3 秒輪詢一次資料
         setInterval(fetchData, 3000);
 
     </script>
