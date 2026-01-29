@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>課後照顧 - 班級集合確認系統</title>
+    <style>
+        body {
+            font-family: "Microsoft JhengHei", Arial, sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 { color: #333; margin-bottom: 10px; text-align: center; }
+
+        .status-bar {
+            background-color: #fff;
+            padding: 10px 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 15px;
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .class-card {
+            background-color: #e0e0e0;
+            color: #555;
+            border: 2px solid #ccc;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .class-card:active { transform: scale(0.95); }
+
+        /* 到達樣式 */
+        .class-card.arrived {
+            background-color: #4CAF50;
+            color: white;
+            border-color: #388E3C;
+            box-shadow: 0 0 15px rgba(76, 175, 80, 0.6);
+        }
+
+        /* 讀取中遮罩 */
+        .loading-overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(255,255,255,0.7);
+            display: none;
+            border-radius: 8px;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            color: #333;
+        }
+        .loading-overlay.active { display: flex; }
+
+        .controls {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+            width: 100%;
+            max-width: 800px;
+            text-align: right;
+        }
+
+        .reset-btn {
+            background-color: #ff5252;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        
+        #system-msg {
+            margin-top: 10px;
+            height: 20px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>🏫 課後照顧班級集合看板</h1>
+    
+    <div class="status-bar">
+        系統狀態：<span id="connection-status">連線中...</span>
+    </div>
+
+    <div class="grid-container" id="classGrid">
+        </div>
+
+    <div id="system-msg"></div>
+
+    <div class="controls">
+        <button onclick="resetSystem()" class="reset-btn">🔄 重置系統 (新的一天)</button>
+    </div>
+
+    <script>
+        // -----------------------------------------------------------
+        // ⚠️ 請將這裡替換成你的 Google Apps Script 部署網址
+        // -----------------------------------------------------------
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwjBcn08HTv11ugu09o3LAGDZA9DKol1_Ny0tYxjRnvvAmNHyIjD0GQ2_RLdmUZHbxs/exec"; 
+        // -----------------------------------------------------------
+
+        const classList = [
+            "1A", "1B",
+            "2A", "2B",
+            "3A", "3B",
+            "4A", "4B",
+            "5A", "5B", "5C",
+            "6A", "6B"
+        ];
+
+        const gridContainer = document.getElementById('classGrid');
+        const statusSpan = document.getElementById('connection-status');
+
+        // 1. 初始化畫面
+        function initUI() {
+            gridContainer.innerHTML = '';
+            classList.forEach(className => {
+                const btn = document.createElement('div');
+                btn.className = 'class-card';
+                btn.id = `btn-${className}`;
+                btn.innerHTML = `
+                    ${className}
+                    <div class="loading-overlay" id="load-${className}">處理中...</div>
+                `;
+                
+                btn.addEventListener('click', () => {
+                    if(!btn.querySelector('.loading-overlay.active')) {
+                        toggleStatus(className);
+                    }
+                });
+
+                gridContainer.appendChild(btn);
+            });
+            fetchData(); // 立即抓取一次資料
+        }
+
+        // 2. 切換班級狀態 (發送指令給 Google Sheet)
+        function toggleStatus(className) {
+            // 顯示該按鈕的讀取圈圈，避免重複點擊
+            document.getElementById(`load-${className}`).classList.add('active');
+
+            // 發送 update 請求
+            fetch(`${SCRIPT_URL}?action=update&class=${className}`)
+                .then(response => response.json())
+                .then(data => {
+                    console.log("更新成功", data);
+                    // 更新完畢後，立刻重新抓取最新狀態
+                    fetchData();
+                })
+                .catch(err => {
+                    console.error("更新失敗", err);
+                    alert("網路連線錯誤，請稍後再試");
+                    document.getElementById(`load-${className}`).classList.remove('active');
+                });
+        }
+
+        // 3. 讀取資料 (同步畫面)
+        function fetchData() {
+            fetch(`${SCRIPT_URL}?action=read`)
+                .then(response => response.json())
+                .then(data => {
+                    updateGrid(data);
+                    statusSpan.textContent = "🟢 已連線同步";
+                    statusSpan.style.color = "green";
+                })
+                .catch(err => {
+                    console.error("讀取失敗", err);
+                    statusSpan.textContent = "🔴 連線中斷...";
+                    statusSpan.style.color = "red";
+                });
+        }
+
+        // 4. 更新畫面顏色
+        function updateGrid(data) {
+            classList.forEach(className => {
+                const btn = document.getElementById(`btn-${className}`);
+                const loader = document.getElementById(`load-${className}`);
+                
+                // 移除讀取遮罩
+                loader.classList.remove('active');
+
+                if (data[className] === true) {
+                    btn.classList.add('arrived');
+                } else {
+                    btn.classList.remove('arrived');
+                }
+            });
+        }
+
+        // 5. 重置系統
+        window.resetSystem = function() {
+            if(confirm("確定要重置所有班級狀態嗎？")) {
+                statusSpan.textContent = "重置中...";
+                fetch(`${SCRIPT_URL}?action=reset`)
+                    .then(() => fetchData())
+                    .catch(err => alert("重置失敗"));
+            }
+        }
+
+        // 啟動 UI
+        initUI();
+
+        // 設定自動更新 (每 3 秒向 Google Sheet 要一次資料)
+        setInterval(fetchData, 3000);
+
+    </script>
+</body>
+</html>
