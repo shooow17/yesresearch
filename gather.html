@@ -5,86 +5,87 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>課後照顧集合回報系統</title>
     <style>
-        /* 全域設定：固定一頁，禁止捲動 */
+        /* 全域設定 */
         body {
             font-family: "Microsoft JhengHei", "Heiti TC", sans-serif;
-            background-color: #1a1a2e; /* 深藍黑色背景 */
+            background-color: #1a1a2e;
             color: #ffffff;
             margin: 0;
-            padding: 10px; /* 縮小邊距 */
+            padding: 10px;
             box-sizing: border-box;
-            height: 100vh; /* 強制與螢幕等高 */
-            overflow: hidden; /* 禁止出現卷軸 */
+            
+            /* --- 關鍵修正開始 --- */
+            /* 使用 dvh (Dynamic Viewport Height) 自動扣除瀏覽器工具列高度 */
+            height: 100vh; /* 舊瀏覽器備案 */
+            height: 100dvh; /* 新瀏覽器專用 */
+            
+            overflow: hidden; /* 保持禁止卷軸 */
+            /* --- 關鍵修正結束 --- */
+
             display: flex;
             flex-direction: column;
         }
 
-        /* 標題區：盡量縮小以留空間給按鈕 */
         header {
-            flex: 0 0 auto; /* 高度自動，不伸縮 */
+            flex: 0 0 auto;
             text-align: center;
-            margin-bottom: 10px;
+            margin-bottom: 5px; /* 縮小標題下方的留白 */
         }
 
         h1 {
             margin: 0;
-            font-size: 1.5rem; /* 字體稍微縮小 */
+            font-size: 1.4rem; /* 標題字再縮小一點，留空間給按鈕 */
             font-weight: bold;
             color: #ffffff;
         }
 
-        /* 狀態列 */
         .status-bar {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             color: #a4b0be;
-            margin-top: 5px;
+            margin-top: 3px;
         }
 
-        /* 格狀容器：佔據所有剩餘空間 */
         .grid-container {
-            flex: 1 1 auto; /* 自動填滿剩餘高度 */
+            flex: 1 1 auto; /* 自動填滿剩餘空間 */
             display: grid;
-            /* 手機版：3欄 | 電腦版：自動調整 */
             grid-template-columns: repeat(3, 1fr); 
-            grid-gap: 10px; /* 按鈕間距 */
+            grid-gap: 8px; /* 按鈕間距稍微縮小 */
             width: 100%;
             max-width: 800px;
             margin: 0 auto;
-            /* 讓 grid 充滿高度 */
             align-content: stretch; 
+            
+            /* --- 關鍵修正：底部留白 --- */
+            /* 預留底部空間，防止貼底被擋住 */
+            padding-bottom: 10px; 
+            /* 針對 iPhone X 以上的底部橫條 (Home Indicator) 增加安全距離 */
+            padding-bottom: calc(10px + env(safe-area-inset-bottom));
         }
 
-        /* 當螢幕較寬時 (平板/電腦)，改成 4 欄或更多，避免按鈕太扁 */
         @media (min-width: 600px) {
             .grid-container {
                 grid-template-columns: repeat(4, 1fr);
+                padding-bottom: 10px; /* 電腦版不需要太多底部留白 */
             }
         }
 
-        /* 班級卡片：自動伸縮 */
         .class-card {
-            background-color: #3e4152; /* 未到達：深灰色 */
+            background-color: #3e4152;
             color: #e0e0e0;
             border: 2px solid #555;
             border-radius: 8px;
-            
-            /* 讓文字絕對置中 */
             display: flex;
             justify-content: center;
             align-items: center;
-            
-            font-size: 1.5rem; /* 字體大小 */
+            font-size: 1.5rem;
             font-weight: bold;
             cursor: pointer;
-            user-select: none; /* 防止選取文字 */
+            user-select: none;
             transition: transform 0.1s, background-color 0.2s;
             box-shadow: 0 4px 6px rgba(0,0,0,0.4);
-            
-            /* 觸控優化 */
             touch-action: manipulation;
         }
 
-        /* 到達狀態 (Arrived)：實心綠色 */
         .class-card.arrived {
             background-color: #00b894; 
             color: #ffffff;
@@ -92,14 +93,12 @@
             box-shadow: 0 0 15px rgba(0, 184, 148, 0.4);
         }
 
-        /* 處理中狀態 */
         .class-card.processing {
             opacity: 0.7;
             background-color: #636e72;
             cursor: wait;
         }
 
-        /* 滑鼠懸停 (僅電腦版) */
         @media (hover: hover) {
             .class-card:hover {
                 background-color: #4e5266;
@@ -148,7 +147,6 @@
         const statusSpan = document.getElementById('connection-status');
         const pendingUpdates = new Set();
 
-        // 1. 初始化畫面
         function initUI() {
             gridContainer.innerHTML = '';
             classList.forEach(className => {
@@ -156,19 +154,16 @@
                 btn.className = 'class-card';
                 btn.id = `btn-${className}`;
                 btn.textContent = className;
-                
                 btn.addEventListener('click', () => {
                     if(!pendingUpdates.has(className)) {
                         toggleStatus(className);
                     }
                 });
-
                 gridContainer.appendChild(btn);
             });
             fetchData(); 
         }
 
-        // 2. 切換班級狀態 (樂觀模式)
         function toggleStatus(className) {
             const btn = document.getElementById(`btn-${className}`);
             const isCurrentlyArrived = btn.classList.contains('arrived');
@@ -202,7 +197,6 @@
                 });
         }
 
-        // 3. 讀取資料
         function fetchData() {
             fetch(`${SCRIPT_URL}?action=read`)
                 .then(response => response.json())
@@ -217,11 +211,9 @@
                 });
         }
 
-        // 4. 更新 Grid
         function updateGrid(data) {
             classList.forEach(className => {
                 if (pendingUpdates.has(className)) return; 
-
                 const btn = document.getElementById(`btn-${className}`);
                 if (data[className] === true) {
                     btn.classList.add('arrived');
@@ -231,10 +223,7 @@
             });
         }
 
-        // 啟動 UI
         initUI();
-
-        // 3 秒輪詢一次資料
         setInterval(fetchData, 3000);
 
     </script>
