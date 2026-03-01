@@ -3,8 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>極速影片聲音放大器 (FFmpeg 版)</title>
-    <script src="https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.11.2/dist/ffmpeg.min.js"></script>
+    <title>極速影片聲音放大器 (FFmpeg v0.12 升級版)</title>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.12.10/dist/umd/ffmpeg.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@ffmpeg/util@0.12.1/dist/umd/index.js"></script>
+    
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -58,11 +61,11 @@
 <body>
 
     <div class="container">
-        <h2>⚡ 極速影片聲音放大器</h2>
+        <h2>⚡ 極速影片聲音放大器 (無安全限制版)</h2>
         <p>直接處理檔案，不須等待播放，畫質無損直出 MP4。</p>
 
         <div style="margin: 20px 0; border: 2px dashed #ccc; padding: 20px; border-radius: 8px;">
-            <input type="file" id="videoUpload" accept="video/mp4,video/x-m4v,video/*">
+            <input type="file" id="videoUpload" accept="video/mp4,video/x-m4v,video/webm,video/*">
         </div>
 
         <div class="controls">
@@ -76,13 +79,14 @@
 
         <div id="downloadArea">
             <h3>✅ 處理完成！</h3>
-            <a id="downloadLink" class="download-btn">⬇️ 下載放大音量後的影片 (.mp4)</a>
+            <a id="downloadLink" class="download-btn">⬇️ 下載放大音量後的影片</a>
         </div>
     </div>
 
     <script>
-        const { createFFmpeg, fetchFile } = FFmpeg;
-        const ffmpeg = createFFmpeg({ log: true });
+        const { FFmpeg } = window.FFmpeg;
+        const { fetchFile } = window.FFmpegUtil;
+        let ffmpeg = null;
 
         const videoUpload = document.getElementById('videoUpload');
         const volumeSlider = document.getElementById('volumeSlider');
@@ -96,12 +100,6 @@
             volumeValue.textContent = parseFloat(e.target.value).toFixed(1);
         });
 
-        // 攔截 FFmpeg 的進度日誌顯示在畫面上
-        ffmpeg.setLogger(({ type, message }) => {
-            logArea.innerHTML += `<div>${message}</div>`;
-            logArea.scrollTop = logArea.scrollHeight; // 自動捲動到底部
-        });
-
         startProcessBtn.addEventListener('click', async () => {
             const files = videoUpload.files;
             if (files.length === 0) {
@@ -111,52 +109,65 @@
 
             const file = files[0];
             const volume = volumeSlider.value;
-            const inputFileName = 'input_video' + file.name.substring(file.name.lastIndexOf('.'));
-            const outputFileName = 'output_video.mp4';
+            // 取得副檔名
+            const ext = file.name.substring(file.name.lastIndexOf('.'));
+            const inputFileName = 'input_video' + ext;
+            const outputFileName = 'output_video' + ext;
 
             startProcessBtn.disabled = true;
-            logArea.innerHTML = "<div>⏳ 正在載入 FFmpeg 核心引擎 (初次載入需約幾十秒下載)...</div>";
             downloadArea.style.display = 'none';
+            logArea.innerHTML = '';
 
             try {
-                // 1. 載入 FFmpeg
-                if (!ffmpeg.isLoaded()) {
-                    await ffmpeg.load();
+                // 1. 初始化 FFmpeg (如果尚未初始化)
+                if (!ffmpeg) {
+                    logArea.innerHTML += "<div>⏳ 正在載入 FFmpeg 單執行緒核心 (初次載入需數秒)...</div>";
+                    ffmpeg = new FFmpeg();
+                    
+                    // 綁定日誌輸出
+                    ffmpeg.on('log', ({ message }) => {
+                        logArea.innerHTML += `<div>${message}</div>`;
+                        logArea.scrollTop = logArea.scrollHeight;
+                    });
+
+                    // 載入核心檔案 (指定使用不需要 SharedArrayBuffer 的版本)
+                    await ffmpeg.load({
+                        coreURL: 'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.6/dist/umd/ffmpeg-core.js',
+                        wasmURL: 'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.6/dist/umd/ffmpeg-core.wasm'
+                    });
                 }
 
                 logArea.innerHTML += "<div>📦 正在讀取影片到記憶體中...</div>";
 
                 // 2. 將使用者的檔案寫入 FFmpeg 的虛擬檔案系統
-                ffmpeg.FS('writeFile', inputFileName, await fetchFile(file));
+                await ffmpeg.writeFile(inputFileName, await fetchFile(file));
 
                 logArea.innerHTML += `<div>⚙️ 開始處理影片 (放大音量 ${volume} 倍)...</div>`;
 
                 // 3. 執行 FFmpeg 指令
-                // -c:v copy 代表「直接複製影片畫面，不重新編碼，極快且不掉畫質」
-                // -af "volume=X" 代表「加入音量濾鏡」
-                await ffmpeg.run(
+                await ffmpeg.exec([
                     '-i', inputFileName, 
                     '-c:v', 'copy', 
                     '-af', `volume=${volume}`, 
                     outputFileName
-                );
+                ]);
 
                 logArea.innerHTML += "<div>💾 正在匯出檔案...</div>";
 
                 // 4. 從虛擬檔案系統讀取處理好的檔案
-                const data = ffmpeg.FS('readFile', outputFileName);
+                const data = await ffmpeg.readFile(outputFileName);
 
                 // 5. 建立下載連結
-                const videoBlob = new Blob([data.buffer], { type: 'video/mp4' });
+                const videoBlob = new Blob([data.buffer], { type: file.type || 'video/mp4' });
                 const videoUrl = URL.createObjectURL(videoBlob);
                 
                 downloadLink.href = videoUrl;
                 downloadLink.download = `Boosted_${file.name}`;
                 downloadArea.style.display = 'block';
-                logArea.innerHTML += "<div style='color: #2ecc71;'>🎉 處理完成！請點擊下方按鈕下載。</div>";
+                logArea.innerHTML += "<div style='color: #2ecc71; font-weight: bold;'>🎉 處理完成！請點擊下方按鈕下載。</div>";
 
             } catch (error) {
-                logArea.innerHTML += `<div style='color: #e74c3c;'>❌ 發生錯誤: ${error.message}</div>`;
+                logArea.innerHTML += `<div style='color: #e74c3c; font-weight: bold;'>❌ 發生錯誤: ${error.message}</div>`;
             } finally {
                 startProcessBtn.disabled = false;
             }
