@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>極速影片聲音放大器 (FFmpeg 版)</title>
+    <script src="https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.11.2/dist/ffmpeg.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            text-align: center;
+            background-color: #f0f2f5;
+            color: #333;
+        }
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .controls {
+            margin: 20px 0;
+            padding: 20px;
+            background-color: #e8f4f8;
+            border-radius: 8px;
+        }
+        button {
+            background-color: #9b59b6;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover { background-color: #8e44ad; }
+        button:disabled { background-color: #bdc3c7; cursor: not-allowed; }
+        #logArea {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            border-radius: 6px;
+            text-align: left;
+            font-family: monospace;
+            font-size: 0.9em;
+            height: 150px;
+            overflow-y: auto;
+        }
+        #downloadArea { display: none; margin-top: 20px; }
+        .download-btn { background-color: #2ecc71; padding: 12px 24px; color: white; text-decoration: none; border-radius: 6px; display: inline-block;}
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>⚡ 極速影片聲音放大器</h2>
+        <p>直接處理檔案，不須等待播放，畫質無損直出 MP4。</p>
+
+        <div style="margin: 20px 0; border: 2px dashed #ccc; padding: 20px; border-radius: 8px;">
+            <input type="file" id="videoUpload" accept="video/mp4,video/x-m4v,video/*">
+        </div>
+
+        <div class="controls">
+            <label><strong>放大倍數: <span id="volumeValue" style="color:#c0392b; font-size: 1.2em;">2.0</span> 倍</strong></label><br>
+            <input type="range" id="volumeSlider" min="0.1" max="5" step="0.1" value="2" style="width: 80%; margin: 15px 0;">
+            <br>
+            <button id="startProcessBtn">🚀 開始極速處理</button>
+        </div>
+
+        <div id="logArea">等待操作...</div>
+
+        <div id="downloadArea">
+            <h3>✅ 處理完成！</h3>
+            <a id="downloadLink" class="download-btn">⬇️ 下載放大音量後的影片 (.mp4)</a>
+        </div>
+    </div>
+
+    <script>
+        const { createFFmpeg, fetchFile } = FFmpeg;
+        const ffmpeg = createFFmpeg({ log: true });
+
+        const videoUpload = document.getElementById('videoUpload');
+        const volumeSlider = document.getElementById('volumeSlider');
+        const volumeValue = document.getElementById('volumeValue');
+        const startProcessBtn = document.getElementById('startProcessBtn');
+        const logArea = document.getElementById('logArea');
+        const downloadArea = document.getElementById('downloadArea');
+        const downloadLink = document.getElementById('downloadLink');
+
+        volumeSlider.addEventListener('input', (e) => {
+            volumeValue.textContent = parseFloat(e.target.value).toFixed(1);
+        });
+
+        // 攔截 FFmpeg 的進度日誌顯示在畫面上
+        ffmpeg.setLogger(({ type, message }) => {
+            logArea.innerHTML += `<div>${message}</div>`;
+            logArea.scrollTop = logArea.scrollHeight; // 自動捲動到底部
+        });
+
+        startProcessBtn.addEventListener('click', async () => {
+            const files = videoUpload.files;
+            if (files.length === 0) {
+                alert('請先選擇一個影片檔案！');
+                return;
+            }
+
+            const file = files[0];
+            const volume = volumeSlider.value;
+            const inputFileName = 'input_video' + file.name.substring(file.name.lastIndexOf('.'));
+            const outputFileName = 'output_video.mp4';
+
+            startProcessBtn.disabled = true;
+            logArea.innerHTML = "<div>⏳ 正在載入 FFmpeg 核心引擎 (初次載入需約幾十秒下載)...</div>";
+            downloadArea.style.display = 'none';
+
+            try {
+                // 1. 載入 FFmpeg
+                if (!ffmpeg.isLoaded()) {
+                    await ffmpeg.load();
+                }
+
+                logArea.innerHTML += "<div>📦 正在讀取影片到記憶體中...</div>";
+
+                // 2. 將使用者的檔案寫入 FFmpeg 的虛擬檔案系統
+                ffmpeg.FS('writeFile', inputFileName, await fetchFile(file));
+
+                logArea.innerHTML += `<div>⚙️ 開始處理影片 (放大音量 ${volume} 倍)...</div>`;
+
+                // 3. 執行 FFmpeg 指令
+                // -c:v copy 代表「直接複製影片畫面，不重新編碼，極快且不掉畫質」
+                // -af "volume=X" 代表「加入音量濾鏡」
+                await ffmpeg.run(
+                    '-i', inputFileName, 
+                    '-c:v', 'copy', 
+                    '-af', `volume=${volume}`, 
+                    outputFileName
+                );
+
+                logArea.innerHTML += "<div>💾 正在匯出檔案...</div>";
+
+                // 4. 從虛擬檔案系統讀取處理好的檔案
+                const data = ffmpeg.FS('readFile', outputFileName);
+
+                // 5. 建立下載連結
+                const videoBlob = new Blob([data.buffer], { type: 'video/mp4' });
+                const videoUrl = URL.createObjectURL(videoBlob);
+                
+                downloadLink.href = videoUrl;
+                downloadLink.download = `Boosted_${file.name}`;
+                downloadArea.style.display = 'block';
+                logArea.innerHTML += "<div style='color: #2ecc71;'>🎉 處理完成！請點擊下方按鈕下載。</div>";
+
+            } catch (error) {
+                logArea.innerHTML += `<div style='color: #e74c3c;'>❌ 發生錯誤: ${error.message}</div>`;
+            } finally {
+                startProcessBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
