@@ -3,11 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>極速影片聲音放大器 (FFmpeg v0.12 升級版)</title>
-    
-    <script src="https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.12.10/dist/umd/ffmpeg.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@ffmpeg/util@0.12.1/dist/umd/index.js"></script>
-    
+    <title>極速影片聲音放大器 (穩定版)</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -15,7 +11,7 @@
             margin: 40px auto;
             padding: 20px;
             text-align: center;
-            background-color: #f0f2f5;
+            background-color: #f4f7f6;
             color: #333;
         }
         .container {
@@ -27,11 +23,11 @@
         .controls {
             margin: 20px 0;
             padding: 20px;
-            background-color: #e8f4f8;
+            background-color: #eef2f3;
             border-radius: 8px;
         }
         button {
-            background-color: #9b59b6;
+            background-color: #3498db;
             color: white;
             border: none;
             padding: 12px 24px;
@@ -40,53 +36,54 @@
             cursor: pointer;
             transition: background-color 0.3s;
         }
-        button:hover { background-color: #8e44ad; }
+        button:hover { background-color: #2980b9; }
         button:disabled { background-color: #bdc3c7; cursor: not-allowed; }
         #logArea {
             margin-top: 20px;
-            padding: 10px;
-            background-color: #2c3e50;
-            color: #ecf0f1;
+            padding: 15px;
+            background-color: #1e272e;
+            color: #d2dae2;
             border-radius: 6px;
             text-align: left;
             font-family: monospace;
-            font-size: 0.9em;
-            height: 150px;
+            font-size: 0.95em;
+            height: 200px;
             overflow-y: auto;
+            border: 1px solid #000;
         }
         #downloadArea { display: none; margin-top: 20px; }
         .download-btn { background-color: #2ecc71; padding: 12px 24px; color: white; text-decoration: none; border-radius: 6px; display: inline-block;}
+        .download-btn:hover { background-color: #27ae60; }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h2>⚡ 極速影片聲音放大器 (無安全限制版)</h2>
-        <p>直接處理檔案，不須等待播放，畫質無損直出 MP4。</p>
+        <h2>⚡ 影片聲音放大器 (免安裝直出版)</h2>
+        <p>直接在網頁端處理檔案，畫質無損且處理速度極快。</p>
 
-        <div style="margin: 20px 0; border: 2px dashed #ccc; padding: 20px; border-radius: 8px;">
-            <input type="file" id="videoUpload" accept="video/mp4,video/x-m4v,video/webm,video/*">
+        <div style="margin: 20px 0; border: 2px dashed #bdc3c7; padding: 20px; border-radius: 8px;">
+            <input type="file" id="videoUpload" accept="video/mp4,video/webm,video/x-m4v,video/*">
         </div>
 
         <div class="controls">
-            <label><strong>放大倍數: <span id="volumeValue" style="color:#c0392b; font-size: 1.2em;">2.0</span> 倍</strong></label><br>
+            <label><strong>放大倍數: <span id="volumeValue" style="color:#e74c3c; font-size: 1.2em;">2.0</span> 倍</strong></label><br>
             <input type="range" id="volumeSlider" min="0.1" max="5" step="0.1" value="2" style="width: 80%; margin: 15px 0;">
             <br>
             <button id="startProcessBtn">🚀 開始極速處理</button>
         </div>
 
-        <div id="logArea">等待操作...</div>
+        <div id="logArea">等待選擇檔案與執行...</div>
 
         <div id="downloadArea">
-            <h3>✅ 處理完成！</h3>
+            <h3 style="color: #27ae60;">✅ 處理完成！</h3>
             <a id="downloadLink" class="download-btn">⬇️ 下載放大音量後的影片</a>
         </div>
     </div>
 
-    <script>
-        const { FFmpeg } = window.FFmpeg;
-        const { fetchFile } = window.FFmpegUtil;
-        let ffmpeg = null;
+    <script type="module">
+        import { FFmpeg } from 'https://unpkg.com/@ffmpeg/ffmpeg@0.12.10/dist/esm/index.js';
+        import { fetchFile } from 'https://unpkg.com/@ffmpeg/util@0.12.1/dist/esm/index.js';
 
         const videoUpload = document.getElementById('videoUpload');
         const volumeSlider = document.getElementById('volumeSlider');
@@ -95,6 +92,13 @@
         const logArea = document.getElementById('logArea');
         const downloadArea = document.getElementById('downloadArea');
         const downloadLink = document.getElementById('downloadLink');
+
+        let ffmpeg = null;
+
+        // 全域錯誤捕捉，如果有問題會直接顯示在畫面的黑框裡
+        window.onerror = function(message) {
+            logArea.innerHTML += `<div style='color: #ff4757; font-weight: bold;'>🚨 錯誤: ${message}</div>`;
+        };
 
         volumeSlider.addEventListener('input', (e) => {
             volumeValue.textContent = parseFloat(e.target.value).toFixed(1);
@@ -109,42 +113,42 @@
 
             const file = files[0];
             const volume = volumeSlider.value;
-            // 取得副檔名
+            // 抓取原本的副檔名 (如 .mp4)
             const ext = file.name.substring(file.name.lastIndexOf('.'));
             const inputFileName = 'input_video' + ext;
             const outputFileName = 'output_video' + ext;
 
             startProcessBtn.disabled = true;
             downloadArea.style.display = 'none';
-            logArea.innerHTML = '';
+            logArea.innerHTML = ''; // 清空日誌
 
             try {
-                // 1. 初始化 FFmpeg (如果尚未初始化)
+                // 1. 初始化 FFmpeg 引擎
                 if (!ffmpeg) {
-                    logArea.innerHTML += "<div>⏳ 正在載入 FFmpeg 單執行緒核心 (初次載入需數秒)...</div>";
+                    logArea.innerHTML += "<div>⏳ 正在從伺服器載入轉檔引擎 (初次載入約需幾秒鐘)...</div>";
                     ffmpeg = new FFmpeg();
                     
-                    // 綁定日誌輸出
+                    // 讓轉檔進度顯示在畫面上
                     ffmpeg.on('log', ({ message }) => {
                         logArea.innerHTML += `<div>${message}</div>`;
                         logArea.scrollTop = logArea.scrollHeight;
                     });
 
-                    // 載入核心檔案 (指定使用不需要 SharedArrayBuffer 的版本)
+                    // 指定載入無 SharedArrayBuffer 限制的單執行緒核心檔案
                     await ffmpeg.load({
-                        coreURL: 'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.6/dist/umd/ffmpeg-core.js',
-                        wasmURL: 'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.6/dist/umd/ffmpeg-core.wasm'
+                        coreURL: 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd/ffmpeg-core.js',
+                        wasmURL: 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd/ffmpeg-core.wasm'
                     });
                 }
 
                 logArea.innerHTML += "<div>📦 正在讀取影片到記憶體中...</div>";
 
-                // 2. 將使用者的檔案寫入 FFmpeg 的虛擬檔案系統
+                // 2. 把檔案載入虛擬環境
                 await ffmpeg.writeFile(inputFileName, await fetchFile(file));
 
-                logArea.innerHTML += `<div>⚙️ 開始處理影片 (放大音量 ${volume} 倍)...</div>`;
+                logArea.innerHTML += `<div style="color: #3498db;">⚙️ 開始處理影片 (放大音量 ${volume} 倍)...</div>`;
 
-                // 3. 執行 FFmpeg 指令
+                // 3. 執行指令：複製畫面 (-c:v copy)，並調整聲音 (-af volume=X)
                 await ffmpeg.exec([
                     '-i', inputFileName, 
                     '-c:v', 'copy', 
@@ -152,22 +156,26 @@
                     outputFileName
                 ]);
 
-                logArea.innerHTML += "<div>💾 正在匯出檔案...</div>";
+                logArea.innerHTML += "<div>💾 正在打包輸出檔案...</div>";
 
-                // 4. 從虛擬檔案系統讀取處理好的檔案
+                // 4. 讀取處理完的檔案
                 const data = await ffmpeg.readFile(outputFileName);
 
-                // 5. 建立下載連結
+                // 5. 產生下載連結
                 const videoBlob = new Blob([data.buffer], { type: file.type || 'video/mp4' });
                 const videoUrl = URL.createObjectURL(videoBlob);
                 
                 downloadLink.href = videoUrl;
-                downloadLink.download = `Boosted_${file.name}`;
+                downloadLink.download = `VolumeBoosted_${file.name}`;
                 downloadArea.style.display = 'block';
-                logArea.innerHTML += "<div style='color: #2ecc71; font-weight: bold;'>🎉 處理完成！請點擊下方按鈕下載。</div>";
+                logArea.innerHTML += "<div style='color: #2ecc71; font-weight: bold;'>🎉 處理完成！請點擊下方綠色按鈕下載。</div>";
+
+                // 6. 清理記憶體
+                await ffmpeg.deleteFile(inputFileName);
+                await ffmpeg.deleteFile(outputFileName);
 
             } catch (error) {
-                logArea.innerHTML += `<div style='color: #e74c3c; font-weight: bold;'>❌ 發生錯誤: ${error.message}</div>`;
+                logArea.innerHTML += `<div style='color: #ff4757; font-weight: bold;'>❌ 處理失敗: ${error.message}</div>`;
             } finally {
                 startProcessBtn.disabled = false;
             }
