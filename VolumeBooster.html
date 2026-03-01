@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>極速影片聲音放大器 (穩定版)</title>
+    <title>影片聲音放大器 (GitHub Pages 完美相容版)</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -59,7 +59,7 @@
 <body>
 
     <div class="container">
-        <h2>⚡ 影片聲音放大器 (免安裝直出版)</h2>
+        <h2>⚡ 影片聲音放大器 (GitHub Pages 相容版)</h2>
         <p>直接在網頁端處理檔案，畫質無損且處理速度極快。</p>
 
         <div style="margin: 20px 0; border: 2px dashed #bdc3c7; padding: 20px; border-radius: 8px;">
@@ -83,7 +83,7 @@
 
     <script type="module">
         import { FFmpeg } from 'https://unpkg.com/@ffmpeg/ffmpeg@0.12.10/dist/esm/index.js';
-        import { fetchFile } from 'https://unpkg.com/@ffmpeg/util@0.12.1/dist/esm/index.js';
+        import { fetchFile, toBlobURL } from 'https://unpkg.com/@ffmpeg/util@0.12.1/dist/esm/index.js';
 
         const videoUpload = document.getElementById('videoUpload');
         const volumeSlider = document.getElementById('volumeSlider');
@@ -95,7 +95,6 @@
 
         let ffmpeg = null;
 
-        // 全域錯誤捕捉，如果有問題會直接顯示在畫面的黑框裡
         window.onerror = function(message) {
             logArea.innerHTML += `<div style='color: #ff4757; font-weight: bold;'>🚨 錯誤: ${message}</div>`;
         };
@@ -113,42 +112,40 @@
 
             const file = files[0];
             const volume = volumeSlider.value;
-            // 抓取原本的副檔名 (如 .mp4)
             const ext = file.name.substring(file.name.lastIndexOf('.'));
             const inputFileName = 'input_video' + ext;
             const outputFileName = 'output_video' + ext;
 
             startProcessBtn.disabled = true;
             downloadArea.style.display = 'none';
-            logArea.innerHTML = ''; // 清空日誌
+            logArea.innerHTML = ''; 
 
             try {
-                // 1. 初始化 FFmpeg 引擎
                 if (!ffmpeg) {
-                    logArea.innerHTML += "<div>⏳ 正在從伺服器載入轉檔引擎 (初次載入約需幾秒鐘)...</div>";
+                    logArea.innerHTML += "<div>⏳ 正在將轉檔引擎下載至本地以突破安全限制 (約需數秒)...</div>";
                     ffmpeg = new FFmpeg();
                     
-                    // 讓轉檔進度顯示在畫面上
                     ffmpeg.on('log', ({ message }) => {
                         logArea.innerHTML += `<div>${message}</div>`;
                         logArea.scrollTop = logArea.scrollHeight;
                     });
 
-                    // 指定載入無 SharedArrayBuffer 限制的單執行緒核心檔案
+                    // 定義 CDN 網址
+                    const baseURL = 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd';
+                    const ffmpegURL = 'https://unpkg.com/@ffmpeg/ffmpeg@0.12.10/dist/esm';
+
+                    // 透過 toBlobURL 將跨網域資源轉成本地記憶體網址，完美繞過 Worker 的 CORS 限制
                     await ffmpeg.load({
-                        coreURL: 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd/ffmpeg-core.js',
-                        wasmURL: 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd/ffmpeg-core.wasm'
+                        coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
+                        wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm'),
+                        classWorkerURL: await toBlobURL(`${ffmpegURL}/worker.js`, 'text/javascript')
                     });
                 }
 
                 logArea.innerHTML += "<div>📦 正在讀取影片到記憶體中...</div>";
-
-                // 2. 把檔案載入虛擬環境
                 await ffmpeg.writeFile(inputFileName, await fetchFile(file));
 
                 logArea.innerHTML += `<div style="color: #3498db;">⚙️ 開始處理影片 (放大音量 ${volume} 倍)...</div>`;
-
-                // 3. 執行指令：複製畫面 (-c:v copy)，並調整聲音 (-af volume=X)
                 await ffmpeg.exec([
                     '-i', inputFileName, 
                     '-c:v', 'copy', 
@@ -157,11 +154,8 @@
                 ]);
 
                 logArea.innerHTML += "<div>💾 正在打包輸出檔案...</div>";
-
-                // 4. 讀取處理完的檔案
                 const data = await ffmpeg.readFile(outputFileName);
 
-                // 5. 產生下載連結
                 const videoBlob = new Blob([data.buffer], { type: file.type || 'video/mp4' });
                 const videoUrl = URL.createObjectURL(videoBlob);
                 
@@ -170,7 +164,6 @@
                 downloadArea.style.display = 'block';
                 logArea.innerHTML += "<div style='color: #2ecc71; font-weight: bold;'>🎉 處理完成！請點擊下方綠色按鈕下載。</div>";
 
-                // 6. 清理記憶體
                 await ffmpeg.deleteFile(inputFileName);
                 await ffmpeg.deleteFile(outputFileName);
 
