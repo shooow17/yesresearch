@@ -1,0 +1,168 @@
+import React, { useState } from 'react';
+import { BookOpen, User, ShieldCheck, Zap, Brain, CheckCircle2, AlertTriangle, Lightbulb } from 'lucide-react';
+
+const App = () => {
+  const [activeTab, setActiveTab] = useState('comparison');
+  const [selectedScenario, setSelectedScenario] = useState(null);
+
+  const comparisonData = [
+    {
+      title: "專業度與精準度",
+      icon: <Brain className="w-6 h-6 text-blue-500" />,
+      schoolBot: {
+        text: "高。背景內容通常已加入教育部領綱、素養指標或校內考古題，生成的題目較能符合教學目標。",
+        advantage: true
+      },
+      chatGPT: {
+        text: "中。需要極強的 Prompt 指令技巧。若指令不精確，容易產出傳統知識型題目而非素養題。",
+        advantage: false
+      }
+    },
+    {
+      title: "資料安全性",
+      icon: <ShieldCheck className="w-6 h-6 text-green-500" />,
+      schoolBot: {
+        text: "優。校園版本通常有較嚴格的隱私協定，教材與學生資料較不容易被外洩或成為訓練素材。",
+        advantage: true
+      },
+      chatGPT: {
+        text: "疑慮。免費版或個人版資料可能被回傳訓練，若輸入未公開的試卷內容可能存在風險。",
+        advantage: false
+      }
+    },
+    {
+      title: "靈活性與創意",
+      icon: <Zap className="w-6 h-6 text-yellow-500" />,
+      schoolBot: {
+        text: "穩定但受限。受限於預設的知識庫，雖然精確，但跨領域的創意發想可能較為固定。",
+        advantage: false
+      },
+      chatGPT: {
+        text: "極高。擁有全球最廣大的數據庫，擅長編寫生活情境故事、跨學科的趣味命題(但不一定符合課本內容)。",
+        advantage: true
+      }
+    }
+  ];
+
+  const scenarios = [
+    {
+      id: 1,
+      title: "學期評量",
+      advice: "建議使用【校方推薦機器人】。正式考試需要高度對齊課程標準與領綱，且涉及試題保密性，專用工具的準確度與安全性是首選。",
+      type: "school"
+    },
+    {
+      id: 2,
+      title: "課堂趣味小測驗",
+      advice: "建議使用【個人 ChatGPT】。針對當下時事（如最近流行的動畫或節慶）快速生成趣味情境，ChatGPT 的反應速度與創意更能吸引學生興趣。",
+      type: "chatgpt"
+    },
+    {
+      id: 3,
+      title: "跨領域專題評量",
+      advice: "建議【兩者結合】。先用 ChatGPT 發想具創意的跨領域生活情境，再將草稿放入 NotebookLM 進行專業指標的修訂與校準。",
+      type: "both"
+    }
+  ];
+
+  return (
+    <div className="min-h-screen bg-slate-50 p-4 md:p-8 font-sans">
+      <div className="max-w-4xl mx-auto">
+        {/* Header */}
+        <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 mb-6">
+          <h1 className="text-3xl font-bold text-slate-800 mb-2">國小素養命題：AI 工具雙軌分析</h1>
+          <p className="text-slate-600">分析「專業定制化機器人」與「通用型 ChatGPT」在教育現場的應用差異。</p>
+        </div>
+
+        {/* Navigation */}
+        <div className="flex space-x-2 mb-6">
+          <button 
+            onClick={() => setActiveTab('comparison')}
+            className={`px-4 py-2 rounded-lg font-medium transition-all ${activeTab === 'comparison' ? 'bg-blue-600 text-white shadow-md' : 'bg-white text-slate-600 hover:bg-slate-100'}`}
+          >
+            深度對比
+          </button>
+          <button 
+            onClick={() => setActiveTab('scenarios')}
+            className={`px-4 py-2 rounded-lg font-medium transition-all ${activeTab === 'scenarios' ? 'bg-blue-600 text-white shadow-md' : 'bg-white text-slate-600 hover:bg-slate-100'}`}
+          >
+            情境建議
+          </button>
+        </div>
+
+        {activeTab === 'comparison' ? (
+          <div className="space-y-4">
+            {comparisonData.map((item, index) => (
+              <div key={index} className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                <div className="bg-slate-50 p-4 border-b border-slate-200 flex items-center space-x-3">
+                  {item.icon}
+                  <h3 className="font-bold text-slate-800">{item.title}</h3>
+                </div>
+                <div className="grid md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-slate-200">
+                  <div className="p-4">
+                    <div className="flex items-center space-x-2 mb-2">
+                      <div className="p-1 bg-blue-100 rounded text-blue-600"><BookOpen size={16} /></div>
+                      <span className="font-semibold text-blue-800">1. 校方推薦機器人</span>
+                    </div>
+                    <p className="text-slate-700 text-sm leading-relaxed">{item.schoolBot.text}</p>
+                    {item.schoolBot.advantage && (
+                      <span className="inline-block mt-3 text-xs bg-green-100 text-green-700 px-2 py-1 rounded">推薦亮點</span>
+                    )}
+                  </div>
+                  <div className="p-4">
+                    <div className="flex items-center space-x-2 mb-2">
+                      <div className="p-1 bg-orange-100 rounded text-orange-600"><User size={16} /></div>
+                      <span className="font-semibold text-orange-800">2. 個人 ChatGPT</span>
+                    </div>
+                    <p className="text-slate-700 text-sm leading-relaxed">{item.chatGPT.text}</p>
+                    {item.chatGPT.advantage && (
+                      <span className="inline-block mt-3 text-xs bg-green-100 text-green-700 px-2 py-1 rounded">推薦亮點</span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="grid gap-4">
+            {scenarios.map((s) => (
+              <div 
+                key={s.id} 
+                className="bg-white p-5 rounded-xl shadow-sm border border-slate-200 hover:border-blue-300 transition-colors cursor-pointer"
+                onClick={() => setSelectedScenario(s.id)}
+              >
+                <div className="flex justify-between items-start mb-3">
+                  <h3 className="text-lg font-bold text-slate-800 flex items-center">
+                    <Lightbulb className="mr-2 text-yellow-500" size={20} />
+                    情境：{s.title}
+                  </h3>
+                  <CheckCircle2 className={selectedScenario === s.id ? "text-blue-500" : "text-slate-300"} />
+                </div>
+                <p className="text-slate-600 text-sm">{s.advice}</p>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Conclusion Card */}
+        <div className="mt-8 bg-blue-900 text-white rounded-2xl p-6 shadow-lg">
+          <div className="flex items-start space-x-4">
+            <div className="p-3 bg-blue-800 rounded-full">
+              <AlertTriangle className="text-yellow-400" />
+            </div>
+            <div>
+              <h3 className="text-xl font-bold mb-2">給老師的關鍵建議</h3>
+              <ul className="space-y-2 text-blue-100 text-sm">
+                <li>• <b>核心在「審題」：</b> 無論哪種工具，AI 生成的素養題常有語意模糊或邏輯斷層，教師的專業審稿不可或缺。</li>
+                <li>• <b>善用 NotebookLM 的來源功能：</b> 如果選用校方機器人，應要求 AI 標註該題目對應到教材的哪一頁，確保信度。</li>
+                <li>• <b>隱私第一：</b> 避免在 ChatGPT 輸入學生的個人姓名或特定隱私數據。</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default App;
