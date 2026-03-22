@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>桃園市教師甄選試教版本抽籤</title>
+  
+  <!-- 引入 Tailwind CSS 引擎 -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- 引入 React 核心函式庫 -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  
+  <!-- 引入較新版的 Babel 以在瀏覽器中編譯現代 JSX/JS 語法 -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    body { background-color: #0f172a; margin: 0; padding: 0; }
+    .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 10px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #6b7280; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <!-- 主程式邏輯 -->
+  <script type="text/babel">
+    const { useState, useEffect, useRef } = React;
+
+    // === 資料設定 ===
+    const SUBJECTS = [
+      { id: 0, name: '國語', versions: ['康軒', '南一', '翰林'] },
+      { id: 1, name: '數學', versions: ['康軒', '翰林', '南一'] },
+      { id: 2, name: '英語', versions: ['康軒 (Wonder Word)', '翰林 (Here We Go)', '何嘉仁 (Super Fun)'] },
+      { id: 3, name: '藝術', versions: ['康軒', '翰林'] },
+      { id: 4, name: '健康與體育', versions: ['康軒', '南一', '翰林'] },
+      { id: 5, name: '自然科學', versions: ['康軒', '翰林', '南一'] },
+      { id: 6, name: '閩南語', versions: ['康軒', '真平'] },
+      { id: 7, name: '客語', versions: ['康軒', '真平'] },
+      { id: 8, name: '羅浮國小', versions: ['泰雅文化與信仰 上學期', '泰雅文化與信仰 下學期', '部落文學與歷史 上學期', '部落文學與歷史 下學期', '傳統生活與技能 上學期', '傳統生活與技能 下學期', '藝術與樂舞 上學期', '藝術與樂舞 下學期'] },
+      { id: 9, name: '光華國小', versions: ['泰雅生活 A年段', '泰雅生活 B年段', '原來部落 A年段', '原來部落 B年段', '歲時祭儀 A年段', '歲時祭儀 B年段', '歷史傳說 A年段', '歷史傳說 B年段', '泰雅之美 A年段', '泰雅之美 B年段', '山林生態 A年段', '山林生態 B年段'] },
+    ];
+
+    // 版本對應的顏色與短名稱 (用於彩球顯示)
+    const getVersionStyle = (fullName) => {
+      if (fullName.includes('康軒')) return { color: '#ef4444', short: '康軒' };
+      if (fullName.includes('南一')) return { color: '#3b82f6', short: '南一' };
+      if (fullName.includes('翰林')) return { color: '#10b981', short: '翰林' };
+      if (fullName.includes('何嘉仁')) return { color: '#a855f7', short: '何嘉仁' };
+      if (fullName.includes('真平')) return { color: '#f59e0b', short: '真平' };
+
+      if (fullName.includes('泰雅文化與信仰')) return { color: '#8b5cf6', short: fullName.includes('上') ? '文化(上)' : '文化(下)' };
+      if (fullName.includes('部落文學與歷史')) return { color: '#ec4899', short: fullName.includes('上') ? '文學(上)' : '文學(下)' };
+      if (fullName.includes('傳統生活與技能')) return { color: '#14b8a6', short: fullName.includes('上') ? '技能(上)' : '技能(下)' };
+      if (fullName.includes('藝術與樂舞')) return { color: '#f97316', short: fullName.includes('上') ? '藝術(上)' : '藝術(下)' };
+
+      if (fullName.includes('泰雅生活')) return { color: '#6366f1', short: fullName.includes('A') ? '生活(A)' : '生活(B)' };
+      if (fullName.includes('原來部落')) return { color: '#10b981', short: fullName.includes('A') ? '部落(A)' : '部落(B)' };
+      if (fullName.includes('歲時祭儀')) return { color: '#f59e0b', short: fullName.includes('A') ? '祭儀(A)' : '祭儀(B)' };
+      if (fullName.includes('歷史傳說')) return { color: '#ef4444', short: fullName.includes('A') ? '歷史(A)' : '歷史(B)' };
+      if (fullName.includes('泰雅之美')) return { color: '#8b5cf6', short: fullName.includes('A') ? '之美(A)' : '之美(B)' };
+      if (fullName.includes('山林生態')) return { color: '#06b6d4', short: fullName.includes('A') ? '生態(A)' : '生態(B)' };
+
+      return { color: '#6b7280', short: fullName.substring(0, 4) }; 
+    };
+
+    // === 樂透球物理引擎組件 ===
+    const LottoMachine = ({ currentOptions, isDrawing, drawnResult }) => {
+      const canvasRef = useRef(null);
+      const ballsRef = useRef([]);
+      const animationRef = useRef(null);
+
+      // 修正：將可選串連運算子 (?.) 替換為相容性更高的 && 寫法
+      const versionShortNames = (currentOptions && currentOptions.length > 0)
+        ? currentOptions.map(opt => getVersionStyle(opt).short).join('、') 
+        : '抽籤完畢';
+
+      useEffect(() => {
+        if (!currentOptions) return;
+        
+        const balls = [];
+        let radius = 45; 
+        let ballsPerOption = 1; 
+        
+        if (currentOptions.length > 3 && currentOptions.length <= 8) {
+          radius = 36;
+        } else if (currentOptions.length > 8) {
+          radius = 30; 
+        }
+
+        currentOptions.forEach(option => {
+          const style = getVersionStyle(option);
+          for (let i = 0; i < ballsPerOption; i++) {
+            balls.push({
+              x: 240 + Math.random() * 100 - 50,
+              y: 260 + Math.random() * 100 - 50,
+              vx: (Math.random() - 0.5) * 6,
+              vy: (Math.random() - 0.5) * 6,
+              radius: radius,
+              color: style.color,
+              text: style.short,
+              fullName: option
+            });
+          }
+        });
+        ballsRef.current = balls;
+      }, [currentOptions]);
+
+      useEffect(() => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        const width = canvas.width;
+        const height = canvas.height;
+        const centerX = width / 2;
+        const centerY = height / 2 - 20; 
+        const containerRadius = 210; 
+
+        const render = () => {
+          ctx.clearRect(0, 0, width, height);
+
+          ctx.beginPath();
+          ctx.arc(centerX, centerY, containerRadius, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+          ctx.fill();
+          ctx.lineWidth = 6;
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+          ctx.stroke();
+
+          ctx.beginPath();
+          ctx.arc(centerX - 60, centerY - 70, 60, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.15)';
+          ctx.fill();
+
+          const balls = ballsRef.current;
+          balls.forEach(ball => {
+            if (isDrawing) {
+              ball.vx += (Math.random() - 0.5) * 3;
+              ball.vy += (Math.random() - 0.5) * 3 - 0.5;
+              const speed = Math.sqrt(ball.vx * ball.vx + ball.vy * ball.vy);
+              if (speed > 22) {
+                ball.vx = (ball.vx / speed) * 22;
+                ball.vy = (ball.vy / speed) * 22;
+              }
+            } else {
+              ball.vy += 0.8; 
+              ball.vx *= 0.98;
+              ball.vy *= 0.98;
+            }
+
+            ball.x += ball.vx;
+            ball.y += ball.vy;
+
+            const dx = ball.x - centerX;
+            const dy = ball.y - centerY;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+
+            if (dist + ball.radius > containerRadius) {
+              const overlap = dist + ball.radius - containerRadius;
+              const nx = dx / dist;
+              const ny = dy / dist;
+              
+              ball.x -= nx * overlap;
+              ball.y -= ny * overlap;
+
+              const dot = ball.vx * nx + ball.vy * ny;
+              const bounce = isDrawing ? 1.05 : 0.6; 
+              ball.vx = ball.vx - (1 + bounce) * dot * nx;
+              ball.vy = ball.vy - (1 + bounce) * dot * ny;
+            }
+
+            ctx.beginPath();
+            ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+            const gradient = ctx.createRadialGradient(
+              ball.x - ball.radius * 0.3, ball.y - ball.radius * 0.3, ball.radius * 0.1,
+              ball.x, ball.y, ball.radius
+            );
+            gradient.addColorStop(0, '#ffffff');
+            gradient.addColorStop(0.3, ball.color);
+            gradient.addColorStop(1, '#000000');
+            
+            ctx.fillStyle = gradient;
+            ctx.fill();
+            ctx.lineWidth = 1;
+            ctx.strokeStyle = 'rgba(0,0,0,0.3)';
+            ctx.stroke();
+
+            const fontSize = Math.max(14, Math.floor(ball.radius * 0.45));
+            ctx.fillStyle = '#ffffff';
+            ctx.font = `bold ${fontSize}px "Microsoft JhengHei", sans-serif`; 
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            
+            ctx.shadowColor = "rgba(0, 0, 0, 0.8)";
+            ctx.shadowBlur = 4;
+            ctx.shadowOffsetX = 1;
+            ctx.shadowOffsetY = 1;
+            ctx.fillText(ball.text, ball.x, ball.y);
+            ctx.shadowColor = "transparent";
+          });
+
+          animationRef.current = requestAnimationFrame(render);
+        };
+
+        animationRef.current = requestAnimationFrame(render);
+
+        return () => {
+          cancelAnimationFrame(animationRef.current);
+        };
+      }, [isDrawing]);
+
+      return (
+        <div className="relative flex justify-center items-center w-full h-[500px] lg:h-[650px] transform scale-[0.7] sm:scale-[0.85] lg:scale-100 origin-top lg:origin-center">
+          <div className="absolute w-[500px] h-[640px] bg-gradient-to-b from-gray-700 to-gray-900 rounded-t-full rounded-b-[40px] shadow-[0_20px_50px_rgba(0,0,0,0.8)] border-8 border-gray-800 flex flex-col items-center pt-8">
+            <canvas ref={canvasRef} width="480" height="480" className="z-10" />
+            <div className="w-[480px] h-[140px] mt-0 bg-gradient-to-r from-yellow-600 via-yellow-400 to-yellow-600 rounded-2xl border-[6px] border-yellow-700 shadow-inner flex flex-col justify-center items-center relative overflow-hidden">
+               <div className="w-[120px] h-[60px] bg-gray-900 rounded-full absolute -top-6 shadow-inner"></div>
+               <div className="z-20 flex flex-col items-center mt-3 w-full px-6">
+                 <span className="text-white text-xl lg:text-2xl font-black mb-1 bg-gradient-to-r from-red-600 to-red-800 px-6 py-1 rounded-full border-2 border-red-300 shadow-[0_0_15px_rgba(220,38,38,0.8)] tracking-widest animate-pulse">
+                   等待抽籤版本
+                 </span>
+                 <h2 className={`font-black text-red-900 leading-tight text-center ${versionShortNames.length > 25 ? 'text-sm lg:text-[17px] tracking-normal' : 'text-2xl lg:text-3xl tracking-widest'}`} style={{ textShadow: '1px 1px 0 #fff' }}>
+                   {versionShortNames}
+                 </h2>
+               </div>
+            </div>
+          </div>
+
+          {drawnResult && !isDrawing && (
+            <div className="absolute z-50 animate-bounce">
+              <div 
+                className="w-56 h-56 rounded-full flex flex-col justify-center items-center shadow-[0_0_50px_rgba(255,255,0,0.9)] border-[6px] border-white transform transition-transform"
+                style={{ background: `radial-gradient(circle at 30% 30%, #fff, ${getVersionStyle(drawnResult).color} 60%, #000)` }}
+              >
+                <span className="text-white text-4xl lg:text-5xl font-black drop-shadow-lg text-center leading-tight">
+                  {getVersionStyle(drawnResult).short}
+                </span>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    };
+
+    // === 主應用程式 ===
+    function App() {
+      const [currentStep, setCurrentStep] = useState(0); 
+      const [results, setResults] = useState(Array(SUBJECTS.length).fill(null));
+      const [isDrawing, setIsDrawing] = useState(false);
+      const [justDrawn, setJustDrawn] = useState(null); 
+      
+      // 新增：整體流程處理鎖定 (確保循序運作不被干擾)
+      const [isProcessing, setIsProcessing] = useState(false);
+
+      // 新增：結束與檢查狀態
+      const [isChecking, setIsChecking] = useState(false);
+      const [checkPassed, setCheckPassed] = useState(false);
+
+      const isFinished = currentStep >= SUBJECTS.length;
+      const currentSubject = !isFinished ? SUBJECTS[currentStep] : null;
+
+      const handleDraw = () => {
+        // 如果正在處理任何階段(攪拌中、展示中、切換中) 或 已經抽完，完全鎖定不可點擊
+        if (isProcessing || isFinished) return;
+
+        setIsProcessing(true); // 啟動全流程鎖定
+        setIsDrawing(true);
+        setJustDrawn(null);
+
+        // 步驟一：機器攪拌 2.5 秒
+        setTimeout(() => {
+          const versions = currentSubject.versions;
+          const winner = versions[Math.floor(Math.random() * versions.length)];
+          
+          setJustDrawn(winner);
+          setIsDrawing(false); // 停止攪拌，秀出大球
+
+          const newResults = [...results];
+          newResults[currentStep] = winner;
+          setResults(newResults);
+
+          // 步驟二：展示結果 2.5 秒後，自動切換至下一題
+          setTimeout(() => {
+            const nextStep = currentStep + 1;
+            setCurrentStep(nextStep);
+            setJustDrawn(null); 
+            
+            if (nextStep >= SUBJECTS.length) {
+              // 全數抽完，進入最終檢查
+              setIsChecking(true);
+              setTimeout(() => {
+                setIsChecking(false);
+                setCheckPassed(true);
+                setIsProcessing(false); // 解除鎖定
+              }, 1500);
+            } else {
+              // 準備好下一題，解除鎖定，允許下次點擊
+              setIsProcessing(false); 
+            }
+          }, 2500);
+
+        }, 2500);
+      };
+
+      const resetAll = () => {
+        setCurrentStep(0);
+        setResults(Array(SUBJECTS.length).fill(null));
+        setJustDrawn(null);
+        setIsDrawing(false);
+        setIsProcessing(false);
+        setIsChecking(false);
+        setCheckPassed(false);
+      };
+
+      // 強化的 PDF 列印功能 (獨立開窗印出正式文件)
+      const handlePrint = () => {
+        const printWindow = window.open('', '_blank');
+        if (!printWindow) {
+          alert('請允許瀏覽器開啟彈出視窗以進行列印！');
+          return;
+        }
+
+        const now = new Date();
+        const timeString = `${now.getFullYear()}/${(now.getMonth() + 1).toString().padStart(2, '0')}/${now.getDate().toString().padStart(2, '0')} ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
+
+        let tableHtml = `
+          <!DOCTYPE html>
+          <html lang="zh-TW">
+          <head>
+            <meta charset="UTF-8">
+            <title>桃園市教師甄選試教版本 - 抽籤結果</title>
+            <style>
+              body { font-family: 'Microsoft JhengHei', 'PingFang TC', sans-serif; padding: 40px; color: #000; }
+              h1 { text-align: center; font-size: 36px; letter-spacing: 4px; margin-bottom: 10px; }
+              h2 { text-align: center; font-size: 26px; margin-bottom: 30px; color: #333; }
+              .time { text-align: right; font-size: 16px; margin-bottom: 15px; color: #555; }
+              table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 20px; }
+              th, td { border: 2px solid #000; padding: 14px; text-align: center; }
+              th { background-color: #e5e7eb; font-weight: bold; }
+              td.subject { text-align: left; padding-left: 30px; font-weight: bold; font-size: 22px; }
+              td.version { font-weight: bold; font-size: 24px; color: #dc2626; }
+              .print-btn { display: block; width: 280px; margin: 40px auto; padding: 18px; font-size: 20px; font-weight: bold; background: #2563eb; color: white; text-align: center; border: none; border-radius: 12px; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+              .print-btn:hover { background: #1d4ed8; }
+              @media print { 
+                .print-btn { display: none !important; } 
+                body { padding: 0; }
+              }
+            </style>
+          </head>
+          <body>
+            <h1>桃園市教師甄選試教版本</h1>
+            <h2>公開抽籤結果紀錄表</h2>
+            <div class="time">產生時間：${timeString}</div>
+            <table>
+              <thead>
+                <tr>
+                  <th style="width: 12%;">序號</th>
+                  <th style="width: 40%;">考試科目</th>
+                  <th style="width: 48%;">抽中版本</th>
+                </tr>
+              </thead>
+              <tbody>
+        `;
+
+        SUBJECTS.forEach((subject, index) => {
+          const result = results[index] || '未抽籤';
+          tableHtml += `
+            <tr>
+              <td>${index + 1}</td>
+              <td class="subject">${subject.name}</td>
+              <td class="version">${result}</td>
+            </tr>
+          `;
+        });
+
+        tableHtml += `
+              </tbody>
+            </table>
+            <button class="print-btn" onclick="window.print()">點此列印 / 儲存 PDF</button>
+            <script>
+              setTimeout(() => { window.print(); }, 800);
+            <\/script>
+          </body>
+          </html>
+        `;
+
+        printWindow.document.open();
+        printWindow.document.write(tableHtml);
+        printWindow.document.close();
+      };
+
+      // 決定按鈕顯示文字
+      const getButtonText = () => {
+        if (isDrawing) return "🎲 機器攪拌中...";
+        if (isProcessing && !isDrawing) return "⏳ 準備下一項...";
+        return "🎯 點擊開始抽籤";
+      };
+
+      return (
+        <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-black text-white font-sans overflow-x-hidden p-4 sm:p-6 lg:p-10 flex flex-col xl:flex-row gap-6 lg:gap-12 items-center xl:items-stretch justify-center">
+          
+          {/* 左側：樂透機與按鈕區域 */}
+          <div className="w-full xl:w-6/12 flex flex-col items-center justify-center relative py-6">
+            
+            <div className="mb-4 xl:mb-6 text-center h-28 lg:h-32">
+              <h1 className="text-3xl md:text-5xl lg:text-[54px] font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-yellow-600 mb-4 drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)] leading-tight">
+                桃園市教師甄選<br className="hidden md:block xl:hidden" />試教版本抽籤
+              </h1>
+              {currentSubject && !isFinished && (
+                <div className="inline-block px-8 py-3 bg-blue-600 rounded-full border-4 border-blue-400 shadow-[0_0_20px_rgba(59,130,246,0.6)]">
+                  <span className="text-xl lg:text-2xl font-bold">現在抽籤科目：{currentSubject.name}</span>
+                </div>
+              )}
+              {isFinished && isChecking && (
+                <div className="inline-block px-8 py-3 bg-yellow-600 rounded-full border-4 border-yellow-400 shadow-[0_0_20px_rgba(202,138,4,0.6)] animate-pulse">
+                  <span className="text-xl lg:text-2xl font-bold text-white">🔍 系統檢查漏抽情形...</span>
+                </div>
+              )}
+              {isFinished && checkPassed && (
+                <div className="inline-block px-8 py-3 bg-green-600 rounded-full border-4 border-green-400 shadow-[0_0_20px_rgba(16,185,129,0.8)]">
+                  <span className="text-xl lg:text-2xl font-bold">✅ 檢查完畢，全數無漏抽！</span>
+                </div>
+              )}
+            </div>
+
+            <LottoMachine 
+              currentOptions={currentSubject ? currentSubject.versions : []} 
+              isDrawing={isDrawing}
+              drawnResult={justDrawn}
+            />
+
+            <div className="mt-[-10px] lg:mt-6 text-center z-10 relative">
+              {!isFinished ? (
+                 <button 
+                    onClick={handleDraw}
+                    disabled={isProcessing}
+                    className={`px-10 lg:px-12 py-4 lg:py-5 rounded-full font-black text-xl lg:text-3xl shadow-[0_0_30px_rgba(59,130,246,0.6)] transform transition-all ${
+                      isProcessing 
+                      ? 'bg-gray-600 text-gray-400 cursor-not-allowed scale-95 border-4 border-gray-500' 
+                      : 'bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white border-4 border-blue-300 hover:scale-105 active:scale-95'
+                    }`}
+                  >
+                    {getButtonText()}
+                 </button>
+              ) : checkPassed ? (
+                 <div className="flex flex-col sm:flex-row gap-4 justify-center mt-2">
+                    <button 
+                      onClick={handlePrint}
+                      className="px-8 lg:px-10 py-4 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-full font-black text-xl lg:text-2xl shadow-[0_0_30px_rgba(16,185,129,0.6)] border-4 border-teal-300 transform hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2"
+                    >
+                      <span>🖨️</span> 儲存為 PDF
+                    </button>
+                    <button 
+                      onClick={resetAll}
+                      className="px-8 lg:px-10 py-4 bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-500 hover:to-pink-500 text-white rounded-full font-black text-xl lg:text-2xl shadow-[0_0_30px_rgba(225,29,72,0.6)] border-4 border-pink-300 transform hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2"
+                    >
+                      <span>🔄</span> 重新開始
+                    </button>
+                 </div>
+              ) : (
+                <div className="h-16"></div>
+              )}
+            </div>
+          </div>
+
+          {/* 右側：結果看板 */}
+          <div className="w-full xl:w-5/12 max-w-2xl h-auto flex flex-col bg-gray-900/80 backdrop-blur-md border border-gray-700 rounded-3xl p-5 lg:p-6 shadow-2xl relative my-6 xl:my-10">
+            
+            <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-yellow-400 via-yellow-200 to-yellow-400"></div>
+            
+            <h2 className="text-2xl lg:text-3xl font-bold text-center mb-4 lg:mb-6 text-yellow-400 flex items-center justify-center gap-3">
+              <span>📋</span> 版本抽籤結果
+            </h2>
+
+            <div className="flex flex-col w-full gap-2 lg:gap-3">
+              {SUBJECTS.map((subject, index) => {
+                const isCurrent = currentStep === index;
+                const isDone = results[index] !== null;
+                const isWaiting = currentStep < index;
+
+                return (
+                  <div 
+                    key={subject.id} 
+                    className={`
+                      flex items-center justify-between p-3 lg:p-4 rounded-xl transition-all duration-500 w-full
+                      ${isDone ? 'bg-gradient-to-r from-green-900/50 to-emerald-800/50 border border-green-500/50 shadow-[0_0_10px_rgba(16,185,129,0.1)]' : ''}
+                      ${isCurrent ? 'bg-blue-900/60 border-2 border-blue-400 shadow-[0_0_15px_rgba(59,130,246,0.3)] transform scale-[1.02]' : ''}
+                      ${isWaiting ? 'bg-gray-800/50 border border-gray-700 opacity-60' : ''}
+                    `}
+                  >
+                    <div className="flex items-center gap-3 lg:gap-4 w-[40%]">
+                      <div className={`
+                        w-8 h-8 lg:w-10 lg:h-10 shrink-0 rounded-full flex items-center justify-center font-bold text-base lg:text-xl
+                        ${isDone ? 'bg-green-500 text-white shadow-[0_0_8px_rgba(16,185,129,0.8)]' : isCurrent ? 'bg-blue-500 text-white animate-pulse shadow-[0_0_8px_rgba(59,130,246,0.8)]' : 'bg-gray-600 text-gray-300'}
+                      `}>
+                        {index + 1}
+                      </div>
+                      <span className={`text-lg lg:text-xl font-bold truncate ${isCurrent ? 'text-blue-300' : 'text-gray-100'}`}>
+                        {subject.name}
+                      </span>
+                    </div>
+                    
+                    <div className="flex-1 text-right ml-2 flex justify-end">
+                      {isDone ? (
+                        <span className="inline-block px-3 py-1.5 lg:px-4 lg:py-2 rounded-lg bg-gray-950/60 text-yellow-300 font-extrabold text-lg lg:text-2xl border border-yellow-500/40 shadow-inner max-w-full break-words text-left leading-snug">
+                          {results[index]}
+                        </span>
+                      ) : isCurrent ? (
+                        <span className="text-blue-400 font-bold text-base lg:text-lg animate-pulse">
+                          {isProcessing ? (isDrawing ? '開獎中...' : '處理中...') : '等待抽籤'}
+                        </span>
+                      ) : (
+                        <span className="text-gray-500 text-base lg:text-lg">尚未開始</span>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
