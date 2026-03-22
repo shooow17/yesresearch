@@ -416,12 +416,12 @@
               )}
               {isFinished && isChecking && (
                 <div className="inline-block px-8 py-3 bg-yellow-600 rounded-full border-4 border-yellow-400 shadow-[0_0_20px_rgba(202,138,4,0.6)] animate-pulse">
-                  <span className="text-xl lg:text-2xl font-bold text-white">🔍 系統檢查漏抽情形...</span>
+                  <span className="text-xl lg:text-2xl font-bold text-white">🔍 系統檢查抽籤情形...</span>
                 </div>
               )}
               {isFinished && checkPassed && (
                 <div className="inline-block px-8 py-3 bg-green-600 rounded-full border-4 border-green-400 shadow-[0_0_20px_rgba(16,185,129,0.8)]">
-                  <span className="text-xl lg:text-2xl font-bold">✅ 檢查完畢，全數無漏抽！</span>
+                  <span className="text-xl lg:text-2xl font-bold">✅ 檢查完畢，全數抽籤完成且無遺漏！</span>
                 </div>
               )}
             </div>
@@ -510,7 +510,7 @@
                         </span>
                       ) : isCurrent ? (
                         <span className="text-blue-400 font-bold text-base lg:text-lg animate-pulse">
-                          {isProcessing ? (isDrawing ? '開獎中...' : '處理中...') : '等待抽籤'}
+                          {isProcessing ? (isDrawing ? '搖籤中...' : '處理中...') : '等待抽籤'}
                         </span>
                       ) : (
                         <span className="text-gray-500 text-base lg:text-lg">尚未開始</span>
