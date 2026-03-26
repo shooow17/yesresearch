@@ -44,8 +44,8 @@
       { id: 5, name: '自然科學', versions: ['康軒', '翰林', '南一'] },
       { id: 6, name: '閩南語', versions: ['康軒', '真平'] },
       { id: 7, name: '客語', versions: ['康軒', '真平'] },
-      { id: 8, name: '羅浮國小', versions: ['泰雅文化與信仰 上學期', '泰雅文化與信仰 下學期', '部落文學與歷史 上學期', '部落文學與歷史 下學期', '傳統生活與技能 上學期', '傳統生活與技能 下學期', '藝術與樂舞 上學期', '藝術與樂舞 下學期'] },
-      { id: 9, name: '光華國小', versions: ['泰雅生活 A年段', '泰雅生活 B年段', '原來部落 A年段', '原來部落 B年段', '歲時祭儀 A年段', '歲時祭儀 B年段', '歷史傳說 A年段', '歷史傳說 B年段', '泰雅之美 A年段', '泰雅之美 B年段', '山林生態 A年段', '山林生態 B年段'] },
+      { id: 8, name: '羅浮拉號原住民族實驗', versions: ['泰雅文化與信仰 上學期', '泰雅文化與信仰 下學期', '部落文學與歷史 上學期', '部落文學與歷史 下學期', '傳統生活與技能 上學期', '傳統生活與技能 下學期', '藝術與樂舞 上學期', '藝術與樂舞 下學期'] },
+      { id: 9, name: '光華哈嘎灣原住民族實驗', versions: ['泰雅生活 A年段', '泰雅生活 B年段', '原來部落 A年段', '原來部落 B年段', '歲時祭儀 A年段', '歲時祭儀 B年段', '歷史傳說 A年段', '歷史傳說 B年段', '泰雅之美 A年段', '泰雅之美 B年段', '山林生態 A年段', '山林生態 B年段'] },
     ];
 
     // 版本對應的顏色與短名稱
@@ -236,9 +236,9 @@
           });
 
           animationRef.current = requestAnimationFrame(render);
-        }; // <-- 補回這個遺失的括號
+        }; 
 
-        animationRef.current = requestAnimationFrame(render); // 啟動初始動畫
+        animationRef.current = requestAnimationFrame(render); 
 
         return () => {
           cancelAnimationFrame(animationRef.current);
@@ -372,7 +372,7 @@
         setCheckPassed(false);
       };
 
-      // PDF 匯出
+      // PDF 匯出 - 還原為原本的列表格式，並新增教育局局長簽名
       const handlePrint = () => {
         const printWindow = window.open('', '_blank');
         if (!printWindow) {
@@ -399,6 +399,7 @@
               th { background-color: #e5e7eb; font-weight: bold; }
               td.subject { text-align: left; padding-left: 30px; font-weight: bold; font-size: 22px; }
               td.version { font-weight: bold; font-size: 24px; color: #dc2626; }
+              .signature { text-align: right; font-size: 22px; margin-top: 40px; margin-right: 20px; font-weight: bold; }
               .print-btn { display: block; width: 280px; margin: 40px auto; padding: 18px; font-size: 20px; font-weight: bold; background: #2563eb; color: white; text-align: center; border: none; border-radius: 12px; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
               .print-btn:hover { background: #1d4ed8; }
               @media print { 
@@ -436,6 +437,7 @@
         tableHtml += `
               </tbody>
             </table>
+            <div class="signature">教育局局長簽名：________________________</div>
             <button class="print-btn" onclick="window.print()">點此列印 / 儲存 PDF</button>
             <script>
               setTimeout(() => { window.print(); }, 800);
@@ -516,7 +518,7 @@
                       onClick={handlePrint}
                       className="px-6 lg:px-8 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-full font-black text-lg lg:text-xl shadow-[0_0_20px_rgba(16,185,129,0.6)] border-4 border-teal-300 transform hover:scale-105 active:scale-95 transition-all flex items-center gap-2"
                     >
-                      <span>🖨️</span> 儲存 PDF
+                      <span>🖨️</span> 顯示所有版本
                     </button>
                     <button 
                       onClick={resetAll}
@@ -575,7 +577,7 @@
                         </span>
                       ) : isCurrent ? (
                         <span className="text-blue-400 font-bold text-sm lg:text-lg animate-pulse truncate">
-                          {isProcessing ? (isDrawing ? '開獎中...' : '展示中...') : '等待抽籤'}
+                          {isProcessing ? (isDrawing ? '搖籤中...' : '展示中...') : '等待抽籤'}
                         </span>
                       ) : (
                         <span className="text-gray-500 text-sm lg:text-lg truncate">尚未開始</span>
