@@ -236,9 +236,9 @@
           });
 
           animationRef.current = requestAnimationFrame(render);
-        };
+        }; // <-- 補回這個遺失的括號
 
-        animationRef.current = requestAnimationFrame(render);
+        animationRef.current = requestAnimationFrame(render); // 啟動初始動畫
 
         return () => {
           cancelAnimationFrame(animationRef.current);
@@ -271,12 +271,12 @@
 
             {/* 開獎球 */}
             {drawnResult && !isDrawing && (
-              <div className="absolute z-50 animate-bounce">
+              <div className="absolute z-50">
                 <div 
-                  className="w-[280px] h-[280px] rounded-full flex flex-col justify-center items-center shadow-[0_0_50px_rgba(255,255,0,0.9)] border-[6px] border-white transform transition-transform px-4"
+                  className="w-[340px] h-[340px] rounded-full flex flex-col justify-center items-center shadow-[0_0_80px_rgba(255,255,0,1)] border-[8px] border-white px-4"
                   style={{ background: `radial-gradient(circle at 30% 30%, #fff, ${getVersionStyle(drawnResult).color} 60%, #000)` }}
                 >
-                  <span className={`text-white font-black drop-shadow-lg text-center leading-tight ${drawnLines.length > 2 ? 'text-3xl' : 'text-4xl'}`}>
+                  <span className={`text-white font-black drop-shadow-lg text-center ${drawnLines.length > 2 ? 'text-[60px] leading-[70px]' : 'text-[72px] leading-[85px]'}`}>
                     {drawnLines.map((line, i) => <React.Fragment key={i}>{line}<br/></React.Fragment>)}
                   </span>
                 </div>
@@ -357,7 +357,7 @@
             } else {
               setIsProcessing(false); 
             }
-          }, 3500); 
+          }, 1500); 
 
         }, 3500); 
       };
