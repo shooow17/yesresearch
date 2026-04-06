@@ -1,0 +1,433 @@
+import React, { useState, useEffect, useCallback } from 'react';
+import { RotateCcw, Undo2, Lightbulb, Plus, ChevronLeft, Trophy } from 'lucide-react';
+
+// 精確提取自 image_9acf03.png 的厚重 3D 色彩計畫
+// 分別定義：頂面(最亮)、正面(主色)、左面(受光)、右面(背光)
+const NUT_TYPES = {
+  orange: { top: '#fdba74', body: '#f97316', left: '#fb923c', right: '#ea580c', icon: '⚡' },
+  green: { top: '#86efac', body: '#22c55e', left: '#4ade80', right: '#16a34a', icon: '🍀' },
+  purple: { top: '#d8b4fe', body: '#a855f7', left: '#c084fc', right: '#9333ea', icon: '🌙' },
+  yellow: { top: '#fde047', body: '#eab308', left: '#facc15', right: '#ca8a04', icon: '☀️' },
+  red: { top: '#fca5a5', body: '#ef4444', left: '#f87171', right: '#dc2626', icon: '❤️' },
+  blue: { top: '#93c5fd', body: '#3b82f6', left: '#60a5fa', right: '#2563eb', icon: '💧' },
+  pink: { top: '#f9a8d4', body: '#ec4899', left: '#f472b6', right: '#db2777', icon: '👑' },
+  brown: { top: '#ddb892', body: '#b08968', left: '#cda27a', right: '#9c6644', icon: '🦴' },
+  darkblue: { top: '#a78bfa', body: '#8b5cf6', left: '#a78bfa', right: '#7c3aed', icon: '🎵' },
+  gray: { top: '#94a3b8', body: '#475569', left: '#64748b', right: '#334155', icon: '👻' },
+  lightgreen: { top: '#bef264', body: '#84cc16', left: '#a3e635', right: '#65a30d', icon: '📷' },
+  white: { top: '#f8fafc', body: '#cbd5e1', left: '#e2e8f0', right: '#94a3b8', icon: '⭐' },
+};
+
+// 隱藏的問號方塊
+const HIDDEN_NUT = { top: '#e2e8f0', body: '#94a3b8', left: '#cbd5e1', right: '#64748b', icon: '?' };
+
+// 改良：傾斜的螺旋狀金屬螺紋，對比度加強，更像真實螺絲
+const THREAD_GRADIENT = 'repeating-linear-gradient(-12deg, #64748b 0px, #64748b 3px, #cbd5e1 3px, #cbd5e1 7px)';
+// 改良：加深圓柱體的立體陰影，讓中柱看起來更圓潤立體
+const CYLINDER_SHADING = 'linear-gradient(to right, rgba(0,0,0,0.45) 0%, transparent 20%, transparent 75%, rgba(0,0,0,0.6) 100%)';
+
+const STACK_CAPACITY = 4;
+
+export default function App() {
+  // 調整：從第 1 關開始
+  const [level, setLevel] = useState(1);
+  const [stacks, setStacks] = useState([]);
+  const [selectedIdx, setSelectedIdx] = useState(null);
+  const [history, setHistory] = useState([]);
+  const [isWon, setIsWon] = useState(false);
+  const [extraBoltsUsed, setExtraBoltsUsed] = useState(0);
+  
+  // 新增：提示功能的狀態
+  const [hintCount, setHintCount] = useState(6);
+  const [activeHint, setActiveHint] = useState(null);
+
+  const generateLevel = useCallback((currentLevel) => {
+    // 調整：Level 1, 2 從 3 種顏色開始，循序漸進增加難度
+    const colorCount = Math.min(2 + Math.ceil(currentLevel / 2), Object.keys(NUT_TYPES).length);
+    const availableColors = Object.keys(NUT_TYPES).slice(0, colorCount);
+    
+    let allNuts = [];
+    availableColors.forEach(color => {
+      for (let i = 0; i < STACK_CAPACITY; i++) {
+        allNuts.push({ color, id: `${color}-${i}` });
+      }
+    });
+
+    for (let i = allNuts.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [allNuts[i], allNuts[j]] = [allNuts[j], allNuts[i]];
+    }
+
+    const newStacks = [];
+    let currentStack = [];
+    
+    allNuts.forEach((nut, index) => {
+      // 調整：前 2 關太簡單不需要隱藏方塊，第 3 關之後才開始出現
+      const isHidden = currentLevel > 2 && Math.random() > 0.6 && (index % STACK_CAPACITY) < 2; 
+      currentStack.push({ ...nut, hidden: isHidden });
+      
+      if (currentStack.length === STACK_CAPACITY) {
+        currentStack[STACK_CAPACITY - 1].hidden = false;
+        newStacks.push(currentStack);
+        currentStack = [];
+      }
+    });
+
+    newStacks.push([]);
+    newStacks.push([]);
+
+    setStacks(newStacks);
+    setSelectedIdx(null);
+    setHistory([]);
+    setIsWon(false);
+    setExtraBoltsUsed(0);
+    setActiveHint(null); // 重置關卡時清除提示狀態
+  }, []);
+
+  useEffect(() => {
+    generateLevel(level);
+  }, [level, generateLevel]);
+
+  const checkWin = (currentStacks) => {
+    return currentStacks.every(stack => {
+      if (stack.length === 0) return true;
+      if (stack.length !== STACK_CAPACITY) return false;
+      const firstColor = stack[0].color;
+      return stack.every(nut => nut.color === firstColor && !nut.hidden);
+    });
+  };
+
+  const handleStackClick = (idx) => {
+    if (isWon) return;
+
+    setActiveHint(null); // 玩家點擊任何地方時，清除提示的光環
+
+    const clickedStack = stacks[idx];
+
+    if (selectedIdx === idx) {
+      setSelectedIdx(null);
+      return;
+    }
+
+    if (selectedIdx === null) {
+      if (clickedStack.length > 0) {
+        setSelectedIdx(idx);
+      }
+      return;
+    }
+
+    const sourceStack = stacks[selectedIdx];
+    const targetStack = clickedStack;
+    const movingNut = sourceStack[sourceStack.length - 1];
+
+    const isValidMove = 
+      targetStack.length < STACK_CAPACITY && 
+      (targetStack.length === 0 || targetStack[targetStack.length - 1].color === movingNut.color);
+
+    if (isValidMove) {
+      const newStacks = stacks.map(s => [...s]);
+      setHistory([...history, JSON.stringify(stacks)]);
+      const poppedNut = newStacks[selectedIdx].pop();
+      newStacks[idx].push(poppedNut);
+
+      if (newStacks[selectedIdx].length > 0) {
+        newStacks[selectedIdx][newStacks[selectedIdx].length - 1].hidden = false;
+      }
+
+      setStacks(newStacks);
+      setSelectedIdx(null);
+
+      if (checkWin(newStacks)) {
+        setIsWon(true);
+      }
+    } else {
+      if (clickedStack.length > 0) {
+        setSelectedIdx(idx);
+      } else {
+        setSelectedIdx(null);
+      }
+    }
+  };
+
+  const handleUndo = () => {
+    if (history.length > 0 && !isWon) {
+      const previousState = JSON.parse(history[history.length - 1]);
+      setStacks(previousState);
+      setHistory(history.slice(0, -1));
+      setSelectedIdx(null);
+    }
+  };
+
+  const handleAddBolt = () => {
+    if (extraBoltsUsed < 1 && !isWon) {
+      setHistory([...history, JSON.stringify(stacks)]);
+      setStacks([...stacks, []]);
+      setExtraBoltsUsed(extraBoltsUsed + 1);
+    }
+  };
+
+  // 新增：尋找最佳移動路徑的提示演算法
+  const handleHint = () => {
+    if (hintCount <= 0 || isWon || activeHint) return;
+
+    let foundMove = null;
+
+    // 策略 1：優先尋找可以疊加相同顏色的移動
+    for (let i = 0; i < stacks.length; i++) {
+      if (stacks[i].length === 0) continue;
+      const sourceTop = stacks[i][stacks[i].length - 1];
+
+      for (let j = 0; j < stacks.length; j++) {
+        if (i === j) continue;
+        if (stacks[j].length > 0 && stacks[j].length < STACK_CAPACITY) {
+          const targetTop = stacks[j][stacks[j].length - 1];
+          if (sourceTop.color === targetTop.color) {
+            foundMove = { source: i, target: j };
+            break;
+          }
+        }
+      }
+      if (foundMove) break;
+    }
+
+    // 策略 2：如果沒有相同顏色可疊加，找一個空柱子把最上面的螺帽移過去 (前提是該柱子還有其他螺帽被壓著)
+    if (!foundMove) {
+      for (let i = 0; i < stacks.length; i++) {
+        if (stacks[i].length > 1) { 
+          for (let j = 0; j < stacks.length; j++) {
+            if (stacks[j].length === 0) {
+              foundMove = { source: i, target: j };
+              break;
+            }
+          }
+        }
+        if (foundMove) break;
+      }
+    }
+
+    // 顯示提示並扣除次數
+    if (foundMove) {
+      setActiveHint(foundMove);
+      setHintCount(prev => prev - 1);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-[#1c1830] text-white font-sans flex flex-col max-w-2xl mx-auto shadow-2xl overflow-hidden relative selection:bg-transparent">
+      
+      <header className="flex items-center justify-between p-6 pb-2">
+        <button className="p-3 bg-white/5 hover:bg-white/10 rounded-full transition-colors relative group">
+          <ChevronLeft className="w-6 h-6 text-white" />
+          {/* 返回按鈕浮動說明 */}
+          <div className="absolute top-full mt-2 left-1/2 -translate-x-1/2 w-max px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 shadow-lg border border-white/10">
+            回首頁
+          </div>
+        </button>
+        <div className="text-center">
+          <div className="text-xs font-bold tracking-widest text-white/50 uppercase mb-1">
+            {level > 5 ? '困難模式' : '益智解謎'}
+          </div>
+          <h1 className="text-2xl font-black tracking-wide">第 {level} 關</h1>
+        </div>
+        <button 
+          onClick={() => generateLevel(level)}
+          className="p-3 bg-white/5 hover:bg-white/10 rounded-full transition-colors relative group"
+        >
+          <RotateCcw className="w-6 h-6 text-white" />
+          {/* 重設按鈕浮動說明 */}
+          <div className="absolute top-full mt-2 left-1/2 -translate-x-1/2 w-max px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 shadow-lg border border-white/10">
+            重新開始本關
+          </div>
+        </button>
+      </header>
+
+      <main className="flex-1 flex items-center justify-center p-2">
+        <div className="flex flex-wrap justify-center gap-x-1 gap-y-16 max-w-full mt-8">
+          {stacks.map((stack, idx) => (
+            <div 
+              key={`bolt-${idx}`}
+              onClick={() => handleStackClick(idx)}
+              className="relative w-[72px] h-[210px] cursor-pointer group hover:-translate-y-1 transition-transform"
+            >
+              
+              {/* === 1. 堅固的白銀底座 (Base) === */}
+              <div className="absolute bottom-0 w-[72px] h-[26px] z-10">
+                 {/* 底層邊緣 */}
+                 <div className="absolute bottom-0 w-full h-[16px] bg-[#94a3b8] rounded-[50%_/_8px] border-b-2 border-black/30 shadow-[0_6px_8px_rgba(0,0,0,0.5)]"></div>
+                 {/* 圓柱主體 */}
+                 <div className="absolute top-[8px] w-full h-[8px] bg-[#cbd5e1]"></div>
+                 {/* 頂面 */}
+                 <div className="absolute top-0 w-full h-[16px] bg-[#f8fafc] rounded-[50%_/_8px] shadow-[inset_0_-2px_4px_rgba(0,0,0,0.15)] flex items-center justify-center">
+                     {/* 底座中心的連接孔 */}
+                     <div className="w-[20px] h-[10px] bg-slate-800 rounded-[50%_/_5px] shadow-[inset_0_2px_4px_rgba(0,0,0,0.8)]"></div>
+                 </div>
+              </div>
+
+              {/* === 2. 真實的金屬螺紋鋼柱 (Bolt Rod) === */}
+              {/* 置於 z-0，將被螺帽包覆。加粗並換上真實螺旋紋理與金屬切面。 */}
+              <div className="absolute bottom-[20px] left-[24px] w-[24px] h-[170px] z-0 flex flex-col items-center">
+                 {/* 具有金屬反光的平滑螺絲頂部 (Screw Top) */}
+                 <div className="absolute top-[-6px] w-[24px] h-[12px] bg-gradient-to-br from-white to-[#94a3b8] rounded-[50%] border-[1px] border-[#64748b] z-10 shadow-[inset_0_-2px_3px_rgba(0,0,0,0.3)]"></div>
+                 {/* 帶有螺紋的柱體，加上深色邊框讓輪廓更清晰 */}
+                 <div className="w-[24px] flex-1 relative overflow-hidden bg-[#cbd5e1] border-x-[1px] border-[#475569] rounded-b-[50%_/_4px]">
+                     <div className="absolute inset-0" style={{ backgroundImage: THREAD_GRADIENT }}></div>
+                     {/* 圓柱立體陰影覆蓋 */}
+                     <div className="absolute inset-0" style={{ backgroundImage: CYLINDER_SHADING }}></div>
+                 </div>
+              </div>
+
+              {/* === 3. 六角透視螺帽 (Hex Nuts) === */}
+              {stack.map((nut, nutIdx) => {
+                  const isTop = nutIdx === stack.length - 1;
+                  const isSelected = selectedIdx === idx && isTop;
+                  const colors = nut.hidden ? HIDDEN_NUT : NUT_TYPES[nut.color];
+                  
+                  // 完美咬合的高度計算：底座從 16px 開始，每顆螺帽厚 30px。
+                  const bottomPos = 16 + (nutIdx * 30) + (isSelected ? 36 : 0);
+                  
+                  // 硬邊漸層，創造出 3D 六角形的「左、中、右」三個轉折面
+                  const hexGradient = `linear-gradient(to right, ${colors.left} 0%, ${colors.left} 25%, ${colors.body} 25%, ${colors.body} 75%, ${colors.right} 75%, ${colors.right} 100%)`;
+
+                  return (
+                    <div 
+                      key={nut.id}
+                      className={`absolute left-[4px] w-[64px] h-[48px] transition-all duration-300 ease-out flex flex-col drop-shadow-[0_8px_6px_rgba(0,0,0,0.4)] ${isSelected ? 'drop-shadow-[0_20px_15px_rgba(0,0,0,0.5)] z-50' : ''}`}
+                      style={{ 
+                        bottom: `${bottomPos}px`, 
+                        zIndex: 20 + nutIdx 
+                      }}
+                    >
+                        {/* 螺帽側身 (六角柱體) */}
+                        <div 
+                          className="absolute bottom-0 w-[64px] h-[36px] rounded-[50%_/_10px] border-b border-black/20"
+                          style={{ background: hexGradient }}
+                        >
+                            {/* 六角形的轉折縫隙 */}
+                            <div className="absolute left-[25%] w-[1.5px] h-[30px] top-[3px] bg-black/10"></div>
+                            <div className="absolute right-[25%] w-[1.5px] h-[30px] top-[3px] bg-black/10"></div>
+                            
+                            {/* 側邊圖示 */}
+                            <div className="absolute bottom-[6px] w-full text-center text-[15px] font-black text-black/40 drop-shadow-sm">
+                                {nut.hidden ? '?' : colors.icon}
+                            </div>
+                        </div>
+
+                        {/* 螺帽頂面 (橢圓面) */}
+                        <div 
+                          className="absolute top-0 w-[64px] h-[18px] rounded-[50%_/_9px] shadow-[inset_0_-3px_5px_rgba(0,0,0,0.15)] flex items-center justify-center"
+                          style={{ backgroundColor: colors.top }}
+                        >
+                            {/* 🔥 視覺魔術核心：內建假鋼柱的穿透孔 🔥 */}
+                            {/* 加寬孔洞 (24px) 完美對齊外部的新版加粗鋼柱，營造緊密穿透感 */}
+                            <div className="w-[24px] h-[12px] bg-slate-900 rounded-[50%] relative overflow-hidden shadow-[inset_0_3px_6px_rgba(0,0,0,0.9)]">
+                                {/* 迷你鋼柱 */}
+                                <div className="absolute bottom-0 left-0 w-[24px] h-[10px]">
+                                    <div className="absolute inset-0" style={{ backgroundImage: THREAD_GRADIENT }}></div>
+                                    <div className="absolute inset-0" style={{ backgroundImage: CYLINDER_SHADING }}></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                  );
+              })}
+
+              {/* 選擇光環 */}
+              {selectedIdx === idx && (
+                <div className="absolute bottom-[10px] left-[0px] w-[72px] h-[30px] bg-white/20 rounded-[50%_/_15px] z-[5] animate-pulse pointer-events-none blur-md"></div>
+              )}
+
+              {/* 新增：提示功能的高亮光環 (標示來源與目標柱子) */}
+              {activeHint && (activeHint.source === idx || activeHint.target === idx) && (
+                <div className="absolute bottom-[10px] left-[-4px] w-[80px] h-[200px] bg-[#facc15]/20 rounded-full z-[40] animate-pulse pointer-events-none blur-md border-2 border-[#facc15]/50"></div>
+              )}
+            </div>
+          ))}
+        </div>
+      </main>
+
+      <footer className="p-6 pt-2 pb-10 flex justify-between items-end">
+        <button 
+          onClick={handleUndo}
+          disabled={history.length === 0 || isWon}
+          className={`relative group flex flex-col items-center gap-2 transition-opacity ${history.length === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105 active:scale-95'}`}
+        >
+          {/* 浮動說明 */}
+          <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-max px-3 py-1.5 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 shadow-lg border border-white/10">
+            復原上一步
+            <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
+          </div>
+          
+          <div className="w-16 h-16 rounded-full bg-[#facc15] border-b-4 border-[#ca8a04] flex items-center justify-center shadow-lg relative overflow-hidden border-2 border-black/20">
+             <div className="absolute inset-0 bg-gradient-to-tr from-transparent to-white/30"></div>
+             <Undo2 className="w-8 h-8 text-yellow-950" strokeWidth={3} />
+          </div>
+          <span className="text-[#facc15] font-bold text-sm tracking-wide">復原</span>
+        </button>
+
+        <div className="flex gap-4">
+          <button 
+             className={`relative group flex flex-col items-center gap-2 transition-transform ${hintCount === 0 || isWon ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105 active:scale-95'}`}
+             onClick={handleHint}
+             disabled={hintCount === 0 || isWon}
+          >
+            {/* 浮動說明 */}
+            <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-max px-3 py-1.5 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 shadow-lg border border-white/10">
+              標示最佳移動路線
+              <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
+            </div>
+
+            <div className="w-16 h-16 rounded-full bg-[#facc15] border-b-4 border-[#ca8a04] flex items-center justify-center shadow-lg relative overflow-hidden border-2 border-black/20">
+               <div className="absolute inset-0 bg-gradient-to-tr from-transparent to-white/30"></div>
+               <Lightbulb className="w-8 h-8 text-yellow-950" strokeWidth={2.5} />
+               {/* 顯示剩餘次數 */}
+               <div className="absolute top-0 right-0 bg-white text-yellow-900 text-xs font-black w-5 h-5 rounded-full flex items-center justify-center m-1 shadow-sm border border-black/10">
+                 {hintCount}
+               </div>
+            </div>
+            <span className="text-[#facc15] font-bold text-sm tracking-wide">提示</span>
+          </button>
+
+          <button 
+            onClick={handleAddBolt}
+            disabled={extraBoltsUsed >= 1 || isWon}
+            className={`relative group flex flex-col items-center gap-2 transition-all ${extraBoltsUsed >= 1 ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105 active:scale-95'}`}
+          >
+            {/* 浮動說明 */}
+            <div className="absolute bottom-full mb-2 right-0 sm:left-1/2 sm:-translate-x-1/2 w-max px-3 py-1.5 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 shadow-lg border border-white/10">
+              增加一根空螺栓
+              <div className="absolute top-full right-6 sm:left-1/2 sm:-translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
+            </div>
+
+            <div className="w-16 h-16 rounded-full bg-[#facc15] border-b-4 border-[#ca8a04] flex items-center justify-center shadow-lg relative overflow-hidden border-2 border-black/20">
+               <div className="absolute inset-0 bg-gradient-to-tr from-transparent to-white/30"></div>
+               <Plus className="w-8 h-8 text-yellow-950" strokeWidth={3} />
+               <div className="absolute bottom-1 right-1 bg-[#22c55e] rounded p-0.5 shadow-sm border border-black/20">
+                 <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+               </div>
+            </div>
+            <span className="text-[#facc15] font-bold text-sm tracking-wide">新增</span>
+          </button>
+        </div>
+      </footer>
+
+      {isWon && (
+        <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 animate-in fade-in duration-300">
+          <div className="bg-[#2a2245] p-8 rounded-3xl shadow-2xl flex flex-col items-center transform animate-in zoom-in duration-500 delay-150 border-[3px] border-[#facc15]">
+            <div className="w-24 h-24 bg-[#facc15] rounded-full flex items-center justify-center shadow-[0_0_40px_rgba(250,204,21,0.5)] mb-6 border-[3px] border-white">
+              <Trophy className="w-12 h-12 text-yellow-950" strokeWidth={2} />
+            </div>
+            <h2 className="text-4xl font-black text-white mb-2 drop-shadow-md">成功過關！</h2>
+            <p className="text-gray-300 mb-8 font-medium">你已成功將所有螺帽分類完畢。</p>
+            
+            <button 
+              onClick={() => setLevel(l => l + 1)}
+              className="bg-[#22c55e] hover:bg-[#16a34a] text-white font-black text-xl py-4 px-12 rounded-full shadow-[0_6px_0_#15803d] hover:shadow-[0_4px_0_#15803d] hover:translate-y-1 transition-all active:shadow-none active:translate-y-2 border-2 border-[#15803d]"
+            >
+              下一關
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
