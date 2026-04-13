@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>互動共用白板</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- QRCode.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <!-- PeerJS (無伺服器點對點連線) -->
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // ==========================================
+            // P2P 連線狀態與全域變數
+            // ==========================================
+            let peer = null;
+            let isHost = false;
+            let hostConnection = null; 
+            let clientConnections = []; // 儲存 { conn: 連線物件, name: '學生姓名' }
+            
+            let currentUserName = '';
+            let roomId = '';
+            let globalActions = []; 
+            
+            // 畫布與繪圖狀態
+            const canvas = document.getElementById('board');
+            const ctx = canvas.getContext('2d');
+            const VIRTUAL_WIDTH = 2400;
+            const VIRTUAL_HEIGHT = 1600;
+            
+            let isDrawing = false;
+            let currentTool = 'pen'; 
+            let currentColor = '#000000';
+            let currentWidth = 4;
+            let currentPath = [];
+
+            canvas.width = VIRTUAL_WIDTH;
+            canvas.height = VIRTUAL_HEIGHT;
+
+            // ==========================================
+            // UI 與畫布自適應
+            // ==========================================
+            function resizeCanvas() {
+                const container = document.getElementById('canvas-container');
+                if (!container) return;
+                const containerRatio = container.clientWidth / container.clientHeight;
+                const canvasRatio = VIRTUAL_WIDTH / VIRTUAL_HEIGHT;
+
+                if (containerRatio > canvasRatio) {
+                    canvas.style.height = '100%';
+                    canvas.style.width = 'auto';
+                } else {
+                    canvas.style.width = '100%';
+                    canvas.style.height = 'auto';
+                }
+            }
+            window.addEventListener('resize', resizeCanvas);
+            resizeCanvas();
+
+            // ==========================================
+            // 網址 Hash 解析 (支援掃描 QR Code 直接帶入房間號)
+            // ==========================================
+            const hashId = window.location.hash.substring(1).toUpperCase();
+            if (hashId) {
+                document.getElementById('room-input').value = hashId;
+                document.getElementById('create-btn').classList.add('hidden'); // 隱藏建立按鈕，引導加入
+                document.getElementById('join-btn').classList.add('w-full');
+            }
+
+            // ==========================================
+            // 點對點連線邏輯 (PeerJS)
+            // ==========================================
+            const createBtn = document.getElementById('create-btn');
+            const joinBtn = document.getElementById('join-btn');
+
+            // 老師：建立新白板 (成為 Host)
+            createBtn.addEventListener('click', () => {
+                const nameInput = document.getElementById('name-input').value.trim();
+                if (!nameInput) return alert('請輸入您的姓名！');
+                
+                roomId = Math.random().toString(36).substring(2, 8).toUpperCase();
+                currentUserName = nameInput;
+                
+                setLoading(createBtn, true);
+                initHost(roomId);
+            });
+
+            // 學生：加入現有白板 (成為 Client)
+            joinBtn.addEventListener('click', () => {
+                const nameInput = document.getElementById('name-input').value.trim();
+                const roomInput = document.getElementById('room-input').value.trim().toUpperCase();
+                
+                if (!nameInput) return alert('請輸入您的姓名！');
+                if (!roomInput) return alert('請輸入老師給的 6 碼房間代碼！');
+                
+                roomId = roomInput;
+                currentUserName = nameInput;
+                
+                setLoading(joinBtn, true);
+                initClient(roomId);
+            });
+
+            function setLoading(btn, isLoading) {
+                if (isLoading) {
+                    btn.dataset.originalText = btn.innerHTML;
+                    btn.innerHTML = '<i class="ph ph-spinner-gap animate-spin text-xl"></i> 連線中...';
+                    btn.disabled = true;
+                    btn.classList.add('opacity-70', 'cursor-not-allowed');
+                } else {
+                    btn.innerHTML = btn.dataset.originalText;
+                    btn.disabled = false;
+                    btn.classList.remove('opacity-70', 'cursor-not-allowed');
+                }
+            }
+
+            // --- 廣播/更新使用者名單 ---
+            function getConnectedUsers() {
+                let list = [currentUserName + ' (老師)'];
+                clientConnections.forEach(c => list.push(c.name));
+                return list;
+            }
+
+            function broadcastUsers() {
+                if (!isHost) return;
+                const users = getConnectedUsers();
+                renderUserList(users);
+                clientConnections.forEach(c => {
+                    if (c.conn.open) c.conn.send({ type: 'users', users: users });
+                });
+            }
+
+            function renderUserList(users) {
+                document.getElementById('user-count').textContent = users.length;
+                const panel = document.getElementById('users-list-panel');
+                panel.innerHTML = users.map(u => `<div class="py-1.5 border-b border-slate-100 last:border-0 text-sm text-slate-700">${u}</div>`).join('');
+            }
+
+            // 初始化老師端 (Host)
+            function initHost(id) {
+                isHost = true;
+                peer = new Peer('wb-room-' + id); 
+                
+                peer.on('open', () => {
+                    enterRoomUI();
+                    broadcastUsers(); // 自己先加入名單
+                    window.addEventListener('beforeunload', (e) => { e.preventDefault(); e.returnValue = ''; });
+                });
+
+                peer.on('connection', (conn) => {
+                    let clientName = '未知學生';
+                    
+                    conn.on('data', (data) => {
+                        if (data.type === 'join') {
+                            clientName = data.name;
+                            clientConnections.push({ conn: conn, name: clientName });
+                            broadcastUsers();
+                            // 傳送當前畫布歷史與名單給剛加入的學生
+                            conn.send({ type: 'sync', actions: globalActions, users: getConnectedUsers() });
+                        } else if (data.type === 'action') {
+                            globalActions.push(data.action);
+                            redraw();
+                            // 轉發給其他學生
+                            clientConnections.forEach(c => {
+                                if (c.conn !== conn && c.conn.open) c.conn.send({ type: 'action', action: data.action });
+                            });
+                        } else if (data.type === 'clear') {
+                            globalActions = [];
+                            redraw();
+                            clientConnections.forEach(c => {
+                                if (c.conn !== conn && c.conn.open) c.conn.send({ type: 'clear' });
+                            });
+                        }
+                    });
+
+                    conn.on('close', () => {
+                        clientConnections = clientConnections.filter(c => c.conn !== conn);
+                        broadcastUsers(); // 學生離開，更新名單
+                    });
+                });
+
+                peer.on('error', (err) => {
+                    setLoading(createBtn, false);
+                    alert("建立失敗，代碼可能發生衝突。請重試。");
+                });
+            }
+
+            // 初始化學生端 (Client)
+            function initClient(id) {
+                isHost = false;
+                peer = new Peer(); 
+                
+                peer.on('open', () => {
+                    hostConnection = peer.connect('wb-room-' + id, { reliable: true });
+                    
+                    hostConnection.on('open', () => {
+                        hostConnection.send({ type: 'join', name: currentUserName }); // 告訴老師我的名字
+                        enterRoomUI();
+                    });
+
+                    hostConnection.on('data', (data) => {
+                        if (data.type === 'sync') {
+                            globalActions = data.actions;
+                            renderUserList(data.users);
+                            redraw();
+                        } else if (data.type === 'users') {
+                            renderUserList(data.users); // 老師更新了名單
+                        } else if (data.type === 'action') {
+                            globalActions.push(data.action);
+                            redraw();
+                        } else if (data.type === 'clear') {
+                            globalActions = [];
+                            redraw();
+                        }
+                    });
+
+                    hostConnection.on('close', () => alert("老師已關閉白板或連線中斷。"));
+                    hostConnection.on('error', () => {
+                        setLoading(joinBtn, false);
+                        alert("無法連線至該房間，請確認代碼。");
+                    });
+                });
+
+                peer.on('error', () => {
+                    setLoading(joinBtn, false);
+                    alert("網路連線失敗。");
+                });
+            }
+
+            // ==========================================
+            // UI 切換與 QR Code 產生 (GitHub Pages 專用)
+            // ==========================================
+            function enterRoomUI() {
+                document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('app-screen').classList.remove('hidden');
+                
+                document.getElementById('display-room-id').textContent = roomId;
+                document.getElementById('modal-display-room-id').textContent = roomId; 
+                
+                // GitHub Pages 支援直接使用當前網址加上 Hash (#代碼)
+                const baseUrl = window.location.href.split('#')[0];
+                const shareUrl = `${baseUrl}#${roomId}`;
+                
+                // 可選：將老師的網址也加上 Hash，方便複製網址分享
+                if (isHost) {
+                    window.history.replaceState(null, null, `#${roomId}`);
+                }
+
+                document.getElementById("modal-qrcode").innerHTML = ""; 
+                new QRCode(document.getElementById("modal-qrcode"), {
+                    text: shareUrl,
+                    width: 220,
+                    height: 220,
+                    colorDark : "#000000",
+                    colorLight : "#ffffff",
+                    correctLevel : QRCode.CorrectLevel.L
+                });
+                
+                resizeCanvas(); 
+            }
+
+            // ==========================================
+            // 人員名單展開控制
+            // ==========================================
+            document.getElementById('users-toggle-btn').addEventListener('click', () => {
+                document.getElementById('users-list-panel').classList.toggle('hidden');
+            });
+
+            // ==========================================
+            // 資料派發與繪圖核心
+            // ==========================================
+            function dispatchAction(actionObj) {
+                globalActions.push(actionObj);
+                redraw();
+                if (isHost) {
+                    clientConnections.forEach(c => { if (c.conn.open) c.conn.send({ type: 'action', action: actionObj }); });
+                } else {
+                    if (hostConnection && hostConnection.open) hostConnection.send({ type: 'action', action: actionObj });
+                }
+            }
+
+            function dispatchClear() {
+                globalActions = [];
+                redraw();
+                if (isHost) {
+                    clientConnections.forEach(c => { if (c.conn.open) c.conn.send({ type: 'clear' }); });
+                } else {
+                    if (hostConnection && hostConnection.open) hostConnection.send({ type: 'clear' });
+                }
+            }
+
+            function redraw() {
+                ctx.clearRect(0, 0, VIRTUAL_WIDTH, VIRTUAL_HEIGHT);
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, VIRTUAL_WIDTH, VIRTUAL_HEIGHT);
+
+                globalActions.forEach(action => {
+                    if (action.type === 'stroke') {
+                        ctx.beginPath();
+                        ctx.strokeStyle = action.color;
+                        ctx.lineWidth = action.width;
+                        ctx.lineCap = 'round';
+                        ctx.lineJoin = 'round';
+                        for (let i = 0; i < action.points.length; i++) {
+                            const pt = action.points[i];
+                            if (i === 0) ctx.moveTo(pt.x, pt.y);
+                            else ctx.lineTo(pt.x, pt.y);
+                        }
+                        ctx.stroke();
+                    } else if (action.type === 'text') {
+                        ctx.font = `${action.size}px "Noto Sans TC", sans-serif`;
+                        ctx.fillStyle = action.color;
+                        ctx.textBaseline = 'top';
+                        ctx.fillText(action.text, action.x, action.y);
+                    }
+                });
+
+                if (isDrawing && currentPath.length > 0 && currentTool !== 'text') {
+                    ctx.beginPath();
+                    ctx.strokeStyle = currentTool === 'eraser' ? '#ffffff' : currentColor;
+                    ctx.lineWidth = currentTool === 'eraser' ? currentWidth * 5 : currentWidth;
+                    ctx.lineCap = 'round';
+                    ctx.lineJoin = 'round';
+                    for (let i = 0; i < currentPath.length; i++) {
+                        const pt = currentPath[i];
+                        if (i === 0) ctx.moveTo(pt.x, pt.y);
+                        else ctx.lineTo(pt.x, pt.y);
+                    }
+                    ctx.stroke();
+                }
+            }
+
+            // ==========================================
+            // 工具列與事件綁定
+            // ==========================================
+            document.querySelectorAll('.tool-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active', 'bg-blue-100', 'text-blue-600'));
+                    const target = e.currentTarget;
+                    target.classList.add('active', 'bg-blue-100', 'text-blue-600');
+                    currentTool = target.dataset.tool;
+                });
+            });
+
+            document.querySelectorAll('.color-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('ring-4', 'ring-gray-400', 'scale-110'));
+                    const target = e.currentTarget;
+                    target.classList.add('ring-4', 'ring-gray-400', 'scale-110');
+                    currentColor = target.dataset.color;
+                    if (currentTool === 'eraser') document.querySelector('[data-tool="pen"]').click();
+                });
+            });
+
+            document.getElementById('width-select').addEventListener('change', (e) => currentWidth = parseInt(e.target.value));
+
+            document.getElementById('clear-btn').addEventListener('click', () => {
+                if (confirm('確定要清除所有人的畫布內容嗎？')) dispatchClear();
+            });
+
+            const qrModal = document.getElementById('qr-modal');
+            document.getElementById('show-qr-btn').addEventListener('click', () => {
+                qrModal.classList.remove('hidden'); qrModal.classList.add('flex');
+            });
+            document.getElementById('close-qr-btn').addEventListener('click', () => {
+                qrModal.classList.add('hidden'); qrModal.classList.remove('flex');
+            });
+
+            function getVirtualCoords(e) {
+                const rect = canvas.getBoundingClientRect();
+                let clientX, clientY;
+                if (e.touches && e.touches.length > 0) {
+                    clientX = e.touches[0].clientX; clientY = e.touches[0].clientY;
+                } else {
+                    clientX = e.clientX; clientY = e.clientY;
+                }
+                const x = clientX - rect.left;
+                const y = clientY - rect.top;
+                return { x: x * (VIRTUAL_WIDTH / rect.width), y: y * (VIRTUAL_HEIGHT / rect.height) };
+            }
+
+            canvas.addEventListener('pointerdown', (e) => {
+                if (currentTool === 'text') return handleTextClick(e);
+                isDrawing = true;
+                currentPath = [getVirtualCoords(e)];
+                canvas.setPointerCapture(e.pointerId);
+                redraw();
+            });
+
+            canvas.addEventListener('pointermove', (e) => {
+                if (!isDrawing || currentTool === 'text') return;
+                const coords = getVirtualCoords(e);
+                const lastPt = currentPath[currentPath.length - 1];
+                if (Math.hypot(coords.x - lastPt.x, coords.y - lastPt.y) > 5) {
+                    currentPath.push(coords);
+                    redraw();
+                }
+            });
+
+            canvas.addEventListener('pointerup', (e) => {
+                if (!isDrawing || currentTool === 'text') return;
+                isDrawing = false;
+                canvas.releasePointerCapture(e.pointerId);
+                if (currentPath.length > 0) {
+                    dispatchAction({
+                        type: 'stroke', userName: currentUserName, points: currentPath,
+                        color: currentTool === 'eraser' ? '#ffffff' : currentColor,
+                        width: currentTool === 'eraser' ? currentWidth * 5 : currentWidth
+                    });
+                }
+                currentPath = [];
+                redraw();
+            });
+
+            canvas.addEventListener('pointercancel', () => { isDrawing = false; currentPath = []; redraw(); });
+
+            // 文字工具
+            const textInput = document.getElementById('text-input-overlay');
+            function handleTextClick(e) {
+                const vCoords = getVirtualCoords(e);
+                const rect = canvas.getBoundingClientRect();
+                textInput.style.left = (rect.left + vCoords.x * (rect.width / VIRTUAL_WIDTH)) + 'px';
+                textInput.style.top = (rect.top + vCoords.y * (rect.height / VIRTUAL_HEIGHT)) + 'px';
+                textInput.style.color = currentColor;
+                textInput.style.fontSize = Math.max(16, currentWidth * 2 + 16) + 'px';
+                textInput.style.display = 'block';
+                textInput.value = '';
+                textInput.dataset.vx = vCoords.x;
+                textInput.dataset.vy = vCoords.y;
+                setTimeout(() => textInput.focus(), 50);
+            }
+
+            function saveText() {
+                if (textInput.style.display === 'none') return;
+                const text = textInput.value.trim();
+                textInput.style.display = 'none';
+                if (text) {
+                    dispatchAction({
+                        type: 'text', userName: currentUserName, text: text,
+                        x: parseFloat(textInput.dataset.vx), y: parseFloat(textInput.dataset.vy),
+                        color: currentColor, size: currentWidth * 12 + 30
+                    });
+                }
+            }
+            textInput.addEventListener('blur', saveText);
+            textInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') saveText(); });
+        });
+    </script>
+    <style>
+        /* 嚴格限制畫面不捲動，保證工具列不見 */
+        body, html {
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            overflow: hidden;
+            overscroll-behavior: none;
+            background-color: #f1f5f9;
+            font-family: "Noto Sans TC", sans-serif;
+            position: fixed; inset: 0;
+        }
+        
+        #canvas-container {
+            flex-grow: 1;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        canvas {
+            background-color: white;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            touch-action: none;
+            object-fit: contain;
+            cursor: crosshair;
+        }
+
+        #text-input-overlay {
+            position: absolute;
+            z-index: 50;
+            background: rgba(255, 255, 255, 0.8);
+            border: 2px dashed #3b82f6;
+            padding: 4px 8px;
+            border-radius: 4px;
+            outline: none;
+            display: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            font-family: inherit;
+        }
+    </style>
+</head>
+<body class="text-slate-800 selection:bg-blue-200">
+
+    <!-- 登入畫面 -->
+    <div id="login-screen" class="absolute inset-0 z-50 flex items-center justify-center bg-slate-100 p-4">
+        <div class="bg-white p-8 rounded-2xl shadow-xl max-w-md w-full text-center flex flex-col items-center">
+            <i class="ph ph-chalkboard text-6xl text-blue-500 mb-4"></i>
+            <h1 class="text-2xl font-bold mb-2">共用白板</h1>
+            <p class="text-slate-500 mb-6 text-sm">老師請建立房間，學生請輸入姓名加入</p>
+            
+            <div class="w-full relative mb-4">
+                <i class="ph ph-user absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 text-lg"></i>
+                <input type="text" id="name-input" placeholder="您的姓名" 
+                       class="w-full pl-10 pr-4 py-3 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition text-lg"
+                       maxlength="15" autocomplete="off">
+            </div>
+
+            <div class="w-full relative mb-6">
+                <i class="ph ph-hash absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 text-lg"></i>
+                <input type="text" id="room-input" placeholder="房間代碼 (老師建立請留白)" 
+                       class="w-full pl-10 pr-4 py-3 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition text-lg uppercase"
+                       maxlength="6" autocomplete="off">
+            </div>
+            
+            <div class="flex gap-3 w-full">
+                <button id="create-btn" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition">
+                    建立新白板
+                </button>
+                <button id="join-btn" class="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold py-3 px-4 rounded-lg transition">
+                    加入房間
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 白板主畫面 -->
+    <div id="app-screen" class="hidden absolute inset-0 flex flex-col w-full h-full">
+        
+        <!-- 工具列 -->
+        <div class="bg-white border-b shadow-sm flex items-center justify-between px-2 md:px-4 py-2 z-20 shrink-0 flex-wrap gap-2">
+            
+            <!-- 繪圖工具區 -->
+            <div class="flex items-center gap-1 md:gap-3 flex-wrap">
+                <button class="tool-btn active bg-blue-100 text-blue-600 p-2 rounded-xl transition flex items-center justify-center gap-1" data-tool="pen">
+                    <i class="ph ph-pencil-simple text-xl"></i>
+                    <span class="text-xs font-medium hidden md:block">畫筆</span>
+                </button>
+                <button class="tool-btn text-slate-600 p-2 rounded-xl transition hover:bg-slate-100 flex items-center justify-center gap-1" data-tool="text">
+                    <i class="ph ph-text-t text-xl"></i>
+                    <span class="text-xs font-medium hidden md:block">文字</span>
+                </button>
+                <button class="tool-btn text-slate-600 p-2 rounded-xl transition hover:bg-slate-100 flex items-center justify-center gap-1" data-tool="eraser">
+                    <i class="ph ph-eraser text-xl"></i>
+                    <span class="text-xs font-medium hidden md:block">橡皮擦</span>
+                </button>
+
+                <div class="w-px h-6 bg-slate-200 mx-1"></div>
+
+                <!-- 粗細與顏色 -->
+                <select id="width-select" class="bg-slate-50 border border-slate-200 text-slate-700 rounded-lg p-1 outline-none text-sm">
+                    <option value="2">細</option>
+                    <option value="4" selected>中</option>
+                    <option value="8">粗</option>
+                </select>
+
+                <div class="flex items-center gap-2 ml-1">
+                    <button class="color-btn w-6 h-6 rounded-full bg-[#000000] ring-4 ring-gray-400 scale-110 transition cursor-pointer" data-color="#000000"></button>
+                    <button class="color-btn w-6 h-6 rounded-full bg-[#ef4444] transition cursor-pointer border border-black/10" data-color="#ef4444"></button>
+                    <button class="color-btn w-6 h-6 rounded-full bg-[#3b82f6] transition cursor-pointer border border-black/10" data-color="#3b82f6"></button>
+                    <button class="color-btn w-6 h-6 rounded-full bg-[#22c55e] transition cursor-pointer border border-black/10" data-color="#22c55e"></button>
+                </div>
+            </div>
+
+            <!-- 右側功能與連線資訊 -->
+            <div class="flex items-center gap-2">
+                <!-- 線上人員清單切換按鈕 -->
+                <div class="relative">
+                    <button id="users-toggle-btn" class="flex items-center gap-1 px-2 py-1.5 bg-green-50 hover:bg-green-100 text-green-700 rounded-lg transition text-xs md:text-sm font-medium border border-green-200">
+                        <i class="ph ph-users"></i> <span id="user-count">1</span> 人
+                    </button>
+                    <!-- 人員名單面板 -->
+                    <div id="users-list-panel" class="hidden absolute top-full right-0 mt-1 w-32 bg-white border border-slate-200 rounded-lg shadow-xl p-2 max-h-48 overflow-y-auto z-50">
+                        <div class="py-1 border-b border-slate-100 text-sm text-slate-700">尚未連線</div>
+                    </div>
+                </div>
+
+                <div class="bg-slate-100 px-2 py-1.5 rounded-lg text-xs md:text-sm font-bold text-slate-600 flex items-center gap-1">
+                    代碼: <span id="display-room-id" class="text-blue-600 tracking-wider"></span>
+                </div>
+                <button id="show-qr-btn" class="flex items-center gap-1 px-2 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg transition text-xs md:text-sm font-medium border border-blue-200">
+                    <i class="ph ph-qr-code text-lg"></i>
+                </button>
+                <button id="clear-btn" class="flex items-center gap-1 px-2 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg transition text-xs md:text-sm font-medium border border-red-200">
+                    <i class="ph ph-trash text-lg"></i>
+                </button>
+            </div>
+        </div>
+
+        <div id="canvas-container">
+            <canvas id="board"></canvas>
+            <input type="text" id="text-input-overlay" placeholder="輸入文字後按 Enter...">
+        </div>
+    </div>
+
+    <!-- QR Code 彈跳視窗 -->
+    <div id="qr-modal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm items-center justify-center p-4">
+        <div class="bg-white rounded-2xl p-6 shadow-2xl flex flex-col items-center max-w-sm w-full relative">
+            <button id="close-qr-btn" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition">
+                <i class="ph ph-x text-2xl"></i>
+            </button>
+            
+            <h2 class="text-xl font-bold mb-2">邀請學生加入</h2>
+            <p class="text-slate-500 mb-6 text-sm text-center">掃描下方 QR Code，或透過網址加入</p>
+
+            <div id="modal-qrcode" class="p-3 bg-white border-2 border-slate-100 rounded-xl mb-4"></div>
+            
+            <div class="bg-blue-50 text-blue-700 px-6 py-2 rounded-xl font-mono text-4xl tracking-widest font-bold shadow-inner" id="modal-display-room-id"></div>
+        </div>
+    </div>
+
+</body>
+</html>
