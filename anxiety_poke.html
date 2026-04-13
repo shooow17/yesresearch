@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>焦慮戳戳樂</title>
+  <!-- 引入 Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- 引入 React 與 ReactDOM -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <!-- 引入 Babel 以在瀏覽器中編譯 JSX -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    function App() {
+      const [count, setCount] = useState(0);
+      const [message, setMessage] = useState('點擊按鈕來釋放你的焦慮！');
+      const [clicks, setClicks] = useState([]);
+      
+      // 切換頁面狀態與歷史紀錄
+      const [view, setView] = useState('game'); // 'game' | 'stats'
+      const [cpsHistory, setCpsHistory] = useState([]);
+
+      // 時間與手速統計相關狀態
+      const [clickTimestamps, setClickTimestamps] = useState([]);
+      const [currentCps, setCurrentCps] = useState(0);
+      const [startTime, setStartTime] = useState(null);
+      const [elapsedSeconds, setElapsedSeconds] = useState(0);
+
+      // 處理按鈕點擊事件
+      const handleClick = (e) => {
+        const now = Date.now();
+        
+        // 紀錄第一次點擊的時間與初始化長條圖紀錄
+        if (!startTime) {
+          setStartTime(now);
+          setCpsHistory([1]);
+        } else {
+          const sec = Math.floor((now - startTime) / 1000);
+          setCpsHistory((prev) => {
+            const newHistory = [...prev];
+            while (newHistory.length <= sec) newHistory.push(0);
+            newHistory[sec] += 1;
+            return newHistory;
+          });
+        }
+        
+        // 紀錄當下點擊時間戳記，用於計算手速
+        setClickTimestamps((prev) => [...prev, now]);
+        
+        setCount((prev) => prev + 1);
+
+        // 取得點擊位置以產生漂浮的 +1 動畫
+        const rect = e.currentTarget.getBoundingClientRect();
+        
+        // 支援滑鼠點擊與觸控點擊的座標計算
+        let clientX, clientY;
+        if (e.touches && e.touches.length > 0) {
+          clientX = e.touches[0].clientX;
+          clientY = e.touches[0].clientY;
+        } else {
+          clientX = e.clientX;
+          clientY = e.clientY;
+        }
+
+        const x = clientX - rect.left;
+        const y = clientY - rect.top;
+
+        const newClick = { id: Date.now() + Math.random(), x, y };
+        setClicks((prev) => [...prev, newClick]);
+
+        // 1秒後移除該次點擊的動畫元素
+        setTimeout(() => {
+          setClicks((prev) => prev.filter((click) => click.id !== newClick.id));
+        }, 1000);
+      };
+
+      // 根據點擊次數更新鼓勵訊息
+      useEffect(() => {
+        if (count === 0) setMessage('點擊按鈕來釋放你的焦慮！');
+        else if (count === 10) setMessage('很好，深呼吸...');
+        else if (count === 50) setMessage('用力戳！把煩惱都戳掉！');
+        else if (count === 100) setMessage('焦慮正在慢慢消散...');
+        else if (count === 200) setMessage('你已經做得很好了！');
+        else if (count === 500) setMessage('無敵狀態！焦慮退散！');
+        else if (count === 1000) setMessage('大師！你的心境已心如止水 🌊');
+      }, [count]);
+
+      // 處理時間統計與 CPS (每秒點擊次數) 計算
+      useEffect(() => {
+        if (!startTime) return;
+
+        const interval = setInterval(() => {
+          const now = Date.now();
+          
+          // 更新經過的秒數
+          const currentElapsed = Math.floor((now - startTime) / 1000);
+          setElapsedSeconds(currentElapsed);
+
+          // 計算過去 1 秒內的點擊次數 (CPS)
+          setClickTimestamps((prev) => {
+            const recentClicks = prev.filter((time) => now - time <= 1000);
+            setCurrentCps(recentClicks.length);
+            return recentClicks; // 僅保留近一秒內的紀錄以節省記憶體
+          });
+
+          // 自動為沒有點擊的秒數補 0，讓長條圖時間軸連續
+          setCpsHistory((prev) => {
+            if (prev.length <= currentElapsed) {
+              const newHistory = [...prev];
+              while (newHistory.length <= currentElapsed) newHistory.push(0);
+              return newHistory;
+            }
+            return prev;
+          });
+        }, 100);
+
+        return () => clearInterval(interval);
+      }, [startTime]);
+
+      // 計算圖表所需最高數據
+      const maxHistoryCps = cpsHistory.length > 0 ? Math.max(...cpsHistory) : 0;
+      const avgCps = elapsedSeconds > 0 ? (count / elapsedSeconds).toFixed(1) : 0;
+
+      return (
+        <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4 font-sans select-none overflow-hidden">
+          {/* 注入自訂動畫樣式 */}
+          <style>
+            {`
+              @keyframes floatUp {
+                0% { opacity: 1; transform: translateY(0) scale(1); }
+                100% { opacity: 0; transform: translateY(-80px) scale(1.5); }
+              }
+              .float-animation {
+                animation: floatUp 0.8s ease-out forwards;
+                pointer-events: none;
+              }
+              /* 隱藏長條圖捲軸但保持可滑動 */
+              .hide-scrollbar::-webkit-scrollbar {
+                display: none;
+              }
+              .hide-scrollbar {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+              }
+            `}
+          </style>
+
+          {view === 'game' ? (
+            <React.Fragment>
+              {/* 遊戲標題與圖表按鈕 */}
+              <div className="w-full max-w-lg flex justify-between items-end mb-4 px-4">
+                <h1 className="text-4xl md:text-5xl font-black text-slate-800 tracking-wider drop-shadow-sm">
+                  焦慮戳戳樂
+                </h1>
+                <button
+                  onClick={() => setView('stats')}
+                  className="bg-white px-3 py-2 md:px-4 md:py-2 rounded-xl shadow-sm border border-slate-200 text-slate-600 font-bold hover:bg-slate-100 transition-colors active:scale-95"
+                >
+                  📊 統計圖表
+                </button>
+              </div>
+
+              {/* 鼓勵訊息 */}
+              <div className="text-lg md:text-xl text-slate-500 mb-12 h-8 font-medium transition-all duration-300">
+                {message}
+              </div>
+
+              {/* 互動按鈕區塊 */}
+              <div className="relative mb-16">
+                <button
+                  onMouseDown={handleClick}
+                  onTouchStart={handleClick}
+                  className="
+                    relative w-64 h-64 md:w-80 md:h-80 rounded-full
+                    bg-red-500 hover:bg-red-550
+                    text-white text-5xl md:text-6xl font-bold tracking-widest
+                    shadow-[0_15px_0_rgb(185,28,28),0_25px_40px_rgba(239,68,68,0.4)]
+                    active:shadow-[0_0px_0_rgb(185,28,28),0_10px_20px_rgba(239,68,68,0.4)]
+                    active:translate-y-[15px]
+                    transition-all duration-75 ease-in-out
+                    flex items-center justify-center
+                    border-4 border-red-600 outline-none
+                    cursor-pointer
+                  "
+                  style={{ WebkitTapHighlightColor: 'transparent' }}
+                >
+                  我好焦慮
+                  
+                  {/* 渲染漂浮的 +1 */}
+                  {clicks.map((click) => (
+                    <span
+                      key={click.id}
+                      className="absolute text-3xl font-black text-yellow-300 drop-shadow-md float-animation"
+                      style={{
+                        left: click.x,
+                        top: click.y,
+                        transform: 'translate(-50%, -50%)',
+                      }}
+                    >
+                      +1
+                    </span>
+                  ))}
+                </button>
+              </div>
+
+              {/* 統計數據區塊 */}
+              <div className="grid grid-cols-3 gap-3 md:gap-6 w-full max-w-lg px-4 items-end mt-4">
+                {/* 舒壓時長 */}
+                <div className="flex flex-col items-center bg-white px-2 py-4 rounded-3xl shadow-sm border border-slate-100">
+                  <span className="text-slate-400 text-xs md:text-sm font-bold mb-1 tracking-wider whitespace-nowrap">
+                    舒壓時長
+                  </span>
+                  <span className="text-2xl md:text-3xl font-black text-slate-700 tabular-nums">
+                    {elapsedSeconds}<span className="text-sm font-bold text-slate-400 ml-1">s</span>
+                  </span>
+                </div>
+
+                {/* 總點擊次數 (主要焦點) */}
+                <div className="flex flex-col items-center bg-white px-2 py-6 rounded-3xl shadow-lg border-2 border-red-50 relative bottom-2 transform scale-105">
+                  <span className="text-red-400 text-xs md:text-sm font-bold mb-2 tracking-widest whitespace-nowrap">
+                    釋放焦慮
+                  </span>
+                  <span className="text-5xl md:text-6xl font-black text-red-500 tabular-nums tracking-tighter">
+                    {count}
+                  </span>
+                </div>
+
+                {/* 當前手速 (CPS) */}
+                <div className="flex flex-col items-center bg-white px-2 py-4 rounded-3xl shadow-sm border border-slate-100">
+                  <span className="text-slate-400 text-xs md:text-sm font-bold mb-1 tracking-wider whitespace-nowrap">
+                    當前手速
+                  </span>
+                  <span className="text-2xl md:text-3xl font-black text-slate-700 tabular-nums">
+                    {currentCps}<span className="text-sm font-bold text-slate-400 ml-1">cps</span>
+                  </span>
+                </div>
+              </div>
+            </React.Fragment>
+          ) : (
+            /* 數據統計頁面 */
+            <div className="w-full max-w-4xl bg-white rounded-3xl shadow-xl border border-slate-100 p-6 md:p-8 flex flex-col h-[85vh]">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl md:text-3xl font-black text-slate-800 tracking-wider">📊 數據統計</h2>
+                <button
+                  onClick={() => setView('game')}
+                  className="bg-slate-100 px-4 py-2 rounded-xl text-slate-600 font-bold hover:bg-slate-200 transition-colors active:scale-95"
+                >
+                  ⬅️ 返回戳戳樂
+                </button>
+              </div>
+
+              {/* 統計摘要卡片 */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                <div className="bg-red-50 rounded-2xl p-4 flex flex-col items-center justify-center">
+                  <span className="text-red-400 text-sm font-bold mb-1">總點擊次數</span>
+                  <span className="text-3xl font-black text-red-600">{count}</span>
+                </div>
+                <div className="bg-slate-50 rounded-2xl p-4 flex flex-col items-center justify-center">
+                  <span className="text-slate-500 text-sm font-bold mb-1">總時長 (秒)</span>
+                  <span className="text-3xl font-black text-slate-700">{elapsedSeconds}</span>
+                </div>
+                <div className="bg-slate-50 rounded-2xl p-4 flex flex-col items-center justify-center">
+                  <span className="text-slate-500 text-sm font-bold mb-1">最高手速 (CPS)</span>
+                  <span className="text-3xl font-black text-slate-700">{maxHistoryCps}</span>
+                </div>
+                <div className="bg-slate-50 rounded-2xl p-4 flex flex-col items-center justify-center">
+                  <span className="text-slate-500 text-sm font-bold mb-1">平均手速 (CPS)</span>
+                  <span className="text-3xl font-black text-slate-700">{avgCps}</span>
+                </div>
+              </div>
+
+              {/* 長條圖區塊 */}
+              <div className="flex-1 w-full bg-slate-50 rounded-2xl border border-slate-100 p-4 pt-10 flex flex-col relative overflow-hidden">
+                <h3 className="text-slate-500 font-bold text-sm mb-2 absolute top-4 left-4">時間軸 / 點擊次數長條圖</h3>
+                
+                {cpsHistory.length === 0 ? (
+                  <div className="flex-1 flex items-center justify-center text-slate-400 font-medium">
+                    還沒有數據喔，快去戳幾下！
+                  </div>
+                ) : (
+                  <div className="flex-1 flex items-end gap-1 md:gap-2 mt-4 overflow-x-auto pb-2 px-2 hide-scrollbar">
+                    {cpsHistory.map((cps, index) => {
+                      const heightPercent = maxHistoryCps > 0 ? (cps / maxHistoryCps) * 100 : 0;
+                      return (
+                        <div 
+                          key={index} 
+                          className="flex flex-col items-center justify-end h-full min-w-[24px] md:min-w-[32px] group"
+                        >
+                          <div className="opacity-0 group-hover:opacity-100 transition-opacity text-xs font-bold text-red-500 mb-1">
+                            {cps}
+                          </div>
+                          <div 
+                            className="w-full bg-red-400 hover:bg-red-500 rounded-t-sm transition-all duration-300 relative cursor-pointer"
+                            style={{ height: `${Math.max(heightPercent, 2)}%` }}
+                          ></div>
+                          <div className="text-[10px] text-slate-400 mt-2 font-medium">
+                            {index}s
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
