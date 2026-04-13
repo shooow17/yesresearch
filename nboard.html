@@ -331,21 +331,21 @@
                 }
             }
 
-            // 繪製姓名小標籤
+            // 繪製姓名中標籤
             function drawNameTag(ctx, x, y, name, color) {
                 if (!name) return;
                 ctx.save();
-                ctx.font = '10px "Noto Sans TC", sans-serif';
+                ctx.font = '14px "Noto Sans TC", sans-serif'; // 放大為 14px 中標籤
                 const textWidth = ctx.measureText(name).width;
                 
-                // 標籤背景 (半透明白底)
+                // 標籤背景 (半透明白底，稍微放大 padding)
                 ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
-                ctx.fillRect(x, y - 16, textWidth + 6, 16);
+                ctx.fillRect(x, y - 22, textWidth + 8, 20);
 
                 // 標籤文字 (如果用橡皮擦，名字用灰色顯示)
                 ctx.fillStyle = color === '#ffffff' ? '#94a3b8' : color; 
                 ctx.textBaseline = 'bottom';
-                ctx.fillText(name, x + 3, y - 2);
+                ctx.fillText(name, x + 4, y - 4);
                 ctx.restore();
             }
 
@@ -353,6 +353,9 @@
                 ctx.clearRect(0, 0, VIRTUAL_WIDTH, VIRTUAL_HEIGHT);
                 ctx.fillStyle = '#ffffff';
                 ctx.fillRect(0, 0, VIRTUAL_WIDTH, VIRTUAL_HEIGHT);
+
+                // 記錄「誰已經畫過標籤了」，保證每人只顯示一次（直到被擦掉重作）
+                const drawnUsers = new Set();
 
                 globalActions.forEach(action => {
                     if (action.type === 'stroke') {
@@ -367,20 +370,27 @@
                             else ctx.lineTo(pt.x, pt.y);
                         }
                         ctx.stroke();
-                        // 畫上姓名標籤
-                        if (action.points.length > 0) {
+                        
+                        // 畫上姓名標籤 (如果這個人還沒出現過標籤)
+                        if (action.points.length > 0 && !drawnUsers.has(action.userName)) {
                             drawNameTag(ctx, action.points[0].x, action.points[0].y, action.userName, action.color);
+                            drawnUsers.add(action.userName);
                         }
                     } else if (action.type === 'text') {
                         ctx.font = `${action.size}px "Noto Sans TC", sans-serif`;
                         ctx.fillStyle = action.color;
                         ctx.textBaseline = 'top';
                         ctx.fillText(action.text, action.x, action.y);
-                        // 畫上姓名標籤
-                        drawNameTag(ctx, action.x, action.y, action.userName, action.color);
+                        
+                        // 畫上姓名標籤 (如果這個人還沒出現過標籤)
+                        if (!drawnUsers.has(action.userName)) {
+                            drawNameTag(ctx, action.x, action.y, action.userName, action.color);
+                            drawnUsers.add(action.userName);
+                        }
                     }
                 });
 
+                // 自己當下正在畫的即時筆跡
                 if (isDrawing && currentPath.length > 0 && currentTool !== 'text') {
                     ctx.beginPath();
                     ctx.strokeStyle = currentTool === 'eraser' ? '#ffffff' : currentColor;
@@ -393,8 +403,11 @@
                         else ctx.lineTo(pt.x, pt.y);
                     }
                     ctx.stroke();
-                    // 自己正在畫的時候也顯示標籤
-                    drawNameTag(ctx, currentPath[0].x, currentPath[0].y, currentUserName, currentTool === 'eraser' ? '#ffffff' : currentColor);
+                    
+                    // 如果自己還沒有留下任何已完成的筆跡（代表這是第一筆），也即時顯示標籤
+                    if (!drawnUsers.has(currentUserName)) {
+                        drawNameTag(ctx, currentPath[0].x, currentPath[0].y, currentUserName, currentTool === 'eraser' ? '#ffffff' : currentColor);
+                    }
                 }
             }
 
