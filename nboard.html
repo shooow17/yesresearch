@@ -141,8 +141,32 @@
             function renderUserList(users) {
                 document.getElementById('user-count').textContent = users.length;
                 const panel = document.getElementById('users-list-panel');
-                panel.innerHTML = users.map(u => `<div class="py-1.5 border-b border-slate-100 last:border-0 text-sm text-slate-700">${u}</div>`).join('');
+                
+                if (isHost) {
+                    // 老師端：顯示可以清除特定學生的按鈕
+                    panel.innerHTML = users.map(u => {
+                        const isTeacher = u.includes('(老師)');
+                        const rawName = isTeacher ? currentUserName : u;
+                        return `
+                        <div class="py-1.5 border-b border-slate-100 last:border-0 text-sm text-slate-700 flex justify-between items-center">
+                            <span class="truncate pr-2">${u}</span>
+                            <button class="text-red-500 hover:bg-red-50 p-1 rounded transition" onclick="window.clearUserBoard('${rawName}')" title="清除此人的畫布">
+                                <i class="ph ph-eraser text-base"></i>
+                            </button>
+                        </div>`;
+                    }).join('');
+                } else {
+                    // 學生端：僅顯示名單
+                    panel.innerHTML = users.map(u => `<div class="py-1.5 border-b border-slate-100 last:border-0 text-sm text-slate-700 truncate">${u}</div>`).join('');
+                }
             }
+
+            // 老師專用：清除單一使用者的畫布資料
+            window.clearUserBoard = function(userName) {
+                if (confirm(`確定要清除「${userName}」的所有畫布內容嗎？`)) {
+                    dispatchClear(userName);
+                }
+            };
 
             // 初始化老師端 (Host)
             function initHost(id) {
@@ -172,11 +196,12 @@
                             clientConnections.forEach(c => {
                                 if (c.conn !== conn && c.conn.open) c.conn.send({ type: 'action', action: data.action });
                             });
-                        } else if (data.type === 'clear') {
-                            globalActions = [];
+                        } else if (data.type === 'clearUser') {
+                            // 收到學生清除自己資料的請求
+                            globalActions = globalActions.filter(a => a.userName !== data.userName);
                             redraw();
                             clientConnections.forEach(c => {
-                                if (c.conn !== conn && c.conn.open) c.conn.send({ type: 'clear' });
+                                if (c.conn !== conn && c.conn.open) c.conn.send({ type: 'clearUser', userName: data.userName });
                             });
                         }
                     });
@@ -216,7 +241,12 @@
                         } else if (data.type === 'action') {
                             globalActions.push(data.action);
                             redraw();
-                        } else if (data.type === 'clear') {
+                        } else if (data.type === 'clearUser') {
+                            // 清除特定使用者的資料
+                            globalActions = globalActions.filter(a => a.userName !== data.userName);
+                            redraw();
+                        } else if (data.type === 'clearAll') {
+                            // 老師清除了所有人
                             globalActions = [];
                             redraw();
                         }
@@ -236,7 +266,7 @@
             }
 
             // ==========================================
-            // UI 切換與 QR Code 產生 (GitHub Pages 專用)
+            // UI 切換與 QR Code 產生
             // ==========================================
             function enterRoomUI() {
                 document.getElementById('login-screen').classList.add('hidden');
@@ -245,11 +275,9 @@
                 document.getElementById('display-room-id').textContent = roomId;
                 document.getElementById('modal-display-room-id').textContent = roomId; 
                 
-                // GitHub Pages 支援直接使用當前網址加上 Hash (#代碼)
                 const baseUrl = window.location.href.split('#')[0];
                 const shareUrl = `${baseUrl}#${roomId}`;
                 
-                // 可選：將老師的網址也加上 Hash，方便複製網址分享
                 if (isHost) {
                     window.history.replaceState(null, null, `#${roomId}`);
                 }
@@ -267,9 +295,6 @@
                 resizeCanvas(); 
             }
 
-            // ==========================================
-            // 人員名單展開控制
-            // ==========================================
             document.getElementById('users-toggle-btn').addEventListener('click', () => {
                 document.getElementById('users-list-panel').classList.toggle('hidden');
             });
@@ -287,14 +312,41 @@
                 }
             }
 
-            function dispatchClear() {
-                globalActions = [];
-                redraw();
-                if (isHost) {
-                    clientConnections.forEach(c => { if (c.conn.open) c.conn.send({ type: 'clear' }); });
+            // 處理清除邏輯 (targetUserName: null = 刪除全部; 有名字 = 刪除特定人員)
+            function dispatchClear(targetUserName = null) {
+                if (targetUserName) {
+                    globalActions = globalActions.filter(a => a.userName !== targetUserName);
+                    redraw();
+                    if (isHost) {
+                        clientConnections.forEach(c => { if (c.conn.open) c.conn.send({ type: 'clearUser', userName: targetUserName }); });
+                    } else {
+                        if (hostConnection && hostConnection.open) hostConnection.send({ type: 'clearUser', userName: targetUserName });
+                    }
                 } else {
-                    if (hostConnection && hostConnection.open) hostConnection.send({ type: 'clear' });
+                    globalActions = [];
+                    redraw();
+                    if (isHost) {
+                        clientConnections.forEach(c => { if (c.conn.open) c.conn.send({ type: 'clearAll' }); });
+                    }
                 }
+            }
+
+            // 繪製姓名小標籤
+            function drawNameTag(ctx, x, y, name, color) {
+                if (!name) return;
+                ctx.save();
+                ctx.font = '10px "Noto Sans TC", sans-serif';
+                const textWidth = ctx.measureText(name).width;
+                
+                // 標籤背景 (半透明白底)
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+                ctx.fillRect(x, y - 16, textWidth + 6, 16);
+
+                // 標籤文字 (如果用橡皮擦，名字用灰色顯示)
+                ctx.fillStyle = color === '#ffffff' ? '#94a3b8' : color; 
+                ctx.textBaseline = 'bottom';
+                ctx.fillText(name, x + 3, y - 2);
+                ctx.restore();
             }
 
             function redraw() {
@@ -315,11 +367,17 @@
                             else ctx.lineTo(pt.x, pt.y);
                         }
                         ctx.stroke();
+                        // 畫上姓名標籤
+                        if (action.points.length > 0) {
+                            drawNameTag(ctx, action.points[0].x, action.points[0].y, action.userName, action.color);
+                        }
                     } else if (action.type === 'text') {
                         ctx.font = `${action.size}px "Noto Sans TC", sans-serif`;
                         ctx.fillStyle = action.color;
                         ctx.textBaseline = 'top';
                         ctx.fillText(action.text, action.x, action.y);
+                        // 畫上姓名標籤
+                        drawNameTag(ctx, action.x, action.y, action.userName, action.color);
                     }
                 });
 
@@ -335,6 +393,8 @@
                         else ctx.lineTo(pt.x, pt.y);
                     }
                     ctx.stroke();
+                    // 自己正在畫的時候也顯示標籤
+                    drawNameTag(ctx, currentPath[0].x, currentPath[0].y, currentUserName, currentTool === 'eraser' ? '#ffffff' : currentColor);
                 }
             }
 
@@ -362,8 +422,17 @@
 
             document.getElementById('width-select').addEventListener('change', (e) => currentWidth = parseInt(e.target.value));
 
+            // 主清除按鈕邏輯
             document.getElementById('clear-btn').addEventListener('click', () => {
-                if (confirm('確定要清除所有人的畫布內容嗎？')) dispatchClear();
+                if (isHost) {
+                    if (confirm('老師您好，確定要清除「所有人」的畫布內容嗎？\n(若只要清除單一學生，可點開名單中的橡皮擦)')) {
+                        dispatchClear(); // 不帶參數 = 清除全部
+                    }
+                } else {
+                    if (confirm('確定要清除「您自己」的畫布內容嗎？')) {
+                        dispatchClear(currentUserName); // 帶入自己名字 = 只清除自己
+                    }
+                }
             });
 
             const qrModal = document.getElementById('qr-modal');
@@ -577,7 +646,7 @@
                         <i class="ph ph-users"></i> <span id="user-count">1</span> 人
                     </button>
                     <!-- 人員名單面板 -->
-                    <div id="users-list-panel" class="hidden absolute top-full right-0 mt-1 w-32 bg-white border border-slate-200 rounded-lg shadow-xl p-2 max-h-48 overflow-y-auto z-50">
+                    <div id="users-list-panel" class="hidden absolute top-full right-0 mt-1 w-40 bg-white border border-slate-200 rounded-lg shadow-xl p-2 max-h-48 overflow-y-auto z-50">
                         <div class="py-1 border-b border-slate-100 text-sm text-slate-700">尚未連線</div>
                     </div>
                 </div>
@@ -588,7 +657,7 @@
                 <button id="show-qr-btn" class="flex items-center gap-1 px-2 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg transition text-xs md:text-sm font-medium border border-blue-200">
                     <i class="ph ph-qr-code text-lg"></i>
                 </button>
-                <button id="clear-btn" class="flex items-center gap-1 px-2 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg transition text-xs md:text-sm font-medium border border-red-200">
+                <button id="clear-btn" class="flex items-center gap-1 px-2 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg transition text-xs md:text-sm font-medium border border-red-200" title="清除畫布">
                     <i class="ph ph-trash text-lg"></i>
                 </button>
             </div>
