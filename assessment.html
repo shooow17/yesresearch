@@ -10,25 +10,25 @@
         
         body {
             font-family: 'Noto+Sans+TC', sans-serif;
-            background-color: #f8fafc;
+            background-color: #f1f5f9;
             overflow: hidden; /* 禁止全頁捲軸 */
             height: 100vh;
         }
 
-        /* 指針時鐘樣式：配合 3/5 版面放大 */
+        /* 指針時鐘樣式 */
         .analog-clock {
-            width: 450px; 
-            height: 450px;
-            border: 15px solid #1e293b;
+            width: 440px; 
+            height: 440px;
+            border: 12px solid #1e293b;
             border-radius: 50%;
             position: relative;
             background: white;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
         }
         
         .clock-number {
             position: absolute;
-            font-size: 2.5rem; /* 放大數字 */
+            font-size: 2.2rem;
             font-weight: 900;
             color: #1e293b;
             width: 50px;
@@ -39,8 +39,8 @@
         }
 
         .dot {
-            width: 20px;
-            height: 20px;
+            width: 18px;
+            height: 18px;
             background: #1e293b;
             border-radius: 50%;
             position: absolute;
@@ -57,22 +57,22 @@
             transform-origin: bottom;
             border-radius: 10px;
         }
-        .hour-hand { width: 12px; height: 120px; background: #1e293b; z-index: 3; }
-        .min-hand { width: 8px; height: 170px; background: #475569; z-index: 2; }
-        .sec-hand { width: 3px; height: 195px; background: #ef4444; z-index: 4; }
+        .hour-hand { width: 10px; height: 110px; background: #1e293b; z-index: 3; }
+        .min-hand { width: 7px; height: 160px; background: #475569; z-index: 2; }
+        .sec-hand { width: 3px; height: 185px; background: #ef4444; z-index: 4; }
 
         .clock-mark {
             position: absolute;
             width: 3px;
-            height: 15px;
+            height: 14px;
             background: #cbd5e1;
             left: 50%;
-            transform-origin: 50% 225px; /* 對應半徑 450/2 */
+            transform-origin: 50% 220px;
         }
-        .hour-mark { background: #94a3b8; width: 6px; height: 25px; }
+        .hour-mark { background: #94a3b8; width: 5px; height: 22px; }
 
         .glass-card {
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(255, 255, 255, 0.98);
             border: 1px solid #e2e8f0;
         }
 
@@ -86,15 +86,36 @@
             resize: none;
         }
 
-        .scroll-container::-webkit-scrollbar { width: 6px; }
+        .scroll-container::-webkit-scrollbar { width: 5px; }
         .scroll-container::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 10px; }
     </style>
 </head>
-<body class="p-6">
+<body class="p-5">
 
-    <main class="grid grid-cols-5 gap-6 h-full">
+    <main class="grid grid-cols-5 gap-5 h-full">
         
-        <section class="col-span-3 flex flex-col items-center justify-center glass-card rounded-[3rem] shadow-sm border-2 border-white bg-white/50">
+        <!-- 左側：時鐘與標題區域 (3/5) -->
+        <section class="col-span-3 relative flex flex-col items-center justify-center glass-card rounded-[3rem] shadow-sm border-2 border-white bg-white/60">
+            
+            <!-- 標題與版本切換：移至左上角並縮小 -->
+            <div class="absolute top-8 left-10 flex flex-col gap-3">
+                <div class="flex items-center gap-2">
+                    <div class="bg-blue-600 p-1.5 rounded-lg">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    </div>
+                    <h1 class="text-xl font-black text-slate-800 tracking-tight">永順國小定期評量提醒</h1>
+                </div>
+                
+                <div class="flex bg-slate-200/50 p-1 rounded-xl items-center gap-2 w-fit">
+                    <span class="text-slate-500 font-bold ml-2 text-xs">切換版本</span>
+                    <div class="flex gap-1">
+                        <button onclick="setGrade('midHigh')" id="btn-midHigh" class="px-3 py-1 rounded-lg font-bold transition-all text-xs">中高年級</button>
+                        <button onclick="setGrade('lower')" id="btn-lower" class="px-3 py-1 rounded-lg font-bold transition-all text-xs">低年級</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 時鐘部分 -->
             <div class="analog-clock" id="analog-clock">
                 <div class="dot"></div>
                 <div class="hand hour-hand" id="hour-hand"></div>
@@ -103,79 +124,69 @@
             </div>
             
             <div class="text-center mt-10">
-                <div id="digital-clock" class="text-[9rem] font-black text-slate-800 font-mono tabular-nums tracking-tighter leading-none">
+                <div id="digital-clock" class="text-[10rem] font-black text-slate-800 font-mono tabular-nums tracking-tighter leading-none">
                     00:00:00
                 </div>
-                <div id="date-display" class="text-4xl text-slate-500 mt-4 font-bold bg-slate-100 py-2 px-8 rounded-full inline-block">
+                <div id="date-display" class="text-3xl text-slate-500 mt-4 font-bold bg-slate-100 py-2 px-8 rounded-full inline-block">
                     2024年 01月 01日
                 </div>
             </div>
         </section>
 
+        <!-- 右側：資訊區 (2/5) -->
         <section class="col-span-2 flex flex-col gap-5 min-h-0">
             
-            <div class="glass-card rounded-[2rem] p-5 shadow-sm border-2 border-white flex flex-col gap-4">
-                <div class="flex items-center gap-3">
-                    <div class="bg-blue-600 p-2 rounded-xl">
-                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                    </div>
-                    <h1 class="text-2xl font-black text-slate-800 tracking-tight">永順國小定期評量提醒</h1>
-                </div>
-                
-                <div class="flex bg-slate-100 p-1.5 rounded-xl justify-between items-center">
-                    <span class="text-slate-500 font-bold ml-2 text-sm">版本切換</span>
-                    <div class="flex gap-1">
-                        <button onclick="setGrade('midHigh')" id="btn-midHigh" class="px-4 py-1.5 rounded-lg font-bold transition-all text-sm">中高年級</button>
-                        <button onclick="setGrade('lower')" id="btn-lower" class="px-4 py-1.5 rounded-lg font-bold transition-all text-sm">低年級</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="glass-card rounded-[2.5rem] p-5 shadow-sm border-2 border-white flex flex-col min-h-0 h-[40%]">
+            <!-- 考試科目區：稍微調大占比 -->
+            <div class="glass-card rounded-[2.5rem] p-5 shadow-sm border-2 border-white flex flex-col min-h-0 h-[45%]">
                 <div class="flex gap-2 mb-4 bg-slate-100 p-1 rounded-xl w-fit">
-                    <button onclick="setDay(1)" id="day1-tab" class="px-6 py-2 rounded-lg font-black transition-all active-tab text-base">第一天</button>
-                    <button onclick="setDay(2)" id="day2-tab" class="px-6 py-2 rounded-lg font-black transition-all text-slate-500 hover:bg-white text-base">第二天</button>
+                    <button onclick="setDay(1)" id="day1-tab" class="px-6 py-2 rounded-lg font-black transition-all active-tab text-sm">第一天考試</button>
+                    <button onclick="setDay(2)" id="day2-tab" class="px-6 py-2 rounded-lg font-black transition-all text-slate-500 hover:bg-white text-sm">第二天考試</button>
                 </div>
 
                 <div class="flex-grow overflow-auto scroll-container rounded-xl border border-slate-100">
                     <table class="w-full text-left border-collapse">
                         <thead class="sticky top-0 z-10">
-                            <tr class="bg-slate-800 text-white text-sm">
-                                <th class="p-3 font-bold">科目</th>
-                                <th class="p-3 font-bold">時間</th>
-                                <th class="p-3 font-bold">狀態</th>
+                            <tr class="bg-slate-800 text-white text-xs">
+                                <th class="p-3 font-bold">考試科目</th>
+                                <th class="p-3 font-bold">考試時間</th>
+                                <th class="p-3 font-bold text-center">狀態</th>
                             </tr>
                         </thead>
                         <tbody id="schedule-body">
-                            </tbody>
+                            <!-- 動態生成 -->
+                        </tbody>
                     </table>
                 </div>
             </div>
 
+            <!-- 人數統計：調整為水平並列 -->
             <div class="glass-card rounded-[2rem] p-5 shadow-sm border-2 border-white">
-                <h2 class="text-lg font-bold mb-3 flex items-center text-slate-700">
-                    <svg class="w-5 h-5 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                <h2 class="text-base font-bold mb-4 flex items-center text-slate-700">
+                    <svg class="w-4 h-4 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
                     應考人數統計
                 </h2>
-                <div class="grid grid-cols-2 gap-3">
-                    <div class="bg-blue-50/50 p-3 rounded-xl border border-blue-100">
-                        <label class="block text-xs text-blue-600 font-bold mb-1">應考人數</label>
-                        <input type="number" value="25" class="w-full bg-transparent text-2xl font-black text-blue-800 focus:outline-none">
+                <div class="flex flex-col gap-3">
+                    <div class="flex gap-3">
+                        <div class="flex-1 bg-blue-50/50 p-3 rounded-xl border border-blue-100 flex items-center justify-between">
+                            <label class="text-sm text-blue-600 font-bold whitespace-nowrap">應考人數：</label>
+                            <input type="number" value="25" class="w-16 bg-transparent text-xl font-black text-blue-800 focus:outline-none text-right">
+                        </div>
+                        <div class="flex-1 bg-emerald-50/50 p-3 rounded-xl border border-emerald-100 flex items-center justify-between">
+                            <label class="text-sm text-emerald-600 font-bold whitespace-nowrap">實到人數：</label>
+                            <input type="number" value="25" class="w-16 bg-transparent text-xl font-black text-emerald-800 focus:outline-none text-right">
+                        </div>
                     </div>
-                    <div class="bg-emerald-50/50 p-3 rounded-xl border border-emerald-100">
-                        <label class="block text-xs text-emerald-600 font-bold mb-1">實到人數</label>
-                        <input type="number" value="25" class="w-full bg-transparent text-2xl font-black text-emerald-800 focus:outline-none">
-                    </div>
-                    <div class="bg-rose-50/50 p-3 rounded-xl border border-rose-100 col-span-2 flex items-center gap-3">
+                    <div class="bg-rose-50/50 p-3 rounded-xl border border-rose-100 flex items-center gap-3">
                         <label class="text-sm text-rose-600 font-bold whitespace-nowrap">缺考座號：</label>
-                        <input type="text" placeholder="無" class="flex-grow bg-transparent text-xl font-black text-rose-800 placeholder-rose-300 focus:outline-none">
+                        <input type="text" placeholder="無" class="flex-grow bg-transparent text-lg font-black text-rose-800 placeholder-rose-300 focus:outline-none">
                     </div>
                 </div>
             </div>
 
+            <!-- 注意事項 -->
             <div class="glass-card rounded-[2.5rem] p-5 shadow-sm border-2 border-white flex-grow flex flex-col min-h-0">
-                <h2 class="text-lg font-bold mb-2 flex items-center text-slate-700">
-                    <svg class="w-5 h-5 mr-2 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                <h2 class="text-base font-bold mb-3 flex items-center text-slate-700">
+                    <svg class="w-4 h-4 mr-2 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
                     注意事項
                 </h2>
                 <textarea class="w-full flex-grow p-4 rounded-2xl bg-amber-50/50 border-2 border-amber-100 text-amber-900 text-lg font-bold leading-relaxed focus:outline-none focus:bg-amber-50" placeholder="點擊此處輸入提醒..."></textarea>
@@ -206,14 +217,14 @@
                 mark.style.transform = `translateX(-50%) rotate(${i * 6}deg)`;
                 clock.appendChild(mark);
             }
-            const radius = 180; // 配合 450px 調整數字半徑
+            const radius = 175;
             for (let i = 1; i <= 12; i++) {
                 const num = document.createElement('div');
                 num.className = 'clock-number';
                 num.textContent = i;
                 const angle = (i * 30 - 90) * (Math.PI / 180);
-                const x = 225 + radius * Math.cos(angle);
-                const y = 225 + radius * Math.sin(angle);
+                const x = 220 + radius * Math.cos(angle);
+                const y = 220 + radius * Math.sin(angle);
                 num.style.left = `${x}px`;
                 num.style.top = `${y}px`;
                 clock.appendChild(num);
@@ -244,27 +255,27 @@
                 const startInMins = sH * 60 + sM, endInMins = eH * 60 + eM;
                 const statusCell = row.querySelector('.status-cell');
                 if (nowInMins < startInMins) {
-                    statusCell.innerHTML = '<span class="text-slate-400 font-bold">待考</span>';
+                    statusCell.innerHTML = '<span class="text-slate-400 font-bold text-xs">尚未開始</span>';
                 } else if (nowInMins >= startInMins && nowInMins < endInMins) {
-                    statusCell.innerHTML = '<span class="text-blue-600 font-black animate-pulse">考試中</span>';
+                    statusCell.innerHTML = '<span class="text-blue-600 font-black animate-pulse text-xs">考試中</span>';
                 } else {
-                    statusCell.innerHTML = '<span class="text-emerald-500 font-bold">完試</span>';
+                    statusCell.innerHTML = '<span class="text-emerald-500 font-bold text-xs">結束</span>';
                 }
             });
         }
 
         function setGrade(grade) {
             currentGrade = grade;
-            document.getElementById('btn-midHigh').className = (grade === 'midHigh') ? "px-4 py-1.5 rounded-lg font-bold bg-blue-600 text-white shadow-md" : "px-4 py-1.5 rounded-lg font-bold text-slate-500 hover:bg-white";
-            document.getElementById('btn-lower').className = (grade === 'lower') ? "px-4 py-1.5 rounded-lg font-bold bg-blue-600 text-white shadow-md" : "px-4 py-1.5 rounded-lg font-bold text-slate-500 hover:bg-white";
+            document.getElementById('btn-midHigh').className = (grade === 'midHigh') ? "px-3 py-1 rounded-lg font-bold bg-blue-600 text-white shadow-sm" : "px-3 py-1 rounded-lg font-bold text-slate-500 hover:bg-white";
+            document.getElementById('btn-lower').className = (grade === 'lower') ? "px-3 py-1 rounded-lg font-bold bg-blue-600 text-white shadow-sm" : "px-3 py-1 rounded-lg font-bold text-slate-500 hover:bg-white";
             renderSchedule();
         }
 
         function setDay(day) {
             currentDay = day;
             const d1 = document.getElementById('day1-tab'), d2 = document.getElementById('day2-tab');
-            if (day === 1) { d1.className = "px-6 py-2 rounded-lg font-black transition-all active-tab text-base"; d2.className = "px-6 py-2 rounded-lg font-black transition-all text-slate-500 hover:bg-white text-base"; }
-            else { d2.className = "px-6 py-2 rounded-lg font-black transition-all active-tab text-base"; d1.className = "px-6 py-2 rounded-lg font-black transition-all text-slate-500 hover:bg-white text-base"; }
+            if (day === 1) { d1.className = "px-6 py-2 rounded-lg font-black transition-all active-tab text-sm"; d2.className = "px-6 py-2 rounded-lg font-black transition-all text-slate-500 hover:bg-white text-sm"; }
+            else { d2.className = "px-6 py-2 rounded-lg font-black transition-all active-tab text-sm"; d1.className = "px-6 py-2 rounded-lg font-black transition-all text-slate-500 hover:bg-white text-sm"; }
             renderSchedule();
         }
 
@@ -275,7 +286,7 @@
                 const tr = document.createElement('tr');
                 tr.className = 'subject-row border-b border-slate-50';
                 tr.dataset.start = sub.start; tr.dataset.end = sub.end;
-                tr.innerHTML = `<td class="p-3 text-lg font-black text-slate-800">${sub.name}</td><td class="p-3 text-base font-mono font-bold text-slate-600">${sub.start}-${sub.end}</td><td class="p-3 status-cell text-sm"></td>`;
+                tr.innerHTML = `<td class="p-4 text-xl font-black text-slate-800">${sub.name}</td><td class="p-4 text-lg font-mono font-bold text-slate-600">${sub.start}-${sub.end}</td><td class="p-4 status-cell text-center"></td>`;
                 body.appendChild(tr);
             });
             updateTime();
