@@ -103,14 +103,6 @@
         /* 隱藏捲軸但保持版面完整 */
         .scroll-container::-webkit-scrollbar { width: 0px; background: transparent; }
         .scroll-container { scrollbar-width: none; -ms-overflow-style: none; }
-        
-        /* 注音樣式微調 */
-        rt {
-            font-size: 0.35em;
-            font-weight: 700;
-            line-height: 1;
-            padding-bottom: 0.1em;
-        }
     </style>
 </head>
 <body class="p-5 theme-bright">
@@ -172,7 +164,7 @@
         <!-- 右側：資訊區 (2/5) -->
         <section class="col-span-2 flex flex-col gap-5 min-h-0">
             
-            <!-- 考試科目區：優化文字大小與間距以消除捲軸 -->
+            <!-- 考試科目區 -->
             <div class="glass-card rounded-[2.5rem] p-6 shadow-sm flex flex-col min-h-0 h-[50%]">
                 <div class="flex gap-2 mb-4 bg-black/5 p-1 rounded-xl w-fit">
                     <button onclick="setDay(1)" id="day1-tab" class="px-6 py-2 rounded-lg font-black transition-all active-tab text-sm">第一天考試</button>
@@ -231,32 +223,6 @@
     </main>
 
     <script>
-        // 注音轉換映射表
-        const zhuyinMap = {
-            '永順國小定期評量提醒': '<ruby>永<rt>ㄩㄥˇ</rt>順<rt>ㄕㄨㄣˋ</rt>國<rt>ㄍㄨㄛˊ</rt>小<rt>ㄒㄧㄠˇ</rt>定<rt>ㄉㄧㄥˋ</rt>期<rt>ㄑㄧˊ</rt>評<rt>ㄆㄧㄥˊ</rt>量<rt>ㄌㄧㄤˊ</rt>提<rt>ㄊㄧˊ</rt>醒<rt>ㄒㄧㄥˇ</rt></ruby>',
-            '第一天考試': '<ruby>第<rt>ㄉㄧˋ</rt>一<rt>ㄧ</rt>天<rt>ㄊㄧㄢ</rt>考<rt>ㄎㄠˇ</rt>試<rt>ㄕˋ</rt></ruby>',
-            '第二天考試': '<ruby>第<rt>ㄉㄧˋ</rt>二<rt>ㄦˋ</rt>天<rt>ㄊㄧㄢ</rt>考<rt>ㄎㄠˇ</rt>試<rt>ㄕˋ</rt></ruby>',
-            '考試科目': '<ruby>考<rt>ㄎㄠˇ</rt>試<rt>ㄕˋ</rt>科<rt>ㄎㄜ</rt>目<rt>ㄇㄨˋ</rt></ruby>',
-            '考試時間': '<ruby>考<rt>ㄎㄠˇ</rt>試<rt>ㄕˋ</rt>時<rt>ㄕˊ</rt>間<rt>ㄐㄧㄢ</rt></ruby>',
-            '狀態': '<ruby>狀<rt>ㄓㄨㄤˋ</rt>ㄊㄞˋ</ruby>',
-            '應考人數統計': '<ruby>應<rt>ㄧㄥˋ</rt>考<rt>ㄎㄠˇ</rt>人<rt>ㄖㄣˊ</rt>數<rt>ㄕㄨˋ</rt>統<rt>ㄊㄨㄥˇ</rt>計<rt>ㄐㄧˋ</rt></ruby>',
-            '應考人數：': '<ruby>應<rt>ㄧㄥˋ</rt>考<rt>ㄎㄠˇ</rt>人<rt>ㄖㄣˊ</rt>數<rt>ㄕㄨˋ</rt>：</ruby>',
-            '實到人數：': '<ruby>實<rt>ㄕˊ</rt>到<rt>ㄉㄠˋ</rt>人<rt>ㄖㄣˊ</rt>數<rt>ㄕㄨˋ</rt>：</ruby>',
-            '缺考座號：': '<ruby>缺<rt>ㄑㄩㄝ</rt>考<rt>ㄎㄠˇ</rt>座<rt>ㄗㄨㄛˋ</rt>號<rt>ㄏㄠˋ</rt>：</ruby>',
-            '注意事項': '<ruby>注<rt>ㄓㄨˋ</rt>意<rt>ㄧˋ</rt>事<rt>ㄕˋ</rt>項<rt>ㄒㄧㄤˋ</rt></ruby>',
-            // 科目注音
-            '國語': '<ruby>國<rt>ㄍㄨㄛˊ</rt>語<rt>ㄩˇ</rt></ruby>',
-            '生活': '<ruby>生<rt>ㄕㄥ</rt>活<rt>ㄏㄨㄛˊ</rt></ruby>',
-            '數學': '<ruby>數<rt>ㄕㄨˋ</rt>學<rt>ㄒㄩㄝˊ</rt></ruby>',
-            '自然': '<ruby>自<rt>ㄗˋ</rt>然<rt>ㄖㄢˊ</rt></ruby>',
-            '社會': '<ruby>社<rt>ㄕㄜˋ</rt>會<rt>ㄏㄨㄟˋ</rt></ruby>',
-            '英語': '<ruby>英<rt>ㄧㄥ</rt>語<rt>ㄩˇ</rt></ruby>',
-            // 狀態注音
-            '尚未開始': '<ruby>尚<rt>ㄕㄤˋ</rt>未<rt>ㄨㄟˋ</rt>開<rt>ㄎㄞ</rt>始<rt>ㄕˇ</rt></ruby>',
-            '● 考試中': '<ruby>● 考<rt>ㄎㄠˇ</rt>試<rt>ㄕˋ</rt>中<rt>ㄓㄨㄥ</rt></ruby>',
-            '✓ 結束': '<ruby>✓ 結<rt>ㄐㄧㄝˊ</rt>束<rt>ㄕㄨˋ</rt></ruby>'
-        };
-
         const examData = {
             midHigh: {
                 day1: [{ name: '國語', start: '08:40', end: '09:20' },{ name: '自然', start: '09:30', end: '10:00' },{ name: '英語', start: '10:30', end: '11:10' }],
@@ -341,7 +307,7 @@
                     statusText = '✓ 結束';
                     statusCell.className = "p-4 status-cell text-center text-emerald-500 font-bold text-xs";
                 }
-                statusCell.innerHTML = currentGrade === 'lower' ? zhuyinMap[statusText] : statusText;
+                statusCell.innerHTML = statusText;
             });
         }
 
@@ -349,26 +315,6 @@
             currentGrade = grade;
             document.getElementById('btn-midHigh').className = (grade === 'midHigh') ? "px-3 py-1 rounded-lg font-bold bg-blue-600 text-white shadow-sm" : "px-3 py-1 rounded-lg font-bold opacity-60 hover:bg-black/10";
             document.getElementById('btn-lower').className = (grade === 'lower') ? "px-3 py-1 rounded-lg font-bold bg-blue-600 text-white shadow-sm" : "px-3 py-1 rounded-lg font-bold opacity-60 hover:bg-black/10";
-            
-            // 更新 UI 標籤文字 (是否帶注音)
-            const isLower = grade === 'lower';
-            const updateUI = (id, originalText) => {
-                const el = document.getElementById(id);
-                if (el) el.innerHTML = isLower ? zhuyinMap[originalText] : originalText;
-            };
-
-            updateUI('main-title', '永順國小定期評量提醒');
-            updateUI('day1-tab', '第一天考試');
-            updateUI('day2-tab', '第二天考試');
-            updateUI('th-subject', '考試科目');
-            updateUI('th-time', '考試時間');
-            updateUI('th-status', '狀態');
-            updateUI('stat-title', '應考人數統計');
-            updateUI('label-total', '應考人數：');
-            updateUI('label-present', '實到人數：');
-            updateUI('label-absent', '缺考座號：');
-            updateUI('note-title', '注意事項');
-
             renderSchedule();
         }
 
@@ -392,10 +338,8 @@
                 const tr = document.createElement('tr');
                 tr.className = 'subject-row border-b border-black/5';
                 tr.dataset.start = sub.start; tr.dataset.end = sub.end;
-                const displayName = currentGrade === 'lower' ? (zhuyinMap[sub.name] || sub.name) : sub.name;
-                // 調整字體大小：科目 4xl -> 3xl, 時間 3xl -> 2xl, 並縮小 Padding 8 -> 4
                 tr.innerHTML = `
-                    <td class="p-4 text-4xl font-black">${displayName}</td>
+                    <td class="p-4 text-4xl font-black">${sub.name}</td>
                     <td class="p-4 text-3xl font-mono font-bold opacity-80">${sub.start}-${sub.end}</td>
                     <td class="p-4 status-cell text-center"></td>
                 `;
