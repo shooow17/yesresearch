@@ -28,7 +28,7 @@
         body.theme-soft .glass-card { background: rgba(255, 253, 245, 0.98); border-color: #faeecd; }
         body.theme-dark .glass-card { background: rgba(30, 41, 59, 0.8); border-color: #334155; }
 
-        /* 指針時鐘樣式：放大至 500px */
+        /* 指針時鐘樣式：保持 500px */
         .analog-clock {
             width: 500px; 
             height: 500px;
@@ -110,7 +110,7 @@
     <main class="grid grid-cols-5 gap-5 h-full">
         
         <!-- 左側：時鐘與標題區域 (3/5) -->
-        <section class="col-span-3 relative flex flex-col items-center glass-card rounded-[3rem] shadow-sm pt-24 pb-10">
+        <section class="col-span-3 relative flex flex-col items-center glass-card rounded-[3rem] shadow-sm pt-28 pb-10">
             
             <!-- 標題、版本、主題切換區域 -->
             <div class="absolute top-8 left-10 z-20 flex flex-col gap-4">
@@ -118,7 +118,7 @@
                     <div class="bg-blue-600 p-1.5 rounded-lg shadow-lg">
                         <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                     </div>
-                    <h1 id="main-title" class="text-2xl font-black tracking-tight">永順國小定期評量提醒</h1>
+                    <h1 id="main-title" class="text-2xl font-black tracking-tight text-slate-800">永順國小定期評量提醒</h1>
                 </div>
                 
                 <div class="flex flex-col gap-2">
@@ -142,22 +142,22 @@
                 </div>
             </div>
 
-            <!-- 指針時鐘部分：交換至上方，放大至 500px -->
-            <div class="analog-clock mb-8" id="analog-clock">
+            <!-- 1. 日期放在最上面 -->
+            <div id="date-display" class="text-3xl mb-4 font-bold bg-black/5 py-2 px-8 rounded-full inline-block">
+                2024年 01月 01日
+            </div>
+
+            <!-- 2. 數位時鐘放在中間 -->
+            <div id="digital-clock" class="text-[8.5rem] font-black font-mono tabular-nums tracking-tighter leading-none mb-10">
+                00:00:00
+            </div>
+
+            <!-- 3. 類比時鐘放在最下方 -->
+            <div class="analog-clock" id="analog-clock">
                 <div class="dot"></div>
                 <div class="hand hour-hand" id="hour-hand"></div>
                 <div class="hand min-hand" id="min-hand"></div>
                 <div class="hand sec-hand" id="sec-hand"></div>
-            </div>
-
-            <!-- 數位時鐘與日期：交換至下方，日期放在時間上方 -->
-            <div class="text-center">
-                <div id="date-display" class="text-3xl mb-4 font-bold bg-black/5 py-2 px-8 rounded-full inline-block">
-                    2024年 01月 01日
-                </div>
-                <div id="digital-clock" class="text-[8.5rem] font-black font-mono tabular-nums tracking-tighter leading-none">
-                    00:00:00
-                </div>
             </div>
             
         </section>
@@ -230,7 +230,7 @@
                 day2: [{ name: '數學', start: '08:40', end: '09:20' },{ name: '社會', start: '09:30', end: '10:10' }]
             },
             lower: {
-                day1: [{ name: '國語', start: '08:40', end: '09:20' },{ name: '生活', start: '09:30', end: '11:00' }],
+                day1: [{ name: '國語', start: '08:40', end: '09:20' },{ name: '生活', start: '09:30', end: '10:10' }],
                 day2: [{ name: '數學', start: '08:40', end: '09:20' }]
             }
         };
@@ -270,7 +270,7 @@
             }
             
             // 數字
-            const radius = 205; // 配合 500px 的半徑
+            const radius = 205; 
             for (let i = 1; i <= 12; i++) {
                 const num = document.createElement('div');
                 num.className = 'clock-number';
