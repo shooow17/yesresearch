@@ -28,28 +28,28 @@
         body.theme-soft .glass-card { background: rgba(255, 253, 245, 0.98); border-color: #faeecd; }
         body.theme-dark .glass-card { background: rgba(30, 41, 59, 0.8); border-color: #334155; }
 
-        /* 指針時鐘樣式 */
+        /* 指針時鐘樣式：放大至 500px */
         .analog-clock {
-            width: 440px; 
-            height: 440px;
+            width: 500px; 
+            height: 500px;
             border-radius: 50%;
             position: relative;
             background: white;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
             transition: border-color 0.5s ease;
         }
-        body.theme-bright .analog-clock { border: 12px solid #1e293b; }
-        body.theme-soft .analog-clock { border: 12px solid #854d0e; }
-        body.theme-dark .analog-clock { border: 12px solid #f1f5f9; }
+        body.theme-bright .analog-clock { border: 14px solid #1e293b; }
+        body.theme-soft .analog-clock { border: 14px solid #854d0e; }
+        body.theme-dark .analog-clock { border: 14px solid #f1f5f9; }
         
         .clock-number {
             position: absolute;
-            font-size: 2.2rem;
+            font-size: 2.5rem;
             font-weight: 900;
-            width: 50px;
-            height: 50px;
+            width: 60px;
+            height: 60px;
             text-align: center;
-            line-height: 50px;
+            line-height: 60px;
             transform: translate(-50%, -50%);
         }
         body.theme-bright .clock-number { color: #1e293b; }
@@ -57,8 +57,8 @@
         body.theme-dark .clock-number { color: #1e293b; }
 
         .dot {
-            width: 18px;
-            height: 18px;
+            width: 20px;
+            height: 20px;
             background: #1e293b;
             border-radius: 50%;
             position: absolute;
@@ -75,19 +75,19 @@
             transform-origin: bottom;
             border-radius: 10px;
         }
-        .hour-hand { width: 10px; height: 110px; background: #1e293b; z-index: 3; }
-        .min-hand { width: 7px; height: 160px; background: #475569; z-index: 2; }
-        .sec-hand { width: 3px; height: 185px; background: #ef4444; z-index: 4; }
+        .hour-hand { width: 12px; height: 130px; background: #1e293b; z-index: 3; }
+        .min-hand { width: 8px; height: 190px; background: #475569; z-index: 2; }
+        .sec-hand { width: 3px; height: 215px; background: #ef4444; z-index: 4; }
 
         .clock-mark {
             position: absolute;
             width: 3px;
-            height: 14px;
+            height: 16px;
             background: #cbd5e1;
             left: 50%;
-            transform-origin: 50% 220px;
+            transform-origin: 50% 250px;
         }
-        .hour-mark { background: #94a3b8; width: 5px; height: 22px; }
+        .hour-mark { background: #94a3b8; width: 6px; height: 26px; }
 
         .active-tab {
             background-color: #2563eb;
@@ -100,7 +100,7 @@
             background: transparent;
         }
 
-        /* 隱藏捲軸但保持版面完整 */
+        /* 隱藏捲軸 */
         .scroll-container::-webkit-scrollbar { width: 0px; background: transparent; }
         .scroll-container { scrollbar-width: none; -ms-overflow-style: none; }
     </style>
@@ -110,7 +110,7 @@
     <main class="grid grid-cols-5 gap-5 h-full">
         
         <!-- 左側：時鐘與標題區域 (3/5) -->
-        <section class="col-span-3 relative flex flex-col items-center glass-card rounded-[3rem] shadow-sm pt-28">
+        <section class="col-span-3 relative flex flex-col items-center glass-card rounded-[3rem] shadow-sm pt-24 pb-10">
             
             <!-- 標題、版本、主題切換區域 -->
             <div class="absolute top-8 left-10 z-20 flex flex-col gap-4">
@@ -121,7 +121,6 @@
                     <h1 id="main-title" class="text-2xl font-black tracking-tight">永順國小定期評量提醒</h1>
                 </div>
                 
-                <!-- 切換功能組 -->
                 <div class="flex flex-col gap-2">
                     <!-- 年級切換 -->
                     <div class="flex items-center gap-2 bg-black/5 p-1 rounded-xl w-fit">
@@ -143,22 +142,22 @@
                 </div>
             </div>
 
-            <!-- 數位時鐘與日期：交換至上方，調整邊距與字體大小防止重疊 -->
-            <div class="text-center mb-8">
-                <div id="digital-clock" class="text-[8.5rem] font-black font-mono tabular-nums tracking-tighter leading-none">
-                    00:00:00
-                </div>
-                <div id="date-display" class="text-3xl mt-4 font-bold bg-black/5 py-2 px-8 rounded-full inline-block">
-                    2024年 01月 01日
-                </div>
-            </div>
-
-            <!-- 指針時鐘部分：交換至下方 -->
-            <div class="analog-clock" id="analog-clock">
+            <!-- 指針時鐘部分：交換至上方，放大至 500px -->
+            <div class="analog-clock mb-8" id="analog-clock">
                 <div class="dot"></div>
                 <div class="hand hour-hand" id="hour-hand"></div>
                 <div class="hand min-hand" id="min-hand"></div>
                 <div class="hand sec-hand" id="sec-hand"></div>
+            </div>
+
+            <!-- 數位時鐘與日期：交換至下方，日期放在時間上方 -->
+            <div class="text-center">
+                <div id="date-display" class="text-3xl mb-4 font-bold bg-black/5 py-2 px-8 rounded-full inline-block">
+                    2024年 01月 01日
+                </div>
+                <div id="digital-clock" class="text-[8.5rem] font-black font-mono tabular-nums tracking-tighter leading-none">
+                    00:00:00
+                </div>
             </div>
             
         </section>
@@ -231,7 +230,7 @@
                 day2: [{ name: '數學', start: '08:40', end: '09:20' },{ name: '社會', start: '09:30', end: '10:10' }]
             },
             lower: {
-                day1: [{ name: '國語', start: '08:40', end: '09:20' },{ name: '生活', start: '09:30', end: '10:10' }],
+                day1: [{ name: '國語', start: '08:40', end: '09:20' },{ name: '生活', start: '09:30', end: '11:00' }],
                 day2: [{ name: '數學', start: '08:40', end: '09:20' }]
             }
         };
@@ -255,20 +254,30 @@
 
         function initClock() {
             const clock = document.getElementById('analog-clock');
+            clock.innerHTML = `
+                <div class="dot"></div>
+                <div class="hand hour-hand" id="hour-hand"></div>
+                <div class="hand min-hand" id="min-hand"></div>
+                <div class="hand sec-hand" id="sec-hand"></div>
+            `;
+            
+            // 刻度
             for (let i = 0; i < 60; i++) {
                 const mark = document.createElement('div');
                 mark.className = 'clock-mark' + (i % 5 === 0 ? ' hour-mark' : '');
                 mark.style.transform = `translateX(-50%) rotate(${i * 6}deg)`;
                 clock.appendChild(mark);
             }
-            const radius = 175;
+            
+            // 數字
+            const radius = 205; // 配合 500px 的半徑
             for (let i = 1; i <= 12; i++) {
                 const num = document.createElement('div');
                 num.className = 'clock-number';
                 num.textContent = i;
                 const angle = (i * 30 - 90) * (Math.PI / 180);
-                const x = 220 + radius * Math.cos(angle);
-                const y = 220 + radius * Math.sin(angle);
+                const x = 250 + radius * Math.cos(angle);
+                const y = 250 + radius * Math.sin(angle);
                 num.style.left = `${x}px`;
                 num.style.top = `${y}px`;
                 clock.appendChild(num);
