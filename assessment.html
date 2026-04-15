@@ -54,7 +54,7 @@
         }
         body.theme-bright .clock-number { color: #1e293b; }
         body.theme-soft .clock-number { color: #854d0e; }
-        body.theme-dark .clock-number { color: #1e293b; } /* 鐘面維持白色背景 */
+        body.theme-dark .clock-number { color: #1e293b; }
 
         .dot {
             width: 18px;
@@ -143,15 +143,8 @@
                 </div>
             </div>
 
-            <!-- 時鐘部分 -->
-            <div class="analog-clock" id="analog-clock">
-                <div class="dot"></div>
-                <div class="hand hour-hand" id="hour-hand"></div>
-                <div class="hand min-hand" id="min-hand"></div>
-                <div class="hand sec-hand" id="sec-hand"></div>
-            </div>
-            
-            <div class="text-center mt-10">
+            <!-- 數位時鐘與日期：交換至上方 -->
+            <div class="text-center mb-10">
                 <div id="digital-clock" class="text-[10rem] font-black font-mono tabular-nums tracking-tighter leading-none">
                     00:00:00
                 </div>
@@ -159,6 +152,15 @@
                     2024年 01月 01日
                 </div>
             </div>
+
+            <!-- 指針時鐘部分：交換至下方 -->
+            <div class="analog-clock" id="analog-clock">
+                <div class="dot"></div>
+                <div class="hand hour-hand" id="hour-hand"></div>
+                <div class="hand min-hand" id="min-hand"></div>
+                <div class="hand sec-hand" id="sec-hand"></div>
+            </div>
+            
         </section>
 
         <!-- 右側：資訊區 (2/5) -->
