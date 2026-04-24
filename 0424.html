@@ -5,27 +5,23 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>課程計畫審查工具｜115學年度彈性學習課程</title>
 <script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
 <style>
   body { font-family: -apple-system, "Microsoft JhengHei", "PingFang TC", sans-serif; }
   .fade-in { animation: fadeIn 0.3s ease-in; }
   @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-  .scroll::-webkit-scrollbar { width: 8px; height: 8px; }
-  .scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
   .drop-zone.dragging { background: #eef2ff; border-color: #6366f1; transform: scale(1.01); }
   details > summary { list-style: none; cursor: pointer; }
   details > summary::-webkit-details-marker { display: none; }
   details[open] > summary .arrow { transform: rotate(90deg); }
   .arrow { transition: transform 0.2s; }
   .progress-bar { transition: width 0.3s ease; }
-  .rule-card { transition: all 0.2s; }
   .rule-card:hover { transform: translateX(-2px); }
+  .page-badge { display: inline-flex; align-items: center; gap: 2px; background: #eef2ff; color: #4338ca; padding: 1px 6px; border-radius: 4px; font-size: 11px; font-weight: 600; margin: 0 2px; white-space: nowrap; }
 </style>
 </head>
 <body class="bg-slate-50 min-h-screen">
 
-<!-- Header -->
 <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
   <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between flex-wrap gap-3">
     <div class="flex items-center gap-3">
@@ -35,11 +31,8 @@
         <p class="text-xs text-slate-500">115學年度彈性學習課程 · 6-2-1 / 6-2-4 系列</p>
       </div>
     </div>
-    <div class="flex items-center gap-2">
-      <span class="text-xs bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full font-medium">🔒 本地處理 · 不上傳</span>
-    </div>
+    <span class="text-xs bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full font-medium">🔒 本地處理 · 不上傳</span>
   </div>
-  <!-- Tabs -->
   <div class="max-w-6xl mx-auto px-4 flex gap-1 border-t border-slate-100">
     <button onclick="switchTab('tool')" id="tab-tool" class="tab-btn px-4 py-2.5 text-sm font-medium border-b-2 border-indigo-500 text-indigo-600">🔍 審查工具</button>
     <button onclick="switchTab('criteria')" id="tab-criteria" class="tab-btn px-4 py-2.5 text-sm font-medium border-b-2 border-transparent text-slate-600 hover:text-slate-900">📖 審查重點</button>
@@ -49,17 +42,14 @@
 
 <main class="max-w-6xl mx-auto p-4">
 
-<!-- =============== 審查工具 =============== -->
 <section id="panel-tool" class="tab-panel">
-
-  <!-- Step indicator -->
   <div class="mb-4 bg-white rounded-xl border border-slate-200 p-4 flex items-center justify-between flex-wrap gap-3">
     <div class="flex items-center gap-2 text-sm">
-      <span id="step1" class="step-active flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-600 text-white font-medium"><span class="w-5 h-5 rounded-full bg-white text-indigo-600 flex items-center justify-center text-xs font-bold">1</span>上傳</span>
+      <span id="step1" class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-600 text-white font-medium"><span class="w-5 h-5 rounded-full bg-white text-indigo-600 flex items-center justify-center text-xs font-bold">1</span>上傳</span>
       <span class="text-slate-300">→</span>
       <span id="step2" class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 text-slate-500 font-medium"><span class="w-5 h-5 rounded-full bg-slate-300 text-white flex items-center justify-center text-xs font-bold">2</span>審查</span>
       <span class="text-slate-300">→</span>
-      <span id="step3" class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 text-slate-500 font-medium"><span class="w-5 h-5 rounded-full bg-slate-300 text-white flex items-center justify-center text-xs font-bold">3</span>下載</span>
+      <span id="step3" class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 text-slate-500 font-medium"><span class="w-5 h-5 rounded-full bg-slate-300 text-white flex items-center justify-center text-xs font-bold">3</span>檢視</span>
     </div>
     <div class="flex items-center gap-2">
       <label class="text-sm text-slate-600">套用規則：</label>
@@ -71,24 +61,20 @@
     </div>
   </div>
 
-  <!-- Upload zone -->
-  <div id="uploadSection" class="bg-white rounded-xl border border-slate-200 p-6 mb-4">
+  <div class="bg-white rounded-xl border border-slate-200 p-6 mb-4">
     <div id="dropZone" class="drop-zone border-2 border-dashed border-slate-300 rounded-xl p-8 text-center cursor-pointer hover:bg-slate-50 transition">
       <input type="file" id="fileInput" multiple accept=".docx" class="hidden">
       <div class="text-5xl mb-3">📤</div>
       <p class="font-semibold text-slate-700 mb-1">將 .docx 課程計畫拖曳至此，或點擊選擇檔案</p>
       <p class="text-xs text-slate-500">支援多檔案同時審查 · 僅接受 .docx 格式</p>
     </div>
-
     <div id="fileList" class="mt-4 space-y-2"></div>
-
     <div id="actionBar" class="mt-4 flex justify-end gap-2 hidden">
       <button onclick="clearFiles()" class="px-4 py-2 text-sm text-slate-600 hover:bg-slate-100 rounded-lg">清空</button>
       <button onclick="startReview()" id="startBtn" class="px-5 py-2 text-sm bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium">🚀 開始審查</button>
     </div>
   </div>
 
-  <!-- Progress -->
   <div id="progressSection" class="hidden bg-white rounded-xl border border-slate-200 p-6 mb-4">
     <div class="flex justify-between items-center mb-2">
       <span id="progressLabel" class="text-sm font-medium text-slate-700">準備中...</span>
@@ -99,32 +85,22 @@
     </div>
   </div>
 
-  <!-- Results -->
   <div id="resultsSection" class="hidden fade-in"></div>
 </section>
 
-<!-- =============== 審查重點 =============== -->
 <section id="panel-criteria" class="tab-panel hidden">
   <div class="bg-white rounded-xl border border-slate-200 p-6">
     <h2 class="text-xl font-bold text-slate-800 mb-4">📖 審查重點對照表</h2>
-    
     <details open class="mb-4 border border-slate-200 rounded-lg">
       <summary class="p-4 bg-slate-50 hover:bg-slate-100 rounded-lg flex items-center justify-between">
-        <div>
-          <span class="font-bold text-slate-800">6-2-1 統整性主題/專題/議題探究課程</span>
-          <p class="text-xs text-slate-500 mt-0.5">共 3 門課程需逐一審查</p>
-        </div>
+        <div><span class="font-bold text-slate-800">6-2-1 統整性主題/專題/議題探究課程</span><p class="text-xs text-slate-500 mt-0.5">共 3 門課程需逐一審查</p></div>
         <span class="arrow text-slate-400">▶</span>
       </summary>
       <div class="p-4 text-sm text-slate-700 space-y-3" id="criteria621"></div>
     </details>
-
     <details class="mb-4 border border-slate-200 rounded-lg">
       <summary class="p-4 bg-slate-50 hover:bg-slate-100 rounded-lg flex items-center justify-between">
-        <div>
-          <span class="font-bold text-slate-800">6-2-4 其他類課程</span>
-          <p class="text-xs text-slate-500 mt-0.5">含本土語文、服務學習、戶外教育等九類</p>
-        </div>
+        <div><span class="font-bold text-slate-800">6-2-4 其他類課程</span><p class="text-xs text-slate-500 mt-0.5">含本土語文、服務學習、戶外教育等九類</p></div>
         <span class="arrow text-slate-400">▶</span>
       </summary>
       <div class="p-4 text-sm text-slate-700 space-y-3" id="criteria624"></div>
@@ -132,77 +108,66 @@
   </div>
 </section>
 
-<!-- =============== 使用說明 =============== -->
 <section id="panel-help" class="tab-panel hidden">
   <div class="bg-white rounded-xl border border-slate-200 p-6 space-y-5 text-slate-700">
     <div>
       <h2 class="text-xl font-bold text-slate-800 mb-2">💡 三分鐘上手</h2>
       <ol class="list-decimal list-inside space-y-2 text-sm leading-relaxed">
         <li>到「審查工具」分頁，把老師寫好的 .docx 拖到框框，可一次選多份</li>
-        <li>按「開始審查」，等進度條跑完，結果會逐項列出</li>
-        <li>每條會附具體問題與建議改法；下載「註解版 docx」或「審查報告」</li>
+        <li>按「開始審查」，系統會自動判斷為 6-2-1 或 6-2-4 系列並逐項檢查</li>
+        <li>結果會顯示每項問題與建議改法，並標示對應上傳文件的頁碼</li>
       </ol>
     </div>
-
     <div class="border-t pt-4">
       <h3 class="font-bold text-slate-800 mb-3">🎯 判讀結果說明</h3>
       <div class="grid sm:grid-cols-2 gap-2 text-sm">
-        <div class="flex gap-2 p-3 bg-emerald-50 rounded-lg"><span class="text-lg">✅</span><div><b class="text-emerald-700">通過</b><p class="text-xs text-slate-600 mt-0.5">該項符合要求，通常附上內容作佐證</p></div></div>
-        <div class="flex gap-2 p-3 bg-red-50 rounded-lg"><span class="text-lg">⚠️</span><div><b class="text-red-700">待修正</b><p class="text-xs text-slate-600 mt-0.5">確定的問題，送審委員多半會挑出</p></div></div>
-        <div class="flex gap-2 p-3 bg-amber-50 rounded-lg"><span class="text-lg">💡</span><div><b class="text-amber-700">建議</b><p class="text-xs text-slate-600 mt-0.5">格式沒錯，但寫得更完整會更順</p></div></div>
-        <div class="flex gap-2 p-3 bg-slate-100 rounded-lg"><span class="text-lg">➖</span><div><b class="text-slate-700">不適用</b><p class="text-xs text-slate-600 mt-0.5">此計畫類型不需要這項</p></div></div>
+        <div class="flex gap-2 p-3 bg-emerald-50 rounded-lg"><span class="text-lg">✅</span><div><b class="text-emerald-700">通過</b><p class="text-xs text-slate-600 mt-0.5">該項符合要求</p></div></div>
+        <div class="flex gap-2 p-3 bg-red-50 rounded-lg"><span class="text-lg">⚠️</span><div><b class="text-red-700">待修正</b><p class="text-xs text-slate-600 mt-0.5">送審委員多半會挑出</p></div></div>
+        <div class="flex gap-2 p-3 bg-amber-50 rounded-lg"><span class="text-lg">💡</span><div><b class="text-amber-700">建議</b><p class="text-xs text-slate-600 mt-0.5">寫得更完整會更順</p></div></div>
+        <div class="flex gap-2 p-3 bg-slate-100 rounded-lg"><span class="text-lg">➖</span><div><b class="text-slate-700">不適用</b><p class="text-xs text-slate-600 mt-0.5">此計畫不需要這項</p></div></div>
       </div>
     </div>
-
-    <div class="border-t pt-4">
-      <h3 class="font-bold text-slate-800 mb-2">⚙️ 自動檢查範圍</h3>
-      <p class="text-sm text-slate-600 leading-relaxed">工具會自動掃描以下硬指標：學年度與年級、核心素養數量、學習內容/表現代碼格式、階段別 I/II/III 一致性（含數學領域特例）、議題引用、A/S/K 學習目標、配分比例殘留、表現任務敘寫等。較主觀的內容（如統整性深度、單元拼裝）工具會標示為「建議人工複查」。</p>
-    </div>
-
     <div class="border-t pt-4 bg-amber-50 -mx-6 -mb-6 px-6 py-4 rounded-b-xl">
-      <h3 class="font-bold text-amber-800 mb-1 text-sm">🔔 小提醒</h3>
-      <p class="text-xs text-amber-900 leading-relaxed">本工具為「送審前自檢」輔助，最終以實際送審委員意見為準。檔案在你的瀏覽器本地處理，不會上傳到任何伺服器。</p>
+      <h3 class="font-bold text-amber-800 mb-1 text-sm">🔔 關於頁碼</h3>
+      <p class="text-xs text-amber-900 leading-relaxed">頁碼會從 docx 內的分頁資訊判讀：優先使用 Word 上次渲染時記錄的分頁（<code>lastRenderedPageBreak</code>），再輔以顯式分頁符號。若該 docx 從未以 Word 開啟過、或完全無分頁資訊，系統會以每約 2000 字為一頁進行估算並標示為「約 p.N」。</p>
     </div>
   </div>
 </section>
 
 </main>
 
-<!-- Toast -->
 <div id="toast" class="hidden fixed bottom-6 right-6 bg-slate-800 text-white px-5 py-3 rounded-lg shadow-2xl text-sm z-50"></div>
 
 <script>
 // ============ 審查重點資料 ============
 const criteria621 = [
-  { id: '1', title: '學年度與年級標示', desc: '須於表件處寫清楚 115 學年度及幾年級課程（共 3 門需逐一審查）' },
-  { id: '2-1', title: '(1) 課程名稱', desc: '須為跨領域課程，不得僅為部定課程單一領域' },
-  { id: '2-2', title: '(2) 核心素養', desc: '至少選用 2 則核心素養（●/■/V 勾選符號）' },
-  { id: '2-3', title: '(3) 學習內容及學習表現', desc: '低年級為 I，不得跨階段（出現 Ⅱ、Ⅲ、Ⅳ、Ⅴ 均不符）；至少選用 2 個領綱；需列出代碼及內容；數學領域「學習內容」第二碼為阿拉伯數字年級（N-1-1 為一年級），勿誤判為跨階段' },
-  { id: '2-4', title: '(4) 融入議題', desc: '列出議題代碼及內容；性別平等、安全（交通安全）、戶外教育三大議題至少引用一項' },
-  { id: '2-5', title: '(5) 學習目標', desc: '需含 A(態度)、S(技能)、K(知識) 三個項度' },
-  { id: '2-6', title: '(6) 單元名稱', desc: '不得為領域單元教學之重複學習' },
-  { id: '2-7', title: '(7) 學習進度/節數', desc: '需要進行描述' },
-  { id: '2-8', title: '(8) 課程內容', desc: '含兩個領域/議題以上，不得同一領域下科目重複；重視統整性探究；避免零碎拼裝' },
-  { id: '2-9', title: '(9) 表現任務', desc: '每單元一項，應為真實情境中的產出或行為表現' },
-  { id: '2-10', title: '(10) 評量方式', desc: '須依單元調整，不可整學期相同；115 學年度無需呈現配分比例（如 60%、40%），若出現請提醒移除' }
+  { title: '學年度與年級標示', desc: '須於表件處寫清楚 115 學年度及幾年級課程（共 3 門需逐一審查）' },
+  { title: '(1) 課程名稱', desc: '須為跨領域課程，不得僅為部定課程單一領域' },
+  { title: '(2) 核心素養', desc: '至少選用 2 則核心素養（●/■/V 勾選符號）' },
+  { title: '(3) 學習內容及學習表現', desc: '低年級為 I，不得跨階段；至少選用 2 個領綱；需列出代碼及內容；數學領域「學習內容」第二碼為阿拉伯數字年級，非跨階段錯誤' },
+  { title: '(4) 融入議題', desc: '列出議題代碼及內容；性平/安全（交通）/戶外教育三大議題至少引用一項' },
+  { title: '(5) 學習目標', desc: '需含 A(態度)、S(技能)、K(知識) 三個項度' },
+  { title: '(6) 單元名稱', desc: '不得為領域單元教學之重複學習' },
+  { title: '(7) 學習進度/節數', desc: '需要進行描述' },
+  { title: '(8) 課程內容', desc: '含兩個領域/議題以上，重視統整性探究，避免零碎拼裝' },
+  { title: '(9) 表現任務', desc: '每單元一項，真實情境產出或行為表現' },
+  { title: '(10) 評量方式', desc: '須依單元調整；115 學年度無需配分比例（60%/40% 等），若出現請移除' }
 ];
-
 const criteria624 = [
-  { id: '1', title: '學年度與年級標示', desc: '須於表件處寫清楚 115 學年度及幾年級課程' },
-  { id: '2-1', title: '(1) 課程類別勾選', desc: '需勾選九大類之一：本土語文/臺灣手語/新住民語文、服務學習、戶外教育、班際或校際交流、自治活動、班級輔導、法定議題融入、自主學習、自主學習暨補救教學' },
-  { id: '2-2', title: '(2) 核心素養', desc: '至少選用 2 則核心素養（●/■/V 勾選符號）' },
-  { id: '2-3', title: '(3) 學習內容及學習表現', desc: '低=I、中=Ⅱ、高=Ⅲ，不得跨階段並須符應年級；需列代碼及內容；數學領域特例同上' },
-  { id: '2-4', title: '(4) 融入議題', desc: '列出議題代碼及內容' },
-  { id: '2-5', title: '(5) 學習目標', desc: '需含 A(態度)、S(技能)、K(知識) 三個項度' },
-  { id: '2-6', title: '(6) 單元名稱', desc: '不得為領域單元教學之重複學習' },
-  { id: '2-7', title: '(7) 學習進度/節數', desc: '需要進行描述' },
-  { id: '2-8', title: '(8) 課程內容', desc: '若勾選「自主學習暨補救教學」不得僅為單一領域（國語或數學），需另安排學生主動學習任務' },
-  { id: '2-9', title: '(9) 表現任務', desc: '每單元一項，應為真實情境中的產出或行為表現' },
-  { id: '2-10', title: '(10) 評量方式', desc: '須依單元調整；115 學年度無需呈現配分比例，若出現請提醒移除' }
+  { title: '學年度與年級標示', desc: '須於表件處寫清楚 115 學年度及幾年級課程' },
+  { title: '(1) 課程類別勾選', desc: '需勾選九大類之一' },
+  { title: '(2) 核心素養', desc: '至少選用 2 則核心素養' },
+  { title: '(3) 學習內容及學習表現', desc: '低=I、中=Ⅱ、高=Ⅲ，不得跨階段並須符應年級' },
+  { title: '(4) 融入議題', desc: '列出議題代碼及內容' },
+  { title: '(5) 學習目標', desc: '需含 A(態度)、S(技能)、K(知識) 三個項度' },
+  { title: '(6) 單元名稱', desc: '不得為領域單元教學之重複學習' },
+  { title: '(7) 學習進度/節數', desc: '需要進行描述' },
+  { title: '(8) 課程內容', desc: '自主學習暨補救教學不得僅為單一領域（國語/數學），需另安排主動學習任務' },
+  { title: '(9) 表現任務', desc: '每單元一項，真實情境產出或行為表現' },
+  { title: '(10) 評量方式', desc: '須依單元調整；115 學年度無需配分比例' }
 ];
-
 function renderCriteria() {
-  const render = (arr) => arr.map(c => `
+  const render = arr => arr.map(c => `
     <div class="border-l-4 border-indigo-300 pl-3 py-1">
       <p class="font-semibold text-slate-800">${c.title}</p>
       <p class="text-xs text-slate-600 mt-1 leading-relaxed">${c.desc}</p>
@@ -211,19 +176,90 @@ function renderCriteria() {
   document.getElementById('criteria624').innerHTML = render(criteria624);
 }
 
-// ============ 審查規則 ============
-// 代碼階段檢查：學習表現第二碼為羅馬數字 I/II/III/IV/V
-// 數學領域的學習內容第二碼是阿拉伯數字年級
+// ============ 規則常數 ============
+const STAGE_BY_GRADE = { 1:'I',2:'I',3:'II',4:'II',5:'III',6:'III',7:'IV',8:'IV',9:'IV' };
+const ISSUES_621 = ['性別平等','安全教育','交通安全','戶外教育'];
+const ALL_ISSUES = ['性別平等','人權','環境','海洋','品德','生命','法治','科技','資訊','能源','安全','防災','家庭教育','生涯規劃','多元文化','閱讀素養','戶外教育','國際教育','原住民族','交通安全'];
+const CATEGORIES_624 = ['本土語文','臺灣手語','新住民語文','服務學習','戶外教育','班際','校際交流','自治活動','班級輔導','法定議題融入','自主學習','自主學習暨補救教學'];
+const CATEGORIES_624_DISPLAY = {
+  '本土語文':'本土語文/臺灣手語/新住民語文','臺灣手語':'本土語文/臺灣手語/新住民語文','新住民語文':'本土語文/臺灣手語/新住民語文',
+  '服務學習':'服務學習','戶外教育':'戶外教育','班際':'班際或校際交流','校際交流':'班際或校際交流',
+  '自治活動':'自治活動','班級輔導':'班級輔導','法定議題融入':'法定議題融入',
+  '自主學習':'自主學習','自主學習暨補救教學':'自主學習暨補救教學'
+};
 
-const ROMAN = { I: 1, II: 2, III: 3, IV: 4, V: 5 };
-const STAGE_BY_GRADE = { 1: 'I', 2: 'I', 3: 'II', 4: 'II', 5: 'III', 6: 'III', 7: 'IV', 8: 'IV', 9: 'IV' };
-// 議題關鍵字
-const ISSUES_621 = ['性別平等', '安全教育', '交通安全', '戶外教育'];
-const ALL_ISSUES = ['性別平等', '人權', '環境', '海洋', '品德', '生命', '法治', '科技', '資訊', '能源', '安全', '防災', '家庭教育', '生涯規劃', '多元文化', '閱讀素養', '戶外教育', '國際教育', '原住民族', '交通安全'];
+// ============ docx 文字與分頁提取 ============
+async function extractTextWithPages(arrayBuffer) {
+  const zip = await JSZip.loadAsync(arrayBuffer);
+  const docXml = await zip.file('word/document.xml').async('string');
+  const parser = new DOMParser();
+  const xml = parser.parseFromString(docXml, 'text/xml');
+  
+  let fullText = '';
+  const pageBreaks = [];
+  
+  function walk(node) {
+    for (const child of node.childNodes) {
+      if (child.nodeType !== 1) continue;
+      const tag = child.tagName;
+      if (tag === 'w:t') {
+        fullText += child.textContent || '';
+      } else if (tag === 'w:tab') {
+        fullText += '\t';
+      } else if (tag === 'w:br') {
+        const type = child.getAttribute('w:type');
+        if (type === 'page') {
+          pageBreaks.push(fullText.length);
+        } else {
+          fullText += '\n';
+        }
+      } else if (tag === 'w:lastRenderedPageBreak') {
+        pageBreaks.push(fullText.length);
+      } else if (tag === 'w:cr') {
+        fullText += '\n';
+      } else {
+        walk(child);
+      }
+    }
+  }
+  
+  const paras = xml.getElementsByTagName('w:p');
+  for (let i = 0; i < paras.length; i++) {
+    walk(paras[i]);
+    fullText += '\n';
+  }
+  
+  const hasRealBreaks = pageBreaks.length > 0;
+  const totalPages = hasRealBreaks ? pageBreaks.length + 1 : Math.max(1, Math.ceil(fullText.length / 2000));
+  
+  return {
+    text: fullText,
+    pageBreaks,
+    hasRealBreaks,
+    totalPages,
+    getPage(position) {
+      if (position < 0 || position === null || position === undefined) return null;
+      if (hasRealBreaks) {
+        let page = 1;
+        for (const bp of pageBreaks) {
+          if (position < bp) return page;
+          page++;
+        }
+        return page;
+      } else {
+        return Math.max(1, Math.ceil((position + 1) / 2000));
+      }
+    },
+    findPage(searchStr) {
+      if (!searchStr) return null;
+      const idx = fullText.indexOf(searchStr);
+      if (idx === -1) return null;
+      return this.getPage(idx);
+    }
+  };
+}
 
-// 6-2-4 類別
-const CATEGORIES_624 = ['本土語文', '臺灣手語', '新住民語文', '服務學習', '戶外教育', '班際', '校際交流', '自治活動', '班級輔導', '法定議題融入', '自主學習', '自主學習暨補救教學'];
-
+// ============ 年級與規則類型偵測 ============
 function detectGrade(text) {
   const m = text.match(/([一二三四五六七八九])年級/);
   if (!m) return null;
@@ -232,315 +268,342 @@ function detectGrade(text) {
 }
 
 function detectRuleType(text) {
-  // 自動偵測：若明顯出現 9 大類別之一，視為 6-2-4；否則 6-2-1
-  if (/主題[式探]|專題|議題探究|統整性/.test(text)) return '621';
+  const result = { type: '621', reasons: [], matchedCategories: [] };
+  
+  const t621Matches = [];
+  if (/統整性/.test(text)) t621Matches.push('統整性');
+  if (/主題式|主題探究/.test(text)) t621Matches.push('主題探究');
+  if (/專題/.test(text)) t621Matches.push('專題');
+  if (/議題探究/.test(text)) t621Matches.push('議題探究');
+  
+  const matchedCats = new Set();
   for (const c of CATEGORIES_624) {
-    if (new RegExp(c).test(text)) return '624';
+    if (new RegExp(c).test(text)) matchedCats.add(CATEGORIES_624_DISPLAY[c]);
   }
-  return '621';
+  
+  const catCount = matchedCats.size;
+  const is624Strong = catCount > 0 && !/統整性|主題探究|議題探究/.test(text);
+  
+  if (is624Strong) {
+    result.type = '624';
+    result.reasons.push(`偵測到 6-2-4 類別關鍵字：${[...matchedCats].join('、')}`);
+    result.matchedCategories = [...matchedCats];
+  } else if (t621Matches.length > 0) {
+    result.type = '621';
+    result.reasons.push(`偵測到 6-2-1 關鍵字：${t621Matches.join('、')}`);
+  } else if (catCount > 0) {
+    result.type = '624';
+    result.reasons.push(`推斷為 6-2-4（偵測到：${[...matchedCats].join('、')}）`);
+    result.matchedCategories = [...matchedCats];
+  } else {
+    result.reasons.push('未明確偵測到系列關鍵字，預設為 6-2-1');
+  }
+  return result;
 }
 
-// 檢查代碼格式：如 1-I-1, B-II-3, N-1-1 (數學), Nc-II-5 等
+// ============ 代碼抽取 ============
 function extractCodes(text) {
-  // 配對: 開頭 1~3 英數字 - 羅馬或阿拉伯 - 數字
   const codeRegex = /\b([A-Za-z0-9\u4e00-\u9fa5]{1,4})-([IVX]+|[1-6])-(\d+[a-z]?)\b/g;
   const codes = [];
   let m;
   while ((m = codeRegex.exec(text)) !== null) {
-    codes.push({ full: m[0], prefix: m[1], stage: m[2], num: m[3], isRoman: /^[IVX]+$/.test(m[2]) });
+    codes.push({ full: m[0], prefix: m[1], stage: m[2], num: m[3], isRoman: /^[IVX]+$/.test(m[2]), index: m.index });
   }
   return codes;
 }
 
-// 判斷代碼是否屬於「數學領域學習內容」（第二碼為阿拉伯數字）
-function isMathLearningContent(code) {
-  // 數學學習內容 prefix: N, S, G, R, A, D, F 等單字母（國小）
-  // 為求寬鬆：若 stage 是純數字 1-6，視為數學學習內容
-  return !code.isRoman && /^[1-6]$/.test(code.stage);
-}
-
-function runChecks(text, ruleType, fileName) {
+// ============ 核心檢查邏輯 ============
+function runChecks(doc, ruleType) {
+  const text = doc.text;
   const checks = [];
   const grade = detectGrade(text);
+  const gradeChinese = grade ? ['','一','二','三','四','五','六','七','八','九'][grade] : null;
   
-  // ===== 通用檢查 =====
+  const pageOf = s => doc.findPage(s);
   
   // 1. 學年度與年級
-  const hasYear = /11[45]\s*學年度|115/.test(text);
-  const has115 = /115\s*學年度|115\s*學/.test(text) || /115/.test(text);
+  const yearIdx = text.search(/115\s*學年度?|11\s*5\s*學年/);
+  const has115 = yearIdx !== -1;
+  const yearPage = has115 ? doc.getPage(yearIdx) : null;
+  const gradePage = grade ? pageOf(`${gradeChinese}年級`) : null;
+  
   checks.push({
-    id: 'c1',
-    title: '學年度與年級標示',
-    category: '基本資訊',
+    title: '學年度與年級標示', category: '基本資訊',
     ...(has115 && grade
-      ? { status: 'pass', evidence: `偵測到：115 學年度、${['','一','二','三','四','五','六','七','八','九'][grade]}年級` }
+      ? { status: 'pass', evidence: `偵測到「115 學年度」、「${gradeChinese}年級」`, evidencePages: [yearPage, gradePage].filter(Boolean) }
       : { status: 'fail',
-          issue: `${!has115 ? '未明確標示「115 學年度」；' : ''}${!grade ? '未明確標示年級；' : ''}`.replace(/；$/, ''),
-          suggestion: '請於表件抬頭清楚寫出「115 學年度」及「幾年級課程」' })
+          issue: `${!has115 ? '未明確標示「115 學年度」；' : ''}${!grade ? '未明確標示年級；' : ''}`.replace(/；$/,''),
+          suggestion: '請於表件抬頭清楚寫出「115 學年度」及「幾年級課程」',
+          evidencePages: [] })
   });
 
-  // 2. 核心素養（至少 2 則，含 ●/■/V 勾選）
-  const coreSymbols = (text.match(/[●■✓✔︎Vv][^\n]{0,30}(A[1-3]|B[1-3]|C[1-3]|J-A[1-3]|J-B[1-3]|J-C[1-3]|E-A[1-3]|E-B[1-3]|E-C[1-3])/g) || []);
-  const coreCodes = (text.match(/\b[EJ]?-?[ABC][1-3]\b/g) || []);
-  const coreCount = Math.max(coreSymbols.length, new Set(coreCodes).size);
+  // 2. 核心素養
+  const coreSymbolMatches = [...text.matchAll(/[●■✓✔︎Vv][^\n]{0,30}(A[1-3]|B[1-3]|C[1-3])/g)];
+  const coreCodes = text.match(/\b[EJ]?-?[ABC][1-3]\b/g) || [];
+  const coreCount = Math.max(coreSymbolMatches.length, new Set(coreCodes).size);
+  const corePage = coreSymbolMatches[0] ? doc.getPage(coreSymbolMatches[0].index) : (coreCodes[0] ? pageOf(coreCodes[0]) : null);
+  
   checks.push({
-    id: 'c2',
-    title: '核心素養（至少 2 則）',
-    category: '核心素養',
+    title: '核心素養（至少 2 則）', category: '核心素養',
     ...(coreCount >= 2
-      ? { status: 'pass', evidence: `偵測到 ${coreCount} 則核心素養相關標示` }
-      : coreCount === 1
-      ? { status: 'fail', issue: `僅偵測到 1 則核心素養勾選`, suggestion: '請使用 ●、■ 或 V 勾選至少 2 則核心素養項目' }
-      : { status: 'fail', issue: '未偵測到核心素養勾選符號（●/■/V）或項目不足', suggestion: '請明確勾選至少 2 則核心素養，並使用 ●/■/V 等勾選符號標示' })
+      ? { status: 'pass', evidence: `偵測到 ${coreCount} 則核心素養相關標示`, evidencePages: corePage ? [corePage] : [] }
+      : { status: 'fail',
+          issue: coreCount === 1 ? '僅偵測到 1 則核心素養勾選' : '未偵測到核心素養勾選符號（●/■/V）或項目不足',
+          suggestion: '請使用 ●、■ 或 V 勾選至少 2 則核心素養項目',
+          evidencePages: corePage ? [corePage] : [] })
   });
 
-  // 3. 學習內容/表現：代碼格式 + 階段別一致 + 至少 2 個領綱
+  // 3. 學習內容/表現
   const codes = extractCodes(text);
   const nonMathCodes = codes.filter(c => c.isRoman);
-  const hasCodeList = codes.length > 0;
+  const codesPages = codes.slice(0, 5).map(c => ({ code: c.full, page: doc.getPage(c.index) }));
   
-  // 3a. 代碼是否附內容（代碼後應有中文敘述）
-  const codesWithoutContent = [];
-  codes.slice(0, 20).forEach(c => {
-    const idx = text.indexOf(c.full);
-    const after = text.substring(idx + c.full.length, idx + c.full.length + 30);
-    // 下一個非空白字元是否為中文
-    if (!/^\s*[\u4e00-\u9fa5]/.test(after)) {
-      codesWithoutContent.push(c.full);
-    }
-  });
-  
-  if (!hasCodeList) {
-    checks.push({ id: 'c3a', title: '學習內容/表現代碼', category: '學習內容/表現',
-      status: 'fail', issue: '未偵測到任何學習內容或學習表現代碼', 
-      suggestion: '請引用領綱代碼，格式如：1-I-1、B-II-3、N-1-1 等' });
+  if (codes.length === 0) {
+    checks.push({ title: '學習內容/表現代碼', category: '學習內容/表現',
+      status: 'fail', issue: '未偵測到任何學習內容或學習表現代碼',
+      suggestion: '請引用領綱代碼（如：1-I-1、B-II-3、N-1-1）', evidencePages: [] });
   } else {
-    checks.push({ id: 'c3a', title: '學習內容/表現代碼格式', category: '學習內容/表現',
-      status: 'pass', evidence: `偵測到 ${codes.length} 個代碼：${codes.slice(0,5).map(c=>c.full).join('、')}${codes.length>5?' 等':''}` });
+    const pagesSummary = [...new Set(codesPages.map(c => c.page).filter(Boolean))];
+    checks.push({ title: '學習內容/表現代碼格式', category: '學習內容/表現',
+      status: 'pass',
+      evidence: `偵測到 ${codes.length} 個代碼：${codes.slice(0,5).map(c=>c.full).join('、')}${codes.length>5?' 等':''}`,
+      evidencePages: pagesSummary });
     
+    const codesWithoutContent = [];
+    codes.slice(0, 30).forEach(c => {
+      const after = text.substring(c.index + c.full.length, c.index + c.full.length + 30);
+      if (!/^\s*[\u4e00-\u9fa5]/.test(after)) codesWithoutContent.push({ full: c.full, page: doc.getPage(c.index) });
+    });
     if (codesWithoutContent.length > 0) {
-      checks.push({ id: 'c3b', title: '代碼需附內容敘述', category: '學習內容/表現',
-        status: 'fail', 
-        issue: `以下代碼可能只列代碼未附內容：${codesWithoutContent.slice(0,5).join('、')}`,
-        suggestion: '學習內容及學習表現需列出代碼「及」對應內容，不只列代碼' });
+      checks.push({ title: '代碼需附內容敘述', category: '學習內容/表現',
+        status: 'fail',
+        issue: `以下代碼可能只列代碼未附內容：${codesWithoutContent.slice(0,5).map(c=>c.full).join('、')}`,
+        suggestion: '學習內容及學習表現需列出代碼「及」對應內容，不只列代碼',
+        evidencePages: [...new Set(codesWithoutContent.map(c=>c.page).filter(Boolean))] });
     } else {
-      checks.push({ id: 'c3b', title: '代碼附內容敘述', category: '學習內容/表現',
-        status: 'pass', evidence: '代碼後方均有接續文字敘述' });
+      checks.push({ title: '代碼附內容敘述', category: '學習內容/表現',
+        status: 'pass', evidence: '代碼後方均有接續文字敘述', evidencePages: pagesSummary });
     }
-  }
-
-  // 3b. 階段別檢查（僅檢查學習表現羅馬數字）
-  if (grade && nonMathCodes.length > 0) {
-    const expectedStage = STAGE_BY_GRADE[grade];
-    const wrongStage = nonMathCodes.filter(c => c.stage !== expectedStage);
-    if (wrongStage.length > 0) {
-      checks.push({ id: 'c3c', title: '學習階段一致性', category: '學習內容/表現',
-        status: 'fail', 
-        issue: `本表件為${['','一','二','三','四','五','六','七','八','九'][grade]}年級（應為階段 ${expectedStage}），但出現跨階段代碼：${wrongStage.slice(0,5).map(c=>c.full).join('、')}`,
-        suggestion: `請確認學習表現代碼第二碼（羅馬數字）為 ${expectedStage}。註：數學領域「學習內容」第二碼為阿拉伯數字年級（如 N-1-1 為一年級），不屬跨階段錯誤` });
-    } else {
-      checks.push({ id: 'c3c', title: '學習階段一致性', category: '學習內容/表現',
-        status: 'pass', evidence: `所有學習表現代碼均為階段 ${expectedStage}，與年級相符` });
+    
+    if (grade && nonMathCodes.length > 0) {
+      const expected = STAGE_BY_GRADE[grade];
+      const wrong = nonMathCodes.filter(c => c.stage !== expected);
+      if (wrong.length > 0) {
+        checks.push({ title: '學習階段一致性', category: '學習內容/表現',
+          status: 'fail',
+          issue: `本表件為${gradeChinese}年級（應為階段 ${expected}），但出現跨階段代碼：${wrong.slice(0,5).map(c=>c.full).join('、')}`,
+          suggestion: `請確認學習表現代碼第二碼（羅馬數字）為 ${expected}。註：數學「學習內容」第二碼為阿拉伯數字年級（如 N-1-1），不屬跨階段錯誤`,
+          evidencePages: [...new Set(wrong.slice(0,5).map(c => doc.getPage(c.index)).filter(Boolean))] });
+      } else {
+        checks.push({ title: '學習階段一致性', category: '學習內容/表現',
+          status: 'pass', evidence: `所有學習表現代碼均為階段 ${expected}，與年級相符`, evidencePages: pagesSummary });
+      }
+    } else if (!grade) {
+      checks.push({ title: '學習階段一致性', category: '學習內容/表現',
+        status: 'suggest', issue: '因未偵測到年級，無法自動檢查階段別',
+        suggestion: '請於文件明確標示年級後再次檢查', evidencePages: [] });
     }
-  } else if (!grade) {
-    checks.push({ id: 'c3c', title: '學習階段一致性', category: '學習內容/表現',
-      status: 'suggest', issue: '因未偵測到年級，無法自動檢查階段別是否正確',
-      suggestion: '請於文件明確標示年級後再次檢查' });
-  }
-
-  // 3c. 至少 2 個領綱
-  const prefixes = [...new Set(codes.map(c => c.prefix))];
-  if (ruleType === '621') {
-    if (prefixes.length >= 2) {
-      checks.push({ id: 'c3d', title: '至少引用 2 個領綱（6-2-1）', category: '學習內容/表現',
-        status: 'pass', evidence: `偵測到 ${prefixes.length} 個不同領綱前綴：${prefixes.join('、')}` });
-    } else {
-      checks.push({ id: 'c3d', title: '至少引用 2 個領綱（6-2-1）', category: '學習內容/表現',
-        status: 'fail', 
-        issue: `僅偵測到 ${prefixes.length} 個領綱前綴${prefixes.length?'：'+prefixes.join('、'):''}`,
-        suggestion: '統整性主題/專題/議題探究課程須引用至少 2 個領綱的學習內容及學習表現' });
+    
+    if (ruleType === '621') {
+      const prefixes = [...new Set(codes.map(c => c.prefix))];
+      if (prefixes.length >= 2) {
+        checks.push({ title: '至少引用 2 個領綱（6-2-1）', category: '學習內容/表現',
+          status: 'pass', evidence: `偵測到 ${prefixes.length} 個不同領綱前綴：${prefixes.join('、')}`, evidencePages: pagesSummary });
+      } else {
+        checks.push({ title: '至少引用 2 個領綱（6-2-1）', category: '學習內容/表現',
+          status: 'fail',
+          issue: `僅偵測到 ${prefixes.length} 個領綱前綴${prefixes.length?'：'+prefixes.join('、'):''}`,
+          suggestion: '統整性主題/專題/議題探究課程須引用至少 2 個領綱的學習內容及學習表現',
+          evidencePages: pagesSummary });
+      }
     }
   }
 
   // 4. 融入議題
-  const foundIssues = ALL_ISSUES.filter(iss => text.includes(iss));
-  const found621Issues = ISSUES_621.filter(iss => text.includes(iss));
+  const foundIssues = [];
+  for (const iss of ALL_ISSUES) {
+    const idx = text.indexOf(iss);
+    if (idx !== -1) foundIssues.push({ name: iss, page: doc.getPage(idx) });
+  }
   if (foundIssues.length === 0) {
-    checks.push({ id: 'c4a', title: '融入議題引用', category: '融入議題',
+    checks.push({ title: '融入議題引用', category: '融入議題',
       status: 'fail', issue: '未偵測到任何議題關鍵字或代碼',
-      suggestion: '請列出引用議題代碼及內容（如：【性 E1】等）' });
+      suggestion: '請列出引用議題代碼及內容（如：【性 E1】等）', evidencePages: [] });
   } else {
-    checks.push({ id: 'c4a', title: '融入議題引用', category: '融入議題',
-      status: 'pass', evidence: `偵測到議題：${foundIssues.join('、')}` });
+    checks.push({ title: '融入議題引用', category: '融入議題',
+      status: 'pass', evidence: `偵測到議題：${foundIssues.map(i=>i.name).join('、')}`,
+      evidencePages: [...new Set(foundIssues.map(i=>i.page).filter(Boolean))] });
   }
   
   if (ruleType === '621') {
-    if (found621Issues.length > 0) {
-      checks.push({ id: 'c4b', title: '三大指定議題（性平/安全/戶外）', category: '融入議題',
-        status: 'pass', evidence: `已引用指定議題：${found621Issues.join('、')}` });
+    const found621 = foundIssues.filter(i => ISSUES_621.includes(i.name));
+    if (found621.length > 0) {
+      checks.push({ title: '三大指定議題（性平/安全/戶外）', category: '融入議題',
+        status: 'pass', evidence: `已引用指定議題：${found621.map(i=>i.name).join('、')}`,
+        evidencePages: [...new Set(found621.map(i=>i.page).filter(Boolean))] });
     } else {
-      checks.push({ id: 'c4b', title: '三大指定議題（性平/安全/戶外）', category: '融入議題',
-        status: 'fail', 
-        issue: '未引用性別平等教育、安全教育（交通安全教育）、戶外教育三大議題之任一',
-        suggestion: '6-2-1 系列須至少引用上述三大議題其一' });
+      checks.push({ title: '三大指定議題（性平/安全/戶外）', category: '融入議題',
+        status: 'fail', issue: '未引用性別平等、安全（交通安全）、戶外教育三大議題之任一',
+        suggestion: '6-2-1 系列須至少引用上述三大議題其一', evidencePages: [] });
     }
   }
 
   // 5. 學習目標 A/S/K
-  const hasA = /\bA[0-9]?[:：]|\bA[\s]|態度|A\s*\(/.test(text) || /[（(]\s*A\s*[)）]/.test(text);
-  const hasS = /\bS[0-9]?[:：]|\bS[\s]|技能|S\s*\(/.test(text) || /[（(]\s*S\s*[)）]/.test(text);
-  const hasK = /\bK[0-9]?[:：]|\bK[\s]|知識|K\s*\(/.test(text) || /[（(]\s*K\s*[)）]/.test(text);
-  // 嚴格版：同時出現 A 和 S 和 K 字樣
-  const askCount = [hasA, hasS, hasK].filter(x=>x).length;
-  if (askCount === 3) {
-    checks.push({ id: 'c5', title: '學習目標含 A/S/K 三項度', category: '學習目標',
-      status: 'pass', evidence: '偵測到態度(A)、技能(S)、知識(K)三項度標示' });
+  const aMatch = text.search(/態度|[（(]\s*A\s*[)）]|\bA[\s-：:]/);
+  const sMatch = text.search(/技能|[（(]\s*S\s*[)）]|\bS[\s-：:]/);
+  const kMatch = text.search(/知識|[（(]\s*K\s*[)）]|\bK[\s-：:]/);
+  const hasA = aMatch !== -1, hasS = sMatch !== -1, hasK = kMatch !== -1;
+  const askPages = [aMatch, sMatch, kMatch].filter(x => x !== -1).map(x => doc.getPage(x));
+  
+  if (hasA && hasS && hasK) {
+    checks.push({ title: '學習目標含 A/S/K 三項度', category: '學習目標',
+      status: 'pass', evidence: '偵測到態度(A)、技能(S)、知識(K)三項度標示',
+      evidencePages: [...new Set(askPages.filter(Boolean))] });
   } else {
     const missing = [];
     if (!hasA) missing.push('A(態度)');
     if (!hasS) missing.push('S(技能)');
     if (!hasK) missing.push('K(知識)');
-    checks.push({ id: 'c5', title: '學習目標含 A/S/K 三項度', category: '學習目標',
-      status: 'fail', 
+    checks.push({ title: '學習目標含 A/S/K 三項度', category: '學習目標',
+      status: 'fail',
       issue: `學習目標可能缺少：${missing.join('、')}`,
-      suggestion: '學習目標需明確呈現 A(態度)、S(技能)、K(知識) 三個項度，建議以 A-1、S-1、K-1 或分類標題方式標示' });
+      suggestion: '建議以 A-1、S-1、K-1 或分類標題方式明確呈現三項度',
+      evidencePages: [...new Set(askPages.filter(Boolean))] });
   }
 
-  // 6. 學習進度/節數
-  const hasProgress = /節數|第[\s]*[一二三四五六七八九十\d]+[\s]*[週節]|進度|\d+\s*節|\d+\s*週/.test(text);
-  checks.push({ id: 'c7', title: '學習進度/節數描述', category: '教學規劃',
-    ...(hasProgress 
-      ? { status: 'pass', evidence: '偵測到節數或進度相關描述' }
-      : { status: 'fail', issue: '未偵測到學習進度或節數相關描述', 
-          suggestion: '請於表件中描述學習進度及節數安排' })
+  // 6. 進度/節數
+  const progMatch = text.match(/節數|第[\s]*[一二三四五六七八九十\d]+[\s]*[週節]|\d+\s*節|\d+\s*週/);
+  const progPage = progMatch ? doc.getPage(progMatch.index) : null;
+  checks.push({ title: '學習進度/節數描述', category: '教學規劃',
+    ...(progMatch
+      ? { status: 'pass', evidence: `偵測到節數或進度：「${progMatch[0]}」`, evidencePages: progPage ? [progPage] : [] }
+      : { status: 'fail', issue: '未偵測到學習進度或節數相關描述',
+          suggestion: '請於表件中描述學習進度及節數安排', evidencePages: [] })
   });
 
   // 7. 表現任務
-  const hasTask = /表現任務|實作|產出|展演|發表|作品集/.test(text);
-  checks.push({ id: 'c9', title: '表現任務', category: '評量',
-    ...(hasTask 
-      ? { status: 'pass', evidence: '偵測到表現任務相關描述' }
+  const taskMatch = text.match(/表現任務|實作|產出|展演|發表|作品集/);
+  const taskPage = taskMatch ? doc.getPage(taskMatch.index) : null;
+  checks.push({ title: '表現任務', category: '評量',
+    ...(taskMatch
+      ? { status: 'pass', evidence: `偵測到關鍵字：「${taskMatch[0]}」`, evidencePages: taskPage ? [taskPage] : [] }
       : { status: 'fail', issue: '未明確呈現「表現任務」欄位',
-          suggestion: '每一單元應呈現一項表現任務，為生活/職場/學習真實情境中的產出或行為表現' })
+          suggestion: '每一單元應呈現一項表現任務，為真實情境中的產出或行為表現', evidencePages: [] })
   });
 
   // 8. 配分比例殘留
-  const pctMatches = text.match(/\d{1,3}\s*%/g);
-  if (pctMatches && pctMatches.length > 0) {
-    checks.push({ id: 'c10a', title: '配分比例殘留', category: '評量',
-      status: 'fail', 
-      issue: `偵測到百分比數字：${[...new Set(pctMatches)].slice(0,8).join('、')}`,
-      suggestion: '115 學年度配分比例無需呈現，請移除計畫中所有百分比配分（如 60%、40%）',
-      autoFixable: true, autoFixLabel: '可自動協助標記移除', fixData: { type: 'remove_percent', matches: pctMatches } });
+  const pctMatches = [...text.matchAll(/\d{1,3}\s*%/g)];
+  if (pctMatches.length > 0) {
+    const pctPages = [...new Set(pctMatches.slice(0,10).map(m => doc.getPage(m.index)).filter(Boolean))];
+    checks.push({ title: '配分比例殘留', category: '評量',
+      status: 'fail',
+      issue: `偵測到百分比數字：${[...new Set(pctMatches.map(m=>m[0]))].slice(0,8).join('、')}`,
+      suggestion: '115 學年度配分比例無需呈現，請移除所有百分比配分（如 60%、40%）',
+      evidencePages: pctPages });
   } else {
-    checks.push({ id: 'c10a', title: '配分比例殘留', category: '評量',
-      status: 'pass', evidence: '未偵測到百分比配分數字' });
+    checks.push({ title: '配分比例殘留', category: '評量',
+      status: 'pass', evidence: '未偵測到百分比配分數字', evidencePages: [] });
   }
 
-  // 9. 評量方式變化（啟發式：偵測評量關鍵字種類）
-  const assessmentKeywords = ['紙筆', '實作', '觀察', '口頭', '檔案評量', '同儕互評', '自評', '學習單', '發表', '專題報告'];
-  const foundAssess = assessmentKeywords.filter(k => text.includes(k));
+  // 9. 評量方式多元性
+  const assessKeywords = ['紙筆','實作','觀察','口頭','檔案評量','同儕互評','自評','學習單','發表','專題報告'];
+  const foundAssess = [];
+  for (const k of assessKeywords) {
+    const idx = text.indexOf(k);
+    if (idx !== -1) foundAssess.push({ name: k, page: doc.getPage(idx) });
+  }
   if (foundAssess.length >= 3) {
-    checks.push({ id: 'c10b', title: '評量方式多元性', category: '評量',
-      status: 'pass', evidence: `偵測到多元評量：${foundAssess.join('、')}` });
+    checks.push({ title: '評量方式多元性', category: '評量',
+      status: 'pass', evidence: `偵測到多元評量：${foundAssess.map(a=>a.name).join('、')}`,
+      evidencePages: [...new Set(foundAssess.map(a=>a.page).filter(Boolean))] });
   } else if (foundAssess.length > 0) {
-    checks.push({ id: 'c10b', title: '評量方式多元性', category: '評量',
-      status: 'suggest', issue: `偵測到的評量方式較單一：${foundAssess.join('、')}`,
-      suggestion: '評量方式須視課程內容進行調整，不得整學期各單元皆相同，建議搭配多元評量' });
-  } else {
-    checks.push({ id: 'c10b', title: '評量方式多元性', category: '評量',
-      status: 'suggest', issue: '未偵測到常見評量方式關鍵字',
-      suggestion: '請明確描述各單元評量方式（如：紙筆測驗、實作評量、觀察紀錄、學習單等）' });
-  }
-
-  // ===== 6-2-1 專屬 =====
-  if (ruleType === '621') {
-    // 課程名稱跨領域（啟發式）
-    checks.push({ id: 'c2-1', title: '課程名稱跨領域性', category: '課程名稱',
-      status: 'suggest', 
-      issue: '工具無法自動判定課程名稱是否跨領域',
-      suggestion: '請人工確認：課程名稱須為跨領域課程，不得僅為部定課程單一領域（如「國語」、「數學」等單一領域名稱）' });
-    
-    // 統整性探究（建議人工）
-    checks.push({ id: 'c8', title: '統整性探究與內容整合', category: '課程內容',
+    checks.push({ title: '評量方式多元性', category: '評量',
       status: 'suggest',
-      issue: '「統整性」與「拼裝化」需人工判讀',
-      suggestion: '請人工確認：課程內容含兩個領域/議題以上、非同領域重複學習、呈現學習歷程、避免零碎拼裝' });
+      issue: `偵測到的評量方式較單一：${foundAssess.map(a=>a.name).join('、')}`,
+      suggestion: '評量方式須視課程內容調整，建議搭配多元評量',
+      evidencePages: [...new Set(foundAssess.map(a=>a.page).filter(Boolean))] });
+  } else {
+    checks.push({ title: '評量方式多元性', category: '評量',
+      status: 'suggest', issue: '未偵測到常見評量方式關鍵字',
+      suggestion: '請明確描述各單元評量方式（紙筆、實作、觀察、學習單等）', evidencePages: [] });
   }
 
-  // ===== 6-2-4 專屬 =====
+  // 10. 6-2-1 專屬
+  if (ruleType === '621') {
+    checks.push({ title: '課程名稱跨領域性', category: '課程名稱',
+      status: 'suggest', issue: '工具無法自動判定課程名稱是否跨領域',
+      suggestion: '請人工確認：課程名稱須為跨領域，不得僅為部定課程單一領域（如「國語」、「數學」等）',
+      evidencePages: [] });
+    checks.push({ title: '統整性探究與內容整合', category: '課程內容',
+      status: 'suggest', issue: '「統整性」與「拼裝化」需人工判讀',
+      suggestion: '請人工確認：含兩個領域/議題以上、非同領域重複、呈現學習歷程、避免零碎拼裝',
+      evidencePages: [] });
+  }
+
+  // 11. 6-2-4 專屬
   if (ruleType === '624') {
-    const foundCat = CATEGORIES_624.filter(c => text.includes(c));
-    if (foundCat.length > 0) {
-      checks.push({ id: 'c2-1-624', title: '課程類別勾選', category: '課程類別',
-        status: 'pass', evidence: `偵測到課程類別：${foundCat.join('、')}` });
-    } else {
-      checks.push({ id: 'c2-1-624', title: '課程類別勾選', category: '課程類別',
-        status: 'fail', 
-        issue: '未偵測到九大課程類別之任一',
-        suggestion: '請勾選：本土語文/臺灣手語/新住民語文、服務學習、戶外教育、班際或校際交流、自治活動、班級輔導、法定議題融入、自主學習、自主學習暨補救教學 其中一種' });
+    const foundCat = [];
+    for (const c of CATEGORIES_624) {
+      const idx = text.indexOf(c);
+      if (idx !== -1) foundCat.push({ name: CATEGORIES_624_DISPLAY[c], page: doc.getPage(idx) });
     }
-
-    // 自主學習暨補救教學特別檢查
+    const uniqueCat = [...new Map(foundCat.map(f => [f.name, f])).values()];
+    if (uniqueCat.length > 0) {
+      checks.push({ title: '課程類別勾選', category: '課程類別',
+        status: 'pass', evidence: `偵測到課程類別：${uniqueCat.map(c=>c.name).join('、')}`,
+        evidencePages: [...new Set(uniqueCat.map(c=>c.page).filter(Boolean))] });
+    } else {
+      checks.push({ title: '課程類別勾選', category: '課程類別',
+        status: 'fail', issue: '未偵測到九大課程類別之任一',
+        suggestion: '請勾選其中一種類別（本土語文、服務學習、戶外教育、班際交流、自治活動、班級輔導、法定議題融入、自主學習、自主學習暨補救教學）',
+        evidencePages: [] });
+    }
+    
     if (text.includes('自主學習暨補救教學')) {
-      const singleDomain = /^(?:.*(?:國語|數學).*)+$/.test(text) && !(/社會|自然|藝術|健康|綜合|英語/.test(text));
-      if (singleDomain) {
-        checks.push({ id: 'c8-624', title: '自主學習暨補救教學內容', category: '課程內容',
-          status: 'fail', 
-          issue: '課程內容可能僅為單一領域（國語或數學）',
-          suggestion: '自主學習暨補救教學不得僅為單一領域之學習，需另外安排學生主動學習任務' });
-      } else {
-        checks.push({ id: 'c8-624', title: '自主學習暨補救教學內容', category: '課程內容',
-          status: 'suggest',
-          issue: '請人工確認是否另有安排學生主動學習任務',
-          suggestion: '自主學習暨補救教學除補救教學外，需明確安排學生主動學習任務' });
-      }
+      const targetPage = pageOf('自主學習暨補救教學');
+      checks.push({ title: '自主學習暨補救教學內容', category: '課程內容',
+        status: 'suggest',
+        issue: '請人工確認是否另有安排學生主動學習任務',
+        suggestion: '自主學習暨補救教學不得僅為單一領域（國語/數學），需另外安排學生主動學習任務',
+        evidencePages: targetPage ? [targetPage] : [] });
     }
   }
 
-  // 單元名稱重複（人工）
-  checks.push({ id: 'c6', title: '單元名稱避免重複', category: '單元設計',
-    status: 'suggest',
-    issue: '單元名稱是否與領域單元重複需人工判讀',
-    suggestion: '請人工確認：單元名稱不得為領域單元教學之重複學習（例如不可直接使用部定課本單元名稱）' });
+  // 12. 單元名稱（人工）
+  checks.push({ title: '單元名稱避免重複', category: '單元設計',
+    status: 'suggest', issue: '單元名稱是否與領域單元重複需人工判讀',
+    suggestion: '請人工確認：單元名稱不得為領域單元教學之重複學習（例如不可直接使用部定課本單元名稱）',
+    evidencePages: [] });
 
   return checks;
 }
 
-// ============ UI 操作 ============
+// ============ UI ============
 let uploadedFiles = [];
 let reviewResults = [];
 
 function switchTab(name) {
   document.querySelectorAll('.tab-btn').forEach(b => {
-    b.classList.remove('border-indigo-500', 'text-indigo-600');
-    b.classList.add('border-transparent', 'text-slate-600');
+    b.classList.remove('border-indigo-500','text-indigo-600');
+    b.classList.add('border-transparent','text-slate-600');
   });
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'));
-  document.getElementById('tab-' + name).classList.remove('border-transparent', 'text-slate-600');
-  document.getElementById('tab-' + name).classList.add('border-indigo-500', 'text-indigo-600');
-  document.getElementById('panel-' + name).classList.remove('hidden');
+  document.getElementById('tab-'+name).classList.remove('border-transparent','text-slate-600');
+  document.getElementById('tab-'+name).classList.add('border-indigo-500','text-indigo-600');
+  document.getElementById('panel-'+name).classList.remove('hidden');
 }
 
 const dropZone = document.getElementById('dropZone');
 const fileInput = document.getElementById('fileInput');
-
 dropZone.addEventListener('click', () => fileInput.click());
 dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragging'); });
 dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragging'));
-dropZone.addEventListener('drop', e => {
-  e.preventDefault();
-  dropZone.classList.remove('dragging');
-  handleFiles(e.dataTransfer.files);
-});
+dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.classList.remove('dragging'); handleFiles(e.dataTransfer.files); });
 fileInput.addEventListener('change', e => handleFiles(e.target.files));
 
 function handleFiles(files) {
   for (const f of files) {
-    if (!f.name.toLowerCase().endsWith('.docx')) {
-      showToast(`${f.name} 非 .docx 格式，已略過`);
-      continue;
-    }
+    if (!f.name.toLowerCase().endsWith('.docx')) { showToast(`${f.name} 非 .docx，已略過`); continue; }
     uploadedFiles.push({ file: f, name: f.name, size: f.size });
   }
   renderFileList();
@@ -549,12 +612,8 @@ function handleFiles(files) {
 function renderFileList() {
   const list = document.getElementById('fileList');
   const bar = document.getElementById('actionBar');
-  if (uploadedFiles.length === 0) {
-    list.innerHTML = '';
-    bar.classList.add('hidden');
-    return;
-  }
-  list.innerHTML = uploadedFiles.map((f, i) => `
+  if (uploadedFiles.length === 0) { list.innerHTML = ''; bar.classList.add('hidden'); return; }
+  list.innerHTML = uploadedFiles.map((f,i) => `
     <div class="flex items-center justify-between bg-slate-50 rounded-lg px-4 py-2.5 fade-in">
       <div class="flex items-center gap-3 min-w-0 flex-1">
         <span class="text-xl">📄</span>
@@ -567,49 +626,44 @@ function renderFileList() {
     </div>`).join('');
   bar.classList.remove('hidden');
 }
-
 function removeFile(i) { uploadedFiles.splice(i,1); renderFileList(); }
 function clearFiles() { uploadedFiles = []; renderFileList(); }
 
 async function startReview() {
   if (uploadedFiles.length === 0) return;
-  
   setStep(2);
   document.getElementById('progressSection').classList.remove('hidden');
   document.getElementById('resultsSection').classList.add('hidden');
   document.getElementById('resultsSection').innerHTML = '';
   reviewResults = [];
   
-  const ruleType = document.getElementById('ruleType').value;
+  const ruleTypeSel = document.getElementById('ruleType').value;
   
   for (let i = 0; i < uploadedFiles.length; i++) {
     const f = uploadedFiles[i];
     updateProgress((i / uploadedFiles.length) * 100, `讀取中：${f.name}`);
-    
     try {
       const arrayBuffer = await f.file.arrayBuffer();
-      const result = await mammoth.extractRawText({ arrayBuffer });
-      const text = result.value;
+      const doc = await extractTextWithPages(arrayBuffer);
       
       updateProgress(((i + 0.5) / uploadedFiles.length) * 100, `分析中：${f.name}`);
       await new Promise(r => setTimeout(r, 200));
       
-      const finalType = ruleType === 'auto' ? detectRuleType(text) : ruleType;
-      const checks = runChecks(text, finalType, f.name);
+      const autoDetect = detectRuleType(doc.text);
+      const finalType = ruleTypeSel === 'auto' ? autoDetect.type : ruleTypeSel;
+      const isManualOverride = ruleTypeSel !== 'auto' && ruleTypeSel !== autoDetect.type;
+      
+      const checks = runChecks(doc, finalType);
       
       reviewResults.push({
-        name: f.name, text, checks, ruleType: finalType,
-        arrayBuffer: arrayBuffer.slice(0) // 保留用於下載
+        name: f.name, doc, checks, ruleType: finalType,
+        autoDetect, isManualOverride, userSelection: ruleTypeSel
       });
     } catch (err) {
       console.error(err);
-      reviewResults.push({
-        name: f.name, error: err.message || '無法讀取此檔案',
-        checks: [], ruleType: 'unknown'
-      });
+      reviewResults.push({ name: f.name, error: err.message || '無法讀取此檔案', checks: [], ruleType: 'unknown' });
     }
   }
-  
   updateProgress(100, '完成！');
   setTimeout(() => {
     document.getElementById('progressSection').classList.add('hidden');
@@ -623,10 +677,9 @@ function updateProgress(pct, label) {
   document.getElementById('progressPercent').textContent = Math.round(pct) + '%';
   document.getElementById('progressLabel').textContent = label;
 }
-
 function setStep(n) {
   for (let i = 1; i <= 3; i++) {
-    const el = document.getElementById('step' + i);
+    const el = document.getElementById('step'+i);
     if (i <= n) {
       el.className = 'flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-600 text-white font-medium';
       el.querySelector('span').className = 'w-5 h-5 rounded-full bg-white text-indigo-600 flex items-center justify-center text-xs font-bold';
@@ -637,17 +690,23 @@ function setStep(n) {
   }
 }
 
+function formatPages(pages, hasRealBreaks) {
+  if (!pages || pages.length === 0) return '';
+  const sorted = [...new Set(pages)].sort((a,b)=>a-b);
+  const prefix = hasRealBreaks ? '上傳文件的 p.' : '上傳文件的約 p.';
+  return `<span class="page-badge">📍 ${prefix}${sorted.join(', ')}</span>`;
+}
+
 function renderResults() {
   const section = document.getElementById('resultsSection');
   section.classList.remove('hidden');
-  
-  const statusIcon = { pass: '✅', fail: '⚠️', suggest: '💡', na: '➖' };
-  const statusLabel = { pass: '通過', fail: '待修正', suggest: '建議', na: '不適用' };
+  const statusIcon = { pass:'✅', fail:'⚠️', suggest:'💡', na:'➖' };
+  const statusLabel = { pass:'通過', fail:'待修正', suggest:'建議', na:'不適用' };
   const statusColor = {
-    pass: 'bg-emerald-50 border-emerald-300 text-emerald-800',
-    fail: 'bg-red-50 border-red-300 text-red-800',
-    suggest: 'bg-amber-50 border-amber-300 text-amber-800',
-    na: 'bg-slate-100 border-slate-300 text-slate-700'
+    pass:'bg-emerald-50 border-emerald-300 text-emerald-800',
+    fail:'bg-red-50 border-red-300 text-red-800',
+    suggest:'bg-amber-50 border-amber-300 text-amber-800',
+    na:'bg-slate-100 border-slate-300 text-slate-700'
   };
   
   let html = '';
@@ -660,36 +719,55 @@ function renderResults() {
       return;
     }
     
-    const pass = r.checks.filter(c => c.status === 'pass').length;
-    const fail = r.checks.filter(c => c.status === 'fail').length;
-    const sug = r.checks.filter(c => c.status === 'suggest').length;
+    const pass = r.checks.filter(c=>c.status==='pass').length;
+    const fail = r.checks.filter(c=>c.status==='fail').length;
+    const sug = r.checks.filter(c=>c.status==='suggest').length;
     const total = r.checks.length;
     const passRate = Math.round(pass / total * 100);
     
     const ruleLabel = r.ruleType === '621' ? '6-2-1 統整性主題/專題/議題探究' : r.ruleType === '624' ? '6-2-4 其他類課程' : '未知';
+    const ruleColor = r.ruleType === '621' ? 'from-indigo-500 to-blue-500' : 'from-teal-500 to-emerald-500';
     
-    // 鼓勵詞
     const encourage = fail === 0 ? '太棒了！自動檢查全數通過，可送審 🎉' :
       fail <= 2 ? '整體相當完整，只差幾處細節即可送審 💪' :
       fail <= 5 ? '主要架構已具備，再把幾項規定補齊會更穩 👍' :
       '先處理「待修正」項目，送審會更順利 📝';
     
+    const detectionHtml = `
+      <div class="bg-white rounded-lg p-3 border border-white/40">
+        <div class="flex items-start gap-2">
+          <span class="text-lg">🎯</span>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="text-xs text-slate-500">系統判斷：</span>
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold text-white bg-gradient-to-r ${ruleColor}">${ruleLabel}</span>
+              ${r.isManualOverride ? '<span class="text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded">使用者手動覆蓋</span>' : r.userSelection === 'auto' ? '<span class="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded">自動偵測</span>' : '<span class="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded">使用者指定</span>'}
+            </div>
+            <p class="text-xs text-slate-600 mt-1.5 leading-relaxed">${r.autoDetect.reasons.join('；')}${r.isManualOverride ? `（自動偵測原判為 ${r.autoDetect.type === '621' ? '6-2-1' : '6-2-4'}，已依手動設定覆蓋）` : ''}</p>
+          </div>
+        </div>
+      </div>
+    `;
+    
+    const pageInfo = r.doc.hasRealBreaks
+      ? `上傳文件共 ${r.doc.totalPages} 頁（依 Word 渲染分頁資訊）`
+      : `上傳文件估算約 ${r.doc.totalPages} 頁（此 docx 無分頁資訊，以字數估算）`;
+    
     html += `
       <div class="bg-white rounded-xl border border-slate-200 overflow-hidden mb-4">
         <div class="bg-gradient-to-r from-indigo-50 to-purple-50 px-5 py-4 border-b border-slate-200">
-          <div class="flex items-start justify-between flex-wrap gap-3">
+          <div class="flex items-start justify-between flex-wrap gap-3 mb-3">
             <div class="flex-1 min-w-0">
               <h3 class="font-bold text-slate-800 truncate">📄 ${r.name}</h3>
-              <p class="text-xs text-slate-600 mt-1">套用規則：${ruleLabel}</p>
+              <p class="text-xs text-slate-500 mt-1">${pageInfo}</p>
               <p class="text-sm text-indigo-700 mt-2 font-medium">${encourage}</p>
             </div>
-            <div class="flex items-center gap-3">
-              <div class="text-center">
-                <div class="text-3xl font-bold ${passRate >= 80 ? 'text-emerald-600' : passRate >= 60 ? 'text-amber-600' : 'text-red-600'}">${passRate}%</div>
-                <div class="text-xs text-slate-500">符合度</div>
-              </div>
+            <div class="text-center">
+              <div class="text-3xl font-bold ${passRate >= 80 ? 'text-emerald-600' : passRate >= 60 ? 'text-amber-600' : 'text-red-600'}">${passRate}%</div>
+              <div class="text-xs text-slate-500">符合度</div>
             </div>
           </div>
+          ${detectionHtml}
           <div class="flex gap-2 mt-3 flex-wrap">
             <span class="text-xs px-2 py-1 bg-emerald-100 text-emerald-700 rounded">✅ 通過 ${pass}</span>
             <span class="text-xs px-2 py-1 bg-red-100 text-red-700 rounded">⚠️ 待修正 ${fail}</span>
@@ -698,13 +776,15 @@ function renderResults() {
         </div>
         
         <div class="p-4 space-y-2">
-          ${r.checks.map((c, ci) => `
+          ${r.checks.map(c => {
+            const pageBadge = formatPages(c.evidencePages, r.doc.hasRealBreaks);
+            return `
             <details class="rule-card border border-slate-200 rounded-lg overflow-hidden" ${c.status === 'fail' ? 'open' : ''}>
               <summary class="px-4 py-3 flex items-center justify-between hover:bg-slate-50">
                 <div class="flex items-center gap-3 min-w-0 flex-1">
                   <span class="text-lg">${statusIcon[c.status]}</span>
                   <div class="min-w-0 flex-1">
-                    <p class="font-medium text-sm text-slate-800 truncate">${c.title}</p>
+                    <p class="font-medium text-sm text-slate-800">${c.title}${pageBadge}</p>
                     <p class="text-xs text-slate-500">${c.category}</p>
                   </div>
                   <span class="text-xs px-2 py-0.5 rounded font-medium ${statusColor[c.status]} border">${statusLabel[c.status]}</span>
@@ -712,34 +792,27 @@ function renderResults() {
                 <span class="arrow text-slate-400 ml-2">▶</span>
               </summary>
               <div class="px-4 py-3 bg-slate-50 border-t border-slate-200 text-sm space-y-2">
-                ${c.evidence ? `<p class="text-emerald-700"><b>📌 佐證：</b>${c.evidence}</p>` : ''}
-                ${c.issue ? `<p class="text-red-700"><b>❗ 問題：</b>${c.issue}</p>` : ''}
+                ${c.evidence ? `<p class="text-emerald-700"><b>📌 佐證：</b>${c.evidence}${pageBadge}</p>` : ''}
+                ${c.issue ? `<p class="text-red-700"><b>❗ 問題：</b>${c.issue}${pageBadge}</p>` : ''}
                 ${c.suggestion ? `<p class="text-slate-700"><b>✏️ 建議：</b>${c.suggestion}</p>` : ''}
-                ${c.autoFixable ? `<label class="flex items-center gap-2 mt-2 p-2 bg-indigo-50 rounded cursor-pointer">
-                  <input type="checkbox" data-file="${fi}" data-check="${ci}" class="autofix-cb w-4 h-4" checked>
-                  <span class="text-xs text-indigo-700">${c.autoFixLabel || '勾選以自動處理此項'}</span>
-                </label>` : ''}
               </div>
-            </details>
-          `).join('')}
-        </div>
-        
-        <div class="px-5 py-3 bg-slate-50 border-t border-slate-200 flex flex-wrap justify-end gap-2">
-          <button onclick="downloadReport(${fi})" class="px-4 py-1.5 text-sm bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 rounded-lg">📄 下載審查報告 (.md)</button>
-          <button onclick="downloadAnnotatedDocx(${fi})" class="px-4 py-1.5 text-sm bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium">📝 下載註解版 .docx</button>
+            </details>`;
+          }).join('')}
         </div>
       </div>
     `;
   });
   
-  // 總覽
   if (reviewResults.length > 1) {
-    const totalPass = reviewResults.reduce((a,r) => a + (r.checks?.filter(c=>c.status==='pass').length || 0), 0);
-    const totalFail = reviewResults.reduce((a,r) => a + (r.checks?.filter(c=>c.status==='fail').length || 0), 0);
-    const totalSug = reviewResults.reduce((a,r) => a + (r.checks?.filter(c=>c.status==='suggest').length || 0), 0);
+    const valid = reviewResults.filter(r => !r.error);
+    const totalPass = valid.reduce((a,r) => a + r.checks.filter(c=>c.status==='pass').length, 0);
+    const totalFail = valid.reduce((a,r) => a + r.checks.filter(c=>c.status==='fail').length, 0);
+    const totalSug = valid.reduce((a,r) => a + r.checks.filter(c=>c.status==='suggest').length, 0);
+    const count621 = valid.filter(r => r.ruleType === '621').length;
+    const count624 = valid.filter(r => r.ruleType === '624').length;
     html = `<div class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl p-5 mb-4">
       <h3 class="font-bold text-lg mb-2">📊 整體審查摘要</h3>
-      <p class="text-indigo-100 text-sm mb-3">共審查 ${reviewResults.length} 份文件</p>
+      <p class="text-indigo-100 text-sm mb-3">共審查 ${reviewResults.length} 份文件（6-2-1：${count621} 份 / 6-2-4：${count624} 份）</p>
       <div class="flex gap-3 flex-wrap">
         <div class="bg-white/20 px-4 py-2 rounded-lg"><span class="text-2xl font-bold">${totalPass}</span> <span class="text-xs">通過</span></div>
         <div class="bg-white/20 px-4 py-2 rounded-lg"><span class="text-2xl font-bold">${totalFail}</span> <span class="text-xs">待修正</span></div>
@@ -751,124 +824,6 @@ function renderResults() {
   section.innerHTML = html;
 }
 
-// ============ 下載：審查報告 Markdown ============
-function downloadReport(fi) {
-  const r = reviewResults[fi];
-  const statusLabel = { pass: '✅ 通過', fail: '⚠️ 待修正', suggest: '💡 建議', na: '➖ 不適用' };
-  const ruleLabel = r.ruleType === '621' ? '6-2-1 統整性主題/專題/議題探究課程' : '6-2-4 其他類課程';
-  
-  let md = `# 課程計畫審查報告\n\n`;
-  md += `**檔名**：${r.name}\n**套用規則**：${ruleLabel}\n**審查時間**：${new Date().toLocaleString('zh-TW')}\n\n---\n\n`;
-  
-  const groups = {};
-  r.checks.forEach(c => {
-    if (!groups[c.category]) groups[c.category] = [];
-    groups[c.category].push(c);
-  });
-  
-  Object.entries(groups).forEach(([cat, items]) => {
-    md += `## ${cat}\n\n`;
-    items.forEach(c => {
-      md += `### ${statusLabel[c.status]} ${c.title}\n\n`;
-      if (c.evidence) md += `- 📌 **佐證**：${c.evidence}\n`;
-      if (c.issue) md += `- ❗ **問題**：${c.issue}\n`;
-      if (c.suggestion) md += `- ✏️ **建議**：${c.suggestion}\n`;
-      md += '\n';
-    });
-  });
-  
-  const pass = r.checks.filter(c => c.status === 'pass').length;
-  const fail = r.checks.filter(c => c.status === 'fail').length;
-  const sug = r.checks.filter(c => c.status === 'suggest').length;
-  md += `---\n\n## 統計\n\n- 通過：${pass}\n- 待修正：${fail}\n- 建議：${sug}\n`;
-  
-  const blob = new Blob([md], { type: 'text/markdown;charset=utf-8' });
-  triggerDownload(blob, `審查報告_${r.name.replace(/\.docx$/i,'')}.md`);
-  showToast('報告已下載');
-}
-
-// ============ 下載：附加 Word 註解的 docx ============
-async function downloadAnnotatedDocx(fi) {
-  const r = reviewResults[fi];
-  try {
-    const zip = await JSZip.loadAsync(r.arrayBuffer);
-    
-    // 1. 建立 comments.xml
-    const issues = r.checks.filter(c => c.status === 'fail' || c.status === 'suggest');
-    if (issues.length === 0) {
-      showToast('此文件無需新增註解');
-      return;
-    }
-    
-    const commentsXml = buildCommentsXml(issues);
-    zip.file('word/comments.xml', commentsXml);
-    
-    // 2. 更新 [Content_Types].xml
-    let ct = await zip.file('[Content_Types].xml').async('string');
-    if (!ct.includes('comments+xml')) {
-      ct = ct.replace('</Types>',
-        '<Override PartName="/word/comments.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.comments+xml"/></Types>');
-      zip.file('[Content_Types].xml', ct);
-    }
-    
-    // 3. 更新 word/_rels/document.xml.rels
-    let rels = await zip.file('word/_rels/document.xml.rels').async('string');
-    if (!rels.includes('comments.xml')) {
-      const newRelId = 'rIdComments' + Date.now();
-      rels = rels.replace('</Relationships>',
-        `<Relationship Id="${newRelId}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/comments" Target="comments.xml"/></Relationships>`);
-      zip.file('word/_rels/document.xml.rels', rels);
-    }
-    
-    // 4. 在 document.xml 開頭段落後插入註解參照
-    let docXml = await zip.file('word/document.xml').async('string');
-    // 找第一個 <w:p> 結束位置後插入註解標記
-    const firstP = docXml.indexOf('</w:p>');
-    if (firstP > 0) {
-      const insertions = issues.map((_, i) => 
-        `<w:commentRangeStart w:id="${i}"/><w:commentRangeEnd w:id="${i}"/><w:r><w:rPr><w:rStyle w:val="CommentReference"/></w:rPr><w:commentReference w:id="${i}"/></w:r>`
-      ).join('');
-      docXml = docXml.substring(0, firstP) + insertions + docXml.substring(firstP);
-      zip.file('word/document.xml', docXml);
-    }
-    
-    const blob = await zip.generateAsync({ type: 'blob', mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
-    triggerDownload(blob, `審查註解版_${r.name}`);
-    showToast('註解版 docx 已下載（請用 Word 開啟查看右側註解）');
-  } catch (err) {
-    console.error(err);
-    showToast('產生註解版失敗，請改用 Markdown 報告');
-  }
-}
-
-function buildCommentsXml(issues) {
-  const escape = s => String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-  const statusLabel = { fail: '⚠️ 待修正', suggest: '💡 建議' };
-  const now = new Date().toISOString();
-  
-  const comments = issues.map((c, i) => {
-    let text = `【${statusLabel[c.status]}】${c.title}`;
-    if (c.issue) text += `\n問題：${c.issue}`;
-    if (c.suggestion) text += `\n建議：${c.suggestion}`;
-    
-    const paras = text.split('\n').map(line => 
-      `<w:p><w:r><w:t xml:space="preserve">${escape(line)}</w:t></w:r></w:p>`
-    ).join('');
-    
-    return `<w:comment w:id="${i}" w:author="審查工具" w:date="${now}" w:initials="REV">${paras}</w:comment>`;
-  }).join('');
-  
-  return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<w:comments xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">${comments}</w:comments>`;
-}
-
-function triggerDownload(blob, fname) {
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = fname; a.click();
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
-}
-
 function showToast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg;
@@ -877,7 +832,6 @@ function showToast(msg) {
   window._toastTimer = setTimeout(() => t.classList.add('hidden'), 2500);
 }
 
-// 初始化
 renderCriteria();
 </script>
 
