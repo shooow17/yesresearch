@@ -307,28 +307,27 @@ body {
         overflow: auto;
     }
     .app-wrapper {
-        flex-direction: column-reverse;
+        flex-direction: column;
         margin: 0;
         padding: 0;
         height: auto;
         gap: 0;
     }
-    .left-panel, .right-panel {
+    .right-panel {
+        order: 1; /* PDF viewer on top */
+        flex: none;
+        height: 85vh; /* PDF gets plenty of height */
         border-radius: 0;
         box-shadow: none;
-        flex: none;
-    }
-    .right-panel {
-        position: sticky;
-        top: 0;
-        height: 50vh;
-        z-index: 100;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-        border-bottom: 2px solid var(--primary-color);
+        border-bottom: 8px solid #E5E7EB;
     }
     .left-panel {
+        order: 2; /* Directory on bottom */
+        flex: none;
         height: auto;
-        padding-bottom: 40px;
+        border-radius: 0;
+        box-shadow: none;
+        padding-bottom: 60px;
     }
     .chapter-list {
         overflow-y: visible;
@@ -350,8 +349,8 @@ body {
         padding: 3px 8px;
     }
     .btn-primary {
-        padding: 6px 12px;
-        font-size: 0.85rem;
+        padding: 8px 12px;
+        font-size: 0.9rem;
     }
     .cat-num {
         font-size: 2rem;
