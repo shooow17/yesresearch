@@ -168,6 +168,10 @@ const siteData = [
         "pdf":  "pdf_files/7-3全校教師授課節數一覽表.pdf"
     },
     {
+        "name":  "7-4課程評鑑歷程與數據",
+        "url":  "https://sites.google.com/yes.tyc.edu.tw/course-ev/%E9%A6%96%E9%A0%81"
+    },
+    {
         "name":  "7-4-1課程評鑑計畫",
         "pdf":  "pdf_files/7-4-1課程評鑑計畫.pdf"
     },

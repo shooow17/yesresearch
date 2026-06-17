@@ -106,8 +106,37 @@ document.addEventListener('DOMContentLoaded', () => {
         currentDocTitle.textContent = item.name;
         currentDocTitle.title = item.name;
         
+        if (item.url) {
+            pdfViewer.classList.add('hidden');
+            pdfMobileViewer.classList.remove('hidden');
+            
+            pdfMobileViewer.innerHTML = `
+                <div style="padding: 60px 20px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
+                    <svg viewBox="0 0 24 24" width="64" height="64" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round" style="color: var(--primary-color); margin-bottom: 24px;"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                    <h2 style="margin-bottom: 16px; font-size: 1.5rem; color: var(--text-main);">外部連結</h2>
+                    <p style="margin-bottom: 32px; color: var(--text-muted); font-size: 1.1rem;">此項目為外部網站，將於新分頁中開啟。</p>
+                    <a href="${item.url}" target="_blank" class="btn-primary" style="font-size: 1.1rem; padding: 12px 24px;">開啟網站</a>
+                </div>
+            `;
+            
+            downloadBtn.href = item.url;
+            downloadBtn.removeAttribute('download');
+            downloadBtn.innerHTML = `
+                <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                前往網站
+            `;
+            downloadBtn.classList.remove('disabled');
+            
+            window.open(item.url, '_blank');
+            return;
+        }
+        
         downloadBtn.href = item.pdf;
-        downloadBtn.download = `${item.name}.pdf`;
+        downloadBtn.setAttribute('download', `${item.name}.pdf`);
+        downloadBtn.innerHTML = `
+            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            下載文件
+        `;
         downloadBtn.classList.remove('disabled');
 
         if (isMobile && window.pdfjsLib) {
