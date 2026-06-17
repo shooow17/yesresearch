@@ -95,7 +95,9 @@ document.addEventListener('DOMContentLoaded', () => {
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
     }
 
-    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || window.innerWidth <= 992;
+    // Detect mobile and tablets, including iPads pretending to be Macs
+    const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    const isMobile = isIOS || /Android/i.test(navigator.userAgent) || window.innerWidth <= 992;
 
     function openPdf(item) {
         welcomeScreen.classList.add('hidden');
@@ -124,7 +126,8 @@ document.addEventListener('DOMContentLoaded', () => {
         pdfMobileViewer.innerHTML = '<div class="loading" style="padding: 40px; text-align: center;">載入文件中...</div>';
         
         try {
-            const loadingTask = pdfjsLib.getDocument(url);
+            const encodedUrl = encodeURI(url);
+            const loadingTask = pdfjsLib.getDocument(encodedUrl);
             const pdf = await loadingTask.promise;
             
             pdfMobileViewer.innerHTML = ''; // Clear loading
