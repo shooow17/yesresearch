@@ -1,4 +1,4 @@
-const siteData = [
+﻿const siteData = [
     {
         "name":  "0 學校課程計畫封面與目錄",
         "pdf":  "pdf_files/0 學校課程計畫封面與目錄.pdf"
@@ -52,6 +52,10 @@ const siteData = [
         "pdf":  "pdf_files/4-2課程評鑑規劃.pdf"
     },
     {
+        "name":  "5-1-1-10健體課程計畫",
+        "pdf":  "pdf_files/5-1-1-10健體課程計畫.pdf"
+    },
+    {
         "name":  "5-1-1-1國語文 ",
         "pdf":  "pdf_files/5-1-1-1國語文 .pdf"
     },
@@ -86,10 +90,6 @@ const siteData = [
     {
         "name":  "5-1-1-9生活課程計畫",
         "pdf":  "pdf_files/5-1-1-9生活課程計畫.pdf"
-    },
-    {
-        "name":  "5-1-1-10健體課程計畫",
-        "pdf":  "pdf_files/5-1-1-10健體課程計畫.pdf"
     },
     {
         "name":  "5-1-2特殊教育班各年級各領域科目課程計畫",
@@ -160,6 +160,10 @@ const siteData = [
         "pdf":  "pdf_files/7-1-1課程發展委員會組織要點.pdf"
     },
     {
+        "name":  "7-10雙語融入課程自主檢核表",
+        "pdf":  "pdf_files/7-10雙語融入課程自主檢核表.pdf"
+    },
+    {
         "name":  "7-3全校教師授課節數一覽表",
         "pdf":  "pdf_files/7-3全校教師授課節數一覽表.pdf"
     },
@@ -187,9 +191,5 @@ const siteData = [
         "name":  "7-9校外人士協助之部定或校訂課程計畫",
         "pdf":  "pdf_files/7-9校外人士協助之部定或校訂課程計畫.pdf"
     }
-    {
-        "name":  "7-10雙語融入課程自主檢核表",
-        "pdf":  "pdf_files/7-10雙語融入課程自主檢核表.pdf"
-    },
 ]
 ;
