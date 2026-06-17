@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     const chapterList = document.getElementById('chapterList');
     const pdfViewer = document.getElementById('pdfViewer');
+    const pdfMobileViewer = document.getElementById('pdfMobileViewer');
     const welcomeScreen = document.getElementById('welcomeScreen');
     const currentDocTitle = document.getElementById('currentDocTitle');
     const downloadBtn = document.getElementById('downloadBtn');
@@ -89,13 +90,16 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Setup PDF.js worker
+    if (window.pdfjsLib) {
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    }
+
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || window.innerWidth <= 992;
+
     function openPdf(item) {
         welcomeScreen.classList.add('hidden');
-        pdfViewer.classList.remove('hidden');
         courseTag.classList.remove('hidden');
-        
-        // Use view=FitH to force the PDF to fill the width, reducing black bars
-        pdfViewer.src = item.pdf + '#toolbar=0&navpanes=0&view=FitH';
         
         currentDocTitle.textContent = item.name;
         currentDocTitle.title = item.name;
@@ -103,6 +107,56 @@ document.addEventListener('DOMContentLoaded', () => {
         downloadBtn.href = item.pdf;
         downloadBtn.download = `${item.name}.pdf`;
         downloadBtn.classList.remove('disabled');
+
+        if (isMobile && window.pdfjsLib) {
+            pdfViewer.classList.add('hidden');
+            pdfMobileViewer.classList.remove('hidden');
+            renderPdfWithPdfJs(item.pdf);
+        } else {
+            pdfMobileViewer.classList.add('hidden');
+            pdfViewer.classList.remove('hidden');
+            // Use view=FitH to force the PDF to fill the width, reducing black bars
+            pdfViewer.src = item.pdf + '#toolbar=0&navpanes=0&view=FitH';
+        }
+    }
+
+    async function renderPdfWithPdfJs(url) {
+        pdfMobileViewer.innerHTML = '<div class="loading" style="padding: 40px; text-align: center;">載入文件中...</div>';
+        
+        try {
+            const loadingTask = pdfjsLib.getDocument(url);
+            const pdf = await loadingTask.promise;
+            
+            pdfMobileViewer.innerHTML = ''; // Clear loading
+            
+            for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+                const page = await pdf.getPage(pageNum);
+                
+                // Get the viewport for scaling
+                const containerWidth = pdfMobileViewer.clientWidth || window.innerWidth - 32;
+                const unscaledViewport = page.getViewport({ scale: 1.0 });
+                // Calculate scale to fit width (with some padding)
+                const scale = (containerWidth - 32) / unscaledViewport.width; 
+                const viewport = page.getViewport({ scale: Math.max(scale, 1.0) });
+                
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                
+                canvas.width = viewport.width;
+                canvas.height = viewport.height;
+                pdfMobileViewer.appendChild(canvas);
+                
+                const renderContext = {
+                    canvasContext: ctx,
+                    viewport: viewport
+                };
+                
+                await page.render(renderContext).promise;
+            }
+        } catch (error) {
+            console.error('Error rendering PDF:', error);
+            pdfMobileViewer.innerHTML = '<div class="loading" style="padding: 40px; text-align: center; color: #ef4444;">PDF 載入失敗，請嘗試直接下載。</div>';
+        }
     }
 
     // Search functionality
