@@ -1,0 +1,3431 @@
+[
+  {
+    "subId": "本土語群組",
+    "classId": "C_812250538",
+    "period": "M",
+    "subName": "本土語群組",
+    "teaId": "T_00885428106",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "本土語群組",
+    "period": "M",
+    "classId": "C_8122090545",
+    "subName": "本土語群組",
+    "teaId": "T_95947963108",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "本土語群組",
+    "classId": "C_8122598746",
+    "period": "M",
+    "subName": "本土語群組",
+    "teaId": "T_95947963108",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "本土語群組",
+    "classId": "C_8122772644",
+    "period": "M",
+    "subName": "本土語群組",
+    "teaId": "T_00881420107",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "本土語群組",
+    "period": "M",
+    "classId": "C_8122090545",
+    "subName": "本土語群組",
+    "teaId": "T_00881420107",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "本土語群組",
+    "classId": "C_8122238727",
+    "period": "M",
+    "subName": "本土語群組",
+    "teaId": "T_357512930",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "本土語群組",
+    "period": "M",
+    "classId": "C_8122081547",
+    "subName": "本土語群組",
+    "teaId": "T_00881420107",
+    "day": "星期三",
+    "roomId": ""
+  },
+  {
+    "subId": "本土語群組",
+    "period": "M",
+    "classId": "C_8122059949",
+    "subName": "本土語群組",
+    "teaId": "T_00881420107",
+    "day": "星期三",
+    "roomId": ""
+  },
+  {
+    "subId": "本土語群組",
+    "classId": "C_8122244842",
+    "period": "M",
+    "subName": "本土語群組",
+    "teaId": "T_772170270",
+    "day": "星期三",
+    "roomId": ""
+  },
+  {
+    "subId": "本土語群組",
+    "period": "M",
+    "classId": "C_8122676811",
+    "subName": "本土語群組",
+    "teaId": "T_411939230",
+    "day": "星期三",
+    "roomId": ""
+  },
+  {
+    "subId": "本土語群組",
+    "period": "M",
+    "classId": "C_8122244842",
+    "subName": "本土語群組",
+    "teaId": "T_467959170",
+    "day": "星期四",
+    "roomId": ""
+  },
+  {
+    "subId": "本土語群組",
+    "period": "M",
+    "classId": "C_8122652822",
+    "subName": "本土語群組",
+    "teaId": "T_467959170",
+    "day": "星期五",
+    "roomId": ""
+  },
+  {
+    "subId": "本土語群組",
+    "classId": "C_8122711917",
+    "period": "M",
+    "subName": "本土語群組",
+    "teaId": "T_134727120",
+    "day": "星期五",
+    "roomId": ""
+  },
+  {
+    "subId": "本土語群組",
+    "classId": "C_8122266529",
+    "period": "M",
+    "subName": "本土語群組",
+    "teaId": "T_832492550",
+    "day": "星期五",
+    "roomId": ""
+  },
+  {
+    "subId": "本土語群組",
+    "classId": "C_8122614739",
+    "period": "M",
+    "subName": "本土語群組",
+    "teaId": "T_370927000",
+    "day": "星期五",
+    "roomId": ""
+  },
+  {
+    "subId": "本土語群組",
+    "period": "1",
+    "classId": "C_8122090545",
+    "subName": "本土語群組",
+    "teaId": "T_00885428106",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "本土語群組",
+    "period": "1",
+    "classId": "C_8122059949",
+    "subName": "本土語群組",
+    "teaId": "T_066040790",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "本土語群組",
+    "period": "1",
+    "classId": "C_8122244842",
+    "subName": "本土語群組",
+    "teaId": "T_371543610",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "本土語群組",
+    "classId": "C_8122252616",
+    "period": "1",
+    "subName": "本土語群組",
+    "teaId": "T_00881420107",
+    "day": "星期三",
+    "roomId": ""
+  },
+  {
+    "subId": "本土語群組",
+    "period": "1",
+    "classId": "C_8122186121",
+    "subName": "本土語群組",
+    "teaId": "T_411939230",
+    "day": "星期三",
+    "roomId": ""
+  },
+  {
+    "subId": "本土語群組",
+    "classId": "C_8122446015",
+    "period": "1",
+    "subName": "本土語群組",
+    "teaId": "T_406225620",
+    "day": "星期三",
+    "roomId": ""
+  },
+  {
+    "subId": "本土語群組",
+    "period": "1",
+    "classId": "C_8122726718",
+    "subName": "本土語群組",
+    "teaId": "T_406225620",
+    "day": "星期三",
+    "roomId": ""
+  },
+  {
+    "subId": "本土語群組",
+    "period": "2",
+    "classId": "C_8122026723",
+    "subName": "本土語群組",
+    "teaId": "T_00885428106",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "本土語群組",
+    "classId": "C_8122266529",
+    "period": "2",
+    "subName": "本土語群組",
+    "teaId": "T_066040790",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "本土語群組",
+    "classId": "C_8122012930",
+    "period": "2",
+    "subName": "本土語群組",
+    "teaId": "T_066040790",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "本土語群組",
+    "classId": "C_8122976528",
+    "period": "2",
+    "subName": "本土語群組",
+    "teaId": "T_491274480",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "本土語群組",
+    "classId": "C_8122266529",
+    "period": "2",
+    "subName": "本土語群組",
+    "teaId": "T_491274480",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "本土語群組",
+    "period": "2",
+    "classId": "C_8122266529",
+    "subName": "本土語群組",
+    "teaId": "T_312768280",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "本土語群組",
+    "classId": "C_812242355",
+    "period": "2",
+    "subName": "本土語群組",
+    "teaId": "T_00881420107",
+    "day": "星期三",
+    "roomId": ""
+  },
+  {
+    "subId": "本土語群組",
+    "period": "2",
+    "classId": "C_812275526",
+    "subName": "本土語群組",
+    "teaId": "T_00881420107",
+    "day": "星期三",
+    "roomId": ""
+  },
+  {
+    "subId": "本土語群組",
+    "classId": "C_812297810",
+    "period": "2",
+    "subName": "本土語群組",
+    "teaId": "T_704791240",
+    "day": "星期三",
+    "roomId": ""
+  },
+  {
+    "subId": "本土語群組",
+    "classId": "C_812260337",
+    "period": "2",
+    "subName": "本土語群組",
+    "teaId": "T_202617540",
+    "day": "星期四",
+    "roomId": ""
+  },
+  {
+    "subId": "本土語群組",
+    "classId": "C_8122253925",
+    "period": "3",
+    "subName": "本土語群組",
+    "teaId": "T_491274480",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "本土語群組",
+    "classId": "C_8122409226",
+    "period": "3",
+    "subName": "本土語群組",
+    "teaId": "T_491274480",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "本土語群組",
+    "period": "3",
+    "classId": "C_8122986419",
+    "subName": "本土語群組",
+    "teaId": "T_00881420107",
+    "day": "星期三",
+    "roomId": ""
+  },
+  {
+    "subId": "本土語群組",
+    "classId": "C_8122960834",
+    "period": "4",
+    "subName": "本土語群組",
+    "teaId": "T_491274480",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "本土語群組",
+    "classId": "C_8122848810",
+    "period": "5",
+    "subName": "本土語群組",
+    "teaId": "T_105663640",
+    "day": "星期四",
+    "roomId": ""
+  },
+  {
+    "subId": "本土語群組",
+    "classId": "C_8122676811",
+    "period": "5",
+    "subName": "本土語群組",
+    "teaId": "T_105663640",
+    "day": "星期四",
+    "roomId": ""
+  },
+  {
+    "subId": "本土語群組",
+    "period": "6",
+    "classId": "C_8122063840",
+    "subName": "本土語群組",
+    "teaId": "T_105663640",
+    "day": "星期四",
+    "roomId": ""
+  },
+  {
+    "subId": "本土語群組",
+    "period": "6",
+    "classId": "C_8122913832",
+    "subName": "本土語群組",
+    "teaId": "T_737091130",
+    "day": "星期四",
+    "roomId": ""
+  },
+  {
+    "subId": "本土語群組",
+    "classId": "C_8122063840",
+    "period": "6",
+    "subName": "本土語群組",
+    "teaId": "T_406225620",
+    "day": "星期四",
+    "roomId": ""
+  },
+  {
+    "subId": "本土語群組",
+    "period": "3",
+    "classId": "C_8122652822",
+    "subName": "本土語群組",
+    "teaId": "T_406225620",
+    "day": "星期三",
+    "roomId": ""
+  },
+  {
+    "subId": "本土語群組",
+    "period": "2",
+    "classId": "C_812275526",
+    "subName": "本土語群組",
+    "teaId": "T_406225620",
+    "day": "星期三",
+    "roomId": ""
+  },
+  {
+    "subId": "本土語群組",
+    "classId": "C_8122244842",
+    "period": "1",
+    "subName": "本土語群組",
+    "teaId": "T_05543491101",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "本土語群組",
+    "classId": "C_8122059949",
+    "period": "1",
+    "subName": "本土語群組",
+    "teaId": "T_05543491101",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "本土語群組",
+    "classId": "C_8122252616",
+    "period": "1",
+    "subName": "本土語群組",
+    "teaId": "T_05597270103",
+    "day": "星期三",
+    "roomId": ""
+  },
+  {
+    "subId": "本土語群組",
+    "classId": "C_8122446015",
+    "period": "1",
+    "subName": "本土語群組",
+    "teaId": "T_05597270103",
+    "day": "星期三",
+    "roomId": ""
+  },
+  {
+    "subId": "本土語群組",
+    "period": "2",
+    "classId": "C_8122976528",
+    "subName": "本土語群組",
+    "teaId": "T_05543491101",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "本土語群組",
+    "classId": "C_8122012930",
+    "period": "2",
+    "subName": "本土語群組",
+    "teaId": "T_05543491101",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "本土語群組",
+    "period": "2",
+    "classId": "C_812297810",
+    "subName": "本土語群組",
+    "teaId": "T_05597270103",
+    "day": "星期三",
+    "roomId": ""
+  },
+  {
+    "subId": "本土語群組",
+    "classId": "C_812242355",
+    "period": "2",
+    "subName": "本土語群組",
+    "teaId": "T_05597270103",
+    "day": "星期三",
+    "roomId": ""
+  },
+  {
+    "subId": "本土語群組",
+    "period": "2",
+    "classId": "C_812275526",
+    "subName": "本土語群組",
+    "teaId": "T_05597270103",
+    "day": "星期三",
+    "roomId": ""
+  },
+  {
+    "subId": "本土語群組",
+    "period": "2",
+    "classId": "C_812260337",
+    "subName": "本土語群組",
+    "teaId": "T_05597270103",
+    "day": "星期四",
+    "roomId": ""
+  },
+  {
+    "subId": "本土語群組",
+    "classId": "C_812218011",
+    "period": "2",
+    "subName": "本土語群組",
+    "teaId": "T_05597270103",
+    "day": "星期四",
+    "roomId": ""
+  },
+  {
+    "subId": "本土語群組",
+    "period": "3",
+    "classId": "C_8122409226",
+    "subName": "本土語群組",
+    "teaId": "T_05543491101",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "本土語群組",
+    "classId": "C_8122986419",
+    "period": "3",
+    "subName": "本土語群組",
+    "teaId": "T_05597270103",
+    "day": "星期三",
+    "roomId": ""
+  },
+  {
+    "subId": "本土語群組",
+    "classId": "C_8122652822",
+    "period": "3",
+    "subName": "本土語群組",
+    "teaId": "T_05597270103",
+    "day": "星期三",
+    "roomId": ""
+  },
+  {
+    "subId": "本土語群組",
+    "period": "3",
+    "classId": "C_8122262341",
+    "subName": "本土語群組",
+    "teaId": "T_05597270103",
+    "day": "星期四",
+    "roomId": ""
+  },
+  {
+    "subId": "本土語群組",
+    "classId": "C_8122772644",
+    "period": "3",
+    "subName": "本土語群組",
+    "teaId": "T_05597270103",
+    "day": "星期四",
+    "roomId": ""
+  },
+  {
+    "subId": "本土語群組",
+    "period": "4",
+    "classId": "C_812250538",
+    "subName": "本土語群組",
+    "teaId": "T_05597270103",
+    "day": "星期三",
+    "roomId": ""
+  },
+  {
+    "subId": "本土語群組",
+    "period": "4",
+    "classId": "C_8122091114",
+    "subName": "本土語群組",
+    "teaId": "T_05597270103",
+    "day": "星期三",
+    "roomId": ""
+  },
+  {
+    "subId": "本土語群組",
+    "period": "4",
+    "classId": "C_8122191243",
+    "subName": "本土語群組",
+    "teaId": "T_05597270103",
+    "day": "星期四",
+    "roomId": ""
+  },
+  {
+    "subId": "本土語群組",
+    "classId": "C_8122838648",
+    "period": "4",
+    "subName": "本土語群組",
+    "teaId": "T_05597270103",
+    "day": "星期四",
+    "roomId": ""
+  },
+  {
+    "subId": "本土語群組",
+    "period": "5",
+    "classId": "C_8122848810",
+    "subName": "本土語群組",
+    "teaId": "T_05597270103",
+    "day": "星期四",
+    "roomId": ""
+  },
+  {
+    "subId": "本土語群組",
+    "period": "5",
+    "classId": "C_8122676811",
+    "subName": "本土語群組",
+    "teaId": "T_05597270103",
+    "day": "星期四",
+    "roomId": ""
+  },
+  {
+    "subId": "本土語群組",
+    "period": "6",
+    "classId": "C_8122913832",
+    "subName": "本土語群組",
+    "teaId": "T_05597270103",
+    "day": "星期四",
+    "roomId": ""
+  },
+  {
+    "subId": "本土語群組",
+    "classId": "C_8122263036",
+    "period": "6",
+    "subName": "本土語群組",
+    "teaId": "T_05597270103",
+    "day": "星期四",
+    "roomId": ""
+  },
+  {
+    "subId": "本土語群組",
+    "period": "2",
+    "classId": "C_8122026723",
+    "subName": "本土語群組",
+    "teaId": "T_05543491101",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "本土語群組",
+    "classId": "C_8122185924",
+    "period": "3",
+    "subName": "本土語群組",
+    "teaId": "T_05543491101",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "本土語群組",
+    "period": "3",
+    "classId": "C_8122238727",
+    "subName": "本土語群組",
+    "teaId": "T_05543491101",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675327919",
+    "period": "6",
+    "classId": "C_8122614739",
+    "subName": "本土語",
+    "teaId": "T_0323673139",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675327919",
+    "period": "2",
+    "classId": "C_812275779",
+    "subName": "本土語",
+    "teaId": "T_019475349",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675327919",
+    "period": "1",
+    "classId": "C_8122252616",
+    "subName": "本土語",
+    "teaId": "T_0235454316",
+    "day": "星期三",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675327919",
+    "classId": "C_8122186121",
+    "period": "1",
+    "subName": "本土語",
+    "teaId": "T_0258878421",
+    "day": "星期三",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675327919",
+    "classId": "C_812297832",
+    "period": "2",
+    "subName": "本土語",
+    "teaId": "T_016811912",
+    "day": "星期三",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675327919",
+    "classId": "C_812275526",
+    "period": "2",
+    "subName": "本土語",
+    "teaId": "T_018496686",
+    "day": "星期三",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675327919",
+    "classId": "C_8122986419",
+    "period": "3",
+    "subName": "本土語",
+    "teaId": "T_0248037919",
+    "day": "星期三",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675327919",
+    "period": "3",
+    "classId": "C_8122871920",
+    "subName": "本土語",
+    "teaId": "T_0472405485",
+    "day": "星期三",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675327919",
+    "period": "3",
+    "classId": "C_8122652822",
+    "subName": "本土語",
+    "teaId": "T_0428259172",
+    "day": "星期三",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675327919",
+    "period": "4",
+    "classId": "C_812250538",
+    "subName": "本土語",
+    "teaId": "T_0545331898",
+    "day": "星期三",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675327919",
+    "period": "4",
+    "classId": "C_8122091114",
+    "subName": "本土語",
+    "teaId": "T_0428259172",
+    "day": "星期三",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675327919",
+    "period": "1",
+    "classId": "C_8122598746",
+    "subName": "本土語",
+    "teaId": "T_526209380",
+    "day": "星期四",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675327919",
+    "period": "2",
+    "classId": "C_812218011",
+    "subName": "本土語",
+    "teaId": "T_526209380",
+    "day": "星期四",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675327919",
+    "period": "2",
+    "classId": "C_812260337",
+    "subName": "本土語",
+    "teaId": "T_0428259172",
+    "day": "星期四",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675327919",
+    "classId": "C_8122262341",
+    "period": "3",
+    "subName": "本土語",
+    "teaId": "T_526209380",
+    "day": "星期四",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675327919",
+    "period": "4",
+    "classId": "C_8122191243",
+    "subName": "本土語",
+    "teaId": "T_526209380",
+    "day": "星期四",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675327919",
+    "period": "4",
+    "classId": "C_8122838648",
+    "subName": "本土語",
+    "teaId": "T_0428259172",
+    "day": "星期四",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675327919",
+    "period": "5",
+    "classId": "C_8122848810",
+    "subName": "本土語",
+    "teaId": "T_526209380",
+    "day": "星期四",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675327919",
+    "period": "5",
+    "classId": "C_8122676811",
+    "subName": "本土語",
+    "teaId": "T_0428259172",
+    "day": "星期四",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675327919",
+    "classId": "C_8122063840",
+    "period": "6",
+    "subName": "本土語",
+    "teaId": "T_0330644140",
+    "day": "星期四",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675327919",
+    "classId": "C_8122913832",
+    "period": "6",
+    "subName": "本土語",
+    "teaId": "T_0428259172",
+    "day": "星期四",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675327919",
+    "period": "6",
+    "classId": "C_8122263036",
+    "subName": "本土語",
+    "teaId": "T_526209380",
+    "day": "星期四",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675327919",
+    "period": "1",
+    "classId": "C_8122211331",
+    "subName": "本土語",
+    "teaId": "T_0428259172",
+    "day": "星期五",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675327919",
+    "period": "2",
+    "classId": "C_8122181633",
+    "subName": "本土語",
+    "teaId": "T_0428259172",
+    "day": "星期五",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675327919",
+    "period": "2",
+    "classId": "C_812256223",
+    "subName": "本土語",
+    "teaId": "T_0428259172",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675327919",
+    "classId": "C_8122410612",
+    "period": "3",
+    "subName": "本土語",
+    "teaId": "T_0545331898",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675327919",
+    "classId": "C_8122321113",
+    "period": "4",
+    "subName": "本土語",
+    "teaId": "T_0545331898",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675327919",
+    "classId": "C_8122647135",
+    "period": "5",
+    "subName": "本土語",
+    "teaId": "T_453693260",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675327919",
+    "period": "5",
+    "classId": "C_8122282438",
+    "subName": "本土語",
+    "teaId": "T_0428259172",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675327919",
+    "classId": "C_8122960834",
+    "period": "4",
+    "subName": "本土語",
+    "teaId": "T_453693260",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675327919",
+    "classId": "C_8122687037",
+    "period": "4",
+    "subName": "本土語",
+    "teaId": "T_0428259172",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675327919",
+    "classId": "C_8122253925",
+    "period": "3",
+    "subName": "本土語",
+    "teaId": "T_0428259172",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675327919",
+    "classId": "C_8122409226",
+    "period": "3",
+    "subName": "本土語",
+    "teaId": "T_0472405485",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675327919",
+    "period": "3",
+    "classId": "C_8122185924",
+    "subName": "本土語",
+    "teaId": "T_0433604673",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675327919",
+    "period": "3",
+    "classId": "C_8122238727",
+    "subName": "本土語",
+    "teaId": "T_453693260",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675327919",
+    "classId": "C_8122026723",
+    "period": "2",
+    "subName": "本土語",
+    "teaId": "T_0428259172",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675327919",
+    "period": "2",
+    "classId": "C_8122976528",
+    "subName": "本土語",
+    "teaId": "T_0472405485",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675327919",
+    "period": "2",
+    "classId": "C_8122266529",
+    "subName": "本土語",
+    "teaId": "T_0433604673",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675327919",
+    "period": "2",
+    "classId": "C_8122012930",
+    "subName": "本土語",
+    "teaId": "T_453693260",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675327919",
+    "period": "1",
+    "classId": "C_8122244842",
+    "subName": "本土語",
+    "teaId": "T_0428259172",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675327919",
+    "classId": "C_8122090545",
+    "period": "1",
+    "subName": "本土語",
+    "teaId": "T_453693260",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675327919",
+    "classId": "C_8122059949",
+    "period": "1",
+    "subName": "本土語",
+    "teaId": "T_0433604673",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "本土語群組",
+    "period": "M",
+    "classId": "C_8122409226",
+    "subName": "本土語群組",
+    "teaId": "T_832492550",
+    "day": "星期五",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675327919",
+    "classId": "C_812297810",
+    "period": "2",
+    "subName": "本土語",
+    "teaId": "T_0433604673",
+    "day": "星期三",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675327919",
+    "period": "2",
+    "classId": "C_812242355",
+    "subName": "本土語",
+    "teaId": "T_0428259172",
+    "day": "星期三",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675327919",
+    "classId": "C_8122446015",
+    "period": "1",
+    "subName": "本土語",
+    "teaId": "T_0428259172",
+    "day": "星期三",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675327919",
+    "classId": "C_8122726718",
+    "period": "1",
+    "subName": "本土語",
+    "teaId": "T_0472405485",
+    "day": "星期三",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675327919",
+    "classId": "C_8122772644",
+    "period": "3",
+    "subName": "本土語",
+    "teaId": "T_0428259172",
+    "day": "星期四",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675327919",
+    "classId": "C_8122081547",
+    "period": "6",
+    "subName": "本土語",
+    "teaId": "T_453693260",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "本土語群組",
+    "classId": "C_812297810",
+    "period": "2",
+    "subName": "本土語群組",
+    "teaId": "T_411939230",
+    "day": "星期三",
+    "roomId": ""
+  },
+  {
+    "subId": "本土語群組",
+    "classId": "C_812297832",
+    "period": "2",
+    "subName": "本土語群組",
+    "teaId": "T_411939230",
+    "day": "星期三",
+    "roomId": ""
+  },
+  {
+    "subId": "本土語群組",
+    "period": "3",
+    "classId": "C_8122871920",
+    "subName": "本土語群組",
+    "teaId": "T_411939230",
+    "day": "星期三",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675327919",
+    "period": "3",
+    "classId": "C_812297734",
+    "subName": "本土語",
+    "teaId": "T_0428259172",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675327919",
+    "classId": "C_8122711917",
+    "period": "4",
+    "subName": "本土語",
+    "teaId": "T_0428259172",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "本土語群組",
+    "period": "4",
+    "classId": "C_812250538",
+    "subName": "本土語群組",
+    "teaId": "T_411939230",
+    "day": "星期三",
+    "roomId": ""
+  },
+  {
+    "subId": "本土語群組",
+    "classId": "C_8122091114",
+    "period": "4",
+    "subName": "本土語群組",
+    "teaId": "T_411939230",
+    "day": "星期三",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-特殊需求",
+    "period": "M",
+    "classId": "C_8122726718",
+    "subName": "資源班-特殊需求",
+    "teaId": "T_0364417851",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-特殊需求",
+    "period": "M",
+    "classId": "C_8122986419",
+    "subName": "資源班-特殊需求",
+    "teaId": "T_0364417851",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-特殊需求",
+    "classId": "C_8122871920",
+    "period": "M",
+    "subName": "資源班-特殊需求",
+    "teaId": "T_0364417851",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "period": "1",
+    "classId": "C_8122726718",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0364417851",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "period": "1",
+    "classId": "C_8122986419",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0364417851",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "classId": "C_8122871920",
+    "period": "1",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0364417851",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-數學學習",
+    "classId": "C_8122059949",
+    "period": "2",
+    "subName": "資源班-數學學習",
+    "teaId": "T_0364417851",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-數學學習",
+    "period": "2",
+    "classId": "C_8122090545",
+    "subName": "資源班-數學學習",
+    "teaId": "T_0364417851",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "classId": "C_8122090545",
+    "period": "3",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0364417851",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "period": "3",
+    "classId": "C_8122059949",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0364417851",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "period": "3",
+    "classId": "C_8122913832",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0364417851",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-特殊需求",
+    "classId": "C_8122244842",
+    "period": "M",
+    "subName": "資源班-特殊需求",
+    "teaId": "T_0364417851",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-特殊需求",
+    "classId": "C_8122772644",
+    "period": "M",
+    "subName": "資源班-特殊需求",
+    "teaId": "T_0364417851",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-特殊需求",
+    "classId": "C_8122838648",
+    "period": "M",
+    "subName": "資源班-特殊需求",
+    "teaId": "T_0364417851",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "period": "2",
+    "classId": "C_8122090545",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0364417851",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "period": "2",
+    "classId": "C_8122913832",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0364417851",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "period": "2",
+    "classId": "C_8122059949",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0364417851",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "period": "3",
+    "classId": "C_8122726718",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0364417851",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "classId": "C_8122986419",
+    "period": "3",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0364417851",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "classId": "C_8122871920",
+    "period": "3",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0364417851",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-數學學習",
+    "period": "4",
+    "classId": "C_8122871920",
+    "subName": "資源班-數學學習",
+    "teaId": "T_0364417851",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-數學學習",
+    "classId": "C_8122986419",
+    "period": "4",
+    "subName": "資源班-數學學習",
+    "teaId": "T_0364417851",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-數學學習",
+    "period": "1",
+    "classId": "C_8122090545",
+    "subName": "資源班-數學學習",
+    "teaId": "T_0364417851",
+    "day": "星期三",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-數學學習",
+    "classId": "C_8122059949",
+    "period": "1",
+    "subName": "資源班-數學學習",
+    "teaId": "T_0364417851",
+    "day": "星期三",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "classId": "C_8122726718",
+    "period": "2",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0364417851",
+    "day": "星期三",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "classId": "C_8122986419",
+    "period": "2",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0364417851",
+    "day": "星期三",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "period": "2",
+    "classId": "C_8122871920",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0364417851",
+    "day": "星期三",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "period": "3",
+    "classId": "C_8122913832",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0364417851",
+    "day": "星期三",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "classId": "C_8122090545",
+    "period": "3",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0364417851",
+    "day": "星期三",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-數學學習",
+    "period": "4",
+    "classId": "C_8122871920",
+    "subName": "資源班-數學學習",
+    "teaId": "T_0364417851",
+    "day": "星期三",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-數學學習",
+    "period": "4",
+    "classId": "C_8122986419",
+    "subName": "資源班-數學學習",
+    "teaId": "T_0364417851",
+    "day": "星期三",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "period": "4",
+    "classId": "C_8122913832",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0364417851",
+    "day": "星期四",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "period": "4",
+    "classId": "C_8122090545",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0364417851",
+    "day": "星期四",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "classId": "C_8122059949",
+    "period": "4",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0364417851",
+    "day": "星期四",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-數學學習",
+    "period": "3",
+    "classId": "C_8122059949",
+    "subName": "資源班-數學學習",
+    "teaId": "T_0364417851",
+    "day": "星期四",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-數學學習",
+    "period": "3",
+    "classId": "C_8122090545",
+    "subName": "資源班-數學學習",
+    "teaId": "T_0364417851",
+    "day": "星期四",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "classId": "C_8122726718",
+    "period": "2",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0364417851",
+    "day": "星期四",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "classId": "C_8122871920",
+    "period": "2",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0364417851",
+    "day": "星期四",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "classId": "C_8122986419",
+    "period": "2",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0364417851",
+    "day": "星期四",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-數學學習",
+    "period": "5",
+    "classId": "C_8122986419",
+    "subName": "資源班-數學學習",
+    "teaId": "T_0364417851",
+    "day": "星期四",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-數學學習",
+    "period": "5",
+    "classId": "C_8122871920",
+    "subName": "資源班-數學學習",
+    "teaId": "T_0364417851",
+    "day": "星期四",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "period": "4",
+    "classId": "C_8122059949",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0364417851",
+    "day": "星期五",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "period": "4",
+    "classId": "C_8122090545",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0364417851",
+    "day": "星期五",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "classId": "C_8122913832",
+    "period": "4",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0364417851",
+    "day": "星期五",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-數學學習",
+    "classId": "C_8122059949",
+    "period": "3",
+    "subName": "資源班-數學學習",
+    "teaId": "T_0364417851",
+    "day": "星期五",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-數學學習",
+    "period": "3",
+    "classId": "C_8122090545",
+    "subName": "資源班-數學學習",
+    "teaId": "T_0364417851",
+    "day": "星期五",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-數學學習",
+    "classId": "C_8122871920",
+    "period": "2",
+    "subName": "資源班-數學學習",
+    "teaId": "T_0364417851",
+    "day": "星期五",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-數學學習",
+    "classId": "C_8122986419",
+    "period": "2",
+    "subName": "資源班-數學學習",
+    "teaId": "T_0364417851",
+    "day": "星期五",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "classId": "C_8122986419",
+    "period": "1",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0364417851",
+    "day": "星期五",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "classId": "C_8122871920",
+    "period": "1",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0364417851",
+    "day": "星期五",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "classId": "C_8122726718",
+    "period": "1",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0364417851",
+    "day": "星期五",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-數學學習",
+    "period": "2",
+    "classId": "C_8122252616",
+    "subName": "資源班-數學學習",
+    "teaId": "T_0368901553",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-數學學習",
+    "classId": "C_8122652822",
+    "period": "2",
+    "subName": "資源班-數學學習",
+    "teaId": "T_0368901553",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "period": "3",
+    "classId": "C_8122652822",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0368901553",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "period": "3",
+    "classId": "C_8122252616",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0368901553",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-數學學習",
+    "classId": "C_8122253925",
+    "period": "4",
+    "subName": "資源班-數學學習",
+    "teaId": "T_0368901553",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "period": "5",
+    "classId": "C_8122253925",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0368901553",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-數學學習",
+    "period": "2",
+    "classId": "C_8122253925",
+    "subName": "資源班-數學學習",
+    "teaId": "T_0368901553",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "classId": "C_8122253925",
+    "period": "3",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0368901553",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-數學學習",
+    "period": "4",
+    "classId": "C_8122252616",
+    "subName": "資源班-數學學習",
+    "teaId": "T_0368901553",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-數學學習",
+    "classId": "C_8122652822",
+    "period": "4",
+    "subName": "資源班-數學學習",
+    "teaId": "T_0368901553",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "period": "5",
+    "classId": "C_8122652822",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0368901553",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "classId": "C_8122252616",
+    "period": "5",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0368901553",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-特殊需求",
+    "classId": "C_8122252616",
+    "period": "M",
+    "subName": "資源班-特殊需求",
+    "teaId": "T_0368901553",
+    "day": "星期三",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-特殊需求",
+    "classId": "C_8122986419",
+    "period": "M",
+    "subName": "資源班-特殊需求",
+    "teaId": "T_0368901553",
+    "day": "星期三",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-特殊需求",
+    "classId": "C_8122652822",
+    "period": "M",
+    "subName": "資源班-特殊需求",
+    "teaId": "T_0368901553",
+    "day": "星期三",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "period": "2",
+    "classId": "C_8122652822",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0368901553",
+    "day": "星期三",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "period": "2",
+    "classId": "C_8122252616",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0368901553",
+    "day": "星期三",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "classId": "C_8122253925",
+    "period": "4",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0368901553",
+    "day": "星期四",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "period": "4",
+    "classId": "C_8122253925",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0368901553",
+    "day": "星期五",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "classId": "C_8122253925",
+    "period": "4",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0368901553",
+    "day": "星期三",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-數學學習",
+    "period": "3",
+    "classId": "C_8122253925",
+    "subName": "資源班-數學學習",
+    "teaId": "T_0368901553",
+    "day": "星期四",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-數學學習",
+    "period": "2",
+    "classId": "C_8122652822",
+    "subName": "資源班-數學學習",
+    "teaId": "T_0368901553",
+    "day": "星期五",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "period": "3",
+    "classId": "C_8122652822",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0368901553",
+    "day": "星期五",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "period": "2",
+    "classId": "C_8122652822",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0368901553",
+    "day": "星期四",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-數學學習",
+    "classId": "C_8122652822",
+    "period": "1",
+    "subName": "資源班-數學學習",
+    "teaId": "T_0368901553",
+    "day": "星期四",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-數學學習",
+    "classId": "C_8122252616",
+    "period": "1",
+    "subName": "資源班-數學學習",
+    "teaId": "T_0368901553",
+    "day": "星期四",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-數學學習",
+    "period": "2",
+    "classId": "C_8122252616",
+    "subName": "資源班-數學學習",
+    "teaId": "T_0368901553",
+    "day": "星期五",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "classId": "C_8122252616",
+    "period": "2",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0368901553",
+    "day": "星期四",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "period": "3",
+    "classId": "C_8122252616",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0368901553",
+    "day": "星期五",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-特殊需求",
+    "period": "M",
+    "classId": "C_8122252616",
+    "subName": "資源班-特殊需求",
+    "teaId": "T_0368901553",
+    "day": "星期五",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-特殊需求",
+    "period": "M",
+    "classId": "C_8122711917",
+    "subName": "資源班-特殊需求",
+    "teaId": "T_0368901553",
+    "day": "星期五",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-特殊需求",
+    "period": "M",
+    "classId": "C_8122186121",
+    "subName": "資源班-特殊需求",
+    "teaId": "T_0368901553",
+    "day": "星期五",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-特殊需求",
+    "period": "M",
+    "classId": "C_8122652822",
+    "subName": "資源班-特殊需求",
+    "teaId": "T_0368901553",
+    "day": "星期五",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-特殊需求",
+    "period": "M",
+    "classId": "C_8122253925",
+    "subName": "資源班-特殊需求",
+    "teaId": "T_0368901553",
+    "day": "星期五",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-特殊需求",
+    "classId": "C_8122185924",
+    "period": "M",
+    "subName": "資源班-特殊需求",
+    "teaId": "T_0361630750",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-特殊需求",
+    "classId": "C_8122913832",
+    "period": "M",
+    "subName": "資源班-特殊需求",
+    "teaId": "T_0361630750",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-數學學習",
+    "period": "2",
+    "classId": "C_8122913832",
+    "subName": "資源班-數學學習",
+    "teaId": "T_0361630750",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-數學學習",
+    "period": "1",
+    "classId": "C_8122913832",
+    "subName": "資源班-數學學習",
+    "teaId": "T_0361630750",
+    "day": "星期三",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-數學學習",
+    "period": "1",
+    "classId": "C_8122913832",
+    "subName": "資源班-數學學習",
+    "teaId": "T_0361630750",
+    "day": "星期四",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-數學學習",
+    "classId": "C_8122913832",
+    "period": "3",
+    "subName": "資源班-數學學習",
+    "teaId": "T_0361630750",
+    "day": "星期五",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-特殊需求",
+    "period": "M",
+    "classId": "C_8122063840",
+    "subName": "資源班-特殊需求",
+    "teaId": "T_0361630750",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "period": "5",
+    "classId": "C_8122063840",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0361630750",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "classId": "C_8122913832",
+    "period": "5",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0361630750",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "classId": "C_8122211331",
+    "period": "5",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0361630750",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "classId": "C_8122211331",
+    "period": "2",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0361630750",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "classId": "C_8122211331",
+    "period": "2",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0361630750",
+    "day": "星期三",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "classId": "C_8122211331",
+    "period": "2",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0361630750",
+    "day": "星期四",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "period": "4",
+    "classId": "C_8122211331",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0361630750",
+    "day": "星期五",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "period": "4",
+    "classId": "C_8122913832",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0361630750",
+    "day": "星期五",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "classId": "C_8122913832",
+    "period": "2",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0361630750",
+    "day": "星期四",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "period": "2",
+    "classId": "C_8122913832",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0361630750",
+    "day": "星期三",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "period": "2",
+    "classId": "C_8122913832",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0361630750",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-數學學習",
+    "period": "1",
+    "classId": "C_8122263036",
+    "subName": "資源班-數學學習",
+    "teaId": "T_0361630750",
+    "day": "星期五",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-數學學習",
+    "period": "1",
+    "classId": "C_8122647135",
+    "subName": "資源班-數學學習",
+    "teaId": "T_0361630750",
+    "day": "星期五",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-數學學習",
+    "period": "2",
+    "classId": "C_8122063840",
+    "subName": "資源班-數學學習",
+    "teaId": "T_0361630750",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-數學學習",
+    "classId": "C_8122063840",
+    "period": "1",
+    "subName": "資源班-數學學習",
+    "teaId": "T_0361630750",
+    "day": "星期三",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-數學學習",
+    "period": "1",
+    "classId": "C_8122063840",
+    "subName": "資源班-數學學習",
+    "teaId": "T_0361630750",
+    "day": "星期四",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-數學學習",
+    "classId": "C_8122063840",
+    "period": "3",
+    "subName": "資源班-數學學習",
+    "teaId": "T_0361630750",
+    "day": "星期五",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "period": "4",
+    "classId": "C_8122063840",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0361630750",
+    "day": "星期五",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "classId": "C_8122063840",
+    "period": "2",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0361630750",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "classId": "C_8122063840",
+    "period": "2",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0361630750",
+    "day": "星期三",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "period": "2",
+    "classId": "C_8122063840",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0361630750",
+    "day": "星期四",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-數學學習",
+    "period": "3",
+    "classId": "C_8122263036",
+    "subName": "資源班-數學學習",
+    "teaId": "T_0361630750",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-數學學習",
+    "period": "3",
+    "classId": "C_8122263036",
+    "subName": "資源班-數學學習",
+    "teaId": "T_0361630750",
+    "day": "星期四",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-數學學習",
+    "period": "3",
+    "classId": "C_8122263036",
+    "subName": "資源班-數學學習",
+    "teaId": "T_0361630750",
+    "day": "星期三",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-數學學習",
+    "classId": "C_8122647135",
+    "period": "3",
+    "subName": "資源班-數學學習",
+    "teaId": "T_0361630750",
+    "day": "星期四",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-數學學習",
+    "period": "3",
+    "classId": "C_8122647135",
+    "subName": "資源班-數學學習",
+    "teaId": "T_0361630750",
+    "day": "星期三",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-數學學習",
+    "period": "3",
+    "classId": "C_8122647135",
+    "subName": "資源班-數學學習",
+    "teaId": "T_0361630750",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "period": "4",
+    "classId": "C_8122647135",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0361630750",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "period": "4",
+    "classId": "C_8122647135",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0361630750",
+    "day": "星期三",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "period": "4",
+    "classId": "C_8122647135",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0361630750",
+    "day": "星期四",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "period": "4",
+    "classId": "C_8122263036",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0361630750",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "classId": "C_8122263036",
+    "period": "4",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0361630750",
+    "day": "星期三",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "classId": "C_8122263036",
+    "period": "4",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0361630750",
+    "day": "星期四",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "period": "2",
+    "classId": "C_8122263036",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0361630750",
+    "day": "星期五",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "period": "2",
+    "classId": "C_8122647135",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0361630750",
+    "day": "星期五",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-數學學習",
+    "period": "3",
+    "classId": "C_8122211331",
+    "subName": "資源班-數學學習",
+    "teaId": "T_0361630750",
+    "day": "星期五",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-數學學習",
+    "period": "1",
+    "classId": "C_8122211331",
+    "subName": "資源班-數學學習",
+    "teaId": "T_0361630750",
+    "day": "星期四",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-數學學習",
+    "classId": "C_8122211331",
+    "period": "1",
+    "subName": "資源班-數學學習",
+    "teaId": "T_0361630750",
+    "day": "星期三",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-數學學習",
+    "period": "2",
+    "classId": "C_8122211331",
+    "subName": "資源班-數學學習",
+    "teaId": "T_0361630750",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-特殊需求",
+    "classId": "C_8122211331",
+    "period": "M",
+    "subName": "資源班-特殊需求",
+    "teaId": "T_0361630750",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-特殊需求",
+    "period": "M",
+    "classId": "C_8122647135",
+    "subName": "資源班-特殊需求",
+    "teaId": "T_0361630750",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-特殊需求",
+    "classId": "C_8122263036",
+    "period": "M",
+    "subName": "資源班-特殊需求",
+    "teaId": "T_0361630750",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-特殊需求",
+    "classId": "C_8122262341",
+    "period": "M",
+    "subName": "資源班-特殊需求",
+    "teaId": "T_0366780252",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-特殊需求",
+    "period": "M",
+    "classId": "C_8122191243",
+    "subName": "資源班-特殊需求",
+    "teaId": "T_0366780252",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-特殊需求",
+    "classId": "C_8122081547",
+    "period": "M",
+    "subName": "資源班-特殊需求",
+    "teaId": "T_0366780252",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "period": "1",
+    "classId": "C_8122960834",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0366780252",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "period": "1",
+    "classId": "C_8122282438",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0366780252",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-數學學習",
+    "classId": "C_812250538",
+    "period": "2",
+    "subName": "資源班-數學學習",
+    "teaId": "T_0366780252",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-數學學習",
+    "classId": "C_8122410612",
+    "period": "2",
+    "subName": "資源班-數學學習",
+    "teaId": "T_0366780252",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-數學學習",
+    "classId": "C_8122091114",
+    "period": "2",
+    "subName": "資源班-數學學習",
+    "teaId": "T_0366780252",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "period": "3",
+    "classId": "C_812250538",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0366780252",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "period": "3",
+    "classId": "C_8122410612",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0366780252",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "period": "3",
+    "classId": "C_8122091114",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0366780252",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "period": "4",
+    "classId": "C_812250538",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0366780252",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "period": "4",
+    "classId": "C_8122410612",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0366780252",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "period": "4",
+    "classId": "C_8122091114",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0366780252",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-數學學習",
+    "classId": "C_812250538",
+    "period": "2",
+    "subName": "資源班-數學學習",
+    "teaId": "T_0366780252",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-數學學習",
+    "period": "2",
+    "classId": "C_8122410612",
+    "subName": "資源班-數學學習",
+    "teaId": "T_0366780252",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-數學學習",
+    "period": "2",
+    "classId": "C_8122091114",
+    "subName": "資源班-數學學習",
+    "teaId": "T_0366780252",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-數學學習",
+    "period": "3",
+    "classId": "C_8122960834",
+    "subName": "資源班-數學學習",
+    "teaId": "T_0366780252",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-數學學習",
+    "period": "3",
+    "classId": "C_8122282438",
+    "subName": "資源班-數學學習",
+    "teaId": "T_0366780252",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "period": "5",
+    "classId": "C_8122960834",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0366780252",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "classId": "C_8122282438",
+    "period": "5",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0366780252",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-數學學習",
+    "classId": "C_812250538",
+    "period": "1",
+    "subName": "資源班-數學學習",
+    "teaId": "T_0366780252",
+    "day": "星期三",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-數學學習",
+    "classId": "C_8122410612",
+    "period": "1",
+    "subName": "資源班-數學學習",
+    "teaId": "T_0366780252",
+    "day": "星期三",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-數學學習",
+    "period": "1",
+    "classId": "C_8122091114",
+    "subName": "資源班-數學學習",
+    "teaId": "T_0366780252",
+    "day": "星期三",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "classId": "C_812250538",
+    "period": "2",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0366780252",
+    "day": "星期三",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "classId": "C_8122410612",
+    "period": "2",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0366780252",
+    "day": "星期三",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "period": "2",
+    "classId": "C_8122091114",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0366780252",
+    "day": "星期三",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-數學學習",
+    "period": "3",
+    "classId": "C_8122960834",
+    "subName": "資源班-數學學習",
+    "teaId": "T_0366780252",
+    "day": "星期三",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-數學學習",
+    "period": "3",
+    "classId": "C_8122282438",
+    "subName": "資源班-數學學習",
+    "teaId": "T_0366780252",
+    "day": "星期三",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "period": "4",
+    "classId": "C_8122960834",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0366780252",
+    "day": "星期三",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "classId": "C_8122282438",
+    "period": "4",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0366780252",
+    "day": "星期三",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "classId": "C_812250538",
+    "period": "1",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0366780252",
+    "day": "星期四",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "classId": "C_8122410612",
+    "period": "1",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0366780252",
+    "day": "星期四",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "period": "1",
+    "classId": "C_8122091114",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0366780252",
+    "day": "星期四",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-數學學習",
+    "period": "2",
+    "classId": "C_812250538",
+    "subName": "資源班-數學學習",
+    "teaId": "T_0366780252",
+    "day": "星期四",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-數學學習",
+    "period": "2",
+    "classId": "C_8122410612",
+    "subName": "資源班-數學學習",
+    "teaId": "T_0366780252",
+    "day": "星期四",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-數學學習",
+    "period": "2",
+    "classId": "C_8122091114",
+    "subName": "資源班-數學學習",
+    "teaId": "T_0366780252",
+    "day": "星期四",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-數學學習",
+    "classId": "C_8122960834",
+    "period": "3",
+    "subName": "資源班-數學學習",
+    "teaId": "T_0366780252",
+    "day": "星期四",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-數學學習",
+    "classId": "C_8122282438",
+    "period": "3",
+    "subName": "資源班-數學學習",
+    "teaId": "T_0366780252",
+    "day": "星期四",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "period": "4",
+    "classId": "C_8122960834",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0366780252",
+    "day": "星期四",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "classId": "C_8122282438",
+    "period": "4",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0366780252",
+    "day": "星期四",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-數學學習",
+    "classId": "C_8122960834",
+    "period": "1",
+    "subName": "資源班-數學學習",
+    "teaId": "T_0366780252",
+    "day": "星期五",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-數學學習",
+    "classId": "C_8122282438",
+    "period": "1",
+    "subName": "資源班-數學學習",
+    "teaId": "T_0366780252",
+    "day": "星期五",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "period": "2",
+    "classId": "C_8122960834",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0366780252",
+    "day": "星期五",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "period": "2",
+    "classId": "C_8122282438",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0366780252",
+    "day": "星期五",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "period": "3",
+    "classId": "C_812250538",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0366780252",
+    "day": "星期五",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "classId": "C_8122410612",
+    "period": "3",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0366780252",
+    "day": "星期五",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "period": "3",
+    "classId": "C_8122091114",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0366780252",
+    "day": "星期五",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "period": "4",
+    "classId": "C_812250538",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0366780252",
+    "day": "星期五",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "classId": "C_8122410612",
+    "period": "4",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0366780252",
+    "day": "星期五",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "period": "4",
+    "classId": "C_8122091114",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0366780252",
+    "day": "星期五",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-數學學習",
+    "classId": "C_8122253925",
+    "period": "3",
+    "subName": "資源班-數學學習",
+    "teaId": "T_0368901553",
+    "day": "星期三",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "classId": "C_8122647135",
+    "period": "1",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0361630750",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "period": "1",
+    "classId": "C_8122263036",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0361630750",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "資源班-語文學習",
+    "period": "3",
+    "classId": "C_8122059949",
+    "subName": "資源班-語文學習",
+    "teaId": "T_0364417851",
+    "day": "星期三",
+    "roomId": ""
+  },
+  {
+    "subId": "S_867514747",
+    "classId": "C_812275526",
+    "period": "3",
+    "subName": "健康",
+    "teaId": "T_581280950",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "S_867514747",
+    "period": "4",
+    "classId": "C_812275779",
+    "subName": "健康",
+    "teaId": "T_581280950",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "S_867514747",
+    "period": "2",
+    "classId": "C_812297832",
+    "subName": "健康",
+    "teaId": "T_581280950",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675749513",
+    "period": "1",
+    "classId": "C_812297810",
+    "subName": "生活全能課程",
+    "teaId": "T_016264400",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675749513",
+    "classId": "C_812218011",
+    "period": "1",
+    "subName": "生活全能課程",
+    "teaId": "T_016532061",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675749513",
+    "classId": "C_812297832",
+    "period": "1",
+    "subName": "生活全能課程",
+    "teaId": "T_016811912",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675749513",
+    "classId": "C_812256223",
+    "period": "1",
+    "subName": "生活全能課程",
+    "teaId": "T_017146643",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675749513",
+    "period": "1",
+    "classId": "C_812297734",
+    "subName": "生活全能課程",
+    "teaId": "T_017771304",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675749513",
+    "classId": "C_812242355",
+    "period": "1",
+    "subName": "生活全能課程",
+    "teaId": "T_018063465",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675749513",
+    "period": "1",
+    "classId": "C_812275526",
+    "subName": "生活全能課程",
+    "teaId": "T_018496686",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675749513",
+    "classId": "C_812260337",
+    "period": "1",
+    "subName": "生活全能課程",
+    "teaId": "T_018818167",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675749513",
+    "classId": "C_812250538",
+    "period": "1",
+    "subName": "生活全能課程",
+    "teaId": "T_019163048",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675749513",
+    "period": "1",
+    "classId": "C_812275779",
+    "subName": "生活全能課程",
+    "teaId": "T_019475349",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675749513",
+    "period": "1",
+    "classId": "C_8122848810",
+    "subName": "生活全能課程",
+    "teaId": "T_0202347810",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675749513",
+    "classId": "C_8122676811",
+    "period": "1",
+    "subName": "生活全能課程",
+    "teaId": "T_0207993111",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675749513",
+    "period": "1",
+    "classId": "C_8122410612",
+    "subName": "生活全能課程",
+    "teaId": "T_0210480712",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675749513",
+    "classId": "C_8122321113",
+    "period": "1",
+    "subName": "生活全能課程",
+    "teaId": "T_0217387713",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675749513",
+    "period": "1",
+    "classId": "C_8122091114",
+    "subName": "生活全能課程",
+    "teaId": "T_0223142014",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675749513",
+    "period": "1",
+    "classId": "C_8122446015",
+    "subName": "生活全能課程",
+    "teaId": "T_0228585015",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675749513",
+    "classId": "C_8122252616",
+    "period": "1",
+    "subName": "生活全能課程",
+    "teaId": "T_0235454316",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675749513",
+    "period": "1",
+    "classId": "C_8122711917",
+    "subName": "生活全能課程",
+    "teaId": "T_0239305417",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675749513",
+    "period": "1",
+    "classId": "C_8122726718",
+    "subName": "生活全能課程",
+    "teaId": "T_0244922918",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675749513",
+    "classId": "C_8122986419",
+    "period": "1",
+    "subName": "生活全能課程",
+    "teaId": "T_0248037919",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675749513",
+    "classId": "C_8122871920",
+    "period": "1",
+    "subName": "生活全能課程",
+    "teaId": "T_0254078720",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675749513",
+    "period": "1",
+    "classId": "C_8122186121",
+    "subName": "生活全能課程",
+    "teaId": "T_0258878421",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675749513",
+    "period": "1",
+    "classId": "C_8122652822",
+    "subName": "生活全能課程",
+    "teaId": "T_0261637622",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675749513",
+    "classId": "C_8122026723",
+    "period": "1",
+    "subName": "生活全能課程",
+    "teaId": "T_0264112523",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675749513",
+    "classId": "C_8122185924",
+    "period": "1",
+    "subName": "生活全能課程",
+    "teaId": "T_0267635224",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675749513",
+    "classId": "C_8122253925",
+    "period": "1",
+    "subName": "生活全能課程",
+    "teaId": "T_0270142125",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675749513",
+    "classId": "C_8122409226",
+    "period": "1",
+    "subName": "生活全能課程",
+    "teaId": "T_0274014926",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675749513",
+    "period": "1",
+    "classId": "C_8122238727",
+    "subName": "生活全能課程",
+    "teaId": "T_0277599927",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675749513",
+    "period": "1",
+    "classId": "C_8122976528",
+    "subName": "生活全能課程",
+    "teaId": "T_0281734428",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675749513",
+    "period": "1",
+    "classId": "C_8122266529",
+    "subName": "生活全能課程",
+    "teaId": "T_0284957029",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675749513",
+    "classId": "C_8122012930",
+    "period": "1",
+    "subName": "生活全能課程",
+    "teaId": "T_0286862030",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675749513",
+    "classId": "C_8122063840",
+    "period": "1",
+    "subName": "生活全能課程",
+    "teaId": "T_0330644140",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675749513",
+    "classId": "C_8122211331",
+    "period": "1",
+    "subName": "生活全能課程",
+    "teaId": "T_0291068731",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675749513",
+    "classId": "C_8122913832",
+    "period": "1",
+    "subName": "生活全能課程",
+    "teaId": "T_0297815832",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675749513",
+    "period": "1",
+    "classId": "C_8122181633",
+    "subName": "生活全能課程",
+    "teaId": "T_0304064433",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675749513",
+    "period": "1",
+    "classId": "C_8122960834",
+    "subName": "生活全能課程",
+    "teaId": "T_0307964334",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675749513",
+    "classId": "C_8122647135",
+    "period": "1",
+    "subName": "生活全能課程",
+    "teaId": "T_0310254535",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675749513",
+    "classId": "C_8122263036",
+    "period": "1",
+    "subName": "生活全能課程",
+    "teaId": "T_0313535736",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675749513",
+    "period": "1",
+    "classId": "C_8122687037",
+    "subName": "生活全能課程",
+    "teaId": "T_0317538237",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675749513",
+    "period": "1",
+    "classId": "C_8122282438",
+    "subName": "生活全能課程",
+    "teaId": "T_0320309238",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675749513",
+    "period": "1",
+    "classId": "C_8122614739",
+    "subName": "生活全能課程",
+    "teaId": "T_0323673139",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675749513",
+    "period": "1",
+    "classId": "C_8122262341",
+    "subName": "生活全能課程",
+    "teaId": "T_0334972741",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675749513",
+    "classId": "C_8122244842",
+    "period": "1",
+    "subName": "生活全能課程",
+    "teaId": "T_0341223542",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675749513",
+    "period": "1",
+    "classId": "C_8122191243",
+    "subName": "生活全能課程",
+    "teaId": "T_0344527443",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675749513",
+    "classId": "C_8122772644",
+    "period": "1",
+    "subName": "生活全能課程",
+    "teaId": "T_0346763144",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675749513",
+    "period": "1",
+    "classId": "C_8122090545",
+    "subName": "生活全能課程",
+    "teaId": "T_0349858445",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675749513",
+    "classId": "C_8122598746",
+    "period": "1",
+    "subName": "生活全能課程",
+    "teaId": "T_0351631746",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675749513",
+    "classId": "C_8122081547",
+    "period": "1",
+    "subName": "生活全能課程",
+    "teaId": "T_0354917047",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675749513",
+    "period": "1",
+    "classId": "C_8122838648",
+    "subName": "生活全能課程",
+    "teaId": "T_0356183248",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675749513",
+    "period": "1",
+    "classId": "C_8122059949",
+    "subName": "生活全能課程",
+    "teaId": "T_0359591749",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675745816",
+    "period": "2",
+    "classId": "C_8122181633",
+    "subName": "數位先鋒",
+    "teaId": "T_0470876884",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675745816",
+    "period": "3",
+    "classId": "C_8122960834",
+    "subName": "數位先鋒",
+    "teaId": "T_0470876884",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675745816",
+    "classId": "C_8122647135",
+    "period": "4",
+    "subName": "數位先鋒",
+    "teaId": "T_0470876884",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "本土語群組",
+    "period": "5",
+    "classId": "C_8122647135",
+    "subName": "本土語群組",
+    "teaId": "T_0491402091",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "本土語群組",
+    "period": "5",
+    "classId": "C_8122282438",
+    "subName": "本土語群組",
+    "teaId": "T_0491402091",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "本土語群組",
+    "classId": "C_8122960834",
+    "period": "4",
+    "subName": "本土語群組",
+    "teaId": "T_0491402091",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "本土語群組",
+    "period": "4",
+    "classId": "C_8122687037",
+    "subName": "本土語群組",
+    "teaId": "T_0491402091",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675581610",
+    "period": "2",
+    "classId": "C_8122848810",
+    "subName": "生活雙語",
+    "teaId": "T_0450107177",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675581610",
+    "classId": "C_8122676811",
+    "period": "3",
+    "subName": "生活雙語",
+    "teaId": "T_0450107177",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675581610",
+    "classId": "C_8122410612",
+    "period": "4",
+    "subName": "生活雙語",
+    "teaId": "T_0450107177",
+    "day": "星期一",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675581610",
+    "period": "2",
+    "classId": "C_8122321113",
+    "subName": "生活雙語",
+    "teaId": "T_0450107177",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675581610",
+    "classId": "C_8122091114",
+    "period": "3",
+    "subName": "生活雙語",
+    "teaId": "T_0450107177",
+    "day": "星期二",
+    "roomId": ""
+  },
+  {
+    "subId": "S_8675581610",
+    "period": "4",
+    "classId": "C_812275779",
+    "subName": "生活雙語",
+    "teaId": "T_0450107177",
+    "day": "星期二",
+    "roomId": ""
+  }
+]
