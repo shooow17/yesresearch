@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>代課系統</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Noto Sans TC',-apple-system,sans-serif;background:#eef1f5;color:#1a1a2e;min-height:100vh}
+.login-wrap{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;background:linear-gradient(135deg,#1a365d 0%,#2563eb 100%)}
+.login-card{background:#fff;border-radius:16px;padding:40px 36px;width:100%;max-width:400px;box-shadow:0 8px 32px rgba(0,0,0,.18);text-align:center}
+.login-card h1{font-size:22px;font-weight:700;color:#1a365d;margin-bottom:4px}
+.login-card .sub{font-size:13px;color:#64748b;margin-bottom:28px}
+.login-card input{width:100%;padding:12px 16px;border:2px solid #e2e8f0;border-radius:10px;font-size:15px;outline:none;transition:border .2s;font-family:inherit}
+.login-card input:focus{border-color:#3b82f6}
+.login-card button{width:100%;padding:12px;background:#1a365d;color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;margin-top:14px;transition:background .2s;font-family:inherit}
+.login-card button:hover{background:#2563eb}
+.login-card button:disabled{background:#94a3b8;cursor:not-allowed}
+.login-err{color:#dc2626;font-size:13px;margin-top:12px;min-height:20px;white-space:pre-line}
+.header{background:#1a365d;color:#fff;padding:16px 24px 12px;position:sticky;top:0;z-index:50}
+.header-top{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+.h-title{font-size:18px;font-weight:700}.h-sub{font-size:12px;color:rgba(255,255,255,.65);margin-top:2px}
+.h-right{display:flex;align-items:center;gap:10px}
+.user-badge{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);padding:5px 14px;border-radius:20px;font-size:12px;font-weight:500}
+.btn-out{background:transparent;border:1px solid rgba(255,255,255,.35);color:#fff;padding:5px 12px;border-radius:20px;font-size:12px;cursor:pointer;font-family:inherit}
+.btn-out:hover{background:rgba(255,255,255,.15)}
+.tabs{display:flex;gap:0;max-width:1100px;margin:16px auto 0;padding:0 12px}
+.tab-btn{padding:10px 20px;background:#fff;border:1px solid #e2e8f0;border-bottom:none;border-radius:10px 10px 0 0;font-size:13px;font-weight:600;cursor:pointer;color:#64748b;font-family:inherit;transition:all .15s}
+.tab-btn.active{background:#1a365d;color:#fff;border-color:#1a365d}
+.legend{max-width:1100px;margin:12px auto 0;padding:0 16px;display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:#64748b}
+.legend-item{display:flex;align-items:center;gap:4px}
+.legend-dot{width:12px;height:12px;border-radius:3px;flex-shrink:0}
+.table-wrap{max-width:1100px;margin:12px auto 32px;padding:0 12px;overflow-x:auto}
+table.tt{width:100%;border-collapse:separate;border-spacing:0;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 1px 6px rgba(0,0,0,.08)}
+table.tt th{background:#1e3a5f;color:#fff;padding:10px 6px;font-size:13px;font-weight:500;text-align:center}
+table.tt td{border:1px solid #e8ecf0;padding:5px 4px;vertical-align:top;text-align:center;height:64px;width:17.6%}
+table.tt td.pl{background:#f7f9fb;font-weight:600;font-size:12px;color:#475569;width:12%;line-height:1.3}
+table.tt td.pl .time{font-weight:400;font-size:10px;color:#94a3b8;display:block}
+table.tt tr.brk td{background:#fefce8;height:auto;padding:6px;font-size:12px;color:#92400e;font-weight:500;text-align:center}
+.lc{padding:4px 6px;border-radius:6px;font-size:12px;margin:2px 0;text-align:center;transition:box-shadow .15s}
+.lc .sn{font-weight:700;font-size:13px;line-height:1.3}.lc .tn{font-size:11px;color:#64748b;margin-top:1px}
+.lc-mine{background:#dbeafe;border-left:3px solid #3b82f6}
+.lc-other{background:#f1f5f9;border-left:3px solid #94a3b8}
+.lc-res{background:#fef3c7;border-left:3px solid #f59e0b}
+.lc-loc{background:#d1fae5;border-left:3px solid #10b981}
+.lc.draggable{cursor:grab;border:2px dashed transparent}.lc.draggable:hover{border-color:#60a5fa;box-shadow:0 2px 8px rgba(59,130,246,.25)}
+.lc.dragging{opacity:.4;transform:scale(.95)}
+td.drop-ok{background:#eff6ff!important;outline:2px dashed #3b82f6;outline-offset:-2px}
+.dash-content{max-width:1100px;margin:16px auto 32px;padding:0 16px}
+.role-section{margin-bottom:24px}
+.role-title{font-size:14px;font-weight:700;color:#1a365d;margin-bottom:10px;padding-bottom:6px;border-bottom:2px solid #e2e8f0}
+.cards-grid{display:flex;flex-wrap:wrap;gap:10px}
+.tea-card{background:#fff;border:2px solid #e8ecf0;border-radius:10px;padding:12px 16px;min-width:110px;cursor:pointer;transition:all .15s;text-align:center}
+.tea-card:hover{border-color:#3b82f6;box-shadow:0 3px 12px rgba(59,130,246,.2);transform:translateY(-2px)}
+.tea-card.viewing{border-color:#1a365d;background:#eff6ff}
+.tea-card .tc-name{font-size:14px;font-weight:700;color:#1e293b}
+.tea-card .tc-class{font-size:12px;color:#3b82f6;margin-top:2px;font-weight:500}
+.tea-card .tc-count{font-size:11px;color:#94a3b8;margin-top:4px}
+.dash-tt-title{font-size:15px;font-weight:700;color:#1a365d;margin:20px 0 8px;padding:0 4px}
+.center-msg{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:50vh;gap:12px;color:#64748b;font-size:16px}
+.center-msg.err{color:#dc2626}
+.spinner{width:36px;height:36px;border:3px solid #e2e8f0;border-top-color:#3b82f6;border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media(max-width:640px){.login-card{padding:28px 24px}.tea-card{min-width:90px;padding:8px 10px}.tea-card .tc-name{font-size:13px}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+/* ============================================================
+   ⭐ 請將這裡替換成您的 GAS Web App 部署 URL
+   ============================================================ */
+var API_URL = 'https://script.google.com/macros/s/在這裡貼上您的部署ID/exec';
+
+var USER=null,scheduleData=null,dashTeachers=null,dashViewingId=null,dragSrc=null;
+var DAYS=["星期一","星期二","星期三","星期四","星期五"];
+var FRAME=[
+  {id:"M",label:"晨間/早會",type:"break",time:"07:55 - 08:35"},
+  {id:"1",label:"第一節",type:"class",time:"08:40 - 09:20"},
+  {id:"2",label:"第二節",type:"class",time:"09:30 - 10:10"},
+  {id:"3",label:"第三節",type:"class",time:"10:30 - 11:10"},
+  {id:"4",label:"第四節",type:"class",time:"11:20 - 12:00"},
+  {id:"L",label:"午餐/午休",type:"break",time:"12:00 - 13:05"},
+  {id:"5",label:"第五節",type:"class",time:"13:10 - 13:50"},
+  {id:"6",label:"第六節",type:"class",time:"14:00 - 14:40"},
+  {id:"7",label:"第七節",type:"class",time:"14:50 - 15:30"}
+];
+
+/* ---- API 呼叫封裝 ---- */
+function apiGet(params){
+  var qs=Object.keys(params).map(function(k){return k+'='+encodeURIComponent(params[k])}).join('&');
+  return fetch(API_URL+'?'+qs,{redirect:'follow'}).then(function(r){return r.json()});
+}
+function apiPost(data){
+  return fetch(API_URL,{method:'POST',redirect:'follow',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(data)}).then(function(r){return r.json()});
+}
+
+renderLogin();
+
+/* ---- Login ---- */
+function renderLogin(){
+  var h='<div class="login-wrap"><div class="login-card">';
+  h+='<h1>📚 代課系統</h1><div class="sub">請輸入您的電子郵件登入</div>';
+  h+='<input id="inpEmail" type="email" placeholder="example@school.edu.tw" autofocus onkeydown="if(event.key===\'Enter\')doLogin()">';
+  h+='<button id="btnLogin" onclick="doLogin()">登入</button>';
+  h+='<div class="login-err" id="loginErr"></div></div></div>';
+  $('app').innerHTML=h;
+  try{var sv=localStorage.getItem('subSysEmail');if(sv)document.getElementById('inpEmail').value=sv}catch(e){}
+}
+function doLogin(){
+  var email=document.getElementById('inpEmail').value.trim();
+  if(!email){document.getElementById('loginErr').textContent='請輸入電子郵件';return;}
+  var btn=document.getElementById('btnLogin');btn.disabled=true;btn.textContent='驗證中...';
+  document.getElementById('loginErr').textContent='';
+  apiGet({action:'verify',email:email}).then(function(r){
+    btn.disabled=false;btn.textContent='登入';
+    if(r.error){document.getElementById('loginErr').textContent=r.error;return;}
+    USER=r;try{localStorage.setItem('subSysEmail',email)}catch(e){}
+    if(USER.isDashboard)showDashboard();else showSchedule();
+  }).catch(function(e){btn.disabled=false;btn.textContent='登入';document.getElementById('loginErr').textContent='連線錯誤：'+e;});
+}
+function logout(){USER=null;scheduleData=null;dashTeachers=null;dashViewingId=null;renderLogin();}
+
+/* ---- Header ---- */
+function mkHeader(tab){
+  var h='<div class="header"><div class="header-top"><div>';
+  h+='<div class="h-title">'+esc(USER.schoolInfo.name||'代課系統')+'</div>';
+  h+='<div class="h-sub">'+esc(USER.schoolInfo.year)+' 學年度</div></div>';
+  h+='<div class="h-right"><div class="user-badge">'+esc(USER.teacher.name)+'（'+esc(USER.teacher.role)+'）</div>';
+  h+='<button class="btn-out" onclick="logout()">登出</button></div></div></div>';
+  if(USER.isDashboard){
+    h+='<div class="tabs">';
+    h+='<button class="tab-btn'+(tab==='dash'?' active':'')+'" onclick="showDashboard()">📊 教師課表概況</button>';
+    h+='<button class="tab-btn'+(tab==='sched'?' active':'')+'" onclick="showSchedule()">📋 我的課表</button>';
+    h+='</div>';
+  }
+  return h;
+}
+
+/* ---- My Schedule ---- */
+function showSchedule(){
+  $('app').innerHTML=mkHeader('sched')+'<div class="center-msg"><div class="spinner"></div><span>載入課表...</span></div>';
+  var mode=USER.isHomeroom?'homeroom':'personal';
+  apiGet({action:'schedule',tid:USER.teacher.id,mode:mode,cid:USER.homeroomClassId||''}).then(function(data){
+    scheduleData=data;renderSchedule(USER.teacher.id,USER.isHomeroom,true);
+  }).catch(function(e){$('app').innerHTML=mkHeader('sched')+'<div class="center-msg err">❌ '+e+'</div>';});
+}
+
+function renderSchedule(viewTid,canDrag,isMyView){
+  var d=scheduleData;var h=mkHeader(isMyView?'sched':'dash');
+  var isHRView=d.homeroomClassId&&d.homeroomClassId!=="";
+  if(!isMyView&&dashTeachers){
+    h+=renderDashCards();
+    var tObj=dashTeachers.teachers.find(function(x){return x.id===viewTid});
+    h+='<div class="dash-content"><div class="dash-tt-title">📋 '+(tObj?esc(tObj.name):'')+(tObj&&tObj.className?' — '+esc(tObj.className):'')+'　的課表</div></div>';
+  }
+  h+='<div class="legend">';
+  if(isMyView&&canDrag) h+=lgnd('#dbeafe','#3b82f6','您的授課（可拖曳交換）')+lgnd('#f1f5f9','#94a3b8','科任/其他教師')+lgnd('#fef3c7','#f59e0b','資源班')+lgnd('#d1fae5','#10b981','本土語');
+  else if(isMyView&&!USER.isHomeroom) h+=lgnd('#dbeafe','#3b82f6','您的授課');
+  else h+=lgnd('#dbeafe','#3b82f6','該師授課')+lgnd('#f1f5f9','#94a3b8','其他教師')+lgnd('#fef3c7','#f59e0b','資源班');
+  if(isMyView&&USER.isHomeroom) h+='<div style="margin-left:auto;font-weight:600;color:#1a365d">'+esc(USER.homeroomClassName)+' 班級課表</div>';
+  else if(isMyView) h+='<div style="margin-left:auto;font-weight:600;color:#1a365d">個人一週課表</div>';
+  h+='</div>';
+  h+='<div class="table-wrap"><table class="tt"><tr><th style="width:12%">節次</th>';
+  DAYS.forEach(function(day){h+='<th>'+day+'</th>'});h+='</tr>';
+  var allowDrop=canDrag&&isMyView;
+  FRAME.forEach(function(f){
+    if(f.type==='break'){h+='<tr class="brk"><td colspan="6">'+f.label+'　'+f.time+'</td></tr>';return;}
+    h+='<tr><td class="pl">'+f.label+'<span class="time">'+f.time+'</span></td>';
+    DAYS.forEach(function(day){
+      var entries=d.timetable.filter(function(t){return t.day===day&&t.period===f.id});
+      var drp=allowDrop?' ondragover="onOver(event)" ondrop="onDrop(event,\''+day+'\',\''+f.id+'\')" ondragleave="onLeave(event)"':'';
+      h+='<td'+drp+'>';
+      entries.forEach(function(e){
+        var mine=e.teaId===viewTid,res=isRes(e),loc=isLoc(e);
+        var cls='lc'+(res?' lc-res':mine?' lc-mine':loc?' lc-loc':' lc-other');
+        var doDrag=allowDrop&&mine&&!res;if(doDrag)cls+=' draggable';
+        var da=doDrag?' draggable="true" ondragstart="onStart(event,\''+day+'\',\''+f.id+'\')" ondragend="onEnd(event)"':'';
+        h+='<div class="'+cls+'"'+da+'>';
+        if(isHRView){h+='<div class="sn">'+esc(e.subName)+'</div>';if(!mine||res)h+='<div class="tn">'+esc(e.teaName)+'</div>';}
+        else{h+='<div class="sn">'+esc(e.className)+'</div>';h+='<div class="tn">'+esc(e.subName)+'</div>';}
+        h+='</div>';});
+      h+='</td>';});h+='</tr>';
+  });
+  h+='</table></div>';$('app').innerHTML=h;
+}
+
+/* ---- Dashboard ---- */
+function showDashboard(){
+  if(dashTeachers){renderDashboard();return;}
+  $('app').innerHTML=mkHeader('dash')+'<div class="center-msg"><div class="spinner"></div><span>載入教師列表...</span></div>';
+  apiGet({action:'dashboard'}).then(function(data){dashTeachers=data;renderDashboard();})
+  .catch(function(e){$('app').innerHTML=mkHeader('dash')+'<div class="center-msg err">❌ '+e+'</div>';});
+}
+function renderDashboard(){
+  var h=mkHeader('dash')+renderDashCards();
+  if(!dashViewingId) h+='<div class="dash-content" style="text-align:center;color:#94a3b8;padding:40px;font-size:14px">👆 點擊任一教師查看完整課表</div>';
+  $('app').innerHTML=h;
+  if(dashViewingId) loadDashSchedule(dashViewingId);
+}
+function renderDashCards(){
+  var h='<div class="dash-content">';var groups={};
+  dashTeachers.teachers.forEach(function(t){var r=t.role||'其他';if(!groups[r])groups[r]=[];groups[r].push(t);});
+  var order=["導師","行政","科任","特教","教支","外籍"];
+  for(var r in groups){if(order.indexOf(r)===-1)order.push(r);}
+  order.forEach(function(role){
+    if(!groups[role])return;
+    h+='<div class="role-section"><div class="role-title">'+esc(role)+'（'+groups[role].length+'）</div><div class="cards-grid">';
+    groups[role].forEach(function(t){
+      var v=dashViewingId===t.id;
+      h+='<div class="tea-card'+(v?' viewing':'')+'" onclick="clickTeaCard(\''+t.id+'\')">';
+      h+='<div class="tc-name">'+esc(t.name)+'</div>';
+      if(t.className)h+='<div class="tc-class">'+esc(t.className)+'</div>';
+      h+='<div class="tc-count">'+t.total+' 節</div></div>';});
+    h+='</div></div>';});
+  return h+'</div>';
+}
+function clickTeaCard(tid){
+  dashViewingId=tid;
+  var h=mkHeader('dash')+renderDashCards();
+  var t=dashTeachers.teachers.find(function(x){return x.id===tid});
+  h+='<div class="dash-content"><div class="dash-tt-title">📋 '+esc(t?t.name:'')+(t&&t.className?' — '+esc(t.className):'')+'　的課表</div></div>';
+  h+='<div class="center-msg" style="min-height:200px"><div class="spinner"></div></div>';
+  $('app').innerHTML=h;loadDashSchedule(tid);
+}
+function loadDashSchedule(tid){
+  var t=dashTeachers.teachers.find(function(x){return x.id===tid});
+  var isHR=t&&t.role.indexOf("導師")!==-1;
+  apiGet({action:'schedule',tid:tid,mode:isHR?'homeroom':'personal',cid:''}).then(function(data){
+    scheduleData=data;renderSchedule(tid,false,false);
+  }).catch(function(e){$('app').innerHTML=mkHeader('dash')+'<div class="center-msg err">❌ '+e+'</div>';});
+}
+
+/* ---- Drag & Drop ---- */
+function onStart(e,day,p){dragSrc={day:day,period:p};e.target.classList.add('dragging');e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain','x');}
+function onEnd(e){e.target.classList.remove('dragging');dragSrc=null;document.querySelectorAll('.drop-ok').forEach(function(el){el.classList.remove('drop-ok')})}
+function onOver(e){e.preventDefault();if(dragSrc)e.currentTarget.classList.add('drop-ok');e.dataTransfer.dropEffect='move';}
+function onLeave(e){e.currentTarget.classList.remove('drop-ok')}
+function onDrop(e,tDay,tPer){
+  e.preventDefault();e.currentTarget.classList.remove('drop-ok');
+  if(!dragSrc)return;if(dragSrc.day===tDay&&dragSrc.period===tPer)return;
+  var d=scheduleData;
+  var src=d.timetable.find(function(t){return t.day===dragSrc.day&&t.period===dragSrc.period&&t.teaId===USER.teacher.id&&!isRes(t)});
+  var tgt=d.timetable.find(function(t){return t.day===tDay&&t.period===tPer&&t.teaId===USER.teacher.id&&!isRes(t)});
+  if(!src){alert('找不到來源課程');return;}
+  if(!tgt){alert('目標時段沒有您的課程。\n只能與您自己的其他課程交換。');return;}
+  if(src.subId===tgt.subId){alert('兩堂課是同一科目，不需要交換。');return;}
+  if(!confirm('確定要交換嗎？\n\n📘 '+dragSrc.day+' '+pLabel(dragSrc.period)+'「'+src.subName+'」\n↕\n📙 '+tDay+' '+pLabel(tPer)+'「'+tgt.subName+'」'))return;
+  $('app').innerHTML=mkHeader('sched')+'<div class="center-msg"><div class="spinner"></div><span>交換中...</span></div>';
+  apiPost({action:'swap',teacherId:USER.teacher.id,classId:USER.homeroomClassId,dayA:dragSrc.day,periodA:dragSrc.period,dayB:tDay,periodB:tPer}).then(function(r){
+    if(r.error){alert('❌ '+r.error);showSchedule();return;}
+    dashTeachers=null;showSchedule();setTimeout(function(){alert('✅ 交換成功！\n\n'+src.subName+' ↔ '+tgt.subName)},200);
+  }).catch(function(e){alert('❌ '+e);showSchedule();});
+}
+
+/* ---- Helpers ---- */
+function $(id){return document.getElementById(id)}
+function isRes(e){return(e.subName||'').indexOf('資源')!==-1||(e.subName||'').indexOf('特教')!==-1||(e.teaRole||'').indexOf('特教')!==-1||(e.teaRole||'').indexOf('教支')!==-1}
+function isLoc(e){return(e.subName||'').indexOf('本土')!==-1||(e.subName||'').indexOf('閩')!==-1||(e.subName||'').indexOf('客')!==-1}
+function esc(s){var d=document.createElement('div');d.textContent=s||'';return d.innerHTML}
+function lgnd(bg,brd,txt){return'<div class="legend-item"><div class="legend-dot" style="background:'+bg+';border:1px solid '+brd+'"></div>'+txt+'</div>'}
+function pLabel(id){var f=FRAME.find(function(f){return f.id===id});return f?f.label:'第'+id+'節'}
+</script>
+</body>
+</html>
