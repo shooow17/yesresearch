@@ -175,6 +175,174 @@
 </head>
 <body>
 
+  <script>
+    // ============================================================
+    // ⭐ GAS API Adapter — 將 google.script.run 轉為 JSONP
+    //    這樣頁面放在 GitHub Pages 上，也能無縫呼叫 Apps Script
+    //    後端函式，不需修改任何既有 google.script.run.xxx 呼叫。
+    //
+    // 部署步驟：
+    //   1. Apps Script → 部署為 Web App（誰可以存取：所有人）
+    //   2. 複製 Web App URL → 貼到下方 API_URL
+    // ============================================================
+    window.API_URL = 'https://script.google.com/macros/s/AKfycbwU5v5pMyYOqV2GbaU-ZkXsJEb5gQVFlfmKeNasPZOruzkh3cAsuqn0E5jCb9Q6Xsnu/exec';
+
+    (function() {
+      var cbSeq = 0;
+
+      // JSONP：適用小資料（URL < 6000 字元）
+      function jsonp(action, args) {
+        return new Promise(function(resolve, reject) {
+          var cbName = '_gsr_cb_' + (++cbSeq) + '_' + Date.now();
+          var timer = setTimeout(function() { cleanup(); reject(new Error('連線逾時，請檢查網路或稍後重試')); }, 300000);
+          window[cbName] = function(data) { cleanup(); resolve(data); };
+          function cleanup() { clearTimeout(timer); try { delete window[cbName]; } catch(e) { window[cbName] = undefined; } if (script && script.parentNode) script.parentNode.removeChild(script); }
+          var argsJson = JSON.stringify(args || []);
+          var url = API_URL + '?action=' + encodeURIComponent(action) +
+                    '&argsJson=' + encodeURIComponent(argsJson) +
+                    '&callback=' + encodeURIComponent(cbName);
+          var script = document.createElement('script');
+          script.src = url;
+          script.onerror = function() { cleanup(); reject(new Error('無法連線到伺服器')); };
+          document.body.appendChild(script);
+        });
+      }
+
+      // Form POST 到隱藏 iframe：適用大資料（不受 URL 長度限制，能跨域）
+      function formPost(action, args) {
+        return new Promise(function(resolve, reject) {
+          var frameName = '_gsr_frame_' + (++cbSeq) + '_' + Date.now();
+          var iframe = document.createElement('iframe');
+          iframe.name = frameName;
+          iframe.style.display = 'none';
+          var form = document.createElement('form');
+          form.method = 'POST';
+          form.action = API_URL;
+          form.target = frameName;
+          form.enctype = 'application/x-www-form-urlencoded';
+          form.style.display = 'none';
+
+          function addField(name, value) {
+            var input = document.createElement('input');
+            input.type = 'hidden'; input.name = name; input.value = value;
+            form.appendChild(input);
+          }
+          addField('action', action);
+          addField('argsJson', JSON.stringify(args || []));
+
+          var timer = setTimeout(function() { cleanup(); reject(new Error('連線逾時')); }, 300000);
+          function cleanup() { clearTimeout(timer); try { iframe.parentNode && iframe.parentNode.removeChild(iframe); } catch(e){} try { form.parentNode && form.parentNode.removeChild(form); } catch(e){} }
+
+          iframe.onload = function() {
+            // 因為跨域，無法讀 iframe 內容。form POST 只當「fire and forget」用。
+            // 實務上：GAS 在 doPost 已將資料寫入，回傳成功。
+            cleanup();
+            resolve({ success: true });
+          };
+          iframe.onerror = function() { cleanup(); reject(new Error('POST 失敗')); };
+
+          document.body.appendChild(iframe);
+          document.body.appendChild(form);
+          form.submit();
+        });
+      }
+
+      function apiCall(action, args) {
+        var argsJson = JSON.stringify(args || []);
+        // 大資料用 form POST（無 URL 長度限制、但無法讀回應）
+        if (argsJson.length > 6000) {
+          return formPost(action, args);
+        }
+        return jsonp(action, args);
+      }
+
+      // 建立仿造的 google.script.run
+      function makeRunner() {
+        var successHandler = null, failureHandler = null, userObject = undefined;
+        var runner = {};
+        runner.withSuccessHandler = function(fn) { successHandler = fn; return runner; };
+        runner.withFailureHandler = function(fn) { failureHandler = fn; return runner; };
+        runner.withUserObject = function(obj) { userObject = obj; return runner; };
+        return new Proxy(runner, {
+          get: function(target, prop) {
+            if (prop in target) return target[prop];
+            return function() {
+              var args = Array.prototype.slice.call(arguments);
+              apiCall(prop, args).then(function(result) {
+                if (typeof successHandler === 'function') {
+                  try { successHandler(result, userObject); } catch(e) { console.error('SuccessHandler 執行錯誤:', e); }
+                }
+              }).catch(function(err) {
+                console.error('GAS API 呼叫失敗 (' + prop + '):', err);
+                if (typeof failureHandler === 'function') {
+                  try { failureHandler(err, userObject); } catch(e) { console.error('FailureHandler 執行錯誤:', e); }
+                } else {
+                  alert('伺服器連線失敗：' + err.message + '\n\n請確認 API_URL 已正確設定，且 Web App 部署為「所有人」可存取。');
+                }
+              });
+            };
+          }
+        });
+      }
+
+      window.google = window.google || {};
+      window.google.script = window.google.script || {};
+      Object.defineProperty(window.google.script, 'run', {
+        get: function() { return makeRunner(); },
+        configurable: true
+      });
+    })();
+  </script>
+
+  <!-- 密碼驗證遮罩：驗證通過前遮住整個頁面 -->
+  <div id="pwdOverlay" style="position:fixed;top:0;left:0;right:0;bottom:0;background:linear-gradient(135deg,#4f46e5 0%,#7c3aed 100%);display:flex;align-items:center;justify-content:center;z-index:99999;font-family:'Noto Sans TC','Microsoft JhengHei',sans-serif;">
+    <div style="background:#fff;border-radius:16px;padding:44px 40px;width:100%;max-width:400px;box-shadow:0 20px 50px rgba(0,0,0,0.3);text-align:center;margin:20px;">
+      <div style="font-size:38px;margin-bottom:8px;">🔐</div>
+      <h2 style="margin:0 0 8px;color:#1e293b;font-size:22px;">排課系統管理平台</h2>
+      <div style="color:#64748b;font-size:13px;margin-bottom:26px;">請輸入管理密碼進入系統</div>
+      <input id="pwdInput" type="password" placeholder="請輸入密碼" autofocus
+        style="width:100%;padding:12px 16px;border:2px solid #e2e8f0;border-radius:10px;font-size:16px;outline:none;font-family:inherit;box-sizing:border-box;letter-spacing:2px;"
+        onkeydown="if(event.key==='Enter')doPwdLogin()">
+      <button id="pwdBtn" onclick="doPwdLogin()"
+        style="width:100%;padding:12px;margin-top:14px;background:#4f46e5;color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;">
+        進入系統
+      </button>
+      <div id="pwdErr" style="color:#dc2626;font-size:13px;margin-top:12px;min-height:20px;"></div>
+    </div>
+  </div>
+
+  <script>
+    // 密碼驗證邏輯（放在最前面，其他 script 之前執行）
+    (function() {
+      var passed = sessionStorage.getItem('ascSysAuth') === '1';
+      if (passed) {
+        document.getElementById('pwdOverlay').style.display = 'none';
+      }
+    })();
+
+    function doPwdLogin() {
+      var input = document.getElementById('pwdInput');
+      var btn = document.getElementById('pwdBtn');
+      var err = document.getElementById('pwdErr');
+      var pwd = input.value;
+      if (!pwd) { err.textContent = '請輸入密碼'; return; }
+
+      btn.disabled = true; btn.textContent = '驗證中...'; err.textContent = '';
+      google.script.run
+        .withSuccessHandler(function(r) {
+          btn.disabled = false; btn.textContent = '進入系統';
+          if (r.error) { err.textContent = r.error; input.select(); return; }
+          try { sessionStorage.setItem('ascSysAuth', '1'); } catch(e) {}
+          document.getElementById('pwdOverlay').style.display = 'none';
+        })
+        .withFailureHandler(function(e) {
+          btn.disabled = false; btn.textContent = '進入系統';
+          err.textContent = '連線錯誤：' + e;
+        })
+        .verifyAccessPassword(pwd);
+    }
+  </script>
+
   <div class="container">
     <h2>📅 排課系統矩陣</h2>
     <div class="tabs">
