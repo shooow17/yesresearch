@@ -3336,20 +3336,17 @@
         let selectedEngine = document.getElementById('engineSelect')?.value || 'backtrack';
 
         // ============================================================
-        // 引擎 1：穩定回溯 (Backtracking + MRV + LCV)
-        //   - MRV(Most Constrained Variable)：選最受約束的課先排
-        //   - LCV(Least Constraining Value)：選對後續影響最小的時段
-        //   - 有解必找到、結果穩定可重現、失敗時可回報卡關原因
+        // 引擎 1：穩定回溯 (Backtracking + MRV + LCV)  — 分段執行版
+        //   為了不卡瀏覽器主執行緒，每跑 200ms 就 yield 一次，
+        //   讓 UI 有機會重繪與回應。狀態存在 btState 供分段延續。
         // ============================================================
         function runBacktrackEngine() {
             btn.innerText = `🎯 穩定回溯運算中...`;
 
-            // 各 lesson 目前的候選時段（會隨排課過程收縮）
             let candidateSlots = validSlotsForLesson.map(opts => opts.map((_, idx) => idx));
             let assignment = new Array(pendingLessons.length).fill(-1);
-            let occupancyTable = [...baseTimetable]; // 動態的課表狀態
+            let occupancyTable = [...baseTimetable];
 
-            // 計算某 lesson 選某時段的「約束傳播影響」：會讓多少其他 lesson 少幾個選項
             let countConstrainingImpact = (lIdx, slotIdx) => {
                 let slot = validSlotsForLesson[lIdx][slotIdx];
                 if (!slot) return 999999;
@@ -3358,11 +3355,8 @@
                 for (let j = 0; j < pendingLessons.length; j++) {
                     if (j === lIdx || assignment[j] !== -1) continue;
                     let otherLesson = pendingLessons[j];
-                    // 只計算「可能相互影響」的 lesson（同班或同教師或同教室）
                     if (otherLesson.classId !== lesson.classId && otherLesson.teaId !== lesson.teaId && otherLesson.expectedRoomId !== lesson.expectedRoomId) continue;
-                    // 檢查 j 的候選中，有多少會被 slot 影響
                     let jSlots = validSlotsForLesson[j];
-                    let daysToCheck = slot.isConsec ? [slot.day] : [slot.day];
                     let periodsToCheck = slot.isConsec ? slot.periods : [slot.period];
                     for (let k of candidateSlots[j]) {
                         let jSlot = jSlots[k];
@@ -3374,7 +3368,6 @@
                 return impact;
             };
 
-            // MRV：找候選最少的未排 lesson
             let pickNextVariable = () => {
                 let best = -1, minCount = Infinity;
                 for (let i = 0; i < pendingLessons.length; i++) {
@@ -3386,7 +3379,6 @@
                 return best;
             };
 
-            // 檢查 slot 是否與目前 occupancyTable 相容
             let canPlace = (lesson, slot) => {
                 if (slot.isConsec) {
                     return checkSlotFully(lesson, slot.day, slot.periods[0], occupancyTable) &&
@@ -3410,56 +3402,107 @@
             };
             let removeFromTable = (recs) => { recs.forEach(r => { let i = occupancyTable.indexOf(r); if (i !== -1) occupancyTable.splice(i, 1); }); };
 
+            // ⭐ 分段執行用的狀態機：stack 記錄當前搜尋路徑
+            //    每個 frame 記錄「當前選到的變數、其候選順序、目前試到第幾個」
+            let stack = [];
             let startBT = Date.now();
-            const BT_MAX_MS = 60000; // 60秒上限
+            const BT_MAX_MS = 45000;
             let backtrackCount = 0;
+            let solved = false;
+            let aborted = false;
 
-            let solve = () => {
-                if (Date.now() - startBT > BT_MAX_MS) return false; // 超時
+            function pushFrame() {
                 let vIdx = pickNextVariable();
-                if (vIdx === -1) return true; // 全部排完
-                if (candidateSlots[vIdx].length === 0) return false; // 死胡同
-
+                if (vIdx === -1) { solved = true; return false; }
+                if (candidateSlots[vIdx].length === 0) return false;
                 let lesson = pendingLessons[vIdx];
-                // LCV：按「對其他 lesson 影響小」排序候選
-                let orderedCands = [...candidateSlots[vIdx]].sort((a, b) => {
-                    return countConstrainingImpact(vIdx, a) - countConstrainingImpact(vIdx, b);
-                });
-
-                for (let slotIdx of orderedCands) {
-                    let slot = validSlotsForLesson[vIdx][slotIdx];
-                    if (!slot || !canPlace(lesson, slot)) continue;
-
-                    assignment[vIdx] = slotIdx;
-                    let addedRecs = addToTable(lesson, slot);
-
-                    if (solve()) return true;
-
-                    // 回溯
-                    assignment[vIdx] = -1;
-                    removeFromTable(addedRecs);
-                    backtrackCount++;
-                    if (backtrackCount % 200 === 0) {
-                        let elapsed = Math.floor((Date.now() - startBT) / 1000);
-                        btn.innerText = `🎯 穩定回溯中... ${elapsed}秒 (已回溯 ${backtrackCount} 次)`;
-                    }
-                }
-                return false;
-            };
-
-            let solved = solve();
-
-            // 把結果轉成 gBest.position
-            gBest.position = assignment.map((a, i) => a === -1 ? 0 : a);
-            gBest.fitness = solved ? 0 : 999;
-
-            if (!solved) {
-                let unresolved = assignment.filter(a => a === -1).length;
-                console.log(`回溯未能完全解決，剩餘 ${unresolved} 節，將交給後處理繼續嘗試`);
+                let orderedCands = [...candidateSlots[vIdx]].sort((a, b) =>
+                    countConstrainingImpact(vIdx, a) - countConstrainingImpact(vIdx, b));
+                stack.push({ vIdx: vIdx, lesson: lesson, cands: orderedCands, tryIdx: 0, addedRecs: null });
+                return true;
             }
 
-            btn.innerText = `🔄 啟動動態互換與最終優化...`;
-            setTimeout(runGreedyAndSwap, 50);
+            function btChunk() {
+                if (aborted) return;
+                let chunkStart = Date.now();
+
+                while (Date.now() - chunkStart < 200) {
+                    // 檢查總時間上限
+                    if (Date.now() - startBT > BT_MAX_MS) {
+                        aborted = true; break;
+                    }
+
+                    // 若 stack 為空，代表要開始或已回溯完
+                    if (stack.length === 0) {
+                        if (!pushFrame()) break; // 沒東西可推 = 結束
+                        continue;
+                    }
+
+                    let top = stack[stack.length - 1];
+
+                    // 若這個 frame 有暫時放入的紀錄（表示之前 push 失敗要回滾）
+                    if (top.addedRecs) {
+                        removeFromTable(top.addedRecs);
+                        assignment[top.vIdx] = -1;
+                        top.addedRecs = null;
+                        top.tryIdx++;
+                        backtrackCount++;
+                    }
+
+                    // 沒有更多候選 → 這個 frame 失敗，pop 回上一層
+                    if (top.tryIdx >= top.cands.length) {
+                        stack.pop();
+                        if (stack.length > 0) {
+                            // 上一層要重新嘗試下一個候選
+                            let parent = stack[stack.length - 1];
+                            if (parent.addedRecs) {
+                                removeFromTable(parent.addedRecs);
+                                assignment[parent.vIdx] = -1;
+                                parent.addedRecs = null;
+                                parent.tryIdx++;
+                                backtrackCount++;
+                            }
+                        }
+                        continue;
+                    }
+
+                    // 嘗試當前候選
+                    let slotIdx = top.cands[top.tryIdx];
+                    let slot = validSlotsForLesson[top.vIdx][slotIdx];
+                    if (!slot || !canPlace(top.lesson, slot)) {
+                        top.tryIdx++;
+                        continue;
+                    }
+
+                    assignment[top.vIdx] = slotIdx;
+                    top.addedRecs = addToTable(top.lesson, slot);
+
+                    // 推入下一層
+                    if (!pushFrame()) {
+                        // 沒得推 → 表示 solved 或死胡同
+                        if (solved) break;
+                        // 死胡同 → 保留 addedRecs，下輪迴圈會回滾
+                    }
+                }
+
+                let elapsed = Math.floor((Date.now() - startBT) / 1000);
+                btn.innerText = `🎯 穩定回溯中... ${elapsed}秒 (已回溯 ${backtrackCount} 次)`;
+
+                if (solved || aborted || stack.length === 0) {
+                    gBest.position = assignment.map(a => a === -1 ? 0 : a);
+                    gBest.fitness = solved ? 0 : 999;
+                    if (!solved) {
+                        let unresolved = assignment.filter(a => a === -1).length;
+                        console.log(`回溯${aborted?'超時':'完成但未全解'}，剩餘 ${unresolved} 節交給後處理`);
+                    }
+                    btn.innerText = `🔄 啟動動態互換與最終優化...`;
+                    setTimeout(runGreedyAndSwap, 50);
+                } else {
+                    setTimeout(btChunk, 0); // yield 給瀏覽器
+                }
+            }
+
+            btChunk();
         }
 
         // ============================================================
