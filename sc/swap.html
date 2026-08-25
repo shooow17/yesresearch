@@ -293,10 +293,10 @@ function pickSlot(side, weekday, period, dateStr, el){
   if(side==='A'){
     if(!lesson){return;} // 自己的空堂不能選
     selA=obj;
-    onDateA(document.getElementById('dateA').value); // re-render to show selection
+    renderSlots('slotsA', mySchedule, weekday, 'A', dateStr);
   } else {
     selB=obj;
-    onDateB(document.getElementById('dateB').value);
+    renderSlots('slotsB', partnerSchedule||[], weekday, 'B', dateStr);
   }
   updateSummary();
 }
