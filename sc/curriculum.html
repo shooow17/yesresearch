@@ -412,21 +412,20 @@ function openPrintPage(role,results){
   html+='@page{size:A4 landscape;margin:12mm 10mm}';
   html+='*{box-sizing:border-box;margin:0;padding:0}';
   html+='body{font-family:"Noto Sans TC",-apple-system,"Microsoft JhengHei",sans-serif;font-size:11px;color:#000}';
-  html+='.page{page-break-inside:avoid;margin-bottom:8mm}';
-  html+='.tt-header{text-align:center;margin-bottom:6px}';
-  html+='.tt-header .school{font-size:14px;font-weight:700}';
-  html+='.tt-header .info{font-size:11px;color:#333;margin-top:2px}';
+  html+='.page{page-break-after:always;padding:8mm 0}';
+  html+='.page:last-child{page-break-after:auto}';
+  html+='.tt-header{text-align:center;margin-bottom:10px}';
+  html+='.tt-header .school{font-size:18px;font-weight:700}';
+  html+='.tt-header .info{font-size:13px;color:#333;margin-top:4px}';
   html+='table.tt{width:100%;border-collapse:collapse;table-layout:fixed}';
-  html+='table.tt th,table.tt td{border:1.5px solid #000;padding:5px 3px;text-align:center;vertical-align:middle;font-size:11px}';
-  html+='table.tt th{background:#e8e8e8;font-weight:700;font-size:11px}';
-  html+='table.tt th.period-col{width:12%}';
-  html+='table.tt td.period-cell{background:#f5f5f5;font-weight:600;font-size:10px}';
-  html+='table.tt td.period-cell .time{display:block;font-size:8px;font-weight:400;color:#666}';
-  html+='.cell-sub{font-weight:700;font-size:11px}';
-  html+='.cell-info{font-size:9px;color:#555}';
+  html+='table.tt th,table.tt td{border:1.5px solid #000;padding:8px 4px;text-align:center;vertical-align:middle;font-size:13px}';
+  html+='table.tt th{background:#e8e8e8;font-weight:700;font-size:13px}';
+  html+='table.tt th.period-col{width:13%}';
+  html+='table.tt td.period-cell{background:#f5f5f5;font-weight:600;font-size:12px}';
+  html+='table.tt td.period-cell .time{display:block;font-size:9px;font-weight:400;color:#666}';
+  html+='.cell-sub{font-weight:700;font-size:14px}';
+  html+='.cell-info{font-size:10px;color:#555}';
   html+='.cell-empty{color:#ccc;font-size:10px}';
-  // 兩欄排版：每頁放兩張課表
-  html+='.grid{display:grid;grid-template-columns:1fr 1fr;gap:10mm}';
   html+='@media print{.no-print{display:none !important}}';
   html+='</style></head><body>';
 
@@ -436,7 +435,7 @@ function openPrintPage(role,results){
   html+='<button onclick="window.print()" style="margin-left:16px;padding:8px 24px;background:#2563eb;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer">🖨️ 列印 / 存為 PDF</button>';
   html+='</div>';
 
-  html+='<div class="grid">';
+  html+='<div>';
   results.forEach(function(r){
     var t=r.teacher, tt=r.timetable, isHR=r.homeroomClassId&&r.homeroomClassId!=="";
     html+='<div class="page">';
