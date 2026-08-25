@@ -24,9 +24,10 @@ body{font-family:'Noto Sans TC',-apple-system,sans-serif;background:#eef1f5;colo
 .h-right{display:flex;align-items:center;gap:10px}
 .user-badge{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);padding:5px 14px;border-radius:20px;font-size:12px;font-weight:500}
 .btn-out{background:transparent;border:1px solid rgba(255,255,255,.35);color:#fff;padding:5px 12px;border-radius:20px;font-size:12px;cursor:pointer;font-family:inherit}
-.tabs{display:flex;gap:0;max-width:1000px;margin:16px auto 0;padding:0 12px}
-.tab-btn{padding:10px 20px;background:#fff;border:1px solid #e2e8f0;border-bottom:none;border-radius:10px 10px 0 0;font-size:13px;font-weight:600;cursor:pointer;color:#64748b;font-family:inherit;transition:all .15s}
+.tabs{display:flex;gap:0;max-width:1000px;margin:16px auto 0;padding:0 12px;flex-wrap:wrap}
+.tab-btn{padding:10px 20px;background:#fff;border:1px solid #e2e8f0;border-bottom:none;border-radius:10px 10px 0 0;font-size:13px;font-weight:600;cursor:pointer;color:#64748b;font-family:inherit;transition:all .15s;position:relative}
 .tab-btn.active{background:#1a365d;color:#fff;border-color:#1a365d}
+.tab-badge{position:absolute;top:-6px;right:-6px;background:#ef4444;color:#fff;font-size:10px;font-weight:700;min-width:18px;height:18px;border-radius:9px;display:flex;align-items:center;justify-content:center;padding:0 5px}
 .main{max-width:1000px;margin:0 auto;padding:16px}
 .card{background:#fff;border-radius:12px;padding:20px 24px;box-shadow:0 1px 6px rgba(0,0,0,.08);margin-bottom:16px}
 .card h3{font-size:15px;font-weight:700;color:#1a365d;margin-bottom:14px;display:flex;align-items:center;gap:6px}
@@ -48,23 +49,38 @@ textarea{resize:vertical;min-height:70px}
 .chk-row{display:flex;align-items:center;gap:8px;margin:14px 0;font-size:14px}
 .chk-row input[type=checkbox]{width:18px;height:18px;accent-color:#2563eb}
 .warn-box{background:#fef3c7;border:1px solid #fde68a;border-radius:8px;padding:12px 16px;margin:12px 0;font-size:13px;color:#92400e}
-.warn-box b{color:#b45309}
-.btn-submit{padding:12px 32px;background:#2563eb;color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;transition:background .2s}
+.btn-submit{padding:12px 32px;background:#2563eb;color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit}
 .btn-submit:hover{background:#1d4ed8}
 .btn-submit:disabled{background:#94a3b8;cursor:not-allowed}
 .record-table{width:100%;border-collapse:collapse;font-size:13px}
 .record-table th{background:#f1f5f9;text-align:left;padding:10px 8px;font-weight:600;color:#475569;border-bottom:2px solid #e2e8f0}
 .record-table td{padding:10px 8px;border-bottom:1px solid #f1f5f9;vertical-align:top}
 .st{display:inline-block;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:600}
-.st-wait{background:#fef3c7;color:#b45309}
-.st-rev{background:#dbeafe;color:#1d4ed8}
+.st-p{background:#fef3c7;color:#b45309}
+.st-r{background:#dbeafe;color:#1d4ed8}
 .st-ok{background:#d1fae5;color:#047857}
 .st-no{background:#fee2e2;color:#b91c1c}
+/* 進度條 */
+.flow{display:flex;align-items:center;gap:0;margin:10px 0 6px;font-size:11px}
+.flow-step{display:flex;flex-direction:column;align-items:center;gap:2px;position:relative}
+.flow-dot{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;border:2px solid #cbd5e1;color:#94a3b8;background:#fff}
+.flow-dot.done{background:#059669;border-color:#059669;color:#fff}
+.flow-dot.active{background:#2563eb;border-color:#2563eb;color:#fff;animation:pulse 1.5s infinite}
+.flow-dot.fail{background:#dc2626;border-color:#dc2626;color:#fff}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(37,99,235,.3)}50%{box-shadow:0 0 0 6px rgba(37,99,235,0)}}
+.flow-label{font-size:10px;color:#64748b;margin-top:2px;text-align:center;max-width:56px}
+.flow-line{width:28px;height:2px;background:#e2e8f0;margin-bottom:16px}
+.flow-line.done{background:#059669}
+/* 審核卡 */
 .rev-card{background:#fff;border:2px solid #e8ecf0;border-radius:12px;padding:16px 20px;margin-bottom:12px}
-.rev-card .rev-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.rev-card .rev-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px}
 .rev-card .rev-title{font-weight:700;font-size:14px;color:#1e293b}
 .rev-card .rev-detail{font-size:13px;color:#475569;line-height:1.8}
 .rev-card .rev-detail b{color:#1e293b}
+.rev-card .rev-role{font-size:11px;color:#fff;padding:2px 8px;border-radius:10px;font-weight:600}
+.rev-card .rev-role.partner{background:#f59e0b}
+.rev-card .rev-role.chief{background:#3b82f6}
+.rev-card .rev-role.dean{background:#7c3aed}
 .rev-actions{display:flex;gap:8px;margin-top:12px}
 .rev-actions button{padding:8px 20px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;border:none;transition:all .15s}
 .rev-actions .btn-approve{background:#059669;color:#fff}.rev-actions .btn-approve:hover{background:#047857}
@@ -73,7 +89,7 @@ textarea{resize:vertical;min-height:70px}
 .spinner{width:36px;height:36px;border:3px solid #e2e8f0;border-top-color:#3b82f6;border-radius:50%;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 .empty-msg{text-align:center;color:#94a3b8;padding:40px;font-size:14px}
-@media(max-width:640px){.form-col{min-width:100%}.login-card{padding:28px 24px}.main{padding:12px}}
+@media(max-width:640px){.form-col{min-width:100%}.login-card{padding:28px 24px}.main{padding:12px}.flow-line{width:16px}}
 </style>
 </head>
 <body>
@@ -82,414 +98,268 @@ textarea{resize:vertical;min-height:70px}
 /* ★★★ 換成你的 GAS Web App 部署網址 ★★★ */
 var API_URL = "https://script.google.com/macros/s/AKfycbzJL3e9ofFRMuvCOwHVnYEVhsiY8GNkhU3p7MvvEH14-a4AoxXxt0ZYAXxWiQGWnkpJ/exec";
 
-var USER=null, EMAIL="", allTeachers=null, mySchedule=null, partnerSchedule=null;
-var selA=null, selB=null; // 選中的課格 {day,period,subName,className,subId,classId,teaId}
+var USER=null,EMAIL="",allTeachers=null,mySchedule=null,partnerSchedule=null;
+var selA=null,selB=null,cachedSwapList=null;
 var PERIODS=["1","2","3","4","5","6","7"];
-var PERIOD_LABELS={"1":"第一節","2":"第二節","3":"第三節","4":"第四節","5":"第五節","6":"第六節","7":"第七節"};
-var WEEKDAYS=["星期日","星期一","星期二","星期三","星期四","星期五","星期六"];
+var PL={"1":"第一節","2":"第二節","3":"第三節","4":"第四節","5":"第五節","6":"第六節","7":"第七節"};
+var WD=["星期日","星期一","星期二","星期三","星期四","星期五","星期六"];
 
 renderLogin();
 
-/* ---- API ---- */
 function apiGet(p){var qs=Object.keys(p).map(function(k){return k+"="+encodeURIComponent(p[k])}).join("&");return fetch(API_URL+"?"+qs,{redirect:"follow"}).then(function(r){return r.text()}).then(function(t){return JSON.parse(t)})}
 function apiPost(d){return fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(d),redirect:"follow"}).then(function(r){return r.text()}).then(function(t){return JSON.parse(t)})}
 
 /* ---- Login ---- */
 function renderLogin(){
-  var h='<div class="login-wrap"><div class="login-card">';
-  h+='<h1>📝 調課申請系統</h1><div class="sub">請輸入您的電子郵件登入</div>';
+  var h='<div class="login-wrap"><div class="login-card"><h1>📝 調課申請系統</h1><div class="sub">請輸入您的電子郵件登入</div>';
   h+='<input id="inpEmail" type="email" placeholder="example@school.edu.tw" autofocus onkeydown="if(event.key===\'Enter\')doLogin()">';
-  h+='<button id="btnLogin" onclick="doLogin()">登入</button>';
-  h+='<div class="login-err" id="loginErr"></div></div></div>';
+  h+='<button id="btnLogin" onclick="doLogin()">登入</button><div class="login-err" id="loginErr"></div></div></div>';
   $('app').innerHTML=h;
   try{var sv=localStorage.getItem('swapSysEmail');if(sv)document.getElementById('inpEmail').value=sv}catch(e){}
 }
 function doLogin(){
-  var email=document.getElementById('inpEmail').value.trim();
-  if(!email){document.getElementById('loginErr').textContent='請輸入電子郵件';return;}
-  var btn=document.getElementById('btnLogin');btn.disabled=true;btn.textContent='驗證中...';
-  document.getElementById('loginErr').textContent='';
+  var email=document.getElementById('inpEmail').value.trim();if(!email){document.getElementById('loginErr').textContent='請輸入電子郵件';return;}
+  var btn=document.getElementById('btnLogin');btn.disabled=true;btn.textContent='驗證中...';document.getElementById('loginErr').textContent='';
   apiGet({action:"verify",email:email}).then(function(r){
-    btn.disabled=false;btn.textContent='登入';
-    if(r.error){document.getElementById('loginErr').textContent=r.error;return;}
-    USER=r; EMAIL=email.toLowerCase();
-    try{localStorage.setItem('swapSysEmail',email)}catch(e){}
-    loadInitialData();
+    btn.disabled=false;btn.textContent='登入';if(r.error){document.getElementById('loginErr').textContent=r.error;return;}
+    USER=r;EMAIL=email.toLowerCase();try{localStorage.setItem('swapSysEmail',email)}catch(e){}loadInitialData();
   }).catch(function(e){btn.disabled=false;btn.textContent='登入';document.getElementById('loginErr').textContent='連線錯誤：'+e.message;});
 }
-function logout(){USER=null;allTeachers=null;mySchedule=null;partnerSchedule=null;selA=null;selB=null;renderLogin();}
+function logout(){USER=null;allTeachers=null;mySchedule=null;partnerSchedule=null;selA=null;selB=null;cachedSwapList=null;renderLogin();}
 
-/* ---- 初始載入 ---- */
 function loadInitialData(){
   $('app').innerHTML=mkHeader()+'<div class="center-msg"><div class="spinner"></div><span>載入資料...</span></div>';
   Promise.all([
     apiGet({action:"schedule",tid:USER.teacher.id,mode:"personal",cid:""}),
     apiGet({action:"swapTeachers"})
-  ]).then(function(results){
-    mySchedule=results[0].timetable;
-    allTeachers=results[1].teachers.filter(function(t){return t.id!==USER.teacher.id});
+  ]).then(function(res){
+    mySchedule=res[0].timetable;allTeachers=res[1].teachers.filter(function(t){return t.id!==USER.teacher.id});
     showTab('apply');
-  }).catch(function(e){
-    $('app').innerHTML=mkHeader()+'<div class="center-msg" style="color:#dc2626">❌ '+e.message+'</div>';
-  });
+  }).catch(function(e){$('app').innerHTML=mkHeader()+'<div class="center-msg" style="color:#dc2626">❌ '+e.message+'</div>';});
 }
 
 /* ---- Header & Tabs ---- */
 function mkHeader(){
-  var h='<div class="header"><div class="header-top"><div>';
-  h+='<div class="h-title">📝 '+esc(USER.schoolInfo.name||'調課申請系統')+'</div>';
+  var h='<div class="header"><div class="header-top"><div><div class="h-title">📝 '+esc(USER.schoolInfo.name||'調課申請系統')+'</div>';
   h+='<div class="h-sub">'+esc(USER.schoolInfo.year)+' 學年度</div></div>';
   h+='<div class="h-right"><div class="user-badge">'+esc(USER.teacher.name)+'（'+esc(USER.teacher.role)+'）</div>';
-  h+='<button class="btn-out" onclick="logout()">登出</button></div></div></div>';
-  return h;
+  h+='<button class="btn-out" onclick="logout()">登出</button></div></div></div>';return h;
 }
-function mkTabs(active){
+function mkTabs(active,pendingCount){
+  var pc=pendingCount||0;
   var h='<div class="tabs">';
   h+='<button class="tab-btn'+(active==='apply'?' active':'')+'" onclick="showTab(\'apply\')">📝 調課申請</button>';
   h+='<button class="tab-btn'+(active==='history'?' active':'')+'" onclick="showTab(\'history\')">📋 申請紀錄</button>';
-  if(USER.isSwapReviewer||USER.isSwapApprover)
-    h+='<button class="tab-btn'+(active==='review'?' active':'')+'" onclick="showTab(\'review\')">✅ 審核管理</button>';
-  h+='</div>';
-  return h;
+  h+='<button class="tab-btn'+(active==='pending'?' active':'')+'" onclick="showTab(\'pending\')">🔔 待處理';
+  if(pc>0) h+='<span class="tab-badge">'+pc+'</span>';
+  h+='</button></div>';return h;
 }
-function showTab(t){
-  if(t==='apply') renderApplyTab();
-  else if(t==='history') renderHistoryTab();
-  else if(t==='review') renderReviewTab();
-}
+function showTab(t){cachedSwapList=null;if(t==='apply')renderApplyTab();else if(t==='history')renderHistoryTab();else if(t==='pending')renderPendingTab();}
 
 /* ================================================================
-   調課申請頁
+   調課申請
    ================================================================ */
 function renderApplyTab(){
-  selA=null; selB=null; partnerSchedule=null;
+  selA=null;selB=null;partnerSchedule=null;
   var h=mkHeader()+mkTabs('apply')+'<div class="main">';
-
-  // ---- 我的課程 ----
-  h+='<div class="card"><h3>📘 Step 1：選擇我要調的課</h3>';
-  h+='<label class="field">選擇日期</label>';
-  h+='<input type="date" id="dateA" onchange="onDateA(this.value)">';
-  h+='<div id="slotsA"></div></div>';
-
-  // ---- 代課老師 ----
-  h+='<div class="card"><h3>📗 Step 2：選擇代課老師與時段</h3>';
-  h+='<div class="form-row"><div class="form-col">';
-  h+='<label class="field">選擇老師</label><select id="selTeacher" onchange="onSelectTeacher(this.value)">';
-  h+='<option value="">— 請選擇 —</option>';
-  if(allTeachers) allTeachers.forEach(function(t){
-    var label=t.name+(t.className?' ('+t.className+')':'')+'　'+t.role;
-    h+='<option value="'+t.id+'">'+esc(label)+'</option>';
-  });
-  h+='</select></div><div class="form-col">';
-  h+='<label class="field">選擇日期</label>';
-  h+='<input type="date" id="dateB" onchange="onDateB(this.value)" disabled>';
-  h+='</div></div>';
-  h+='<div id="slotsB"></div></div>';
-
-  // ---- 詳細資訊 ----
-  h+='<div class="card"><h3>📋 Step 3：填寫資訊並送出</h3>';
-  h+='<div id="summary"></div>';
-  h+='<label class="field" style="margin-top:12px">調課原因</label>';
-  h+='<textarea id="reason" placeholder="請說明調課原因..."></textarea>';
+  h+='<div class="card"><h3>📘 Step 1：選擇我要調的課</h3><label class="field">選擇日期</label>';
+  h+='<input type="date" id="dateA" onchange="onDateA(this.value)"><div id="slotsA"></div></div>';
+  h+='<div class="card"><h3>📗 Step 2：選擇代課老師與時段</h3><div class="form-row"><div class="form-col">';
+  h+='<label class="field">選擇老師</label><select id="selTeacher" onchange="onSelTea(this.value)"><option value="">— 請選擇 —</option>';
+  if(allTeachers)allTeachers.forEach(function(t){h+='<option value="'+t.id+'">'+esc(t.name+(t.className?' ('+t.className+')':'')+'　'+t.role)+'</option>';});
+  h+='</select></div><div class="form-col"><label class="field">選擇日期</label>';
+  h+='<input type="date" id="dateB" onchange="onDateB(this.value)" disabled></div></div><div id="slotsB"></div></div>';
+  h+='<div class="card"><h3>📋 Step 3：填寫資訊並送出</h3><div id="summary"></div>';
+  h+='<label class="field" style="margin-top:12px">調課原因</label><textarea id="reason" placeholder="請說明調課原因..."></textarea>';
   h+='<div class="chk-row"><input type="checkbox" id="chkNotified"><label for="chkNotified">已告知代課老師本人</label></div>';
   h+='<div id="warnings"></div>';
-  h+='<div style="text-align:center;margin-top:16px"><button class="btn-submit" id="btnSubmit" onclick="doSubmit()" disabled>送出調課申請</button></div>';
-  h+='</div></div>';
-
+  h+='<div style="text-align:center;margin-top:16px"><button class="btn-submit" id="btnSubmit" onclick="doSubmit()" disabled>送出調課申請</button></div></div></div>';
   $('app').innerHTML=h;
 }
-
-/* ---- Step 1: 選日期 → 顯示我的課表 ---- */
-function onDateA(val){
-  selA=null; updateSummary();
-  if(!val){$('slotsA').innerHTML='';return;}
-  var d=new Date(val); var wd=WEEKDAYS[d.getDay()];
-  if(d.getDay()===0||d.getDay()===6){$('slotsA').innerHTML='<div class="warn-box">⚠ 請選擇平日（週一到週五）</div>';return;}
-  var lessons=mySchedule.filter(function(t){return t.day===wd});
-  renderSlots('slotsA', lessons, wd, 'A', val);
-}
-
-/* ---- Step 2: 選老師 → 載入課表 ---- */
-function onSelectTeacher(tid){
-  selB=null; partnerSchedule=null; updateSummary();
-  $('slotsB').innerHTML='';
-  document.getElementById('dateB').value='';
-  if(!tid){document.getElementById('dateB').disabled=true;return;}
-  document.getElementById('dateB').disabled=false;
-
-  // 載入該老師的個人課表
+function onDateA(v){selA=null;updateSummary();if(!v){$('slotsA').innerHTML='';return;}
+  var d=new Date(v),wd=WD[d.getDay()];if(d.getDay()===0||d.getDay()===6){$('slotsA').innerHTML='<div class="warn-box">⚠ 請選擇平日</div>';return;}
+  renderSlots('slotsA',mySchedule,wd,'A',v);}
+function onSelTea(tid){selB=null;partnerSchedule=null;updateSummary();$('slotsB').innerHTML='';document.getElementById('dateB').value='';
+  if(!tid){document.getElementById('dateB').disabled=true;return;}document.getElementById('dateB').disabled=false;
   $('slotsB').innerHTML='<div style="padding:12px;color:#64748b;font-size:13px">載入課表中...</div>';
-  apiGet({action:"schedule",tid:tid,mode:"personal",cid:""}).then(function(data){
-    partnerSchedule=data.timetable;
-    $('slotsB').innerHTML='<div style="padding:12px;color:#64748b;font-size:13px">👆 請選擇日期</div>';
-  }).catch(function(e){
-    $('slotsB').innerHTML='<div class="warn-box">❌ '+e.message+'</div>';
-  });
-}
+  apiGet({action:"schedule",tid:tid,mode:"personal",cid:""}).then(function(d){partnerSchedule=d.timetable;$('slotsB').innerHTML='<div style="padding:12px;color:#64748b;font-size:13px">👆 請選擇日期</div>';}).catch(function(e){$('slotsB').innerHTML='<div class="warn-box">❌ '+e.message+'</div>';});}
+function onDateB(v){selB=null;updateSummary();if(!v||!partnerSchedule){$('slotsB').innerHTML='';return;}
+  var d=new Date(v),wd=WD[d.getDay()];if(d.getDay()===0||d.getDay()===6){$('slotsB').innerHTML='<div class="warn-box">⚠ 請選擇平日</div>';return;}
+  renderSlots('slotsB',partnerSchedule,wd,'B',v);}
 
-function onDateB(val){
-  selB=null; updateSummary();
-  if(!val||!partnerSchedule){$('slotsB').innerHTML='';return;}
-  var d=new Date(val); var wd=WEEKDAYS[d.getDay()];
-  if(d.getDay()===0||d.getDay()===6){$('slotsB').innerHTML='<div class="warn-box">⚠ 請選擇平日</div>';return;}
-  renderSlots('slotsB', partnerSchedule, wd, 'B', val);
-}
-
-/* ---- 渲染某天的節次列表 ---- */
-function renderSlots(containerId, schedule, weekday, side, dateStr){
-  var h='<div class="day-slots">';
-  h+='<div style="font-size:12px;color:#64748b;margin-bottom:4px">'+esc(dateStr)+' ('+esc(weekday)+')</div>';
-
+function renderSlots(cid,schedule,weekday,side,dateStr){
+  var h='<div class="day-slots"><div style="font-size:12px;color:#64748b;margin-bottom:4px">'+esc(dateStr)+' ('+esc(weekday)+')</div>';
   PERIODS.forEach(function(p){
-    var lessons = schedule.filter(function(t){return t.day===weekday&&t.period===p});
-    if(lessons.length>0){
-      lessons.forEach(function(l){
-        var selected = (side==='A'&&selA&&selA.period===p&&selA.day===weekday) || (side==='B'&&selB&&selB.period===p&&selB.day===weekday);
-
-        // 衝堂檢查：如果選了 A，檢查 B 在 A 的時段是否有課
-        var conflict = false;
-        if(side==='B' && selA){
-          var otherSchedule = partnerSchedule||[];
-          var selAwd = selA.day;
-          conflict = otherSchedule.some(function(t){return t.day===selAwd&&t.period===selA.period});
-        }
-
-        h+='<div class="slot'+(selected?' selected':'')+(conflict?' conflict':'')+'" onclick="pickSlot(\''+side+'\',\''+weekday+'\',\''+p+'\',\''+dateStr+'\',this)">';
-        h+='<span class="s-period">'+esc(PERIOD_LABELS[p]||p)+'</span>';
-        h+='<span class="s-sub">'+esc(l.subName)+'</span>';
-        h+='<span class="s-class">'+esc(l.className)+'</span>';
-        if(conflict) h+='<span style="color:#dc2626;font-size:11px;margin-left:8px">⚠ 衝堂</span>';
-        h+='</div>';
-      });
+    var ls=schedule.filter(function(t){return t.day===weekday&&t.period===p});
+    if(ls.length>0){ls.forEach(function(l){
+      var sel=(side==='A'&&selA&&selA.period===p&&selA.day===weekday)||(side==='B'&&selB&&selB.period===p&&selB.day===weekday);
+      var conf=false;if(side==='B'&&selA&&partnerSchedule){conf=partnerSchedule.some(function(t){return t.day===selA.day&&t.period===selA.period});}
+      h+='<div class="slot'+(sel?' selected':'')+(conf?' conflict':'')+'" onclick="pickSlot(\''+side+'\',\''+weekday+'\',\''+p+'\',\''+dateStr+'\')">';
+      h+='<span class="s-period">'+esc(PL[p]||p)+'</span><span class="s-sub">'+esc(l.subName)+'</span><span class="s-class">'+esc(l.className)+'</span>';
+      if(conf)h+='<span style="color:#dc2626;font-size:11px;margin-left:8px">⚠ 衝堂</span>';h+='</div>';});
     } else {
-      if(side==='B'){
-        // 空堂可選（代課老師該節有空）
-        h+='<div class="slot" style="border-color:#d1fae5;background:#f0fdf4;cursor:pointer" onclick="pickSlot(\''+side+'\',\''+weekday+'\',\''+p+'\',\''+dateStr+'\',this)">';
-        h+='<span class="s-period">'+esc(PERIOD_LABELS[p]||p)+'</span>';
-        h+='<span class="s-free">✅ 空堂（可代課）</span></div>';
-      } else {
-        h+='<div class="slot free"><span class="s-period">'+esc(PERIOD_LABELS[p]||p)+'</span><span class="s-free">空堂</span></div>';
-      }
+      if(side==='B'){h+='<div class="slot" style="border-color:#d1fae5;background:#f0fdf4" onclick="pickSlot(\''+side+'\',\''+weekday+'\',\''+p+'\',\''+dateStr+'\')">';
+        h+='<span class="s-period">'+esc(PL[p]||p)+'</span><span class="s-free">✅ 空堂（可代課）</span></div>';}
+      else{h+='<div class="slot free"><span class="s-period">'+esc(PL[p]||p)+'</span><span class="s-free">空堂</span></div>';}
     }
-  });
-  h+='</div>';
-  $(containerId).innerHTML=h;
-}
+  });h+='</div>';$(cid).innerHTML=h;}
 
-/* ---- 選中課格 ---- */
-function pickSlot(side, weekday, period, dateStr, el){
-  var schedule = side==='A' ? mySchedule : (partnerSchedule||[]);
-  var lesson = schedule.find(function(t){return t.day===weekday&&t.period===period});
+function pickSlot(side,weekday,period,dateStr){
+  var schedule=side==='A'?mySchedule:(partnerSchedule||[]);
+  var lesson=schedule.find(function(t){return t.day===weekday&&t.period===period});
+  var obj={day:weekday,period:period,date:dateStr,subName:lesson?lesson.subName:'空堂',className:lesson?lesson.className:'',subId:lesson?lesson.subId:'',classId:lesson?lesson.classId:'',teaId:lesson?lesson.teaId:''};
+  if(side==='A'){if(!lesson)return;selA=obj;renderSlots('slotsA',mySchedule,weekday,'A',dateStr);}
+  else{selB=obj;renderSlots('slotsB',partnerSchedule||[],weekday,'B',dateStr);}
+  updateSummary();}
 
-  var obj = {
-    day:weekday, period:period, date:dateStr,
-    subName: lesson?lesson.subName:'空堂',
-    className: lesson?lesson.className:'',
-    subId: lesson?lesson.subId:'',
-    classId: lesson?lesson.classId:'',
-    teaId: lesson?lesson.teaId:''
-  };
-
-  if(side==='A'){
-    if(!lesson){return;} // 自己的空堂不能選
-    selA=obj;
-    renderSlots('slotsA', mySchedule, weekday, 'A', dateStr);
-  } else {
-    selB=obj;
-    renderSlots('slotsB', partnerSchedule||[], weekday, 'B', dateStr);
-  }
-  updateSummary();
-}
-
-/* ---- 摘要與衝堂警告 ---- */
 function updateSummary(){
-  var sumEl=$('summary'), warnEl=$('warnings'), btnEl=$('btnSubmit');
-  if(!sumEl) return;
-
-  if(!selA&&!selB){ sumEl.innerHTML='<div style="color:#94a3b8;font-size:13px">請先選擇雙方的課程時段</div>'; if(btnEl)btnEl.disabled=true; if(warnEl)warnEl.innerHTML=''; return; }
-
+  var se=$('summary'),we=$('warnings'),be=$('btnSubmit');if(!se)return;
+  if(!selA&&!selB){se.innerHTML='<div style="color:#94a3b8;font-size:13px">請先選擇雙方的課程時段</div>';if(be)be.disabled=true;if(we)we.innerHTML='';return;}
   var h='<div style="display:flex;gap:16px;flex-wrap:wrap;margin:8px 0">';
-  if(selA){
-    h+='<div style="flex:1;min-width:200px;background:#eff6ff;padding:12px;border-radius:8px;border-left:4px solid #2563eb">';
-    h+='<div style="font-size:12px;color:#64748b;margin-bottom:4px">我的課程</div>';
-    h+='<div style="font-weight:700">'+esc(selA.date)+' '+esc(selA.day)+' '+esc(PERIOD_LABELS[selA.period])+'</div>';
-    h+='<div style="font-size:13px;color:#475569">'+esc(selA.subName)+' — '+esc(selA.className)+'</div></div>';
-  }
-  if(selB){
-    var tid = document.getElementById('selTeacher').value;
-    var tName = ''; if(allTeachers) allTeachers.forEach(function(t){if(t.id===tid)tName=t.name});
+  if(selA){h+='<div style="flex:1;min-width:200px;background:#eff6ff;padding:12px;border-radius:8px;border-left:4px solid #2563eb">';
+    h+='<div style="font-size:12px;color:#64748b;margin-bottom:4px">我的課程</div><div style="font-weight:700">'+esc(selA.date)+' '+esc(selA.day)+' '+esc(PL[selA.period])+'</div>';
+    h+='<div style="font-size:13px;color:#475569">'+esc(selA.subName)+' — '+esc(selA.className)+'</div></div>';}
+  if(selB){var tid=document.getElementById('selTeacher').value,tn='';if(allTeachers)allTeachers.forEach(function(t){if(t.id===tid)tn=t.name});
     h+='<div style="flex:1;min-width:200px;background:#f0fdf4;padding:12px;border-radius:8px;border-left:4px solid #059669">';
-    h+='<div style="font-size:12px;color:#64748b;margin-bottom:4px">代課老師：'+esc(tName)+'</div>';
-    h+='<div style="font-weight:700">'+esc(selB.date)+' '+esc(selB.day)+' '+esc(PERIOD_LABELS[selB.period])+'</div>';
-    h+='<div style="font-size:13px;color:#475569">'+esc(selB.subName||'空堂')+(selB.className?' — '+esc(selB.className):'')+'</div></div>';
-  }
-  h+='</div>';
-  sumEl.innerHTML=h;
-
-  // 衝堂檢查
+    h+='<div style="font-size:12px;color:#64748b;margin-bottom:4px">代課老師：'+esc(tn)+'</div><div style="font-weight:700">'+esc(selB.date)+' '+esc(selB.day)+' '+esc(PL[selB.period])+'</div>';
+    h+='<div style="font-size:13px;color:#475569">'+esc(selB.subName||'空堂')+(selB.className?' — '+esc(selB.className):'')+'</div></div>';}
+  h+='</div>';se.innerHTML=h;
   var warns=[];
-  if(selA&&selB&&partnerSchedule){
-    var tidB = document.getElementById('selTeacher').value;
-    var tNameB=''; if(allTeachers) allTeachers.forEach(function(t){if(t.id===tidB)tNameB=t.name});
+  if(selA&&selB&&partnerSchedule){var tid2=document.getElementById('selTeacher').value,tn2='';if(allTeachers)allTeachers.forEach(function(t){if(t.id===tid2)tn2=t.name});
+    if(partnerSchedule.some(function(t){return t.day===selA.day&&t.period===selA.period}))warns.push(tn2+' 在 '+selA.day+PL[selA.period]+' 已有課程，可能衝堂');
+    if(selB.subName!=='空堂'&&mySchedule.some(function(t){return t.day===selB.day&&t.period===selB.period&&!(t.day===selA.day&&t.period===selA.period)}))warns.push(USER.teacher.name+' 在 '+selB.day+PL[selB.period]+' 已有其他課程，可能衝堂');}
+  if(we){we.innerHTML=warns.length>0?'<div class="warn-box"><b>⚠ 衝堂警告</b><br>'+warns.map(esc).join('<br>')+'<br><span style="font-size:12px;color:#78716c">仍可送出申請，由審核者判斷</span></div>':'';}
+  if(be)be.disabled=!(selA&&selB);}
 
-    // B 在 A 的時段有課？
-    var bBusy = partnerSchedule.some(function(t){return t.day===selA.day&&t.period===selA.period});
-    if(bBusy) warns.push(tNameB+' 在 '+selA.day+PERIOD_LABELS[selA.period]+' 已有課程，可能衝堂');
-
-    // A 在 B 的時段有課（排除 A 自己被調走的那堂）？
-    if(selB.subName!=='空堂'){
-      var aBusy = mySchedule.some(function(t){
-        return t.day===selB.day&&t.period===selB.period&&!(t.day===selA.day&&t.period===selA.period);
-      });
-      if(aBusy) warns.push(USER.teacher.name+' 在 '+selB.day+PERIOD_LABELS[selB.period]+' 已有其他課程，可能衝堂');
-    }
-  }
-  if(warnEl){
-    if(warns.length>0){
-      warnEl.innerHTML='<div class="warn-box"><b>⚠ 衝堂警告</b><br>'+warns.map(esc).join('<br>')+'<br><span style="font-size:12px;color:#78716c">仍可送出申請，由教學組審核判斷</span></div>';
-    } else { warnEl.innerHTML=''; }
-  }
-
-  if(btnEl) btnEl.disabled = !(selA&&selB);
-}
-
-/* ---- 送出申請 ---- */
 function doSubmit(){
-  if(!selA||!selB) return;
-  var reason = document.getElementById('reason').value.trim();
+  if(!selA||!selB)return;var reason=document.getElementById('reason').value.trim();
   if(!reason){alert('請填寫調課原因');return;}
-  var notified = document.getElementById('chkNotified').checked;
-  if(!notified){alert('請確認已告知代課老師');return;}
-
-  var tidB = document.getElementById('selTeacher').value;
-  var btn = document.getElementById('btnSubmit'); btn.disabled=true; btn.textContent='送出中...';
-
-  apiPost({
-    action:"submitSwap",
-    tidA:USER.teacher.id, dateA:selA.date, weekdayA:selA.day, periodA:selA.period, subNameA:selA.subName, classNameA:selA.className,
-    tidB:tidB, dateB:selB.date, weekdayB:selB.day, periodB:selB.period, subNameB:selB.subName, classNameB:selB.className,
-    reason:reason, notified:notified
-  }).then(function(r){
-    btn.disabled=false; btn.textContent='送出調課申請';
+  if(!document.getElementById('chkNotified').checked){alert('請確認已告知代課老師');return;}
+  var tidB=document.getElementById('selTeacher').value,btn=document.getElementById('btnSubmit');btn.disabled=true;btn.textContent='送出中...';
+  apiPost({action:"submitSwap",tidA:USER.teacher.id,dateA:selA.date,weekdayA:selA.day,periodA:selA.period,subNameA:selA.subName,classNameA:selA.className,
+    tidB:tidB,dateB:selB.date,weekdayB:selB.day,periodB:selB.period,subNameB:selB.subName,classNameB:selB.className,
+    reason:reason,notified:true
+  }).then(function(r){btn.disabled=false;btn.textContent='送出調課申請';
     if(r.error){alert('❌ '+r.error);return;}
-    var msg='✅ 調課申請已送出！\n序號：'+r.seqNo;
-    if(r.warnings&&r.warnings.length>0) msg+='\n\n⚠ 系統偵測到衝堂：\n'+r.warnings.join('\n');
-    alert(msg);
-    showTab('history');
-  }).catch(function(e){
-    btn.disabled=false; btn.textContent='送出調課申請';
-    alert('❌ '+e.message);
-  });
-}
+    var msg='✅ 調課申請已送出！\n序號：'+r.seqNo+'\n\n下一步：等待代課老師登入確認';
+    if(r.warnings&&r.warnings.length>0)msg+='\n\n⚠ 衝堂提醒：\n'+r.warnings.join('\n');
+    alert(msg);showTab('history');
+  }).catch(function(e){btn.disabled=false;btn.textContent='送出調課申請';alert('❌ '+e.message);});}
 
 /* ================================================================
-   申請紀錄頁
+   申請紀錄
    ================================================================ */
 function renderHistoryTab(){
-  $('app').innerHTML=mkHeader()+mkTabs('history')+'<div class="main"><div class="center-msg"><div class="spinner"></div><span>載入紀錄...</span></div></div>';
+  $('app').innerHTML=mkHeader()+mkTabs('history')+'<div class="main"><div class="center-msg"><div class="spinner"></div></div></div>';
   apiGet({action:"swapList",email:EMAIL}).then(function(r){
     if(r.error){$('app').innerHTML=mkHeader()+mkTabs('history')+'<div class="main"><div class="warn-box">'+esc(r.error)+'</div></div>';return;}
-    var mine=r.records.filter(function(x){return x.tidA===USER.teacher.id});
-    var h=mkHeader()+mkTabs('history')+'<div class="main"><div class="card"><h3>📋 我的調課申請</h3>';
-    if(mine.length===0){ h+='<div class="empty-msg">目前沒有調課申請紀錄</div>'; }
-    else {
-      h+='<div style="overflow-x:auto"><table class="record-table"><tr><th>序號</th><th>申請時間</th><th>我的課</th><th>代課老師</th><th>原因</th><th>狀態</th></tr>';
-      mine.forEach(function(r){
-        h+='<tr><td style="font-size:11px;color:#94a3b8">'+esc(r.seqNo)+'</td>';
-        h+='<td>'+esc(r.time)+'</td>';
-        h+='<td>'+esc(r.dateA)+' '+esc(r.weekdayA)+' '+esc(PERIOD_LABELS[r.periodA]||r.periodA)+'<br><span style="font-size:12px;color:#64748b">'+esc(r.subA)+' '+esc(r.classA)+'</span></td>';
-        h+='<td>'+esc(r.nameB)+'<br><span style="font-size:12px;color:#64748b">'+esc(r.dateB)+' '+esc(r.weekdayB)+' '+esc(PERIOD_LABELS[r.periodB]||r.periodB)+'</span></td>';
-        h+='<td style="max-width:120px">'+esc(r.reason)+'</td>';
-        h+='<td>'+statusBadge(r.status)+'</td></tr>';
-      });
-      h+='</table></div>';
-    }
-    h+='</div></div>';
-    $('app').innerHTML=h;
-  }).catch(function(e){
-    $('app').innerHTML=mkHeader()+mkTabs('history')+'<div class="main"><div class="warn-box">❌ '+e.message+'</div></div>';
-  });
-}
+    cachedSwapList=r;
+    var mine=r.records.filter(function(x){return x.tidA===r.myTid});
+    var pc=countPending(r);
+    var h=mkHeader()+mkTabs('history',pc)+'<div class="main"><div class="card"><h3>📋 我的調課申請</h3>';
+    if(mine.length===0){h+='<div class="empty-msg">目前沒有調課申請紀錄</div>';}
+    else{mine.forEach(function(rec){
+      h+='<div style="border:1px solid #e8ecf0;border-radius:10px;padding:14px 16px;margin-bottom:10px">';
+      h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><span style="font-weight:700;font-size:14px">'+esc(rec.subA)+' '+esc(rec.classA)+'</span>'+statusBadge(rec.status)+'</div>';
+      h+='<div style="font-size:13px;color:#475569;line-height:1.8">';
+      h+='📅 '+esc(rec.dateA)+' '+esc(rec.weekdayA)+' '+esc(PL[rec.periodA]||rec.periodA)+'<br>';
+      h+='👤 代課老師：'+esc(rec.nameB);
+      if(rec.dateB)h+=' — '+esc(rec.dateB)+' '+esc(rec.weekdayB)+' '+esc(PL[rec.periodB]||rec.periodB);
+      h+='<br>📝 '+esc(rec.reason)+'</div>';
+      h+=renderFlowBar(rec);
+      h+='</div>';});}
+    h+='</div></div>';$('app').innerHTML=h;
+  }).catch(function(e){$('app').innerHTML=mkHeader()+mkTabs('history')+'<div class="main"><div class="warn-box">❌ '+e.message+'</div></div>';});}
 
 /* ================================================================
-   審核管理頁
+   待處理（所有角色共用）
    ================================================================ */
-function renderReviewTab(){
-  $('app').innerHTML=mkHeader()+mkTabs('review')+'<div class="main"><div class="center-msg"><div class="spinner"></div><span>載入待審核項目...</span></div></div>';
+function renderPendingTab(){
+  $('app').innerHTML=mkHeader()+mkTabs('pending')+'<div class="main"><div class="center-msg"><div class="spinner"></div></div></div>';
   apiGet({action:"swapList",email:EMAIL}).then(function(r){
-    if(r.error){$('app').innerHTML=mkHeader()+mkTabs('review')+'<div class="main"><div class="warn-box">'+esc(r.error)+'</div></div>';return;}
+    if(r.error){$('app').innerHTML=mkHeader()+mkTabs('pending')+'<div class="main"><div class="warn-box">'+esc(r.error)+'</div></div>';return;}
+    cachedSwapList=r;
+    var items=getPendingItems(r);
+    var pc=items.length;
+    var h=mkHeader()+mkTabs('pending',pc)+'<div class="main">';
 
-    var pending=[];
-    if(r.isReviewer) pending=pending.concat(r.records.filter(function(x){return x.status==="待審核"}));
-    if(r.isApprover) pending=pending.concat(r.records.filter(function(x){return x.status==="組長核准"}));
-    // 去重
-    var seen={};pending=pending.filter(function(x){if(seen[x.seqNo])return false;seen[x.seqNo]=true;return true;});
+    if(items.length===0){h+='<div class="card"><div class="empty-msg">🎉 目前沒有待處理的項目</div></div>';}
+    else{items.forEach(function(item){
+      var rec=item.rec,role=item.role;
+      h+='<div class="rev-card"><div class="rev-head"><div class="rev-title">'+esc(rec.nameA)+' 的調課申請</div><div>';
+      if(role==='partner')h+='<span class="rev-role partner">需要您確認</span>';
+      else if(role==='reviewer')h+='<span class="rev-role chief">教學組審核</span>';
+      else if(role==='approver')h+='<span class="rev-role dean">主任核定</span>';
+      h+=' '+statusBadge(rec.status)+'</div></div>';
+      h+='<div class="rev-detail">';
+      h+='<b>申請人：</b>'+esc(rec.nameA)+'<br>';
+      h+='<b>調課課程：</b>'+esc(rec.dateA)+' '+esc(rec.weekdayA)+' '+esc(PL[rec.periodA]||rec.periodA)+' — '+esc(rec.subA)+' '+esc(rec.classA)+'<br>';
+      h+='<b>代課老師：</b>'+esc(rec.nameB)+'<br>';
+      if(rec.dateB)h+='<b>代課時段：</b>'+esc(rec.dateB)+' '+esc(rec.weekdayB)+' '+esc(PL[rec.periodB]||rec.periodB)+' — '+(rec.subB?esc(rec.subB)+' '+esc(rec.classB):'空堂')+'<br>';
+      h+='<b>原因：</b>'+esc(rec.reason)+'<br>';
+      h+='<b>已告知對方：</b>'+esc(rec.notified);
+      if(rec.partnerTime)h+='<br><b>對方確認：</b>'+esc(rec.partnerTime);
+      if(rec.revName)h+='<br><b>組長：</b>'+esc(rec.revName)+' ('+esc(rec.revTime)+')';
+      h+='</div>';
+      h+=renderFlowBar(rec);
+      h+='<div class="rev-actions">';
+      var aLabel=role==='partner'?'✅ 確認同意':'✅ 核准';
+      h+='<button class="btn-approve" onclick="doReview('+rec.row+',\'approve\')">'+aLabel+'</button>';
+      h+='<button class="btn-reject" onclick="doReview('+rec.row+',\'reject\')">❌ 駁回</button>';
+      h+='</div></div>';});}
 
-    var h=mkHeader()+mkTabs('review')+'<div class="main">';
-
-    if(r.isReviewer) h+='<div style="margin-bottom:8px;font-size:12px;color:#059669;font-weight:600">👤 教學組長身份</div>';
-    if(r.isApprover) h+='<div style="margin-bottom:8px;font-size:12px;color:#2563eb;font-weight:600">👤 教務主任身份</div>';
-
-    if(pending.length===0){ h+='<div class="card"><div class="empty-msg">目前沒有待審核的調課申請</div></div>'; }
-    else {
-      pending.forEach(function(rec){
-        h+='<div class="rev-card"><div class="rev-head"><div class="rev-title">'+esc(rec.nameA)+' 的調課申請</div>'+statusBadge(rec.status)+'</div>';
-        h+='<div class="rev-detail">';
-        h+='<b>申請人：</b>'+esc(rec.nameA)+'<br>';
-        h+='<b>調課課程：</b>'+esc(rec.dateA)+' '+esc(rec.weekdayA)+' '+esc(PERIOD_LABELS[rec.periodA]||rec.periodA)+' — '+esc(rec.subA)+' '+esc(rec.classA)+'<br>';
-        h+='<b>代課老師：</b>'+esc(rec.nameB)+'<br>';
-        h+='<b>代課時段：</b>'+esc(rec.dateB)+' '+esc(rec.weekdayB)+' '+esc(PERIOD_LABELS[rec.periodB]||rec.periodB)+' — '+(rec.subB?esc(rec.subB)+' '+esc(rec.classB):'空堂')+'<br>';
-        h+='<b>原因：</b>'+esc(rec.reason)+'<br>';
-        h+='<b>已告知對方：</b>'+esc(rec.notified);
-        if(rec.revName) h+='<br><b>組長審核：</b>'+esc(rec.revName)+' ('+esc(rec.revTime)+')';
-        h+='</div>';
-        h+='<div class="rev-actions">';
-        h+='<button class="btn-approve" onclick="doReview('+rec.row+',\'approve\')">✅ 核准</button>';
-        h+='<button class="btn-reject" onclick="doReview('+rec.row+',\'reject\')">❌ 駁回</button>';
-        h+='</div></div>';
-      });
-    }
-
-    // 最近已處理
-    var done=r.records.filter(function(x){return x.status==="已核准"||x.status==="已駁回"||x.status==="組長核准"});
+    // 最近已處理紀錄
+    var done=r.records.filter(function(x){return x.status==='已核准'||x.status==='已駁回'});
     if(done.length>0){
-      h+='<div class="card" style="margin-top:20px"><h3>📜 最近紀錄</h3>';
-      h+='<div style="overflow-x:auto"><table class="record-table"><tr><th>申請人</th><th>調課</th><th>代課老師</th><th>狀態</th><th>審核</th></tr>';
-      done.slice(0,20).forEach(function(rec){
-        h+='<tr><td>'+esc(rec.nameA)+'</td>';
-        h+='<td style="font-size:12px">'+esc(rec.dateA)+' '+esc(PERIOD_LABELS[rec.periodA]||rec.periodA)+'<br>'+esc(rec.subA)+'</td>';
-        h+='<td>'+esc(rec.nameB)+'</td>';
-        h+='<td>'+statusBadge(rec.status)+'</td>';
-        h+='<td style="font-size:12px">'+esc(rec.revName||'')+(rec.appName?'<br>'+esc(rec.appName):'')+'</td></tr>';
-      });
-      h+='</table></div></div>';
-    }
+      h+='<div class="card" style="margin-top:20px"><h3>📜 最近紀錄</h3><div style="overflow-x:auto"><table class="record-table">';
+      h+='<tr><th>申請人</th><th>調課</th><th>代課</th><th>狀態</th></tr>';
+      done.slice(0,15).forEach(function(rec){
+        h+='<tr><td>'+esc(rec.nameA)+'</td><td style="font-size:12px">'+esc(rec.dateA)+' '+esc(PL[rec.periodA]||rec.periodA)+'<br>'+esc(rec.subA)+'</td>';
+        h+='<td>'+esc(rec.nameB)+'</td><td>'+statusBadge(rec.status)+'</td></tr>';});
+      h+='</table></div></div>';}
+    h+='</div>';$('app').innerHTML=h;
+  }).catch(function(e){$('app').innerHTML=mkHeader()+mkTabs('pending')+'<div class="main"><div class="warn-box">❌ '+e.message+'</div></div>';});}
 
-    h+='</div>';
-    $('app').innerHTML=h;
-  }).catch(function(e){
-    $('app').innerHTML=mkHeader()+mkTabs('review')+'<div class="main"><div class="warn-box">❌ '+e.message+'</div></div>';
-  });
-}
-
-function doReview(row, decision){
-  var label = decision==='approve'?'核准':'駁回';
-  if(!confirm('確定要「'+label+'」這筆調課申請嗎？')) return;
+function doReview(row,decision){
+  var label=decision==='approve'?'核准/確認':'駁回';
+  if(!confirm('確定要「'+label+'」這筆調課申請嗎？'))return;
   apiPost({action:"reviewSwap",row:row,decision:decision,reviewerEmail:EMAIL}).then(function(r){
     if(r.error){alert('❌ '+r.error);return;}
-    alert('✅ 已'+label+'！');
-    renderReviewTab();
-  }).catch(function(e){alert('❌ '+e.message);});
-}
+    alert('✅ 已'+label+'！\n新狀態：'+r.newStatus);renderPendingTab();
+  }).catch(function(e){alert('❌ '+e.message);});}
+
+/* ---- 計算待處理項目 ---- */
+function getPendingItems(r){
+  var items=[];
+  r.records.forEach(function(rec){
+    if(rec.status==='待對方確認'&&rec.tidB===r.myTid) items.push({rec:rec,role:'partner'});
+    else if(rec.status==='待組長審核'&&r.isReviewer) items.push({rec:rec,role:'reviewer'});
+    else if(rec.status==='待主任核定'&&r.isApprover) items.push({rec:rec,role:'approver'});
+  });return items;}
+function countPending(r){return getPendingItems(r).length;}
+
+/* ---- 審核進度條 ---- */
+function renderFlowBar(rec){
+  var steps=[{label:'送出',key:'submit'},{label:'對方確認',key:'partner'},{label:'組長審核',key:'reviewer'},{label:'主任核定',key:'approver'}];
+  var statusMap={'待對方確認':1,'待組長審核':2,'待主任核定':3,'已核准':4,'已駁回':-1};
+  var level=statusMap[rec.status]||0;
+  var h='<div class="flow">';
+  steps.forEach(function(s,i){
+    if(i>0){var lnDone=level>i||(level===4);h+='<div class="flow-line'+(lnDone?' done':'')+'"></div>';}
+    var cls='';
+    if(level===-1){cls=i===0?'done':'fail';}
+    else if(i<level){cls='done';}
+    else if(i===level){cls='active';}
+    var icon=cls==='done'?'✓':(cls==='fail'?'✕':(i+1));
+    h+='<div class="flow-step"><div class="flow-dot '+cls+'">'+icon+'</div><div class="flow-label">'+s.label+'</div></div>';
+  });
+  h+='</div>';return h;}
 
 /* ---- Helpers ---- */
 function $(id){return document.getElementById(id)}
 function esc(s){var d=document.createElement('div');d.textContent=s||'';return d.innerHTML}
-function statusBadge(s){
-  var cls='st-wait';
-  if(s==='組長核准')cls='st-rev'; else if(s==='已核准')cls='st-ok'; else if(s==='已駁回')cls='st-no';
-  return '<span class="st '+cls+'">'+esc(s)+'</span>';
-}
+function statusBadge(s){var c='st-p';if(s==='待組長審核'||s==='待主任核定')c='st-r';else if(s==='已核准')c='st-ok';else if(s==='已駁回')c='st-no';
+  return'<span class="st '+c+'">'+esc(s)+'</span>';}
 </script>
 </body>
 </html>
