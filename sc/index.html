@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -28,7 +28,7 @@ body{font-family:'Noto Sans TC',-apple-system,sans-serif;background:#eef1f5;colo
 .tabs{display:flex;gap:0;max-width:1100px;margin:16px auto 0;padding:0 12px}
 .tab-btn{padding:10px 20px;background:#fff;border:1px solid #e2e8f0;border-bottom:none;border-radius:10px 10px 0 0;font-size:13px;font-weight:600;cursor:pointer;color:#64748b;font-family:inherit;transition:all .15s}
 .tab-btn.active{background:#1a365d;color:#fff;border-color:#1a365d}
-.legend{max-width:1100px;margin:12px auto 0;padding:0 16px;display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:#64748b}
+.legend{max-width:1100px;margin:12px auto 0;padding:0 16px;display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:#64748b;align-items:center}
 .legend-item{display:flex;align-items:center;gap:4px}
 .legend-dot{width:12px;height:12px;border-radius:3px;flex-shrink:0}
 .table-wrap{max-width:1100px;margin:12px auto 32px;padding:0 12px;overflow-x:auto}
@@ -38,15 +38,73 @@ table.tt td{border:1px solid #e8ecf0;padding:5px 4px;vertical-align:top;text-ali
 table.tt td.pl{background:#f7f9fb;font-weight:600;font-size:12px;color:#475569;width:12%;line-height:1.3}
 table.tt td.pl .time{font-weight:400;font-size:10px;color:#94a3b8;display:block}
 table.tt tr.brk td{background:#fefce8;height:auto;padding:6px;font-size:12px;color:#92400e;font-weight:500;text-align:center}
-.lc{padding:4px 6px;border-radius:6px;font-size:12px;margin:2px 0;text-align:center;transition:box-shadow .15s}
+.lc{padding:4px 6px;border-radius:6px;font-size:12px;margin:2px 0;text-align:center;transition:all .15s;position:relative}
 .lc .sn{font-weight:700;font-size:13px;line-height:1.3}.lc .tn{font-size:11px;color:#64748b;margin-top:1px}
+
+/* ---- 導師自己的課（不可拖曳時） ---- */
 .lc-mine{background:#dbeafe;border-left:3px solid #3b82f6}
-.lc-other{background:#f1f5f9;border-left:3px solid #94a3b8}
+
+/* ---- 可拖曳的課格：明顯的互動感 ---- */
+.lc-mine.draggable{
+  background:#93c5fd;border-left:4px solid #1d4ed8;
+  cursor:grab;box-shadow:0 1px 4px rgba(37,99,235,.2);
+}
+.lc-mine.draggable:hover{
+  background:#60a5fa;box-shadow:0 3px 10px rgba(37,99,235,.35);
+  transform:translateY(-1px);
+}
+.lc-mine.draggable .drag-hint{
+  position:absolute;right:3px;top:2px;font-size:9px;color:rgba(30,64,175,.45);
+  letter-spacing:-1px;line-height:1;pointer-events:none;
+}
+
+/* ---- 其他教師（灰，明顯對比） ---- */
+.lc-other{background:#f1f5f9;border-left:3px solid #cbd5e1}
+.lc-other .sn{font-weight:500;color:#64748b}
+
+/* ---- 資源班 / 本土語 ---- */
 .lc-res{background:#fef3c7;border-left:3px solid #f59e0b}
 .lc-loc{background:#d1fae5;border-left:3px solid #10b981}
-.lc.draggable{cursor:grab;border:2px dashed transparent}.lc.draggable:hover{border-color:#60a5fa;box-shadow:0 2px 8px rgba(59,130,246,.25)}
-.lc.dragging{opacity:.4;transform:scale(.95)}
+
+/* ---- 拖曳狀態 ---- */
+.lc.dragging{opacity:.35;transform:scale(.92)}
 td.drop-ok{background:#eff6ff!important;outline:2px dashed #3b82f6;outline-offset:-2px}
+
+/* ---- 變更過的課格：橘色標記 ---- */
+.lc-changed::before{
+  content:'';position:absolute;top:3px;left:3px;width:6px;height:6px;
+  border-radius:50%;background:#f97316;
+}
+
+/* ---- 底部操作列 ---- */
+.action-bar{
+  position:fixed;bottom:0;left:0;right:0;z-index:100;
+  background:#1e293b;padding:12px 24px;
+  display:flex;justify-content:center;align-items:center;gap:12px;
+  box-shadow:0 -4px 16px rgba(0,0,0,.25);
+  animation:slideUp .25s ease;
+}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.action-bar .change-count{color:rgba(255,255,255,.7);font-size:13px}
+.action-bar button{
+  padding:10px 24px;border:none;border-radius:8px;font-size:14px;font-weight:600;
+  cursor:pointer;font-family:inherit;transition:all .15s;
+}
+.action-bar .btn-save{background:#2563eb;color:#fff}
+.action-bar .btn-save:hover{background:#1d4ed8}
+.action-bar .btn-save:disabled{background:#64748b;cursor:not-allowed}
+.action-bar .btn-reset{background:transparent;color:#f87171;border:1px solid rgba(248,113,113,.4)}
+.action-bar .btn-reset:hover{background:rgba(248,113,113,.1)}
+
+/* ---- 調課區間提示 ---- */
+.edit-window-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:4px 12px;border-radius:16px;font-size:11px;font-weight:500;
+}
+.edit-window-badge.open{background:rgba(16,185,129,.12);color:#059669}
+.edit-window-badge.closed{background:rgba(239,68,68,.1);color:#dc2626}
+
+/* ---- Dashboard ---- */
 .dash-content{max-width:1100px;margin:16px auto 32px;padding:0 16px}
 .role-section{margin-bottom:24px}
 .role-title{font-size:14px;font-weight:700;color:#1a365d;margin-bottom:10px;padding-bottom:6px;border-bottom:2px solid #e2e8f0}
@@ -62,18 +120,14 @@ td.drop-ok{background:#eff6ff!important;outline:2px dashed #3b82f6;outline-offse
 .center-msg.err{color:#dc2626}
 .spinner{width:36px;height:36px;border:3px solid #e2e8f0;border-top-color:#3b82f6;border-radius:50%;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-@media(max-width:640px){.login-card{padding:28px 24px}.tea-card{min-width:90px;padding:8px 10px}.tea-card .tc-name{font-size:13px}}
+@media(max-width:640px){.login-card{padding:28px 24px}.tea-card{min-width:90px;padding:8px 10px}.tea-card .tc-name{font-size:13px}.action-bar{padding:10px 12px}.action-bar button{padding:8px 16px;font-size:13px}}
 </style>
 </head>
 <body>
 <div id="app"></div>
 <script>
-/* ============================================================
-   ⭐ 請將這裡替換成您的 GAS Web App 部署 URL
-   ============================================================ */
-var API_URL = 'https://script.google.com/a/macros/yes.tyc.edu.tw/s/AKfycbzJL3e9ofFRMuvCOwHVnYEVhsiY8GNkhU3p7MvvEH14-a4AoxXxt0ZYAXxWiQGWnkpJ/exec';
-
-var USER=null,scheduleData=null,dashTeachers=null,dashViewingId=null,dragSrc=null;
+var USER=null,scheduleData=null,originalTimetable=null,hasChanges=false,canEditSchedule=false;
+var dashTeachers=null,dashViewingId=null,dragSrc=null;
 var DAYS=["星期一","星期二","星期三","星期四","星期五"];
 var FRAME=[
   {id:"M",label:"晨間/早會",type:"break",time:"07:55 - 08:35"},
@@ -86,16 +140,6 @@ var FRAME=[
   {id:"6",label:"第六節",type:"class",time:"14:00 - 14:40"},
   {id:"7",label:"第七節",type:"class",time:"14:50 - 15:30"}
 ];
-
-/* ---- API 呼叫封裝 ---- */
-function apiGet(params){
-  var qs=Object.keys(params).map(function(k){return k+'='+encodeURIComponent(params[k])}).join('&');
-  return fetch(API_URL+'?'+qs,{redirect:'follow'}).then(function(r){return r.json()});
-}
-function apiPost(data){
-  return fetch(API_URL,{method:'POST',redirect:'follow',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(data)}).then(function(r){return r.json()});
-}
-
 renderLogin();
 
 /* ---- Login ---- */
@@ -113,14 +157,16 @@ function doLogin(){
   if(!email){document.getElementById('loginErr').textContent='請輸入電子郵件';return;}
   var btn=document.getElementById('btnLogin');btn.disabled=true;btn.textContent='驗證中...';
   document.getElementById('loginErr').textContent='';
-  apiGet({action:'verify',email:email}).then(function(r){
+  google.script.run.withSuccessHandler(function(r){
     btn.disabled=false;btn.textContent='登入';
     if(r.error){document.getElementById('loginErr').textContent=r.error;return;}
-    USER=r;try{localStorage.setItem('subSysEmail',email)}catch(e){}
+    USER=r;
+    canEditSchedule=r.editWindow?r.editWindow.canEdit:true;
+    try{localStorage.setItem('subSysEmail',email)}catch(e){}
     if(USER.isDashboard)showDashboard();else showSchedule();
-  }).catch(function(e){btn.disabled=false;btn.textContent='登入';document.getElementById('loginErr').textContent='連線錯誤：'+e;});
+  }).withFailureHandler(function(e){btn.disabled=false;btn.textContent='登入';document.getElementById('loginErr').textContent='連線錯誤：'+e;}).verifyLogin(email);
 }
-function logout(){USER=null;scheduleData=null;dashTeachers=null;dashViewingId=null;renderLogin();}
+function logout(){USER=null;scheduleData=null;originalTimetable=null;hasChanges=false;dashTeachers=null;dashViewingId=null;renderLogin();}
 
 /* ---- Header ---- */
 function mkHeader(tab){
@@ -142,65 +188,196 @@ function mkHeader(tab){
 function showSchedule(){
   $('app').innerHTML=mkHeader('sched')+'<div class="center-msg"><div class="spinner"></div><span>載入課表...</span></div>';
   var mode=USER.isHomeroom?'homeroom':'personal';
-  apiGet({action:'schedule',tid:USER.teacher.id,mode:mode,cid:USER.homeroomClassId||''}).then(function(data){
-    scheduleData=data;renderSchedule(USER.teacher.id,USER.isHomeroom,true);
-  }).catch(function(e){$('app').innerHTML=mkHeader('sched')+'<div class="center-msg err">❌ '+e+'</div>';});
+  google.script.run.withSuccessHandler(function(data){
+    scheduleData=data;
+    originalTimetable=JSON.parse(JSON.stringify(data.timetable));
+    hasChanges=false;
+    renderSchedule(USER.teacher.id,USER.isHomeroom,true);
+  }).withFailureHandler(function(e){$('app').innerHTML=mkHeader('sched')+'<div class="center-msg err">❌ '+e+'</div>';
+  }).getScheduleForTeacher(USER.teacher.id,mode,USER.homeroomClassId);
 }
 
 function renderSchedule(viewTid,canDrag,isMyView){
-  var d=scheduleData;var h=mkHeader(isMyView?'sched':'dash');
+  var d=scheduleData;
+  var h=mkHeader(isMyView?'sched':'dash');
   var isHRView=d.homeroomClassId&&d.homeroomClassId!=="";
+
+  // Dashboard cards (when viewing another teacher)
   if(!isMyView&&dashTeachers){
     h+=renderDashCards();
     var tObj=dashTeachers.teachers.find(function(x){return x.id===viewTid});
     h+='<div class="dash-content"><div class="dash-tt-title">📋 '+(tObj?esc(tObj.name):'')+(tObj&&tObj.className?' — '+esc(tObj.className):'')+'　的課表</div></div>';
   }
+
+  // 調課區間提示（僅導師自己的課表頁）
+  var allowDrag=canDrag&&isMyView&&canEditSchedule;
+  if(isMyView&&USER.isHomeroom&&USER.editWindow){
+    var ew=USER.editWindow;
+    if(ew.canEdit){
+      h+='<div style="max-width:1100px;margin:10px auto 0;padding:0 16px"><span class="edit-window-badge open">🟢 '+esc(ew.message)+'</span></div>';
+    } else if(ew.start){
+      h+='<div style="max-width:1100px;margin:10px auto 0;padding:0 16px"><span class="edit-window-badge closed">🔒 '+esc(ew.message)+'</span></div>';
+    }
+  }
+
+  // Legend
   h+='<div class="legend">';
-  if(isMyView&&canDrag) h+=lgnd('#dbeafe','#3b82f6','您的授課（可拖曳交換）')+lgnd('#f1f5f9','#94a3b8','科任/其他教師')+lgnd('#fef3c7','#f59e0b','資源班')+lgnd('#d1fae5','#10b981','本土語');
-  else if(isMyView&&!USER.isHomeroom) h+=lgnd('#dbeafe','#3b82f6','您的授課');
-  else h+=lgnd('#dbeafe','#3b82f6','該師授課')+lgnd('#f1f5f9','#94a3b8','其他教師')+lgnd('#fef3c7','#f59e0b','資源班');
+  if(isMyView&&allowDrag){
+    h+=lgnd('#93c5fd','#1d4ed8','您的授課（可拖曳交換）')+lgnd('#f1f5f9','#cbd5e1','科任/其他教師')+lgnd('#fef3c7','#f59e0b','資源班（他師）')+lgnd('#d1fae5','#10b981','本土語（他師）');
+  } else if(isMyView&&USER.isHomeroom&&!canEditSchedule){
+    h+=lgnd('#dbeafe','#3b82f6','您的授課')+lgnd('#f1f5f9','#cbd5e1','科任/其他教師')+lgnd('#fef3c7','#f59e0b','資源班')+lgnd('#d1fae5','#10b981','本土語');
+  } else if(isMyView&&!USER.isHomeroom){
+    h+=lgnd('#dbeafe','#3b82f6','您的授課');
+  } else {
+    h+=lgnd('#dbeafe','#3b82f6','該師授課')+lgnd('#f1f5f9','#cbd5e1','其他教師')+lgnd('#fef3c7','#f59e0b','資源班');
+  }
   if(isMyView&&USER.isHomeroom) h+='<div style="margin-left:auto;font-weight:600;color:#1a365d">'+esc(USER.homeroomClassName)+' 班級課表</div>';
   else if(isMyView) h+='<div style="margin-left:auto;font-weight:600;color:#1a365d">個人一週課表</div>';
   h+='</div>';
+
+  // Timetable grid
   h+='<div class="table-wrap"><table class="tt"><tr><th style="width:12%">節次</th>';
   DAYS.forEach(function(day){h+='<th>'+day+'</th>'});h+='</tr>';
-  var allowDrop=canDrag&&isMyView;
+
   FRAME.forEach(function(f){
     if(f.type==='break'){h+='<tr class="brk"><td colspan="6">'+f.label+'　'+f.time+'</td></tr>';return;}
     h+='<tr><td class="pl">'+f.label+'<span class="time">'+f.time+'</span></td>';
     DAYS.forEach(function(day){
       var entries=d.timetable.filter(function(t){return t.day===day&&t.period===f.id});
-      var drp=allowDrop?' ondragover="onOver(event)" ondrop="onDrop(event,\''+day+'\',\''+f.id+'\')" ondragleave="onLeave(event)"':'';
+      var drp=allowDrag?' ondragover="onOver(event)" ondrop="onDrop(event,\''+day+'\',\''+f.id+'\')" ondragleave="onLeave(event)"':'';
       h+='<td'+drp+'>';
       entries.forEach(function(e){
-        var mine=e.teaId===viewTid,res=isRes(e),loc=isLoc(e);
-        var cls='lc'+(res?' lc-res':mine?' lc-mine':loc?' lc-loc':' lc-other');
-        var doDrag=allowDrop&&mine&&!res;if(doDrag)cls+=' draggable';
+        var mine=e.teaId===viewTid, res=isRes(e), loc=isLoc(e);
+
+        // 自己的課優先顯示為 lc-mine，不管是否資源/本土
+        var cls='lc';
+        var doDrag=allowDrag&&mine;
+        if(mine){
+          cls+=' lc-mine';
+          if(doDrag) cls+=' draggable';
+        } else if(res){
+          cls+=' lc-res';
+        } else if(loc){
+          cls+=' lc-loc';
+        } else {
+          cls+=' lc-other';
+        }
+
+        // 標記已變更的課格
+        if(mine&&isChanged(day,f.id,viewTid,e)) cls+=' lc-changed';
+
         var da=doDrag?' draggable="true" ondragstart="onStart(event,\''+day+'\',\''+f.id+'\')" ondragend="onEnd(event)"':'';
         h+='<div class="'+cls+'"'+da+'>';
-        if(isHRView){h+='<div class="sn">'+esc(e.subName)+'</div>';if(!mine||res)h+='<div class="tn">'+esc(e.teaName)+'</div>';}
-        else{h+='<div class="sn">'+esc(e.className)+'</div>';h+='<div class="tn">'+esc(e.subName)+'</div>';}
-        h+='</div>';});
-      h+='</td>';});h+='</tr>';
+        if(doDrag) h+='<span class="drag-hint">⋮⋮</span>';
+        if(isHRView){
+          h+='<div class="sn">'+esc(e.subName)+'</div>';
+          if(!mine||res)h+='<div class="tn">'+esc(e.teaName)+'</div>';
+        } else {
+          h+='<div class="sn">'+esc(e.className)+'</div>';
+          h+='<div class="tn">'+esc(e.subName)+'</div>';
+        }
+        h+='</div>';
+      });
+      h+='</td>';
+    });h+='</tr>';
   });
-  h+='</table></div>';$('app').innerHTML=h;
+  h+='</table></div>';
+
+  // Action bar (when there are unsaved changes)
+  if(isMyView&&hasChanges){
+    var cnt=countChanges();
+    h+='<div class="action-bar">';
+    h+='<span class="change-count">已變更 '+cnt+' 個時段</span>';
+    h+='<button class="btn-reset" onclick="doReset()">↩ 復原</button>';
+    h+='<button class="btn-save" id="btnSave" onclick="doSave()">💾 儲存變更</button>';
+    h+='</div>';
+  }
+
+  $('app').innerHTML=h;
+}
+
+/* ---- 檢查某課格是否已變更 ---- */
+function isChanged(day,period,teaId,entry){
+  if(!originalTimetable) return false;
+  var orig=originalTimetable.find(function(o){
+    return o.day===day&&o.period===period&&o.teaId===teaId&&o.classId===entry.classId;
+  });
+  if(!orig) return false;
+  return orig.subId!==entry.subId||orig.roomId!==entry.roomId;
+}
+function countChanges(){
+  if(!originalTimetable||!scheduleData) return 0;
+  var n=0;
+  scheduleData.timetable.forEach(function(c,i){
+    if(c.teaId===USER.teacher.id){
+      var o=originalTimetable.find(function(x){return x.day===c.day&&x.period===c.period&&x.teaId===c.teaId&&x.classId===c.classId});
+      if(o&&(o.subId!==c.subId||o.roomId!==c.roomId)) n++;
+    }
+  });
+  return n;
+}
+
+/* ---- 儲存變更 ---- */
+function doSave(){
+  var changes=[];
+  scheduleData.timetable.forEach(function(c){
+    if(c.teaId!==USER.teacher.id) return;
+    var o=originalTimetable.find(function(x){return x.day===c.day&&x.period===c.period&&x.teaId===c.teaId&&x.classId===c.classId});
+    if(o&&(o.subId!==c.subId||o.roomId!==c.roomId)){
+      changes.push({day:c.day,period:c.period,subId:c.subId,roomId:c.roomId||""});
+    }
+  });
+  if(changes.length===0) return;
+
+  var btn=document.getElementById('btnSave');
+  if(btn){btn.disabled=true;btn.textContent='儲存中...';}
+
+  google.script.run.withSuccessHandler(function(r){
+    if(r.error){
+      alert('❌ '+r.error);
+      if(btn){btn.disabled=false;btn.textContent='💾 儲存變更';}
+      return;
+    }
+    originalTimetable=JSON.parse(JSON.stringify(scheduleData.timetable));
+    hasChanges=false;
+    dashTeachers=null; // 清除 dashboard 快取
+    renderSchedule(USER.teacher.id,USER.isHomeroom,true);
+    alert('✅ 課表變更已儲存！');
+  }).withFailureHandler(function(e){
+    alert('❌ 儲存失敗：'+e);
+    if(btn){btn.disabled=false;btn.textContent='💾 儲存變更';}
+  }).batchUpdateLessons(USER.teacher.id,USER.homeroomClassId,changes);
+}
+
+/* ---- 復原 ---- */
+function doReset(){
+  if(!confirm('確定要復原所有變更嗎？\n課表將回到上次儲存的狀態。')) return;
+  scheduleData.timetable=JSON.parse(JSON.stringify(originalTimetable));
+  hasChanges=false;
+  renderSchedule(USER.teacher.id,USER.isHomeroom,true);
 }
 
 /* ---- Dashboard ---- */
 function showDashboard(){
   if(dashTeachers){renderDashboard();return;}
   $('app').innerHTML=mkHeader('dash')+'<div class="center-msg"><div class="spinner"></div><span>載入教師列表...</span></div>';
-  apiGet({action:'dashboard'}).then(function(data){dashTeachers=data;renderDashboard();})
-  .catch(function(e){$('app').innerHTML=mkHeader('dash')+'<div class="center-msg err">❌ '+e+'</div>';});
+  google.script.run.withSuccessHandler(function(data){dashTeachers=data;renderDashboard();})
+  .withFailureHandler(function(e){$('app').innerHTML=mkHeader('dash')+'<div class="center-msg err">❌ '+e+'</div>';})
+  .getDashboardTeachers();
 }
+
 function renderDashboard(){
   var h=mkHeader('dash')+renderDashCards();
-  if(!dashViewingId) h+='<div class="dash-content" style="text-align:center;color:#94a3b8;padding:40px;font-size:14px">👆 點擊任一教師查看完整課表</div>';
+  if(!dashViewingId){
+    h+='<div class="dash-content" style="text-align:center;color:#94a3b8;padding:40px;font-size:14px">👆 點擊任一教師查看完整課表</div>';
+  }
   $('app').innerHTML=h;
   if(dashViewingId) loadDashSchedule(dashViewingId);
 }
+
 function renderDashCards(){
-  var h='<div class="dash-content">';var groups={};
+  var h='<div class="dash-content">';
+  var groups={};
   dashTeachers.teachers.forEach(function(t){var r=t.role||'其他';if(!groups[r])groups[r]=[];groups[r].push(t);});
   var order=["導師","行政","科任","特教","教支","外籍"];
   for(var r in groups){if(order.indexOf(r)===-1)order.push(r);}
@@ -212,46 +389,58 @@ function renderDashCards(){
       h+='<div class="tea-card'+(v?' viewing':'')+'" onclick="clickTeaCard(\''+t.id+'\')">';
       h+='<div class="tc-name">'+esc(t.name)+'</div>';
       if(t.className)h+='<div class="tc-class">'+esc(t.className)+'</div>';
-      h+='<div class="tc-count">'+t.total+' 節</div></div>';});
-    h+='</div></div>';});
+      h+='<div class="tc-count">'+t.total+' 節</div></div>';
+    });
+    h+='</div></div>';
+  });
   return h+'</div>';
 }
+
 function clickTeaCard(tid){
   dashViewingId=tid;
   var h=mkHeader('dash')+renderDashCards();
   var t=dashTeachers.teachers.find(function(x){return x.id===tid});
   h+='<div class="dash-content"><div class="dash-tt-title">📋 '+esc(t?t.name:'')+(t&&t.className?' — '+esc(t.className):'')+'　的課表</div></div>';
   h+='<div class="center-msg" style="min-height:200px"><div class="spinner"></div></div>';
-  $('app').innerHTML=h;loadDashSchedule(tid);
+  $('app').innerHTML=h;
+  loadDashSchedule(tid);
 }
+
 function loadDashSchedule(tid){
   var t=dashTeachers.teachers.find(function(x){return x.id===tid});
   var isHR=t&&t.role.indexOf("導師")!==-1;
-  apiGet({action:'schedule',tid:tid,mode:isHR?'homeroom':'personal',cid:''}).then(function(data){
+  var mode=isHR?'homeroom':'personal';
+  google.script.run.withSuccessHandler(function(data){
     scheduleData=data;renderSchedule(tid,false,false);
-  }).catch(function(e){$('app').innerHTML=mkHeader('dash')+'<div class="center-msg err">❌ '+e+'</div>';});
+  }).withFailureHandler(function(e){$('app').innerHTML=mkHeader('dash')+'<div class="center-msg err">❌ '+e+'</div>';})
+  .getScheduleForTeacher(tid,mode,'');
 }
 
-/* ---- Drag & Drop ---- */
-function onStart(e,day,p){dragSrc={day:day,period:p};e.target.classList.add('dragging');e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain','x');}
-function onEnd(e){e.target.classList.remove('dragging');dragSrc=null;document.querySelectorAll('.drop-ok').forEach(function(el){el.classList.remove('drop-ok')})}
+/* ---- Drag & Drop（本地交換，不立即存檔） ---- */
+function onStart(e,day,p){dragSrc={day:day,period:p};e.target.closest('.lc').classList.add('dragging');e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain','x');}
+function onEnd(e){var el=e.target.closest('.lc');if(el)el.classList.remove('dragging');dragSrc=null;document.querySelectorAll('.drop-ok').forEach(function(el){el.classList.remove('drop-ok')})}
 function onOver(e){e.preventDefault();if(dragSrc)e.currentTarget.classList.add('drop-ok');e.dataTransfer.dropEffect='move';}
 function onLeave(e){e.currentTarget.classList.remove('drop-ok')}
 function onDrop(e,tDay,tPer){
   e.preventDefault();e.currentTarget.classList.remove('drop-ok');
   if(!dragSrc)return;if(dragSrc.day===tDay&&dragSrc.period===tPer)return;
+
   var d=scheduleData;
-  var src=d.timetable.find(function(t){return t.day===dragSrc.day&&t.period===dragSrc.period&&t.teaId===USER.teacher.id&&!isRes(t)});
-  var tgt=d.timetable.find(function(t){return t.day===tDay&&t.period===tPer&&t.teaId===USER.teacher.id&&!isRes(t)});
+  var src=d.timetable.find(function(t){return t.day===dragSrc.day&&t.period===dragSrc.period&&t.teaId===USER.teacher.id});
+  var tgt=d.timetable.find(function(t){return t.day===tDay&&t.period===tPer&&t.teaId===USER.teacher.id});
+
   if(!src){alert('找不到來源課程');return;}
   if(!tgt){alert('目標時段沒有您的課程。\n只能與您自己的其他課程交換。');return;}
   if(src.subId===tgt.subId){alert('兩堂課是同一科目，不需要交換。');return;}
-  if(!confirm('確定要交換嗎？\n\n📘 '+dragSrc.day+' '+pLabel(dragSrc.period)+'「'+src.subName+'」\n↕\n📙 '+tDay+' '+pLabel(tPer)+'「'+tgt.subName+'」'))return;
-  $('app').innerHTML=mkHeader('sched')+'<div class="center-msg"><div class="spinner"></div><span>交換中...</span></div>';
-  apiPost({action:'swap',teacherId:USER.teacher.id,classId:USER.homeroomClassId,dayA:dragSrc.day,periodA:dragSrc.period,dayB:tDay,periodB:tPer}).then(function(r){
-    if(r.error){alert('❌ '+r.error);showSchedule();return;}
-    dashTeachers=null;showSchedule();setTimeout(function(){alert('✅ 交換成功！\n\n'+src.subName+' ↔ '+tgt.subName)},200);
-  }).catch(function(e){alert('❌ '+e);showSchedule();});
+
+  // 本地交換科目與教室
+  var tmpSub=src.subId, tmpSubN=src.subName, tmpRoom=src.roomId;
+  src.subId=tgt.subId; src.subName=tgt.subName; src.roomId=tgt.roomId;
+  tgt.subId=tmpSub; tgt.subName=tmpSubN; tgt.roomId=tmpRoom;
+
+  hasChanges=countChanges()>0;
+  dragSrc=null;
+  renderSchedule(USER.teacher.id,USER.isHomeroom,true);
 }
 
 /* ---- Helpers ---- */
