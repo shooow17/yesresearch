@@ -292,11 +292,11 @@ function renderSchedule(viewTid,canDrag,isMyView){
             h+='<div class="tn">'+esc(e.teaName)+'</div>';
             if(e.className)h+='<div class="tn" style="font-size:11px;color:#9ca3af">'+esc(e.className)+'</div>';
           }
-          if(e.roomName)h+='<div class="tn" style="font-size:10px;color:#2563eb">'+esc(e.roomName+'</div>';
+          if(e.roomName)h+='<div class="tn" style="font-size:10px;color:#2563eb">'+esc(e.roomName)+'</div>';
         } else {
           h+='<div class="sn">'+esc(e.className)+'</div>';
           h+='<div class="tn">'+esc(e.subName)+'</div>';
-          if(e.roomName)h+='<div class="tn" style="font-size:10px;color:#2563eb">'+esc(e.roomName+'</div>';
+          if(e.roomName)h+='<div class="tn" style="font-size:10px;color:#2563eb">'+esc(e.roomName)+'</div>';
         }
         h+='</div>';
       });
@@ -596,7 +596,7 @@ function openPrintPage(role,results){
             html+='<div class="cell-sub">'+esc(e.subName)+'</div>';
             if(isHR&&e.teaId!==t.id) html+='<div class="cell-info">'+esc(e.teaName)+'</div>';
             if(!isHR) html+='<div class="cell-info">'+esc(e.className)+'</div>';
-            if(e.roomName) html+='<div class="cell-room">'+esc(e.roomName+'</div>';
+            if(e.roomName) html+='<div class="cell-room">'+esc(e.roomName)+'</div>';
           });
         } else {
           html+='<div class="cell-empty"></div>';
