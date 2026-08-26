@@ -28,9 +28,9 @@ body{font-family:'Noto Sans TC',-apple-system,sans-serif;background:#eef1f5;colo
 .tabs{display:flex;gap:0;max-width:1100px;margin:16px auto 0;padding:0 12px}
 .tab-btn{padding:10px 20px;background:#fff;border:1px solid #e2e8f0;border-bottom:none;border-radius:10px 10px 0 0;font-size:13px;font-weight:600;cursor:pointer;color:#64748b;font-family:inherit;transition:all .15s}
 .tab-btn.active{background:#1a365d;color:#fff;border-color:#1a365d}
-.legend{max-width:1400px;margin:14px auto 0;padding:0 16px;display:flex;gap:16px;flex-wrap:wrap;font-size:14px;color:#64748b;align-items:center}
-.legend-item{display:flex;align-items:center;gap:4px}
-.legend-dot{width:12px;height:12px;border-radius:3px;flex-shrink:0}
+.legend{max-width:1400px;margin:16px auto 0;padding:0 20px;display:flex;gap:24px;flex-wrap:wrap;font-size:20px;color:#64748b;align-items:center}
+.legend-item{display:flex;align-items:center;gap:8px}
+.legend-dot{width:20px;height:20px;border-radius:4px;flex-shrink:0}
 .table-wrap{max-width:1400px;margin:16px auto 40px;padding:0 12px;overflow-x:auto}
 table.tt{width:100%;border-collapse:separate;border-spacing:0;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 1px 6px rgba(0,0,0,.08)}
 table.tt th{background:#1e3a5f;color:#fff;padding:14px 8px;font-size:18px;font-weight:600;text-align:center}
@@ -60,7 +60,7 @@ td.drop-ok{background:#eff6ff!important;outline:2px dashed #3b82f6;outline-offse
 .action-bar .btn-save:disabled{background:#64748b;cursor:not-allowed}
 .action-bar .btn-reset{background:transparent;color:#f87171;border:1px solid rgba(248,113,113,.4)}
 .action-bar .btn-reset:hover{background:rgba(248,113,113,.1)}
-.edit-window-badge{display:inline-flex;align-items:center;gap:4px;padding:4px 12px;border-radius:16px;font-size:11px;font-weight:500}
+.edit-window-badge{display:inline-flex;align-items:center;gap:6px;padding:8px 20px;border-radius:20px;font-size:18px;font-weight:600}
 .edit-window-badge.open{background:rgba(16,185,129,.12);color:#059669}
 .edit-window-badge.closed{background:rgba(239,68,68,.1);color:#dc2626}
 .dash-content{max-width:1100px;margin:16px auto 32px;padding:0 16px}
@@ -92,7 +92,7 @@ td.drop-ok{background:#eff6ff!important;outline:2px dashed #3b82f6;outline-offse
    ============================================================ */
 var API_URL = "https://script.google.com/macros/s/AKfycbzJL3e9ofFRMuvCOwHVnYEVhsiY8GNkhU3p7MvvEH14-a4AoxXxt0ZYAXxWiQGWnkpJ/exec";
 
-var USER=null,scheduleData=null,originalTimetable=null,hasChanges=false,canEditSchedule=false;
+var USER=null,EMAIL="",scheduleData=null,originalTimetable=null,hasChanges=false,canEditSchedule=false,dashDragMode=false;
 var dashTeachers=null,dashViewingId=null,dragSrc=null;
 var DAYS=["星期一","星期二","星期三","星期四","星期五"];
 var FRAME=[
@@ -137,7 +137,7 @@ function doLogin(){
   apiGet({action:"verify",email:email}).then(function(r){
     btn.disabled=false;btn.textContent='登入';
     if(r.error){document.getElementById('loginErr').textContent=r.error;return;}
-    USER=r;canEditSchedule=r.editWindow?r.editWindow.canEdit:true;
+    USER=r;EMAIL=email.toLowerCase();canEditSchedule=r.editWindow?r.editWindow.canEdit:true;
     try{localStorage.setItem('subSysEmail',email)}catch(e){}
     if(USER.isDashboard)showDashboard();else showSchedule();
   }).catch(function(e){
@@ -165,6 +165,7 @@ function mkHeader(tab){
 
 /* ---- My Schedule ---- */
 function showSchedule(){
+  dashDragMode=false;
   $('app').innerHTML=mkHeader('sched')+'<div class="center-msg"><div class="spinner"></div><span>載入課表...</span></div>';
   var mode=USER.isHomeroom?'homeroom':'personal';
   apiGet({action:"schedule",tid:USER.teacher.id,mode:mode,cid:USER.homeroomClassId||""}).then(function(data){
@@ -188,7 +189,8 @@ function renderSchedule(viewTid,canDrag,isMyView){
     h+='<div class="dash-content"><div class="dash-tt-title">📋 '+(tObj?esc(tObj.name):'')+(tObj&&tObj.className?' — '+esc(tObj.className):'')+'　的課表</div></div>';
   }
 
-  var allowDrag=canDrag&&isMyView&&canEditSchedule;
+  var isDashDrag=dashDragMode&&!isMyView&&isHRView;
+  var allowDrag=(canDrag&&isMyView&&canEditSchedule)||isDashDrag;
 
   if(isMyView&&USER.isHomeroom&&USER.editWindow){
     var ew=USER.editWindow;
@@ -226,12 +228,12 @@ function renderSchedule(viewTid,canDrag,isMyView){
       entries.forEach(function(e){
         var mine=e.teaId===viewTid, res=isRes(e), loc=isLoc(e);
         var cls='lc';
-        var doDrag=allowDrag&&mine;
+        var doDrag=isDashDrag?true:(allowDrag&&mine);
         if(mine){cls+=' lc-mine';if(doDrag)cls+=' draggable';}
-        else if(res){cls+=' lc-res';}
-        else if(loc){cls+=' lc-loc';}
-        else{cls+=' lc-other';}
-        if(mine&&isChanged(day,f.id,viewTid,e)) cls+=' lc-changed';
+        else if(res){cls+=' lc-res';if(isDashDrag)cls+=' draggable';}
+        else if(loc){cls+=' lc-loc';if(isDashDrag)cls+=' draggable';}
+        else{cls+=' lc-other';if(isDashDrag)cls+=' draggable';}
+        if((mine||isDashDrag)&&isChanged(day,f.id,viewTid,e)) cls+=' lc-changed';
         var da=doDrag?' draggable="true" ondragstart="onStart(event,\''+day+'\',\''+f.id+'\')" ondragend="onEnd(event)"':'';
         h+='<div class="'+cls+'"'+da+'>';
         if(doDrag) h+='<span class="drag-hint">⋮⋮</span>';
@@ -249,12 +251,14 @@ function renderSchedule(viewTid,canDrag,isMyView){
   });
   h+='</table></div>';
 
-  if(isMyView&&hasChanges){
+  if((isMyView||isDashDrag)&&hasChanges){
     var cnt=countChanges();
+    var saveFn=isDashDrag?'doDashSave()':'doSave()';
+    var resetFn=isDashDrag?'doDashReset()':'doReset()';
     h+='<div class="action-bar">';
     h+='<span class="change-count">已變更 '+cnt+' 個時段</span>';
-    h+='<button class="btn-reset" onclick="doReset()">↩ 復原</button>';
-    h+='<button class="btn-save" id="btnSave" onclick="doSave()">💾 儲存變更</button>';
+    h+='<button class="btn-reset" onclick="'+resetFn+'">↩ 復原</button>';
+    h+='<button class="btn-save" id="btnSave" onclick="'+saveFn+'">💾 儲存變更</button>';
     h+='</div>';
   }
   $('app').innerHTML=h;
@@ -263,16 +267,25 @@ function renderSchedule(viewTid,canDrag,isMyView){
 /* ---- 變更檢查 ---- */
 function isChanged(day,period,teaId,entry){
   if(!originalTimetable) return false;
+  if(dashDragMode){
+    var orig=originalTimetable.find(function(o){return o.day===day&&o.period===period&&o.classId===entry.classId});
+    return orig?(orig.subId!==entry.subId||orig.teaId!==entry.teaId):false;
+  }
   var orig=originalTimetable.find(function(o){return o.day===day&&o.period===period&&o.teaId===teaId&&o.classId===entry.classId});
-  return orig?(orig.subId!==entry.subId||orig.roomId!==entry.roomId):false;
+  return orig?(orig.subId!==entry.subId):false;
 }
 function countChanges(){
   if(!originalTimetable||!scheduleData) return 0;
   var n=0;
   scheduleData.timetable.forEach(function(c){
-    if(c.teaId===USER.teacher.id){
-      var o=originalTimetable.find(function(x){return x.day===c.day&&x.period===c.period&&x.teaId===c.teaId&&x.classId===c.classId});
-      if(o&&(o.subId!==c.subId||o.roomId!==c.roomId)) n++;
+    if(dashDragMode){
+      var o=originalTimetable.find(function(x){return x.day===c.day&&x.period===c.period&&x.classId===c.classId});
+      if(o&&(o.subId!==c.subId||o.teaId!==c.teaId)) n++;
+    } else {
+      if(c.teaId===USER.teacher.id){
+        var o=originalTimetable.find(function(x){return x.day===c.day&&x.period===c.period&&x.teaId===c.teaId&&x.classId===c.classId});
+        if(o&&o.subId!==c.subId) n++;
+      }
     }
   });
   return n;
@@ -309,6 +322,31 @@ function doReset(){
   scheduleData.timetable=JSON.parse(JSON.stringify(originalTimetable));
   hasChanges=false;
   renderSchedule(USER.teacher.id,USER.isHomeroom,true);
+}
+
+/* ---- Dashboard 儲存/復原 ---- */
+function doDashSave(){
+  var changes=[];
+  scheduleData.timetable.forEach(function(c){
+    var o=originalTimetable.find(function(x){return x.day===c.day&&x.period===c.period&&x.classId===c.classId});
+    if(o&&(o.subId!==c.subId||o.teaId!==c.teaId)){
+      changes.push({day:c.day,period:c.period,subId:c.subId,teaId:c.teaId});
+    }
+  });
+  if(changes.length===0)return;
+  var classId=scheduleData.homeroomClassId;
+  var btn=document.getElementById('btnSave');if(btn){btn.disabled=true;btn.textContent='儲存中...';}
+  apiPost({action:"dashboardUpdate",email:EMAIL,classId:classId,changes:changes}).then(function(r){
+    if(r.error){alert('❌ '+r.error);if(btn){btn.disabled=false;btn.textContent='💾 儲存變更';}return;}
+    originalTimetable=JSON.parse(JSON.stringify(scheduleData.timetable));
+    hasChanges=false;renderSchedule(dashViewingId,false,false);
+    alert('✅ 課表變更已儲存！');
+  }).catch(function(e){alert('❌ 儲存失敗：'+e.message);if(btn){btn.disabled=false;btn.textContent='💾 儲存變更';}});
+}
+function doDashReset(){
+  if(!confirm('確定要復原所有變更嗎？')) return;
+  scheduleData.timetable=JSON.parse(JSON.stringify(originalTimetable));
+  hasChanges=false;renderSchedule(dashViewingId,false,false);
 }
 
 /* ---- Dashboard ---- */
@@ -365,7 +403,11 @@ function loadDashSchedule(tid){
   var isHR=t&&t.role.indexOf("導師")!==-1;
   var mode=isHR?'homeroom':'personal';
   apiGet({action:"schedule",tid:tid,mode:mode,cid:""}).then(function(data){
-    scheduleData=data;renderSchedule(tid,false,false);
+    scheduleData=data;
+    originalTimetable=JSON.parse(JSON.stringify(data.timetable));
+    hasChanges=false;
+    dashDragMode=USER.isDashboard&&isHR;
+    renderSchedule(tid,false,false);
   }).catch(function(e){$('app').innerHTML=mkHeader('dash')+'<div class="center-msg err">❌ '+e.message+'</div>';});
 }
 
@@ -378,16 +420,31 @@ function onDrop(e,tDay,tPer){
   e.preventDefault();e.currentTarget.classList.remove('drop-ok');
   if(!dragSrc)return;if(dragSrc.day===tDay&&dragSrc.period===tPer)return;
   var d=scheduleData;
-  var src=d.timetable.find(function(t){return t.day===dragSrc.day&&t.period===dragSrc.period&&t.teaId===USER.teacher.id});
-  var tgt=d.timetable.find(function(t){return t.day===tDay&&t.period===tPer&&t.teaId===USER.teacher.id});
-  if(!src){alert('找不到來源課程');return;}
-  if(!tgt){alert('目標時段沒有您的課程。\n只能與您自己的其他課程交換。');return;}
-  if(src.subId===tgt.subId){alert('兩堂課是同一科目，不需要交換。');return;}
-  var tmpSub=src.subId,tmpSubN=src.subName,tmpRoom=src.roomId;
-  src.subId=tgt.subId;src.subName=tgt.subName;src.roomId=tgt.roomId;
-  tgt.subId=tmpSub;tgt.subName=tmpSubN;tgt.roomId=tmpRoom;
-  hasChanges=countChanges()>0;dragSrc=null;
-  renderSchedule(USER.teacher.id,USER.isHomeroom,true);
+
+  if(dashDragMode){
+    // Dashboard 模式：交換任意兩格的科目＋教師
+    var src=d.timetable.find(function(t){return t.day===dragSrc.day&&t.period===dragSrc.period});
+    var tgt=d.timetable.find(function(t){return t.day===tDay&&t.period===tPer});
+    if(!src){alert('找不到來源課程');return;}
+    if(!tgt){alert('目標時段沒有課程，無法交換。');return;}
+    var tmp={subId:src.subId,subName:src.subName,teaId:src.teaId,teaName:src.teaName,teaRole:src.teaRole};
+    src.subId=tgt.subId;src.subName=tgt.subName;src.teaId=tgt.teaId;src.teaName=tgt.teaName;src.teaRole=tgt.teaRole;
+    tgt.subId=tmp.subId;tgt.subName=tmp.subName;tgt.teaId=tmp.teaId;tgt.teaName=tmp.teaName;tgt.teaRole=tmp.teaRole;
+    hasChanges=countChanges()>0;dragSrc=null;
+    renderSchedule(dashViewingId,false,false);
+  } else {
+    // 導師模式：只交換自己的科目
+    var src=d.timetable.find(function(t){return t.day===dragSrc.day&&t.period===dragSrc.period&&t.teaId===USER.teacher.id});
+    var tgt=d.timetable.find(function(t){return t.day===tDay&&t.period===tPer&&t.teaId===USER.teacher.id});
+    if(!src){alert('找不到來源課程');return;}
+    if(!tgt){alert('目標時段沒有您的課程。\n只能與您自己的其他課程交換。');return;}
+    if(src.subId===tgt.subId){alert('兩堂課是同一科目，不需要交換。');return;}
+    var tmpSub=src.subId,tmpSubN=src.subName;
+    src.subId=tgt.subId;src.subName=tgt.subName;
+    tgt.subId=tmpSub;tgt.subName=tmpSubN;
+    hasChanges=countChanges()>0;dragSrc=null;
+    renderSchedule(USER.teacher.id,USER.isHomeroom,true);
+  }
 }
 
 /* ---- 匯出 PDF ---- */
