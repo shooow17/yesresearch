@@ -292,11 +292,11 @@ function renderSchedule(viewTid,canDrag,isMyView){
             h+='<div class="tn">'+esc(e.teaName)+'</div>';
             if(e.className)h+='<div class="tn" style="font-size:11px;color:#9ca3af">'+esc(e.className)+'</div>';
           }
-          if(e.roomId)h+='<div class="tn" style="font-size:10px;color:#2563eb">📍'+esc(e.roomId)+'</div>';
+          if(e.roomName||e.roomId)h+='<div class="tn" style="font-size:10px;color:#2563eb">📍'+esc(e.roomName||e.roomId)+'</div>';
         } else {
           h+='<div class="sn">'+esc(e.className)+'</div>';
           h+='<div class="tn">'+esc(e.subName)+'</div>';
-          if(e.roomId)h+='<div class="tn" style="font-size:10px;color:#2563eb">📍'+esc(e.roomId)+'</div>';
+          if(e.roomName||e.roomId)h+='<div class="tn" style="font-size:10px;color:#2563eb">📍'+esc(e.roomName||e.roomId)+'</div>';
         }
         h+='</div>';
       });
@@ -596,7 +596,7 @@ function openPrintPage(role,results){
             html+='<div class="cell-sub">'+esc(e.subName)+'</div>';
             if(isHR&&e.teaId!==t.id) html+='<div class="cell-info">'+esc(e.teaName)+'</div>';
             if(!isHR) html+='<div class="cell-info">'+esc(e.className)+'</div>';
-            if(e.roomId) html+='<div class="cell-room">📍'+esc(e.roomId)+'</div>';
+            if(e.roomName||e.roomId) html+='<div class="cell-room">📍'+esc(e.roomName||e.roomId)+'</div>';
           });
         } else {
           html+='<div class="cell-empty"></div>';
@@ -829,7 +829,9 @@ function buildCrossTable(side,teacher,sched){
           var cls='cx cx-has'+(isSel?' cx-sel':'')+(changed?' cx-changed':'');
           h+='<div class="'+cls+'" onclick="crossClick(\''+side+'\',\''+day+'\',\''+f.id+'\',\''+e.classId+'\',\''+teacher.id+'\',\''+e.subId+'\')">';
           h+='<span class="cx-del" onclick="event.stopPropagation();crossDelete(\''+e.classId+'\',\''+day+'\',\''+f.id+'\',\''+teacher.id+'\',\''+e.subId+'\',\''+esc(e.subName)+'\',\''+esc(e.className)+'\')">✕</span>';
-          h+='<div class="cx-sub">'+esc(e.subName)+'</div><div class="cx-cls">'+esc(e.className)+'</div></div>';
+          h+='<div class="cx-sub">'+esc(e.subName)+'</div><div class="cx-cls">'+esc(e.className)+'</div>';
+          if(e.roomName)h+='<div style="font-size:9px;color:#2563eb">📍'+esc(e.roomName)+'</div>';
+          h+='</div>';
         });
       }
       // 新增按鈕（空格或已有課的格子都可新增）
@@ -888,7 +890,7 @@ function crossAddShow(day,period,teaId){
   // 先載入 masterData（班級、科目清單）
   if(!masterClasses||!masterSubjects){
     apiGet({action:"masterData"}).then(function(r){
-      masterClasses=r.classes||[];masterSubjects=r.subjects||[];
+      masterClasses=r.classes||[];masterSubjects=r.subjects||[];window._masterRooms=r.rooms||[];
       showAddModal(day,period,teaId);
     }).catch(function(e){alert('❌ 載入資料失敗：'+e.message);});
   } else {
@@ -898,6 +900,7 @@ function crossAddShow(day,period,teaId){
 
 function showAddModal(day,period,teaId){
   var tName='';if(dashTeachers)dashTeachers.teachers.forEach(function(t){if(t.id===teaId)tName=t.name;});
+  var masterRooms=window._masterRooms||[];
   var h='<div class="modal-overlay" onclick="if(event.target===this)closeModal()"><div class="modal-box">';
   h+='<h3>➕ 新增課程</h3>';
   h+='<div style="font-size:13px;color:#64748b;margin-bottom:12px">'+esc(day)+' '+esc(PL[period]||period)+' — 教師：'+esc(tName)+'</div>';
@@ -906,6 +909,9 @@ function showAddModal(day,period,teaId){
   h+='</select>';
   h+='<label>科目</label><select id="addSubId">';
   masterSubjects.forEach(function(s){h+='<option value="'+s.id+'">'+esc(s.name)+'</option>';});
+  h+='</select>';
+  h+='<label>指定教室（選填）</label><select id="addRoomId"><option value="">— 無（原班教室）—</option>';
+  masterRooms.forEach(function(r){h+='<option value="'+r.id+'">'+esc(r.name)+'</option>';});
   h+='</select>';
   h+='<div class="modal-btns"><button class="btn-cancel" onclick="closeModal()">取消</button>';
   h+='<button class="btn-ok" onclick="crossAddSubmit(\''+day+'\',\''+period+'\',\''+teaId+'\')">確定新增</button></div>';
@@ -918,13 +924,14 @@ function closeModal(){$('modalArea').innerHTML='';}
 function crossAddSubmit(day,period,teaId){
   var classId=document.getElementById('addClassId').value;
   var subId=document.getElementById('addSubId').value;
+  var roomId=document.getElementById('addRoomId').value;
   if(!classId||!subId){alert('請選擇班級和科目');return;}
   var className='',subName='';
   masterClasses.forEach(function(c){if(c.id===classId)className=c.name;});
   masterSubjects.forEach(function(s){if(s.id===subId)subName=s.name;});
-  crossPending.push({type:'add',classId:classId,day:day,period:period,subId:subId,teaId:teaId,subName:subName,className:className});
-  // 加到本地
-  var entry={classId:classId,day:day,period:period,subId:subId,subName:subName,className:className,teaId:teaId,teaName:'',teaRole:''};
+  crossPending.push({type:'add',classId:classId,day:day,period:period,subId:subId,teaId:teaId,subName:subName,className:className,roomId:roomId||""});
+  var roomName='';if(roomId&&window._masterRooms)window._masterRooms.forEach(function(r){if(r.id===roomId)roomName=r.name;});
+  var entry={classId:classId,day:day,period:period,subId:subId,subName:subName,className:className,teaId:teaId,teaName:'',teaRole:'',roomId:roomId||'',roomName:roomName};
   if(crossSchedL)crossSchedL.push(entry);
   if(crossSchedR)crossSchedR.push(entry);
   closeModal();renderCrossSwap();
