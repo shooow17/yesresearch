@@ -206,6 +206,7 @@ function mkHeader(tab){
     h+='<button class="tab-btn'+(tab==='dash'?' active':'')+'" onclick="showDashboard()">📊 教師課表概況</button>';
     h+='<button class="tab-btn'+(tab==='sched'?' active':'')+'" onclick="showSchedule()">📋 我的課表</button>';
     h+='<button class="tab-btn'+(tab==='cross'?' active':'')+'" onclick="showCrossSwap()">🔄 跨師調課</button>';
+    h+='<button class="tab-btn'+(tab==='rooms'?' active':'')+'" onclick="showRoomSchedules()">📍 專科教室</button>';
     h+='</div>';
   }
   return h;
@@ -291,9 +292,11 @@ function renderSchedule(viewTid,canDrag,isMyView){
             h+='<div class="tn">'+esc(e.teaName)+'</div>';
             if(e.className)h+='<div class="tn" style="font-size:11px;color:#9ca3af">'+esc(e.className)+'</div>';
           }
+          if(e.roomId)h+='<div class="tn" style="font-size:10px;color:#2563eb">📍'+esc(e.roomId)+'</div>';
         } else {
           h+='<div class="sn">'+esc(e.className)+'</div>';
           h+='<div class="tn">'+esc(e.subName)+'</div>';
+          if(e.roomId)h+='<div class="tn" style="font-size:10px;color:#2563eb">📍'+esc(e.roomId)+'</div>';
         }
         h+='</div>';
       });
@@ -535,22 +538,23 @@ function openPrintPage(role,results){
 
   var html='<!DOCTYPE html><html><head><meta charset="utf-8"><title>'+esc(role)+'課表</title>';
   html+='<style>';
-  html+='@page{size:A4 landscape;margin:12mm 10mm}';
+  html+='@page{size:A4 portrait;margin:10mm 8mm}';
   html+='*{box-sizing:border-box;margin:0;padding:0}';
-  html+='body{font-family:"Noto Sans TC",-apple-system,"Microsoft JhengHei",sans-serif;font-size:11px;color:#000}';
-  html+='.page{page-break-after:always;padding:8mm 0}';
+  html+='body{font-family:"Noto Sans TC",-apple-system,"Microsoft JhengHei",sans-serif;font-size:13px;color:#000}';
+  html+='.page{page-break-after:always;padding:4mm 0}';
   html+='.page:last-child{page-break-after:auto}';
-  html+='.tt-header{text-align:center;margin-bottom:10px}';
-  html+='.tt-header .school{font-size:18px;font-weight:700}';
-  html+='.tt-header .info{font-size:13px;color:#333;margin-top:4px}';
+  html+='.tt-header{text-align:center;margin-bottom:8px}';
+  html+='.tt-header .school{font-size:20px;font-weight:700}';
+  html+='.tt-header .info{font-size:14px;color:#333;margin-top:4px}';
   html+='table.tt{width:100%;border-collapse:collapse;table-layout:fixed}';
-  html+='table.tt th,table.tt td{border:1.5px solid #000;padding:8px 4px;text-align:center;vertical-align:middle;font-size:13px}';
-  html+='table.tt th{background:#e8e8e8;font-weight:700;font-size:13px}';
-  html+='table.tt th.period-col{width:13%}';
-  html+='table.tt td.period-cell{background:#f5f5f5;font-weight:600;font-size:12px}';
-  html+='table.tt td.period-cell .time{display:block;font-size:9px;font-weight:400;color:#666}';
-  html+='.cell-sub{font-weight:700;font-size:14px}';
-  html+='.cell-info{font-size:10px;color:#555}';
+  html+='table.tt th,table.tt td{border:1.5px solid #000;padding:6px 4px;text-align:center;vertical-align:middle;font-size:14px}';
+  html+='table.tt th{background:#e8e8e8;font-weight:700;font-size:15px}';
+  html+='table.tt th.period-col{width:14%}';
+  html+='table.tt td.period-cell{background:#f5f5f5;font-weight:600;font-size:13px}';
+  html+='table.tt td.period-cell .time{display:block;font-size:10px;font-weight:400;color:#666}';
+  html+='.cell-sub{font-weight:700;font-size:15px}';
+  html+='.cell-info{font-size:11px;color:#555}';
+  html+='.cell-room{font-size:9px;color:#2563eb;margin-top:1px}';
   html+='.cell-empty{color:#ccc;font-size:10px}';
   html+='@media print{.no-print{display:none !important}}';
   html+='</style></head><body>';
@@ -592,6 +596,7 @@ function openPrintPage(role,results){
             html+='<div class="cell-sub">'+esc(e.subName)+'</div>';
             if(isHR&&e.teaId!==t.id) html+='<div class="cell-info">'+esc(e.teaName)+'</div>';
             if(!isHR) html+='<div class="cell-info">'+esc(e.className)+'</div>';
+            if(e.roomId) html+='<div class="cell-room">📍'+esc(e.roomId)+'</div>';
           });
         } else {
           html+='<div class="cell-empty"></div>';
@@ -607,6 +612,87 @@ function openPrintPage(role,results){
   var blob=new Blob([html],{type:'text/html;charset=utf-8'});
   var url=URL.createObjectURL(blob);
   window.open(url,'_blank')||window.location.assign(url);
+}
+
+/* ================================================================
+   專科教室課表
+   ================================================================ */
+var roomData=null;
+function showRoomSchedules(){
+  dashDragMode=false;
+  $('app').innerHTML=mkHeader('rooms')+'<div class="center-msg"><div class="spinner"></div><span>載入專科教室資料...</span></div>';
+  apiGet({action:"classrooms"}).then(function(r){
+    if(r.error){$('app').innerHTML=mkHeader('rooms')+'<div style="max-width:1100px;margin:20px auto;padding:20px"><div class="warn-box">'+esc(r.error)+'<br>請在「課表資料庫」工作表新增「指定教室」欄位</div></div>';return;}
+    roomData=r.rooms||[];
+    renderRoomSchedules();
+  }).catch(function(e){$('app').innerHTML=mkHeader('rooms')+'<div class="center-msg" style="color:#dc2626">❌ '+e.message+'</div>';});
+}
+
+function renderRoomSchedules(){
+  var periods=FRAME.filter(function(f){return f.type==='class'});
+  var h=mkHeader('rooms')+'<div style="max-width:1400px;margin:0 auto;padding:16px">';
+  if(roomData.length===0){h+='<div class="center-msg" style="min-height:200px">沒有專科教室資料</div></div>';$('app').innerHTML=h;return;}
+
+  h+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"><div style="font-size:16px;font-weight:700;color:#1a365d">📍 專科教室課表（共 '+roomData.length+' 間）</div>';
+  h+='<button class="btn-export" onclick="exportRoomPDF()">📄 匯出全部教室 PDF</button></div>';
+
+  roomData.forEach(function(room){
+    h+='<div class="card" style="margin-bottom:20px"><h3>📍 '+esc(room.name)+'</h3>';
+    h+='<div style="overflow-x:auto"><table class="tt" style="font-size:13px"><tr><th style="width:12%">節次</th>';
+    DAYS.forEach(function(d){h+='<th>'+d+'</th>'});h+='</tr>';
+    FRAME.forEach(function(f){
+      if(f.type==='break'){h+='<tr class="brk"><td colspan="6">'+f.label+'</td></tr>';return;}
+      h+='<tr><td class="pl">'+f.label+'<span class="time">'+f.time+'</span></td>';
+      DAYS.forEach(function(day){
+        var entries=room.entries.filter(function(e){return e.day===day&&e.period===f.id});
+        h+='<td>';
+        entries.forEach(function(e){
+          h+='<div class="lc lc-mine" style="font-size:12px;padding:3px 4px"><div class="sn" style="font-size:13px">'+esc(e.subName)+'</div>';
+          h+='<div class="tn">'+esc(e.className)+'</div>';
+          h+='<div class="tn">'+esc(e.teaName)+'</div></div>';
+        });
+        h+='</td>';
+      });h+='</tr>';
+    });
+    h+='</table></div></div>';
+  });
+  h+='</div>';
+  $('app').innerHTML=h;
+}
+
+function exportRoomPDF(){
+  if(!roomData||roomData.length===0){alert('沒有專科教室資料');return;}
+  var schoolName=USER.schoolInfo.name||'';var schoolYear=USER.schoolInfo.year||'';
+
+  var html='<!DOCTYPE html><html><head><meta charset="utf-8"><title>專科教室課表</title>';
+  html+='<style>@page{size:A4 portrait;margin:10mm 8mm}*{box-sizing:border-box;margin:0;padding:0}';
+  html+='body{font-family:"Noto Sans TC",-apple-system,"Microsoft JhengHei",sans-serif}';
+  html+='.page{page-break-after:always;padding:4mm 0}.page:last-child{page-break-after:auto}';
+  html+='.tt-header{text-align:center;margin-bottom:8px}.tt-header .school{font-size:20px;font-weight:700}.tt-header .info{font-size:16px;color:#333;margin-top:4px}';
+  html+='table{width:100%;border-collapse:collapse;table-layout:fixed}th,td{border:1.5px solid #000;padding:6px 4px;text-align:center;vertical-align:middle;font-size:13px}';
+  html+='th{background:#e8e8e8;font-weight:700;font-size:14px}td.pl{background:#f5f5f5;font-weight:600;font-size:12px;width:14%}td.pl .time{display:block;font-size:9px;color:#666}';
+  html+='.sub{font-weight:700;font-size:14px}.cls{font-size:11px;color:#555}.tea{font-size:10px;color:#777}';
+  html+='@media print{.no-print{display:none !important}}</style></head><body>';
+  html+='<div class="no-print" style="text-align:center;padding:16px;background:#1a365d;color:#fff;font-size:14px;font-weight:700">📍 專科教室課表（共 '+roomData.length+' 間）<button onclick="window.print()" style="margin-left:16px;padding:8px 24px;background:#2563eb;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer">🖨️ 列印 / 存為 PDF</button></div>';
+
+  roomData.forEach(function(room){
+    html+='<div class="page"><div class="tt-header"><div class="school">'+esc(schoolName)+' '+esc(schoolYear)+'學年度</div><div class="info">📍 '+esc(room.name)+' 教室課表</div></div>';
+    html+='<table><tr><th style="width:14%">節次</th>';
+    DAYS.forEach(function(d){html+='<th>'+d.replace('星期','')+'</th>'});html+='</tr>';
+    FRAME.forEach(function(f){
+      if(f.type!=='class')return;
+      html+='<tr><td class="pl">'+f.label+'<span class="time">'+f.time+'</span></td>';
+      DAYS.forEach(function(day){
+        var entries=room.entries.filter(function(e){return e.day===day&&e.period===f.id});
+        html+='<td>';
+        entries.forEach(function(e){html+='<div class="sub">'+esc(e.subName)+'</div><div class="cls">'+esc(e.className)+'</div><div class="tea">'+esc(e.teaName)+'</div>';});
+        html+='</td>';
+      });html+='</tr>';
+    });
+    html+='</table></div>';
+  });
+  html+='</body></html>';
+  var blob=new Blob([html],{type:'text/html;charset=utf-8'});window.open(URL.createObjectURL(blob),'_blank');
 }
 
 /* ================================================================
