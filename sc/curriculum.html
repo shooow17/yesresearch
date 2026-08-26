@@ -206,7 +206,7 @@ function mkHeader(tab){
     h+='<button class="tab-btn'+(tab==='dash'?' active':'')+'" onclick="showDashboard()">📊 教師課表概況</button>';
     h+='<button class="tab-btn'+(tab==='sched'?' active':'')+'" onclick="showSchedule()">📋 我的課表</button>';
     h+='<button class="tab-btn'+(tab==='cross'?' active':'')+'" onclick="showCrossSwap()">🔄 跨師調課</button>';
-    h+='<button class="tab-btn'+(tab==='rooms'?' active':'')+'" onclick="showRoomSchedules()">📍 專科教室</button>';
+    h+='<button class="tab-btn'+(tab==='rooms'?' active':'')+'" onclick="showRoomSchedules()">專科教室</button>';
     h+='</div>';
   }
   return h;
@@ -292,11 +292,11 @@ function renderSchedule(viewTid,canDrag,isMyView){
             h+='<div class="tn">'+esc(e.teaName)+'</div>';
             if(e.className)h+='<div class="tn" style="font-size:11px;color:#9ca3af">'+esc(e.className)+'</div>';
           }
-          if(e.roomName||e.roomId)h+='<div class="tn" style="font-size:10px;color:#2563eb">📍'+esc(e.roomName||e.roomId)+'</div>';
+          if(e.roomName)h+='<div class="tn" style="font-size:10px;color:#2563eb">'+esc(e.roomName+'</div>';
         } else {
           h+='<div class="sn">'+esc(e.className)+'</div>';
           h+='<div class="tn">'+esc(e.subName)+'</div>';
-          if(e.roomName||e.roomId)h+='<div class="tn" style="font-size:10px;color:#2563eb">📍'+esc(e.roomName||e.roomId)+'</div>';
+          if(e.roomName)h+='<div class="tn" style="font-size:10px;color:#2563eb">'+esc(e.roomName+'</div>';
         }
         h+='</div>';
       });
@@ -596,7 +596,7 @@ function openPrintPage(role,results){
             html+='<div class="cell-sub">'+esc(e.subName)+'</div>';
             if(isHR&&e.teaId!==t.id) html+='<div class="cell-info">'+esc(e.teaName)+'</div>';
             if(!isHR) html+='<div class="cell-info">'+esc(e.className)+'</div>';
-            if(e.roomName||e.roomId) html+='<div class="cell-room">📍'+esc(e.roomName||e.roomId)+'</div>';
+            if(e.roomName) html+='<div class="cell-room">'+esc(e.roomName+'</div>';
           });
         } else {
           html+='<div class="cell-empty"></div>';
@@ -633,11 +633,11 @@ function renderRoomSchedules(){
   var h=mkHeader('rooms')+'<div style="max-width:1400px;margin:0 auto;padding:16px">';
   if(roomData.length===0){h+='<div class="center-msg" style="min-height:200px">沒有專科教室資料</div></div>';$('app').innerHTML=h;return;}
 
-  h+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"><div style="font-size:16px;font-weight:700;color:#1a365d">📍 專科教室課表（共 '+roomData.length+' 間）</div>';
+  h+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"><div style="font-size:16px;font-weight:700;color:#1a365d">專科教室課表（共 '+roomData.length+' 間）</div>';
   h+='<button class="btn-export" onclick="exportRoomPDF()">📄 匯出全部教室 PDF</button></div>';
 
   roomData.forEach(function(room){
-    h+='<div class="card" style="margin-bottom:20px"><h3>📍 '+esc(room.name)+'</h3>';
+    h+='<div class="card" style="margin-bottom:20px"><h3>'+esc(room.name)+'</h3>';
     h+='<div style="overflow-x:auto"><table class="tt" style="font-size:13px"><tr><th style="width:12%">節次</th>';
     DAYS.forEach(function(d){h+='<th>'+d+'</th>'});h+='</tr>';
     FRAME.forEach(function(f){
@@ -673,10 +673,10 @@ function exportRoomPDF(){
   html+='th{background:#e8e8e8;font-weight:700;font-size:14px}td.pl{background:#f5f5f5;font-weight:600;font-size:12px;width:14%}td.pl .time{display:block;font-size:9px;color:#666}';
   html+='.sub{font-weight:700;font-size:14px}.cls{font-size:11px;color:#555}.tea{font-size:10px;color:#777}';
   html+='@media print{.no-print{display:none !important}}</style></head><body>';
-  html+='<div class="no-print" style="text-align:center;padding:16px;background:#1a365d;color:#fff;font-size:14px;font-weight:700">📍 專科教室課表（共 '+roomData.length+' 間）<button onclick="window.print()" style="margin-left:16px;padding:8px 24px;background:#2563eb;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer">🖨️ 列印 / 存為 PDF</button></div>';
+  html+='<div class="no-print" style="text-align:center;padding:16px;background:#1a365d;color:#fff;font-size:14px;font-weight:700">專科教室課表（共 '+roomData.length+' 間）<button onclick="window.print()" style="margin-left:16px;padding:8px 24px;background:#2563eb;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer">🖨️ 列印 / 存為 PDF</button></div>';
 
   roomData.forEach(function(room){
-    html+='<div class="page"><div class="tt-header"><div class="school">'+esc(schoolName)+' '+esc(schoolYear)+'學年度</div><div class="info">📍 '+esc(room.name)+' 教室課表</div></div>';
+    html+='<div class="page"><div class="tt-header"><div class="school">'+esc(schoolName)+' '+esc(schoolYear)+'學年度</div><div class="info">'+esc(room.name)+' 教室課表</div></div>';
     html+='<table><tr><th style="width:14%">節次</th>';
     DAYS.forEach(function(d){html+='<th>'+d.replace('星期','')+'</th>'});html+='</tr>';
     FRAME.forEach(function(f){
@@ -830,7 +830,7 @@ function buildCrossTable(side,teacher,sched){
           h+='<div class="'+cls+'" onclick="crossClick(\''+side+'\',\''+day+'\',\''+f.id+'\',\''+e.classId+'\',\''+teacher.id+'\',\''+e.subId+'\')">';
           h+='<span class="cx-del" onclick="event.stopPropagation();crossDelete(\''+e.classId+'\',\''+day+'\',\''+f.id+'\',\''+teacher.id+'\',\''+e.subId+'\',\''+esc(e.subName)+'\',\''+esc(e.className)+'\')">✕</span>';
           h+='<div class="cx-sub">'+esc(e.subName)+'</div><div class="cx-cls">'+esc(e.className)+'</div>';
-          if(e.roomName)h+='<div style="font-size:9px;color:#2563eb">📍'+esc(e.roomName)+'</div>';
+          if(e.roomName)h+='<div style="font-size:9px;color:#2563eb">'+esc(e.roomName)+'</div>';
           h+='</div>';
         });
       }
