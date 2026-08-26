@@ -803,7 +803,7 @@ function crossSave(){
   apiPost({action:"crossBatchUpdate",email:EMAIL,changes:crossPending}).then(function(r){
     if(r.error){alert('❌ '+r.error);if(btn){btn.disabled=false;btn.textContent='💾 儲存全部變更';}return;}
     alert('✅ 已儲存！交換 '+r.swapped+' 筆、新增 '+r.added+' 筆、刪除 '+r.deleted+' 筆');
-    crossPending=[];crossSel=null;crossSchedL=null;crossSchedR=null;dashTeachers=null;
+    crossPending=[];crossSel=null;crossSchedL=null;crossSchedR=null;
     if(crossTidL)onCrossSelect('L',crossTidL);
     if(crossTidR)setTimeout(function(){onCrossSelect('R',crossTidR);},300);
     else renderCrossSwap();
