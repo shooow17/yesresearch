@@ -70,13 +70,15 @@ td.drop-ok{background:#eff6ff!important;outline:2px dashed #3b82f6;outline-offse
 .btn-export:hover{background:#3b82f6;color:#fff}
 .btn-export:disabled{opacity:.5;cursor:not-allowed}
 .cards-grid{display:flex;flex-wrap:wrap;gap:10px}
-.tea-card{background:#fff;border:2px solid #e8ecf0;border-radius:10px;padding:12px 16px;min-width:110px;cursor:pointer;transition:all .15s;text-align:center}
+.tea-card{background:#fff;border:2px solid #e8ecf0;border-radius:10px;padding:16px 22px;min-width:140px;cursor:pointer;transition:all .15s;text-align:center}
 .tea-card:hover{border-color:#3b82f6;box-shadow:0 3px 12px rgba(59,130,246,.2);transform:translateY(-2px)}
 .tea-card.viewing{border-color:#1a365d;background:#eff6ff}
-.tea-card .tc-name{font-size:14px;font-weight:700;color:#1e293b}
-.tea-card .tc-class{font-size:12px;color:#3b82f6;margin-top:2px;font-weight:500}
-.tea-card .tc-count{font-size:11px;color:#94a3b8;margin-top:4px}
-.dash-tt-title{font-size:15px;font-weight:700;color:#1a365d;margin:20px 0 8px;padding:0 4px}
+.tea-card .tc-name{font-size:18px;font-weight:700;color:#1e293b}
+.tea-card .tc-class{font-size:15px;color:#3b82f6;margin-top:3px;font-weight:500}
+.tea-card .tc-count{font-size:13px;color:#94a3b8;margin-top:4px}
+.dash-tt-title{font-size:15px;font-weight:700;color:#1a365d;margin:20px 0 8px;padding:0 4px;display:flex;align-items:center;justify-content:space-between}
+.btn-close-tt{padding:6px 16px;background:#fff;border:1.5px solid #e2e8f0;color:#64748b;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit}
+.btn-close-tt:hover{background:#fee2e2;border-color:#fca5a5;color:#dc2626}
 .center-msg{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:50vh;gap:12px;color:#64748b;font-size:16px}
 .center-msg.err{color:#dc2626}
 .spinner{width:36px;height:36px;border:3px solid #e2e8f0;border-top-color:#3b82f6;border-radius:50%;animation:spin .8s linear infinite}
@@ -235,7 +237,7 @@ function renderSchedule(viewTid,canDrag,isMyView){
   if(!isMyView&&dashTeachers){
     h+=renderDashCards();
     var tObj=dashTeachers.teachers.find(function(x){return x.id===viewTid});
-    h+='<div class="dash-content"><div class="dash-tt-title">📋 '+(tObj?esc(tObj.name):'')+(tObj&&tObj.className?' — '+esc(tObj.className):'')+'　的課表</div></div>';
+    h+='<div class="dash-content"><div class="dash-tt-title"><span>📋 '+(tObj?esc(tObj.name):'')+(tObj&&tObj.className?' — '+esc(tObj.className):'')+'　的課表</span><button class="btn-close-tt" onclick="closeDashTT()">✕ 關閉課表</button></div></div>';
   }
 
   var isDashDrag=dashDragMode&&!isMyView&&isHRView;
@@ -384,13 +386,12 @@ function doDashSave(){
   scheduleData.timetable.forEach(function(c){
     var o=originalTimetable.find(function(x){return x.day===c.day&&x.period===c.period&&x.classId===c.classId});
     if(o&&(o.subId!==c.subId||o.teaId!==c.teaId)){
-      changes.push({day:c.day,period:c.period,subId:c.subId,teaId:c.teaId});
+      changes.push({classId:c.classId,day:c.day,period:c.period,subId:c.subId,teaId:c.teaId});
     }
   });
   if(changes.length===0)return;
-  var classId=scheduleData.homeroomClassId;
   var btn=document.getElementById('btnSave');if(btn){btn.disabled=true;btn.textContent='儲存中...';}
-  apiPost({action:"dashboardUpdate",email:EMAIL,classId:classId,changes:changes}).then(function(r){
+  apiPost({action:"dashboardUpdate",email:EMAIL,changes:changes}).then(function(r){
     if(r.error){alert('❌ '+r.error);if(btn){btn.disabled=false;btn.textContent='💾 儲存變更';}return;}
     originalTimetable=JSON.parse(JSON.stringify(scheduleData.timetable));
     hasChanges=false;renderSchedule(dashViewingId,false,false);
@@ -448,9 +449,12 @@ function clickTeaCard(tid){
   dashViewingId=tid;
   var h=mkHeader('dash')+renderDashCards();
   var t=dashTeachers.teachers.find(function(x){return x.id===tid});
-  h+='<div class="dash-content"><div class="dash-tt-title">📋 '+esc(t?t.name:'')+(t&&t.className?' — '+esc(t.className):'')+'　的課表</div></div>';
+  h+='<div class="dash-content"><div class="dash-tt-title"><span>📋 '+esc(t?t.name:'')+(t&&t.className?' — '+esc(t.className):'')+'　的課表</span><button class="btn-close-tt" onclick="closeDashTT()">✕ 關閉課表</button></div></div>';
   h+='<div class="center-msg" style="min-height:200px"><div class="spinner"></div></div>';
   $('app').innerHTML=h;loadDashSchedule(tid);
+}
+function closeDashTT(){
+  dashViewingId=null;hasChanges=false;dashDragMode=false;renderDashboard();
 }
 function loadDashSchedule(tid){
   var t=dashTeachers.teachers.find(function(x){return x.id===tid});
@@ -460,7 +464,7 @@ function loadDashSchedule(tid){
     scheduleData=data;
     originalTimetable=JSON.parse(JSON.stringify(data.timetable));
     hasChanges=false;
-    dashDragMode=USER.isDashboard&&isHR;
+    dashDragMode=USER.isDashboard;
     renderSchedule(tid,false,false);
   }).catch(function(e){$('app').innerHTML=mkHeader('dash')+'<div class="center-msg err">❌ '+e.message+'</div>';});
 }
