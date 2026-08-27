@@ -650,21 +650,21 @@ function openPrintPage(role,results){
 
   var html='<!DOCTYPE html><html><head><meta charset="utf-8"><title>'+esc(role)+'課表</title>';
   html+='<style>';
-  html+='@page{size:A4 portrait;margin:8mm 8mm 8mm 8mm}';
+  html+='@page{size:A4 portrait;margin:5mm 6mm}';
   html+='*{box-sizing:border-box;margin:0;padding:0}';
   html+='body{font-family:"DFKai-SB","BiauKai","KaiTi","標楷體",serif;color:#000;font-size:16px}';
-  html+='.page{page-break-after:always;height:100vh;display:flex;flex-direction:column;padding:0}';
+  html+='.page{page-break-after:always;height:100vh;display:flex;flex-direction:column;padding:0;overflow:hidden}';
   html+='.page:last-child{page-break-after:auto}';
-  html+='.tt-title{text-align:left;font-size:24px;font-weight:bold;padding:10px 0 2px}';
-  html+='.tt-sub{text-align:left;font-size:24px;font-weight:bold;padding:2px 0 10px}';
+  html+='.tt-title{text-align:left;font-size:21px;font-weight:bold;padding:4px 0 2px}';
+  html+='.tt-sub{text-align:left;font-size:21px;font-weight:bold;padding:2px 0 6px}';
   html+='table.tt{width:100%;border-collapse:collapse;table-layout:fixed;flex:1}';
-  html+='table.tt th,table.tt td{border:1px solid #000;text-align:center;vertical-align:middle;padding:6px 2px}';
-  html+='table.tt th{font-size:18px;font-weight:bold}';
+  html+='table.tt th,table.tt td{border:1px solid #000;text-align:center;vertical-align:middle;padding:2px 1px}';
+  html+='table.tt th{font-size:16px;font-weight:bold}';
   html+='table.tt col.c-p{width:10%}';
-  html+='table.tt col.c-t{width:6%}';
-  html+='.sub-name{font-size:24px;font-weight:bold;margin-bottom:6px;line-height:1.2}';
-  html+='.sub-info{font-size:15px;line-height:1.2}';
-  html+='.cell-sep{border:none;width:90%;margin:6px auto;border-top:1px dashed #aaa}';
+  html+='table.tt col.c-t{width:5.5%}';
+  html+='.sub-name{font-size:22px;font-weight:bold;margin-bottom:3px;line-height:1.15;white-space:nowrap}';
+  html+='.sub-info{font-size:14px;line-height:1.15}';
+  html+='.cell-sep{border:none;width:90%;margin:4px auto;border-top:1px dashed #aaa}';
   html+='@media print{.no-print{display:none !important}.page{height:100vh}}';
   html+='</style></head><body>';
 
@@ -706,15 +706,20 @@ function openPrintPage(role,results){
           entries.forEach(function(e,i){
             if(i>0) html+='<hr class="cell-sep">';
             var sn=(e.subName||'').replace(/^資源班[-－—–]/,'');
-            html+='<div class="sub-name">'+esc(sn)+'</div>';
+            var fzStyle = "";
+            if (sn.length > 4) {
+              var fz = Math.max(11, Math.floor(22 * 4.2 / sn.length));
+              fzStyle = "font-size:" + fz + "px;";
+            }
+            html+='<div class="sub-name" style="' + fzStyle + '">' + esc(sn) + '</div>';
             
-            var infoArr = [];
-            if(isHR&&e.teaId!==t.id) infoArr.push(esc(e.teaName));
-            else if(isHR) infoArr.push(esc(t.name));
-            if(!isHR) infoArr.push(esc(e.className));
-            if(e.roomName) infoArr.push(esc(e.roomName));
+            var teaCls = "";
+            if(isHR&&e.teaId!==t.id) teaCls = esc(e.teaName);
+            else if(isHR) teaCls = esc(t.name);
+            if(!isHR) teaCls = esc(e.className);
             
-            if(infoArr.length>0) html+='<div class="sub-info">'+infoArr.join(' ')+'</div>';
+            if(teaCls) html+='<div class="sub-info">' + teaCls + '</div>';
+            if(e.roomName) html+='<div class="sub-info">' + esc(e.roomName) + '</div>';
           });
         }
         html+='</td>';
@@ -781,13 +786,13 @@ function exportRoomPDF(){
   var schoolName=USER.schoolInfo.name||'';var schoolYear=USER.schoolInfo.year||'';
 
   var html='<!DOCTYPE html><html><head><meta charset="utf-8"><title>專科教室課表</title>';
-  html+='<style>@page{size:A4 portrait;margin:10mm 8mm}*{box-sizing:border-box;margin:0;padding:0}';
+  html+='<style>@page{size:A4 portrait;margin:6mm}*{box-sizing:border-box;margin:0;padding:0}';
   html+='body{font-family:"Noto Sans TC",-apple-system,"Microsoft JhengHei",sans-serif}';
-  html+='.page{page-break-after:always;padding:4mm 0}.page:last-child{page-break-after:auto}';
-  html+='.tt-header{text-align:center;margin-bottom:8px}.tt-header .school{font-size:20px;font-weight:700}.tt-header .info{font-size:16px;color:#333;margin-top:4px}';
-  html+='table{width:100%;border-collapse:collapse;table-layout:fixed}th,td{border:1.5px solid #000;padding:6px 4px;text-align:center;vertical-align:middle;font-size:13px}';
+  html+='.page{page-break-after:always;height:100vh;display:flex;flex-direction:column;padding:0;overflow:hidden}.page:last-child{page-break-after:auto}';
+  html+='.tt-header{text-align:center;margin-bottom:4px}.tt-header .school{font-size:20px;font-weight:700}.tt-header .info{font-size:16px;color:#333;margin-top:2px}';
+  html+='table{width:100%;border-collapse:collapse;table-layout:fixed;flex:1}th,td{border:1.5px solid #000;padding:2px;text-align:center;vertical-align:middle;font-size:13px}';
   html+='th{background:#e8e8e8;font-weight:700;font-size:14px}td.pl{background:#f5f5f5;font-weight:600;font-size:12px;width:14%}td.pl .time{display:block;font-size:9px;color:#666}';
-  html+='.sub{font-weight:700;font-size:20px;margin-bottom:4px;line-height:1.2}.cls{font-size:12px;color:#555}.tea{font-size:12px;color:#777}';
+  html+='.sub{font-weight:700;font-size:18px;margin-bottom:2px;line-height:1.1;white-space:nowrap}.cls{font-size:12px;color:#555}.tea{font-size:12px;color:#777}';
   html+='@media print{.no-print{display:none !important}}</style></head><body>';
   html+='<div class="no-print" style="text-align:center;padding:16px;background:#1a365d;color:#fff;font-size:14px;font-weight:700">專科教室課表（共 '+roomData.length+' 間）<button onclick="window.print()" style="margin-left:16px;padding:8px 24px;background:#2563eb;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer">🖨️ 列印 / 存為 PDF</button></div>';
 
@@ -801,7 +806,11 @@ function exportRoomPDF(){
       DAYS.forEach(function(day){
         var entries=room.entries.filter(function(e){return e.day===day&&e.period===f.id});
         html+='<td>';
-        entries.forEach(function(e){html+='<div class="sub">'+esc(e.subName)+'</div><div class="cls">'+esc(e.className)+'</div><div class="tea">'+esc(e.teaName)+'</div>';});
+        entries.forEach(function(e){
+          var rSn = esc(e.subName);
+          var fzStyle = e.subName.length > 4 ? ' style="font-size:' + Math.max(10, Math.floor(18 * 4.2 / e.subName.length)) + 'px"' : '';
+          html+='<div class="sub"'+fzStyle+'>'+rSn+'</div><div class="cls">'+esc(e.className)+'</div><div class="tea">'+esc(e.teaName)+'</div>';
+        });
         html+='</td>';
       });html+='</tr>';
     });
