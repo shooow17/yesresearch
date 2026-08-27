@@ -8,10 +8,10 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Noto Sans TC',-apple-system,sans-serif;background:#f8fafc;color:#1e293b;line-height:1.8}
-.hero{background:linear-gradient(135deg,#1a365d 0%,#2563eb 100%);color:#fff;padding:40px 24px;text-align:center}
-.hero h1{font-size:32px;font-weight:900;margin-bottom:8px}
-.hero p{font-size:16px;color:rgba(255,255,255,.8);max-width:600px;margin:0 auto}
-.container{max-width:840px;margin:0 auto;padding:0 20px 60px}
+.hero{background:linear-gradient(135deg,#1a365d 0%,#2563eb 100%);color:#fff;padding:28px 24px;text-align:center}
+.hero h1{font-size:28px;font-weight:900;margin-bottom:4px}
+.hero p{font-size:15px;color:rgba(255,255,255,.8);max-width:600px;margin:0 auto}
+.container{max-width:1100px;margin:0 auto;padding:0 24px 60px}
 
 /* 分頁 */
 .tabs{display:flex;gap:0;margin:24px 0 0;border-bottom:3px solid #1a365d;flex-wrap:wrap}
@@ -22,16 +22,16 @@ body{font-family:'Noto Sans TC',-apple-system,sans-serif;background:#f8fafc;colo
 .tab-content.active{display:block}
 
 /* 重要提醒 */
-.notice{background:#fef3c7;border:2px solid #f59e0b;border-radius:12px;padding:20px 24px;margin:20px 0;font-size:16px;color:#92400e}
-.notice b{color:#b45309;font-size:18px}
-.notice ul{margin:8px 0 0 20px}
+.notice{background:#fef3c7;border:2px solid #f59e0b;border-radius:12px;padding:16px 20px;margin:16px 0;font-size:14px;color:#92400e}
+.notice b{color:#b45309;font-size:16px}
+.notice ul{margin:6px 0 0 20px}
 
 /* 步驟 */
-.step{background:#fff;border-radius:14px;padding:28px;margin:20px 0;box-shadow:0 2px 8px rgba(0,0,0,.06);border-left:5px solid #2563eb;position:relative}
-.step-num{position:absolute;top:-14px;left:20px;background:#2563eb;color:#fff;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:900;box-shadow:0 2px 6px rgba(37,99,235,.3)}
-.step h2{font-size:22px;font-weight:700;color:#1a365d;margin:8px 0 12px}
-.step p,.step-text{font-size:16px;margin-bottom:10px}
-.substep{background:#f1f5f9;border-radius:8px;padding:14px 18px;margin:10px 0;font-size:15px;line-height:2}
+.step{background:#fff;border-radius:14px;padding:22px 28px;margin:16px 0;box-shadow:0 2px 8px rgba(0,0,0,.06);border-left:5px solid #2563eb;position:relative}
+.step-num{position:absolute;top:-12px;left:20px;background:#2563eb;color:#fff;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:900;box-shadow:0 2px 6px rgba(37,99,235,.3)}
+.step h2{font-size:20px;font-weight:700;color:#1a365d;margin:4px 0 10px}
+.step p,.step-text{font-size:15px;margin-bottom:8px}
+.substep{background:#f1f5f9;border-radius:8px;padding:12px 16px;margin:8px 0;font-size:14px;line-height:1.9}
 .substep b{color:#1a365d}
 
 /* 流程圖 */
@@ -49,18 +49,22 @@ body{font-family:'Noto Sans TC',-apple-system,sans-serif;background:#f8fafc;colo
 .role-card p{font-size:13px;color:#64748b}
 
 /* 提示 */
-.tip{background:#eff6ff;border:1.5px solid #93c5fd;border-radius:10px;padding:14px 18px;margin:12px 0;font-size:15px;color:#1e40af}
+.tip{background:#eff6ff;border:1.5px solid #93c5fd;border-radius:10px;padding:10px 16px;margin:8px 0;font-size:14px;color:#1e40af}
 .tip b{color:#1d4ed8}
 
 /* FAQ */
-.faq-item{background:#fff;border-radius:10px;padding:18px 22px;margin:10px 0;box-shadow:0 1px 4px rgba(0,0,0,.05)}
-.faq-item h3{font-size:17px;font-weight:700;color:#2563eb;margin-bottom:6px}
-.faq-item p{font-size:15px;color:#475569}
+.faq-item{background:#fff;border-radius:10px;padding:14px 18px;margin:8px 0;box-shadow:0 1px 4px rgba(0,0,0,.05)}
+.faq-item h3{font-size:15px;font-weight:700;color:#2563eb;margin-bottom:4px}
+.faq-item p{font-size:14px;color:#475569}
 
 /* 摘要 */
-.summary-box{background:#ecfdf5;border:2px solid #059669;border-radius:12px;padding:24px 28px;margin:20px 0;color:#047857}
-.summary-box b{font-size:18px}
-.summary-box ol{margin:12px 0 0 20px;font-size:16px;line-height:2.4}
+.summary-box{background:#ecfdf5;border:2px solid #059669;border-radius:12px;padding:18px 24px;margin:14px 0;color:#047857}
+.summary-box b{font-size:16px}
+.summary-box ol{margin:8px 0 0 20px;font-size:15px;line-height:2.2}
+
+/* 紅色分頁 */
+.tab.tab-red{background:#dc2626;color:#fff;border-color:#dc2626;font-weight:900}
+.tab.tab-red:hover{background:#b91c1c}
 
 .footer{text-align:center;padding:24px;color:#94a3b8;font-size:13px;border-top:1px solid #e2e8f0;margin-top:40px}
 @media(max-width:640px){.hero h1{font-size:24px}.step h2{font-size:18px}.flow-chart{flex-direction:column}.flow-arrow{transform:rotate(90deg)}.tab{padding:10px 14px;font-size:13px}}
@@ -92,6 +96,7 @@ body{font-family:'Noto Sans TC',-apple-system,sans-serif;background:#f8fafc;colo
   <div class="tab" onclick="switchTab('admin')">🏫 給行政人員</div>
   <div class="tab" onclick="switchTab('faq')">❓ 常見問題</div>
   <div class="tab" onclick="switchTab('summary')">📌 操作摘要</div>
+  <div class="tab tab-red" style="margin-left:auto" onclick="window.open('https://shooow17.github.io/yesresearch/sc/swap.html','_blank')">🚀 前往調課系統</div>
 </div>
 
 <!-- ============================
