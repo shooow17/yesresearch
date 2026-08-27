@@ -646,12 +646,7 @@ function exportRolePDF(role){
 function openPrintPage(role,results){
   var schoolName=USER.schoolInfo.name||'';
   var schoolYear=USER.schoolInfo.year||'';
-  /* 包含午餐午休的完整 FRAME（class + break） */
   var allFrames=FRAME;
-  /* 計算總列數：class 節次 + break 列 + 表頭列 */
-  var classCount=allFrames.filter(function(f){return f.type==='class'}).length;
-  var breakCount=allFrames.filter(function(f){return f.type==='break'}).length;
-  var totalRows=1+classCount+breakCount; /* 1 for header row */
 
   var html='<!DOCTYPE html><html><head><meta charset="utf-8"><title>'+esc(role)+'課表</title>';
   html+='<style>';
@@ -660,22 +655,24 @@ function openPrintPage(role,results){
   html+='body{font-family:"Noto Sans TC",-apple-system,"Microsoft JhengHei",sans-serif;color:#000}';
   html+='.page{page-break-after:always;height:100vh;display:flex;flex-direction:column;padding:0}';
   html+='.page:last-child{page-break-after:auto}';
-  html+='.tt-header{text-align:center;padding:6px 0 4px;flex-shrink:0}';
-  html+='.tt-header .school{font-size:24px;font-weight:700;letter-spacing:1px}';
-  html+='.tt-header .info{font-size:18px;color:#222;margin-top:2px;font-weight:500}';
+  html+='.tt-header{text-align:center;padding:8px 0 5px;flex-shrink:0}';
+  html+='.tt-header .school{font-size:24px;font-weight:700;letter-spacing:2px}';
+  html+='.tt-header .info{font-size:18px;color:#222;margin-top:3px;font-weight:500}';
   html+='table.tt{width:100%;border-collapse:collapse;table-layout:fixed;flex:1}';
-  html+='table.tt th,table.tt td{border:2px solid #000;text-align:center;vertical-align:middle}';
-  html+='table.tt th{background:#ddd;font-weight:700;font-size:20px;padding:8px 4px}';
-  html+='table.tt th.period-col{width:14%}';
-  /* 課程格高度由 flex:1 的 table 自動撐滿 */
-  html+='table.tt td.period-cell{background:#f0f0f0;font-weight:700;font-size:18px;padding:4px}';
-  html+='table.tt td.period-cell .time{display:block;font-size:13px;font-weight:400;color:#555;margin-top:2px}';
-  html+='table.tt td.break-cell{background:#fff8dc;font-weight:600;font-size:16px;color:#8b6914;padding:4px}';
-  html+='table.tt td.break-cell .time{font-weight:400;font-size:13px;color:#999;margin-left:6px}';
-  html+='.cell-sub{font-weight:700;font-size:20px;line-height:1.3}';
-  html+='.cell-info{font-size:15px;color:#444;margin-top:1px}';
+  html+='table.tt th,table.tt td{border:1px solid #888;text-align:center;vertical-align:middle}';
+  html+='table.tt th{background:#f0f0f0;font-weight:700;font-size:19px;padding:6px 2px}';
+  html+='table.tt col.col-period{width:10%}';
+  html+='table.tt col.col-time{width:7%}';
+  /* 節次欄 */
+  html+='table.tt td.p-name{background:#f7f7f7;font-weight:700;font-size:17px;padding:2px;line-height:1.35}';
+  html+='table.tt td.p-time{background:#f7f7f7;font-size:14px;color:#555;padding:2px;line-height:1.4}';
+  /* 午餐午休 */
+  html+='table.tt td.break-cell{background:#fefce8;font-weight:600;font-size:17px;color:#7c6a0a;padding:4px}';
+  html+='table.tt td.break-time{background:#fefce8;font-size:14px;color:#999;padding:2px;line-height:1.4}';
+  /* 課程格 */
+  html+='.cell-sub{font-weight:700;font-size:18px;line-height:1.3}';
+  html+='.cell-tea{font-size:14px;color:#444;margin-top:2px}';
   html+='.cell-room{font-size:12px;color:#2563eb;margin-top:1px}';
-  html+='.cell-empty{color:#ccc;font-size:12px}';
   html+='@media print{.no-print{display:none !important}.page{height:100vh}}';
   html+='</style></head><body>';
 
@@ -693,37 +690,47 @@ function openPrintPage(role,results){
     // 標頭
     html+='<div class="tt-header">';
     html+='<div class="school">'+esc(schoolName)+' '+esc(schoolYear)+'學年度</div>';
-    html+='<div class="info">'+esc(t.name)+' 老師';
-    if(t.className) html+='（'+esc(t.className)+' '+esc(t.role)+'）';
-    else html+='（'+esc(t.role)+'）';
-    if(isHR) html+=' — 班級課表';
-    else html+=' — 個人課表';
-    html+='</div></div>';
+    var infoLine='';
+    if(isHR&&t.className){
+      infoLine=esc(t.className)+' 日課表　導師：'+esc(t.name)+' 教師';
+    } else if(t.className){
+      infoLine=esc(t.name)+' 老師（'+esc(t.className)+' '+esc(t.role)+'）— 個人課表';
+    } else {
+      infoLine=esc(t.name)+' 老師（'+esc(t.role)+'）— 個人課表';
+    }
+    html+='<div class="info">'+infoLine+'</div></div>';
 
-    // 課表（含午餐午休）
-    html+='<table class="tt"><tr><th class="period-col">節次</th>';
-    DAYS.forEach(function(d){html+='<th>'+d.replace('星期','')+'</th>'});
+    // 課表（含午餐午休），節次＋時間拆為兩欄
+    html+='<table class="tt">';
+    html+='<colgroup><col class="col-period"><col class="col-time"><col><col><col><col><col></colgroup>';
+    html+='<tr><th>節次</th><th>時間</th>';
+    DAYS.forEach(function(d){html+='<th>'+d+'</th>'});
     html+='</tr>';
 
     allFrames.forEach(function(f){
       if(f.type==='break'){
-        html+='<tr><td class="break-cell" colspan="6">'+esc(f.label)+'<span class="time">'+esc(f.time)+'</span></td></tr>';
+        /* 午餐午休：節次名稱佔第一欄，時間佔第二欄，其餘合併留空 */
+        var timeParts=f.time.split(' - ');
+        html+='<tr><td class="break-cell">'+esc(f.label)+'</td>';
+        html+='<td class="break-time">'+timeParts.join('<br>|<br>')+'</td>';
+        html+='<td class="break-cell" colspan="5"></td></tr>';
         return;
       }
-      html+='<tr><td class="period-cell">'+esc(f.label)+'<span class="time">'+esc(f.time)+'</span></td>';
+      var timeParts=f.time.split(' - ');
+      html+='<tr><td class="p-name">'+esc(f.label)+'</td>';
+      html+='<td class="p-time">'+timeParts.join('<br>|<br>')+'</td>';
       DAYS.forEach(function(day){
         var entries=tt.filter(function(e){return e.day===day&&e.period===f.id});
         html+='<td>';
         if(entries.length>0){
           entries.forEach(function(e,i){
-            if(i>0) html+='<hr style="border:none;border-top:1px solid #ccc;margin:2px 0">';
+            if(i>0) html+='<hr style="border:none;border-top:1px solid #ddd;margin:2px 0">';
             html+='<div class="cell-sub">'+esc(e.subName)+'</div>';
-            if(isHR&&e.teaId!==t.id) html+='<div class="cell-info">'+esc(e.teaName)+'</div>';
-            if(!isHR) html+='<div class="cell-info">'+esc(e.className)+'</div>';
+            if(isHR&&e.teaId!==t.id) html+='<div class="cell-tea">'+esc(e.teaName)+'</div>';
+            else if(isHR) html+='<div class="cell-tea">'+esc(t.name)+'</div>';
+            if(!isHR) html+='<div class="cell-tea">'+esc(e.className)+'</div>';
             if(e.roomName) html+='<div class="cell-room">'+esc(e.roomName)+'</div>';
           });
-        } else {
-          html+='<div class="cell-empty"></div>';
         }
         html+='</td>';
       });
