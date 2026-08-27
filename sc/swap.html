@@ -89,6 +89,15 @@ textarea{resize:vertical;min-height:80px}
 .spinner{width:36px;height:36px;border:3px solid #e2e8f0;border-top-color:#3b82f6;border-radius:50%;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 .empty-msg{text-align:center;color:#94a3b8;padding:40px;font-size:14px}
+.tp2-roles{display:flex;gap:4px;margin-bottom:10px;flex-wrap:wrap}
+.tp2-role{padding:6px 14px;border-radius:16px;font-size:14px;font-weight:600;cursor:pointer;border:1.5px solid #e2e8f0;background:#fff;color:#64748b;font-family:inherit}
+.tp2-role.active{background:#1a365d;color:#fff;border-color:#1a365d}
+.tp2-grid{display:flex;flex-wrap:wrap;gap:5px;max-height:200px;overflow-y:auto;padding:4px}
+.tp2-item{padding:6px 12px;border-radius:8px;font-size:14px;cursor:pointer;border:1.5px solid #e2e8f0;background:#f8fafc;transition:all .12s;text-align:center;min-width:80px}
+.tp2-item:hover{border-color:#3b82f6;background:#eff6ff}
+.tp2-item.selected{background:#2563eb;color:#fff;border-color:#2563eb}
+.tp2-item .tp2-cls{font-size:11px;color:#94a3b8}.tp2-item.selected .tp2-cls{color:rgba(255,255,255,.7)}
+.tp2-sel-name{display:inline-block;background:#1a365d;color:#fff;padding:4px 14px;border-radius:16px;font-size:14px;font-weight:600;margin-left:8px}
 @media(max-width:640px){.form-col{min-width:100%}.login-card{padding:28px 24px}.main{padding:12px}.flow-line{width:16px}}
 </style>
 </head>
@@ -99,7 +108,7 @@ textarea{resize:vertical;min-height:80px}
 var API_URL = "https://script.google.com/macros/s/AKfycbzJL3e9ofFRMuvCOwHVnYEVhsiY8GNkhU3p7MvvEH14-a4AoxXxt0ZYAXxWiQGWnkpJ/exec";
 
 var USER=null,EMAIL="",allTeachers=null,mySchedule=null,partnerSchedule=null;
-var selA=null,selB=null,cachedSwapData=null,swapList=[];
+var selA=null,selB=null,cachedSwapData=null,swapList=[],swapPickerRole="導師",swapSelTid="";
 var PERIODS=["1","2","3","4","5","6","7"];
 var PL={"1":"第一節","2":"第二節","3":"第三節","4":"第四節","5":"第五節","6":"第六節","7":"第七節"};
 var WD=["星期日","星期一","星期二","星期三","星期四","星期五","星期六"];
@@ -193,11 +202,36 @@ function renderApplyTab(){
   h+='<input type="date" id="dateA" onchange="onDateA(this.value)"><div id="slotsA"></div></div>';
 
   // Step 2
-  h+='<div class="card"><h3>📗 Step 2：選擇調課對象與時段</h3><div class="form-row"><div class="form-col">';
-  h+='<label class="field">選擇老師</label><select id="selTeacher" onchange="onSelTea(this.value)"><option value="">— 請選擇 —</option>';
-  if(allTeachers)allTeachers.forEach(function(t){h+='<option value="'+t.id+'">'+esc(t.name+(t.className?' ('+t.className+')':'')+'　'+t.role)+'</option>';});
-  h+='</select></div><div class="form-col"><label class="field">選擇日期</label>';
-  h+='<input type="date" id="dateB" onchange="onDateB(this.value)" disabled></div></div><div id="slotsB"></div></div>';
+  h+='<div class="card"><h3>📗 Step 2：選擇調課對象與時段</h3>';
+  h+='<label class="field">選擇老師';
+  if(swapSelTid){var _st=null;if(allTeachers)allTeachers.forEach(function(t){if(t.id===swapSelTid)_st=t});
+    if(_st)h+='<span class="tp2-sel-name">'+esc(_st.name)+(_st.className?' ('+esc(_st.className)+')':'')+'</span>';}
+  h+='</label>';
+  // 角色分頁
+  var _groups={};if(allTeachers)allTeachers.forEach(function(t){var r=t.role||'其他';if(!_groups[r])_groups[r]=[];_groups[r].push(t);});
+  var _order=["導師","行政","科任","特教","教支","外籍"];for(var _r in _groups){if(_order.indexOf(_r)===-1)_order.push(_r);}
+  h+='<div class="tp2-roles">';
+  _order.forEach(function(r){if(!_groups[r])return;h+='<button class="tp2-role'+(swapPickerRole===r?' active':'')+'" onclick="swapPickerRole=\''+esc(r)+'\';renderApplyTab()">'+esc(r)+'('+_groups[r].length+')</button>';});
+  h+='</div>';
+  // 教師列表
+  var _list=(_groups[swapPickerRole]||[]).slice().sort(function(a,b){
+    var ca=a.className||'',cb=b.className||'';
+    if(ca&&cb){var ga=parseInt(ca)||99,gb=parseInt(cb)||99;if(ga!==gb)return ga-gb;var na=parseInt(ca.replace(/.*年/,''))||0,nb=parseInt(cb.replace(/.*年/,''))||0;return na-nb;}
+    if(ca&&!cb)return -1;if(!ca&&cb)return 1;return a.name.localeCompare(b.name,'zh-Hant');
+  });
+  h+='<div class="tp2-grid">';
+  _list.forEach(function(t){var sel=swapSelTid===t.id;
+    h+='<div class="tp2-item'+(sel?' selected':'')+'" onclick="pickSwapTeacher(\''+t.id+'\')">';
+    h+=esc(t.name);if(t.className)h+='<br><span class="tp2-cls">'+esc(t.className)+'</span>';h+='</div>';
+  });
+  h+='</div>';
+  // 日期選擇
+  h+='<div style="margin-top:12px"><label class="field">選擇日期</label>';
+  h+='<input type="date" id="dateB" onchange="onDateB(this.value)"'+(swapSelTid?'':' disabled')+'></div>';
+  h+='<div id="slotsB"></div>';
+  // hidden select for compatibility
+  h+='<select id="selTeacher" style="display:none"><option value="'+esc(swapSelTid)+'"></option></select>';
+  h+='</div>';
 
   // 加入清單按鈕
   h+='<div style="text-align:center;margin-bottom:16px"><div id="summary"></div>';
@@ -220,10 +254,21 @@ function scrollToStep1(){var el=document.getElementById('step1Card');if(el)el.sc
 function onDateA(v){selA=null;updateSummary();if(!v){$('slotsA').innerHTML='';return;}
   var d=new Date(v),wd=WD[d.getDay()];if(d.getDay()===0||d.getDay()===6){$('slotsA').innerHTML='<div class="warn-box">⚠ 請選擇平日</div>';return;}
   renderSlots('slotsA',mySchedule,wd,'A',v);}
-function onSelTea(tid){selB=null;partnerSchedule=null;updateSummary();$('slotsB').innerHTML='';document.getElementById('dateB').value='';
-  if(!tid){document.getElementById('dateB').disabled=true;return;}document.getElementById('dateB').disabled=false;
-  $('slotsB').innerHTML='<div style="padding:12px;color:#64748b;font-size:13px">載入課表中...</div>';
-  apiGet({action:"schedule",tid:tid,mode:"personal",cid:""}).then(function(d){partnerSchedule=d.timetable;$('slotsB').innerHTML='<div style="padding:12px;color:#64748b;font-size:13px">👆 請選擇日期</div>';}).catch(function(e){$('slotsB').innerHTML='<div class="warn-box">❌ '+e.message+'</div>';});}
+function pickSwapTeacher(tid){
+  swapSelTid=tid;
+  selB=null;partnerSchedule=null;
+  renderApplyTab();
+  // 載入課表
+  if(!tid)return;
+  var slotsEl=document.getElementById('slotsB');
+  if(slotsEl)slotsEl.innerHTML='<div style="padding:12px;color:#64748b;font-size:14px">載入課表中...</div>';
+  apiGet({action:"schedule",tid:tid,mode:"personal",cid:""}).then(function(d){
+    partnerSchedule=d.timetable;
+    var slotsEl2=document.getElementById('slotsB');
+    if(slotsEl2)slotsEl2.innerHTML='<div style="padding:12px;color:#64748b;font-size:14px">👆 請選擇日期</div>';
+  }).catch(function(e){var slotsEl3=document.getElementById('slotsB');if(slotsEl3)slotsEl3.innerHTML='<div class="warn-box">❌ '+e.message+'</div>';});
+}
+function onSelTea(tid){pickSwapTeacher(tid);}
 function onDateB(v){selB=null;updateSummary();if(!v||!partnerSchedule){$('slotsB').innerHTML='';return;}
   var d=new Date(v),wd=WD[d.getDay()];if(d.getDay()===0||d.getDay()===6){$('slotsB').innerHTML='<div class="warn-box">⚠ 請選擇平日</div>';return;}
   renderSlots('slotsB',partnerSchedule,wd,'B',v);}
@@ -239,8 +284,14 @@ function renderSlots(cid,schedule,weekday,side,dateStr){
       h+='<span class="s-period">'+esc(PL[p]||p)+'</span><span class="s-sub">'+esc(l.subName)+'</span><span class="s-class">'+esc(l.className)+'</span>';
       if(conf)h+='<span style="color:#dc2626;font-size:11px;margin-left:8px">⚠ 衝堂</span>';h+='</div>';});
     } else {
-      if(side==='B'){h+='<div class="slot" style="border-color:#d1fae5;background:#f0fdf4" onclick="pickSlot(\''+side+'\',\''+weekday+'\',\''+p+'\',\''+dateStr+'\')">';
-        h+='<span class="s-period">'+esc(PL[p]||p)+'</span><span class="s-free">✅ 空堂（可調課）</span></div>';}
+      if(side==='B'){
+        // 判斷對方老師身份：導師的非授課時段=科任課，科任/行政的非授課時段=空堂
+        var partnerTid=document.getElementById('selTeacher')?document.getElementById('selTeacher').value:'';
+        var isPartnerHR=false;if(allTeachers&&partnerTid)allTeachers.forEach(function(t){if(t.id===partnerTid&&t.role.indexOf('導師')!==-1)isPartnerHR=true;});
+        var freeLabel=isPartnerHR?'科任課時段':'✅ 空堂（可調課）';
+        var freeStyle=isPartnerHR?'border-color:#e2e8f0;background:#f8fafc':'border-color:#d1fae5;background:#f0fdf4';
+        h+='<div class="slot" style="'+freeStyle+'" onclick="pickSlot(\''+side+'\',\''+weekday+'\',\''+p+'\',\''+dateStr+'\')">';
+        h+='<span class="s-period">'+esc(PL[p]||p)+'</span><span class="s-free">'+freeLabel+'</span></div>';}
       else{h+='<div class="slot free"><span class="s-period">'+esc(PL[p]||p)+'</span><span class="s-free">空堂</span></div>';}
     }
   });h+='</div>';$(cid).innerHTML=h;}
@@ -274,9 +325,10 @@ function updateSummary(){
 
 function addToSwapList(){
   if(!selA||!selB)return;
-  var tid=document.getElementById('selTeacher').value;
+  var tid=swapSelTid;
   var tName='';if(allTeachers)allTeachers.forEach(function(t){if(t.id===tid)tName=t.name});
   swapList.push({selA:JSON.parse(JSON.stringify(selA)),selB:JSON.parse(JSON.stringify(selB)),tidB:tid,tNameB:tName});
+  swapSelTid='';partnerSchedule=null;selA=null;selB=null;
   renderApplyTab();
 }
 
