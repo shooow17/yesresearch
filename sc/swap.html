@@ -193,7 +193,7 @@ function renderApplyTab(){
   h+='<input type="date" id="dateA" onchange="onDateA(this.value)"><div id="slotsA"></div></div>';
 
   // Step 2
-  h+='<div class="card"><h3>📗 Step 2：選擇代課老師與時段</h3><div class="form-row"><div class="form-col">';
+  h+='<div class="card"><h3>📗 Step 2：選擇調課對象與時段</h3><div class="form-row"><div class="form-col">';
   h+='<label class="field">選擇老師</label><select id="selTeacher" onchange="onSelTea(this.value)"><option value="">— 請選擇 —</option>';
   if(allTeachers)allTeachers.forEach(function(t){h+='<option value="'+t.id+'">'+esc(t.name+(t.className?' ('+t.className+')':'')+'　'+t.role)+'</option>';});
   h+='</select></div><div class="form-col"><label class="field">選擇日期</label>';
@@ -208,7 +208,7 @@ function renderApplyTab(){
   if(swapList.length>0){
     h+='<div class="card" style="border:2px solid #059669"><h3>📋 Step 3：填寫資訊並送出</h3>';
     h+='<label class="field">調課原因</label><textarea id="reason" placeholder="請說明調課原因..."></textarea>';
-    h+='<div class="chk-row"><input type="checkbox" id="chkNotified"><label for="chkNotified">已告知代課老師本人</label></div>';
+    h+='<div class="chk-row"><input type="checkbox" id="chkNotified"><label for="chkNotified">已告知調課對象本人</label></div>';
     h+='<div style="text-align:center;margin-top:16px"><button class="btn-submit" id="btnSubmit" onclick="doSubmit()">送出調課申請（共 '+swapList.length+' 組）</button></div></div>';
   }
 
@@ -240,7 +240,7 @@ function renderSlots(cid,schedule,weekday,side,dateStr){
       if(conf)h+='<span style="color:#dc2626;font-size:11px;margin-left:8px">⚠ 衝堂</span>';h+='</div>';});
     } else {
       if(side==='B'){h+='<div class="slot" style="border-color:#d1fae5;background:#f0fdf4" onclick="pickSlot(\''+side+'\',\''+weekday+'\',\''+p+'\',\''+dateStr+'\')">';
-        h+='<span class="s-period">'+esc(PL[p]||p)+'</span><span class="s-free">✅ 空堂（可代課）</span></div>';}
+        h+='<span class="s-period">'+esc(PL[p]||p)+'</span><span class="s-free">✅ 空堂（可調課）</span></div>';}
       else{h+='<div class="slot free"><span class="s-period">'+esc(PL[p]||p)+'</span><span class="s-free">空堂</span></div>';}
     }
   });h+='</div>';$(cid).innerHTML=h;}
@@ -262,7 +262,7 @@ function updateSummary(){
     h+='<div style="font-size:15px;color:#475569">'+esc(selA.subName)+' — '+esc(selA.className)+'</div></div>';}
   if(selB){var tid=document.getElementById('selTeacher').value,tn='';if(allTeachers)allTeachers.forEach(function(t){if(t.id===tid)tn=t.name});
     h+='<div style="flex:1;min-width:200px;background:#f0fdf4;padding:14px;border-radius:8px;border-left:4px solid #059669">';
-    h+='<div style="font-size:13px;color:#64748b;margin-bottom:4px">代課老師：'+esc(tn)+'</div><div style="font-weight:700;font-size:16px">'+esc(selB.date)+' '+esc(selB.day)+' '+esc(PL[selB.period])+'</div>';
+    h+='<div style="font-size:13px;color:#64748b;margin-bottom:4px">調課對象：'+esc(tn)+'</div><div style="font-weight:700;font-size:16px">'+esc(selB.date)+' '+esc(selB.day)+' '+esc(PL[selB.period])+'</div>';
     h+='<div style="font-size:15px;color:#475569">'+esc(selB.subName||'空堂')+(selB.className?' — '+esc(selB.className):'')+'</div></div>';}
   h+='</div>';se.innerHTML=h;
   var warns=[];
@@ -284,7 +284,7 @@ function doSubmit(){
   if(swapList.length===0){alert('請先加入至少一組調課');return;}
   var reason=document.getElementById('reason').value.trim();
   if(!reason){alert('請填寫調課原因');return;}
-  if(!document.getElementById('chkNotified').checked){alert('請確認已告知代課老師');return;}
+  if(!document.getElementById('chkNotified').checked){alert('請確認已告知調課對象');return;}
   var btn=document.getElementById('btnSubmit');btn.disabled=true;btn.textContent='送出中...';
   var pairs=swapList.map(function(s){
     return{dateA:s.selA.date,weekdayA:s.selA.day,periodA:s.selA.period,subNameA:s.selA.subName,classNameA:s.selA.className,
@@ -293,7 +293,7 @@ function doSubmit(){
   apiPost({action:"submitSwapBatch",tidA:USER.teacher.id,pairs:pairs,reason:reason,notified:true
   }).then(function(r){btn.disabled=false;btn.textContent='送出調課申請（共 '+swapList.length+' 組）';
     if(r.error){alert('❌ '+r.error);return;}
-    alert('✅ 調課申請已送出！\n序號：'+r.seqNo+'\n共 '+r.count+' 組調課\n\n下一步：等待代課老師登入確認');
+    alert('✅ 調課申請已送出！\n序號：'+r.seqNo+'\n共 '+r.count+' 組調課\n\n下一步：等待調課對象登入確認');
     swapList=[];invalidateCache();showTab('history');
   }).catch(function(e){btn.disabled=false;btn.textContent='送出調課申請（共 '+swapList.length+' 組）';alert('❌ '+e.message);});}
 
@@ -377,7 +377,7 @@ function renderPendingTab(){
     var done=r.records.filter(function(x){return x.status==='已核准'||x.status==='已駁回'});
     if(done.length>0){
       h+='<div class="card" style="margin-top:20px"><h3>📜 最近紀錄</h3><div style="overflow-x:auto"><table class="record-table">';
-      h+='<tr><th>申請人</th><th>調課</th><th>代課</th><th>狀態</th></tr>';
+      h+='<tr><th>申請人</th><th>調課</th><th>調課對象</th><th>狀態</th></tr>';
       done.slice(0,15).forEach(function(rec){
         h+='<tr><td>'+esc(rec.nameA)+'</td><td style="font-size:13px">'+fmtDate(rec.dateA)+' '+fmtPeriod(rec.periodA)+'<br>'+esc(rec.subA)+'</td>';
         h+='<td>'+esc(rec.nameB)+'</td><td>'+statusBadge(rec.status)+'</td></tr>';});
