@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>調課申請系統 操作教學</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Noto Sans TC',-apple-system,sans-serif;background:#f8fafc;color:#1e293b;line-height:1.8}
+.hero{background:linear-gradient(135deg,#1a365d 0%,#2563eb 100%);color:#fff;padding:40px 24px;text-align:center}
+.hero h1{font-size:32px;font-weight:900;margin-bottom:8px}
+.hero p{font-size:16px;color:rgba(255,255,255,.8);max-width:600px;margin:0 auto}
+.container{max-width:840px;margin:0 auto;padding:0 20px 60px}
+
+/* 分頁 */
+.tabs{display:flex;gap:0;margin:24px 0 0;border-bottom:3px solid #1a365d;flex-wrap:wrap}
+.tab{padding:14px 22px;font-size:15px;font-weight:700;cursor:pointer;color:#64748b;background:#fff;border:2px solid #e2e8f0;border-bottom:none;border-radius:10px 10px 0 0;margin-bottom:-3px;transition:all .15s;font-family:inherit}
+.tab:hover{color:#2563eb;background:#eff6ff}
+.tab.active{color:#fff;background:#1a365d;border-color:#1a365d}
+.tab-content{display:none;padding:24px 0}
+.tab-content.active{display:block}
+
+/* 重要提醒 */
+.notice{background:#fef3c7;border:2px solid #f59e0b;border-radius:12px;padding:20px 24px;margin:20px 0;font-size:16px;color:#92400e}
+.notice b{color:#b45309;font-size:18px}
+.notice ul{margin:8px 0 0 20px}
+
+/* 步驟 */
+.step{background:#fff;border-radius:14px;padding:28px;margin:20px 0;box-shadow:0 2px 8px rgba(0,0,0,.06);border-left:5px solid #2563eb;position:relative}
+.step-num{position:absolute;top:-14px;left:20px;background:#2563eb;color:#fff;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:900;box-shadow:0 2px 6px rgba(37,99,235,.3)}
+.step h2{font-size:22px;font-weight:700;color:#1a365d;margin:8px 0 12px}
+.step p,.step-text{font-size:16px;margin-bottom:10px}
+.substep{background:#f1f5f9;border-radius:8px;padding:14px 18px;margin:10px 0;font-size:15px;line-height:2}
+.substep b{color:#1a365d}
+
+/* 流程圖 */
+.flow-chart{display:flex;align-items:center;justify-content:center;gap:0;margin:20px 0;flex-wrap:wrap}
+.flow-node{background:#fff;border:2px solid #2563eb;border-radius:10px;padding:10px 16px;font-size:14px;font-weight:600;color:#1e3a5f;text-align:center;min-width:90px}
+.flow-node.green{border-color:#059669;color:#047857;background:#ecfdf5}
+.flow-node.amber{border-color:#f59e0b;color:#b45309;background:#fffbeb}
+.flow-arrow{font-size:24px;color:#94a3b8;padding:0 6px}
+
+/* 角色卡 */
+.role-grid{display:flex;gap:12px;flex-wrap:wrap;margin:16px 0}
+.role-card{flex:1;min-width:180px;background:#fff;border-radius:10px;padding:16px;border:2px solid #e2e8f0;text-align:center}
+.role-card .emoji{font-size:32px;margin-bottom:6px}
+.role-card h3{font-size:16px;font-weight:700;color:#1a365d;margin-bottom:4px}
+.role-card p{font-size:13px;color:#64748b}
+
+/* 提示 */
+.tip{background:#eff6ff;border:1.5px solid #93c5fd;border-radius:10px;padding:14px 18px;margin:12px 0;font-size:15px;color:#1e40af}
+.tip b{color:#1d4ed8}
+
+/* FAQ */
+.faq-item{background:#fff;border-radius:10px;padding:18px 22px;margin:10px 0;box-shadow:0 1px 4px rgba(0,0,0,.05)}
+.faq-item h3{font-size:17px;font-weight:700;color:#2563eb;margin-bottom:6px}
+.faq-item p{font-size:15px;color:#475569}
+
+/* 摘要 */
+.summary-box{background:#ecfdf5;border:2px solid #059669;border-radius:12px;padding:24px 28px;margin:20px 0;color:#047857}
+.summary-box b{font-size:18px}
+.summary-box ol{margin:12px 0 0 20px;font-size:16px;line-height:2.4}
+
+.footer{text-align:center;padding:24px;color:#94a3b8;font-size:13px;border-top:1px solid #e2e8f0;margin-top:40px}
+@media(max-width:640px){.hero h1{font-size:24px}.step h2{font-size:18px}.flow-chart{flex-direction:column}.flow-arrow{transform:rotate(90deg)}.tab{padding:10px 14px;font-size:13px}}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>📝 調課申請系統 操作教學</h1>
+  <p>本系統提供教師線上提出調課申請，經調課對象確認及行政核准後生效</p>
+</div>
+
+<div class="container">
+
+<div class="notice">
+  <b>⚠ 使用前請注意</b>
+  <ul>
+    <li>本系統透過網路連線雲端資料庫，<b>每次操作可能需等待 3～10 秒</b>，請耐心等候，切勿重複點擊。</li>
+    <li>看到轉圈圈的載入畫面時，表示系統正在處理，<b>請勿關閉或重新整理頁面</b>。</li>
+    <li>建議使用 <b>Chrome 瀏覽器</b>，操作體驗最佳。</li>
+    <li>第一次登入時載入較慢（約 5～10 秒），之後切換頁面會快很多。</li>
+  </ul>
+</div>
+
+<!-- 分頁選單 -->
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('applicant')">📝 給申請人</div>
+  <div class="tab" onclick="switchTab('partner')">👤 給調課對象</div>
+  <div class="tab" onclick="switchTab('admin')">🏫 給行政人員</div>
+  <div class="tab" onclick="switchTab('faq')">❓ 常見問題</div>
+  <div class="tab" onclick="switchTab('summary')">📌 操作摘要</div>
+</div>
+
+<!-- ============================
+     分頁 1：給申請人
+     ============================ -->
+<div class="tab-content active" id="tab-applicant">
+
+<h2 style="font-size:22px;font-weight:700;color:#1a365d;margin:24px 0 12px">📋 調課審核流程</h2>
+<p class="step-text">您送出的調課申請，需要經過以下四個關卡才會正式生效：</p>
+<div class="flow-chart">
+  <div class="flow-node">📝<br>老師送出<br>申請</div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-node amber">👤<br>調課對象<br>確認</div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-node amber">📋<br>教學組長<br>審核</div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-node amber">✅<br>教務主任<br>核定</div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-node green">🎉<br>調課<br>生效</div>
+</div>
+<div class="tip"><b>💡 小提醒：</b>任何一關都可以駁回。被駁回後，您可以在「申請紀錄」中看到狀態，如需重新調課請再次申請。</div>
+
+<div class="step">
+  <div class="step-num">1</div>
+  <h2>登入系統</h2>
+  <p>開啟調課申請系統網頁，輸入您的<b>學校電子郵件</b>（與校務系統相同），然後按「登入」。</p>
+  <div class="substep"><b>📧 輸入電子郵件</b> → 按下「登入」 → 等待系統驗證（約 3～5 秒）</div>
+  <div class="tip"><b>💡 登入後系統會記住您的信箱</b>，下次開啟網頁會自動填入，不需要再輸入。</div>
+</div>
+
+<div class="step">
+  <div class="step-num">2</div>
+  <h2>選擇我要調的課</h2>
+  <p>登入後會看到「📝 調課申請」頁面。在 <b>Step 1</b> 區塊：</p>
+  <div class="substep">
+    <b>① 選擇日期：</b>點擊日曆，選擇您要調課的那一天（只能選星期一到五）。<br>
+    <b>② 系統會列出您當天的所有課程</b>，每一節會顯示科目和班級。<br>
+    <b>③ 點擊要調的那一節課</b>，被選中的課會變成藍色高亮。
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-num">3</div>
+  <h2>選擇調課對象與時段</h2>
+  <p>在 <b>Step 2</b> 區塊，選擇要跟哪位老師調課：</p>
+  <div class="substep">
+    <b>① 選擇老師類別：</b>上方有分類按鈕（導師、行政、科任、特教等），點擊切換類別。<br>
+    <b>② 點擊老師姓名：</b>導師會按年級班級排列，方便查找。點擊後老師名字會變成藍色。<br>
+    <b>③ 選擇日期：</b>選擇您希望調課的對方日期。<br>
+    <b>④ 系統會列出對方當天的課表：</b><br>
+    　• 有授課的時段 → 顯示科目和班級<br>
+    　• 導師的非授課時段 → 顯示「科任課時段」<br>
+    　• 科任 / 行政老師的非授課時段 → 顯示「✅ 空堂（可調課）」<br>
+    <b>⑤ 點擊對方的一個時段</b>，即完成這組調課的選擇。
+  </div>
+  <div class="tip"><b>💡 系統會自動檢查衝堂</b>，如果有衝突會出現橘色警告，但您仍可以送出申請，由行政審核判斷。</div>
+</div>
+
+<div class="step">
+  <div class="step-num">4</div>
+  <h2>加入調課清單</h2>
+  <p>選好雙方的課程後，畫面下方會出現摘要，確認無誤後：</p>
+  <div class="substep">按下綠色的 <b>「➕ 加入調課清單」</b> 按鈕</div>
+  <p>如果您需要調<b>多節課</b>（例如連堂 2 節，或整天都需要找人），可以重複 Step 2～4，繼續加入更多組調課到清單中。</p>
+  <div class="tip"><b>💡 每一組可以選不同的老師</b>，例如第一節找 A 老師、第二節找 B 老師，非常彈性。</div>
+  <p>如果加錯了，可以按清單上每一組右邊的 <b>✕</b> 按鈕移除。</p>
+</div>
+
+<div class="step">
+  <div class="step-num">5</div>
+  <h2>填寫原因並送出</h2>
+  <p>清單確認完畢後，在 <b>Step 3</b> 區塊：</p>
+  <div class="substep">
+    <b>① 填寫調課原因：</b>例如「公假參加研習」「校外教學」等。<br>
+    <b>② 勾選「已告知調課對象本人」：</b>請務必事先與對方老師溝通確認。<br>
+    <b>③ 按下「送出調課申請」</b>
+  </div>
+  <p>送出後，系統會顯示申請序號。此時申請狀態為<b>「待對方確認」</b>。</p>
+</div>
+
+<div class="step" style="border-left-color:#059669">
+  <div class="step-num" style="background:#059669">✓</div>
+  <h2>查看申請進度</h2>
+  <p>點擊上方的 <b>「📋 申請紀錄」</b> 頁籤，可以查看您所有的調課申請。</p>
+  <p>每筆申請下方有<b>進度條</b>，四個圓點清楚顯示目前進行到哪一關：</p>
+  <div class="substep">
+    <b style="color:#059669">✓ 綠色</b> = 已通過　　
+    <b style="color:#2563eb">● 藍色閃爍</b> = 等待中　　
+    <b style="color:#dc2626">✕ 紅色</b> = 已駁回
+  </div>
+</div>
+
+</div>
+
+<!-- ============================
+     分頁 2：給調課對象
+     ============================ -->
+<div class="tab-content" id="tab-partner">
+
+<h2 style="font-size:22px;font-weight:700;color:#1a365d;margin:24px 0 12px">👤 當其他老師邀請您調課時</h2>
+<p class="step-text">其他老師送出調課申請後，您是第一關確認者。請盡快處理，以免耽誤後續行政審核。</p>
+
+<div class="step" style="border-left-color:#f59e0b">
+  <div class="step-num" style="background:#f59e0b">1</div>
+  <h2>登入系統</h2>
+  <p>使用您的學校電子郵件登入調課申請系統。</p>
+  <div class="tip"><b>💡 請申請人事先通知您！</b>系統不會自動發送通知，需要申請人告知您登入處理。</div>
+</div>
+
+<div class="step" style="border-left-color:#f59e0b">
+  <div class="step-num" style="background:#f59e0b">2</div>
+  <h2>進入「🔔 待處理」頁籤</h2>
+  <p>登入後，如果有待確認的申請，「🔔 待處理」頁籤右上角會出現<b>紅色數字</b>。</p>
+  <p>點擊進入後，您會看到調課申請卡片，上方有橘色的<b>「需要您確認」</b>標籤。</p>
+</div>
+
+<div class="step" style="border-left-color:#f59e0b">
+  <div class="step-num" style="background:#f59e0b">3</div>
+  <h2>查看內容並決定</h2>
+  <p>卡片內會列出完整的調課資訊：</p>
+  <div class="substep">
+    • 申請人是誰<br>
+    • 調課的日期、節次、科目、班級<br>
+    • 您需要配合的日期和時段<br>
+    • 調課原因
+  </div>
+  <p>確認無誤後：</p>
+  <div class="substep">
+    <b>✅ 確認同意（全部）</b> → 申請進入教學組長審核<br>
+    <b>❌ 駁回（全部）</b> → 申請結束，申請人需重新申請
+  </div>
+</div>
+
+</div>
+
+<!-- ============================
+     分頁 3：給行政人員
+     ============================ -->
+<div class="tab-content" id="tab-admin">
+
+<h2 style="font-size:22px;font-weight:700;color:#1a365d;margin:24px 0 12px">🏫 教學組長 ＆ 教務主任 操作說明</h2>
+
+<div class="role-grid">
+  <div class="role-card">
+    <div class="emoji">📋</div>
+    <h3>教學組長</h3>
+    <p>第二關審核<br>調課對象確認後才會進到您這關</p>
+  </div>
+  <div class="role-card">
+    <div class="emoji">✅</div>
+    <h3>教務主任</h3>
+    <p>第三關核定<br>教學組長通過後才會進到您這關</p>
+  </div>
+</div>
+
+<div class="step" style="border-left-color:#7c3aed">
+  <div class="step-num" style="background:#7c3aed">1</div>
+  <h2>查看待審核項目</h2>
+  <p>登入後，點擊 <b>「🔔 待處理」</b> 頁籤。</p>
+  <div class="substep">
+    • 教學組長會看到藍色 <b>「教學組審核」</b> 標籤的申請<br>
+    • 教務主任會看到紫色 <b>「主任核定」</b> 標籤的申請
+  </div>
+  <p>每張卡片列出完整的調課內容，如果是多組調課會一起顯示。</p>
+</div>
+
+<div class="step" style="border-left-color:#7c3aed">
+  <div class="step-num" style="background:#7c3aed">2</div>
+  <h2>審核決定</h2>
+  <div class="substep">
+    <b>✅ 核准（全部）</b> → 進入下一關（或正式生效）<br>
+    <b>❌ 駁回（全部）</b> → 申請結束
+  </div>
+  <div class="tip"><b>💡 多組調課會一起處理</b>，不需要逐筆審核。一鍵核准或駁回整批申請。</div>
+</div>
+
+<div class="step" style="border-left-color:#7c3aed">
+  <div class="step-num" style="background:#7c3aed">3</div>
+  <h2>查看全部紀錄</h2>
+  <p>點擊 <b>「📊 全部紀錄」</b> 頁籤，可以看到所有老師的調課申請：</p>
+  <div class="substep">
+    • 表格列出：序號、申請人、時間、調課內容、原因、狀態<br>
+    • 上方有<b>狀態篩選按鈕</b>，可快速篩選「待審核」「已核准」「已駁回」等
+  </div>
+</div>
+
+</div>
+
+<!-- ============================
+     分頁 4：常見問題
+     ============================ -->
+<div class="tab-content" id="tab-faq">
+
+<h2 style="font-size:22px;font-weight:700;color:#1a365d;margin:24px 0 16px">❓ 常見問題</h2>
+
+<div class="faq-item">
+  <h3>Q：系統一直在轉圈圈，怎麼辦？</h3>
+  <p>這是正常現象，系統需要連線雲端資料庫讀取資料，通常等待 3～10 秒即可。如果超過 30 秒，請重新整理頁面再試一次。</p>
+</div>
+<div class="faq-item">
+  <h3>Q：可以一次調很多節課嗎？</h3>
+  <p>可以！選好一組調課後按「➕ 加入調課清單」，然後繼續選下一組。每組可以選不同的老師，最後填一次原因一起送出。</p>
+</div>
+<div class="faq-item">
+  <h3>Q：送出後發現選錯了，可以取消嗎？</h3>
+  <p>目前無法自行取消。請聯繫教學組長，請對方在審核時駁回該筆申請，然後重新申請正確的調課。</p>
+</div>
+<div class="faq-item">
+  <h3>Q：對方老師一直沒有確認怎麼辦？</h3>
+  <p>請親自或電話提醒對方老師登入系統，到「🔔 待處理」頁籤進行確認。系統不會自動發送通知。</p>
+</div>
+<div class="faq-item">
+  <h3>Q：忘記自己的登入信箱？</h3>
+  <p>請使用您的學校公務信箱（與校務系統相同），若仍無法登入，請洽詢教務處。</p>
+</div>
+<div class="faq-item">
+  <h3>Q：手機可以操作嗎？</h3>
+  <p>可以，但建議使用電腦操作，畫面較大、選擇老師和時段比較方便。</p>
+</div>
+<div class="faq-item">
+  <h3>Q：導師的「科任課時段」跟科任老師的「空堂」有什麼不同？</h3>
+  <p>導師在非授課時段並非真正空堂，而是有科任老師來班上教課，因此標示為「科任課時段」。科任或行政老師沒有課的時段才是「空堂」。兩種時段都可以選來調課。</p>
+</div>
+<div class="faq-item">
+  <h3>Q：怎麼知道我的申請進度？</h3>
+  <p>登入後點擊「📋 申請紀錄」頁籤，每筆申請下方有進度條，綠色圓點 ✓ 表示已通過，藍色閃爍 ● 表示等待中，紅色 ✕ 表示被駁回。</p>
+</div>
+
+</div>
+
+<!-- ============================
+     分頁 5：操作摘要
+     ============================ -->
+<div class="tab-content" id="tab-summary">
+
+<h2 style="font-size:22px;font-weight:700;color:#1a365d;margin:24px 0 12px">📌 操作流程摘要</h2>
+
+<div class="summary-box">
+  <b>🔄 申請人操作步驟</b>
+  <ol>
+    <li>用學校信箱<b>登入</b>系統</li>
+    <li>選<b>日期</b> → 點擊<b>我要調的課</b>（藍色高亮）</li>
+    <li>選<b>調課對象</b>（分類點選老師姓名）</li>
+    <li>選<b>日期</b> → 點擊<b>對方的時段</b></li>
+    <li>按 <b>「➕ 加入調課清單」</b>（可重複加入多組）</li>
+    <li>填寫<b>調課原因</b> → 勾選<b>已告知對方</b></li>
+    <li>按 <b>「送出調課申請」</b></li>
+    <li>通知調課對象登入系統<b>確認</b></li>
+    <li>在「📋 申請紀錄」查看<b>審核進度</b></li>
+  </ol>
+</div>
+
+<div class="summary-box" style="background:#eff6ff;border-color:#2563eb;color:#1e40af">
+  <b>👤 調課對象操作步驟</b>
+  <ol>
+    <li>用學校信箱<b>登入</b>系統</li>
+    <li>點擊 <b>「🔔 待處理」</b> 頁籤</li>
+    <li>查看調課內容 → 按 <b>「✅ 確認同意」</b> 或 <b>「❌ 駁回」</b></li>
+  </ol>
+</div>
+
+<div class="summary-box" style="background:#faf5ff;border-color:#7c3aed;color:#5b21b6">
+  <b>🏫 教學組長 / 教務主任 操作步驟</b>
+  <ol>
+    <li>用學校信箱<b>登入</b>系統</li>
+    <li>點擊 <b>「🔔 待處理」</b> 頁籤</li>
+    <li>審核調課內容 → 按 <b>「✅ 核准」</b> 或 <b>「❌ 駁回」</b></li>
+    <li>在 <b>「📊 全部紀錄」</b> 可查看歷史紀錄</li>
+  </ol>
+</div>
+
+<div class="flow-chart" style="margin-top:32px">
+  <div class="flow-node">📝<br>申請人<br>送出</div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-node amber">👤<br>對方<br>確認</div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-node amber">📋<br>組長<br>審核</div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-node amber">✅<br>主任<br>核定</div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-node green">🎉<br>調課<br>生效</div>
+</div>
+
+</div>
+
+<div class="footer">調課申請系統 操作教學 ｜ 如有問題請洽教務處</div>
+
+</div>
+
+<script>
+function switchTab(name){
+  document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active')});
+  document.querySelectorAll('.tab-content').forEach(function(c){c.classList.remove('active')});
+  document.getElementById('tab-'+name).classList.add('active');
+  event.target.classList.add('active');
+  window.scrollTo({top:document.querySelector('.tabs').offsetTop-10,behavior:'smooth'});
+}
+</script>
+</body>
+</html>
