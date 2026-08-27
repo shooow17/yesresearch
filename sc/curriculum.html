@@ -652,14 +652,14 @@ function openPrintPage(role,results){
   html+='<style>';
   html+='@page{size:A4 portrait;margin:6mm 6mm 6mm 6mm}';
   html+='*{box-sizing:border-box;margin:0;padding:0}';
-  html+='body{font-family:"Noto Sans TC",-apple-system,"Microsoft JhengHei",sans-serif;color:#000}';
+  html+='body{font-family:"DFKai-SB","BiauKai","KaiTi","標楷體",serif;color:#000}';
   html+='.page{page-break-after:always;height:100vh;display:flex;flex-direction:column;padding:0}';
   html+='.page:last-child{page-break-after:auto}';
   html+='.tt-header{text-align:center;padding:8px 0 5px;flex-shrink:0}';
   html+='.tt-header .school{font-size:24px;font-weight:700;letter-spacing:2px}';
   html+='.tt-header .info{font-size:18px;color:#222;margin-top:3px;font-weight:500}';
   html+='table.tt{width:100%;border-collapse:collapse;table-layout:fixed;flex:1}';
-  html+='table.tt th,table.tt td{border:1px solid #888;text-align:center;vertical-align:middle}';
+  html+='table.tt th,table.tt td{border:1px solid #888;text-align:center;vertical-align:middle;white-space:nowrap}';
   html+='table.tt th{background:#f0f0f0;font-weight:700;font-size:19px;padding:6px 2px}';
   html+='table.tt col.col-period{width:10%}';
   html+='table.tt col.col-time{width:7%}';
@@ -725,7 +725,8 @@ function openPrintPage(role,results){
         if(entries.length>0){
           entries.forEach(function(e,i){
             if(i>0) html+='<hr style="border:none;border-top:1px solid #ddd;margin:2px 0">';
-            html+='<div class="cell-sub">'+esc(e.subName)+'</div>';
+            var sn=(e.subName||'').replace(/^資源班[-－—–]/,'');
+            html+='<div class="cell-sub">'+esc(sn)+'</div>';
             if(isHR&&e.teaId!==t.id) html+='<div class="cell-tea">'+esc(e.teaName)+'</div>';
             else if(isHR) html+='<div class="cell-tea">'+esc(t.name)+'</div>';
             if(!isHR) html+='<div class="cell-tea">'+esc(e.className)+'</div>';
