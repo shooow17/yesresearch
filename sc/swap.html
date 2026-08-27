@@ -99,7 +99,7 @@ textarea{resize:vertical;min-height:80px}
 var API_URL = "https://script.google.com/macros/s/AKfycbzJL3e9ofFRMuvCOwHVnYEVhsiY8GNkhU3p7MvvEH14-a4AoxXxt0ZYAXxWiQGWnkpJ/exec";
 
 var USER=null,EMAIL="",allTeachers=null,mySchedule=null,partnerSchedule=null;
-var selA=null,selB=null,cachedSwapList=null,swapList=[];
+var selA=null,selB=null,cachedSwapData=null,swapList=[];
 var PERIODS=["1","2","3","4","5","6","7"];
 var PL={"1":"第一節","2":"第二節","3":"第三節","4":"第四節","5":"第五節","6":"第六節","7":"第七節"};
 var WD=["星期日","星期一","星期二","星期三","星期四","星期五","星期六"];
@@ -131,12 +131,19 @@ function loadInitialData(){
   $('app').innerHTML=mkHeader()+'<div class="center-msg"><div class="spinner"></div><span>載入資料...</span></div>';
   Promise.all([
     apiGet({action:"schedule",tid:USER.teacher.id,mode:"personal",cid:""}),
-    apiGet({action:"swapTeachers"})
+    apiGet({action:"swapTeachers"}),
+    apiGet({action:"swapList",email:EMAIL})
   ]).then(function(res){
     mySchedule=res[0].timetable;allTeachers=res[1].teachers.filter(function(t){return t.id!==USER.teacher.id});
+    cachedSwapData=res[2];
     showTab('apply');
   }).catch(function(e){$('app').innerHTML=mkHeader()+'<div class="center-msg" style="color:#dc2626">❌ '+e.message+'</div>';});
 }
+function getSwapData(force){
+  if(!force&&cachedSwapData)return Promise.resolve(cachedSwapData);
+  return apiGet({action:"swapList",email:EMAIL}).then(function(r){cachedSwapData=r;return r;});
+}
+function invalidateCache(){cachedSwapData=null;}
 
 /* ---- Header & Tabs ---- */
 function mkHeader(){
@@ -287,7 +294,7 @@ function doSubmit(){
   }).then(function(r){btn.disabled=false;btn.textContent='送出調課申請（共 '+swapList.length+' 組）';
     if(r.error){alert('❌ '+r.error);return;}
     alert('✅ 調課申請已送出！\n序號：'+r.seqNo+'\n共 '+r.count+' 組調課\n\n下一步：等待代課老師登入確認');
-    swapList=[];showTab('history');
+    swapList=[];invalidateCache();showTab('history');
   }).catch(function(e){btn.disabled=false;btn.textContent='送出調課申請（共 '+swapList.length+' 組）';alert('❌ '+e.message);});}
 
 /* ================================================================
@@ -295,7 +302,7 @@ function doSubmit(){
    ================================================================ */
 function renderHistoryTab(){
   $('app').innerHTML=mkHeader()+mkTabs('history')+'<div class="main"><div class="center-msg"><div class="spinner"></div></div></div>';
-  apiGet({action:"swapList",email:EMAIL}).then(function(r){
+  getSwapData().then(function(r){
     if(r.error){$('app').innerHTML=mkHeader()+mkTabs('history')+'<div class="main"><div class="warn-box">'+esc(r.error)+'</div></div>';return;}
     cachedSwapList=r;
     var mine=r.records.filter(function(x){return x.tidA===r.myTid});
@@ -325,7 +332,7 @@ function renderHistoryTab(){
    ================================================================ */
 function renderPendingTab(){
   $('app').innerHTML=mkHeader()+mkTabs('pending')+'<div class="main"><div class="center-msg"><div class="spinner"></div></div></div>';
-  apiGet({action:"swapList",email:EMAIL}).then(function(r){
+  getSwapData().then(function(r){
     if(r.error){$('app').innerHTML=mkHeader()+mkTabs('pending')+'<div class="main"><div class="warn-box">'+esc(r.error)+'</div></div>';return;}
     cachedSwapList=r;
     var items=getPendingItems(r);
@@ -372,7 +379,7 @@ function renderPendingTab(){
       h+='<div class="card" style="margin-top:20px"><h3>📜 最近紀錄</h3><div style="overflow-x:auto"><table class="record-table">';
       h+='<tr><th>申請人</th><th>調課</th><th>代課</th><th>狀態</th></tr>';
       done.slice(0,15).forEach(function(rec){
-        h+='<tr><td>'+esc(rec.nameA)+'</td><td style="font-size:12px">'+esc(rec.dateA)+' '+esc(PL[rec.periodA]||rec.periodA)+'<br>'+esc(rec.subA)+'</td>';
+        h+='<tr><td>'+esc(rec.nameA)+'</td><td style="font-size:13px">'+fmtDate(rec.dateA)+' '+fmtPeriod(rec.periodA)+'<br>'+esc(rec.subA)+'</td>';
         h+='<td>'+esc(rec.nameB)+'</td><td>'+statusBadge(rec.status)+'</td></tr>';});
       h+='</table></div></div>';}
     h+='</div>';$('app').innerHTML=h;
@@ -383,7 +390,7 @@ function doReview(row,decision){
   if(!confirm('確定要「'+label+'」這筆調課申請嗎？'))return;
   apiPost({action:"reviewSwap",row:row,decision:decision,reviewerEmail:EMAIL}).then(function(r){
     if(r.error){alert('❌ '+r.error);return;}
-    alert('✅ 已'+label+'！\n新狀態：'+r.newStatus);renderPendingTab();
+    alert('✅ 已'+label+'！\n新狀態：'+r.newStatus);invalidateCache();renderPendingTab();
   }).catch(function(e){alert('❌ '+e.message);});}
 
 function doReviewBatch(seqNo,decision){
@@ -391,13 +398,13 @@ function doReviewBatch(seqNo,decision){
   if(!confirm('確定要「'+label+'」序號 '+seqNo+' 的全部調課申請嗎？'))return;
   apiPost({action:"reviewSwapBatch",seqNo:seqNo,decision:decision,reviewerEmail:EMAIL}).then(function(r){
     if(r.error){alert('❌ '+r.error);return;}
-    alert('✅ 已'+label+'！共 '+r.count+' 筆\n新狀態：'+r.newStatus);renderPendingTab();
+    alert('✅ 已'+label+'！共 '+r.count+' 筆\n新狀態：'+r.newStatus);invalidateCache();renderPendingTab();
   }).catch(function(e){alert('❌ '+e.message);});}
 
 /* ---- 全部紀錄總覽（教學組/主任） ---- */
 function renderOverviewTab(){
   $('app').innerHTML=mkHeader()+mkTabs('overview')+'<div class="main"><div class="center-msg"><div class="spinner"></div></div></div>';
-  apiGet({action:"swapList",email:EMAIL}).then(function(r){
+  getSwapData().then(function(r){
     if(r.error){$('app').innerHTML=mkHeader()+mkTabs('overview')+'<div class="main"><div class="warn-box">'+esc(r.error)+'</div></div>';return;}
     // 按序號分組
     var groups={};r.records.forEach(function(rec){
