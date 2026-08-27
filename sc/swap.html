@@ -17,8 +17,8 @@ body{font-family:'Noto Sans TC',-apple-system,sans-serif;background:#eef1f5;colo
 .login-card button{width:100%;padding:14px;background:#1a365d;color:#fff;border:none;border-radius:10px;font-size:17px;font-weight:600;cursor:pointer;margin-top:14px;transition:background .2s;font-family:inherit}
 .login-card button:hover{background:#2563eb}
 .login-card button:disabled{background:#94a3b8;cursor:not-allowed}
-.login-err{color:#dc2626;font-size:13px;margin-top:12px;min-height:20px}
-.header{background:#1a365d;color:#fff;padding:16px 24px 12px;position:sticky;top:0;z-index:50}
+.login-err{color:#dc2626;font-size:15px;margin-top:12px;min-height:20px}
+.header{background:#1a365d;color:#fff;padding:18px 24px 14px;position:sticky;top:0;z-index:50}
 .header-top{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
 .h-title{font-size:20px;font-weight:700}.h-sub{font-size:13px;color:rgba(255,255,255,.65);margin-top:2px}
 .h-right{display:flex;align-items:center;gap:10px}
@@ -55,7 +55,7 @@ textarea{resize:vertical;min-height:80px}
 .record-table{width:100%;border-collapse:collapse;font-size:13px}
 .record-table th{background:#f1f5f9;text-align:left;padding:12px 10px;font-weight:600;color:#475569;border-bottom:2px solid #e2e8f0;font-size:14px}
 .record-table td{padding:12px 10px;border-bottom:1px solid #f1f5f9;vertical-align:top;font-size:14px}
-.st{display:inline-block;padding:4px 12px;border-radius:12px;font-size:13px;font-weight:600}
+.st{display:inline-block;padding:5px 14px;border-radius:12px;font-size:14px;font-weight:600}
 .st-p{background:#fef3c7;color:#b45309}
 .st-r{background:#dbeafe;color:#1d4ed8}
 .st-ok{background:#d1fae5;color:#047857}
@@ -74,8 +74,8 @@ textarea{resize:vertical;min-height:80px}
 /* 審核卡 */
 .rev-card{background:#fff;border:2px solid #e8ecf0;border-radius:12px;padding:16px 20px;margin-bottom:12px}
 .rev-card .rev-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px}
-.rev-card .rev-title{font-weight:700;font-size:16px;color:#1e293b}
-.rev-card .rev-detail{font-size:15px;color:#475569;line-height:1.8}
+.rev-card .rev-title{font-weight:700;font-size:18px;color:#1e293b}
+.rev-card .rev-detail{font-size:16px;color:#475569;line-height:2}
 .rev-card .rev-detail b{color:#1e293b}
 .rev-card .rev-role{font-size:11px;color:#fff;padding:2px 8px;border-radius:10px;font-weight:600}
 .rev-card .rev-role.partner{background:#f59e0b}
@@ -152,9 +152,12 @@ function mkTabs(active,pendingCount){
   h+='<button class="tab-btn'+(active==='history'?' active':'')+'" onclick="showTab(\'history\')">📋 申請紀錄</button>';
   h+='<button class="tab-btn'+(active==='pending'?' active':'')+'" onclick="showTab(\'pending\')">🔔 待處理';
   if(pc>0) h+='<span class="tab-badge">'+pc+'</span>';
-  h+='</button></div>';return h;
+  h+='</button>';
+  if(USER.isSwapReviewer||USER.isSwapApprover)
+    h+='<button class="tab-btn'+(active==='overview'?' active':'')+'" onclick="showTab(\'overview\')">📊 全部紀錄</button>';
+  h+='</div>';return h;
 }
-function showTab(t){cachedSwapList=null;if(t==='apply')renderApplyTab();else if(t==='history')renderHistoryTab();else if(t==='pending')renderPendingTab();}
+function showTab(t){if(t==='apply')renderApplyTab();else if(t==='history')renderHistoryTab();else if(t==='pending')renderPendingTab();else if(t==='overview')renderOverviewTab();}
 
 /* ================================================================
    調課申請
@@ -169,8 +172,8 @@ function renderApplyTab(){
     swapList.forEach(function(s,i){
       h+='<div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:#eff6ff;border-radius:8px;margin-bottom:6px">';
       h+='<span style="font-weight:700;color:#2563eb;font-size:16px">'+( i+1)+'</span>';
-      h+='<div style="flex:1"><div style="font-weight:600;font-size:15px">'+esc(s.selA.date)+' '+esc(s.selA.day)+' '+esc(PL[s.selA.period])+' — '+esc(s.selA.subName)+' '+esc(s.selA.className)+'</div>';
-      h+='<div style="font-size:14px;color:#059669">↔ '+esc(s.tNameB)+' '+esc(s.selB.date)+' '+esc(s.selB.day)+' '+esc(PL[s.selB.period])+' — '+(s.selB.subName||'空堂')+'</div></div>';
+      h+='<div style="flex:1"><div style="font-weight:600;font-size:15px">'+fmtDate(s.selA.date)+' '+esc(PL[s.selA.period])+' '+esc(s.selA.subName)+' '+esc(s.selA.className)+'</div>';
+      h+='<div style="font-size:14px;color:#059669">↔ '+esc(s.tNameB)+'老師 '+fmtDate(s.selB.date)+' '+esc(PL[s.selB.period])+' '+(s.selB.subName||'空堂')+'</div></div>';
       h+='<button onclick="removeSwapItem('+i+')" style="background:#fee2e2;border:none;color:#dc2626;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:14px;font-weight:600">✕</button>';
       h+='</div>';
     });
@@ -307,9 +310,9 @@ function renderHistoryTab(){
       h+='<div style="border:1px solid #e8ecf0;border-radius:10px;padding:14px 16px;margin-bottom:10px">';
       h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><span style="font-weight:700;font-size:15px">'+esc(seqNo)+'（'+g.pairs.length+'組）</span>'+statusBadge(g.status)+'</div>';
       g.pairs.forEach(function(rec,i){
-        h+='<div style="font-size:14px;color:#475569;line-height:1.8;padding:6px 0'+(i>0?';border-top:1px solid #f1f5f9':'')+'">';
-        h+='<b>❶</b> '+esc(rec.dateA)+' '+esc(rec.weekdayA)+' '+esc(PL[rec.periodA]||rec.periodA)+' — '+esc(rec.subA)+' '+esc(rec.classA)+'<br>';
-        h+='<b style="color:#059669">↔</b> '+esc(rec.nameB)+' '+esc(rec.dateB)+' '+esc(rec.weekdayB)+' '+esc(PL[rec.periodB]||rec.periodB)+' — '+(rec.subB||'空堂')+'</div>';
+        h+='<div style="font-size:15px;color:#475569;line-height:2;padding:6px 0'+(i>0?';border-top:1px solid #f1f5f9':'')+'">';
+        h+='<b>調課'+(i+1)+'：</b>'+fmtDate(rec.dateA)+' '+fmtPeriod(rec.periodA)+' '+esc(rec.subA)+' '+esc(rec.classA)+'<br>';
+        h+='<span style="color:#059669">　　↔ </span>'+esc(rec.nameB)+'老師 '+fmtDate(rec.dateB)+' '+fmtPeriod(rec.periodB)+' '+(rec.subB||'空堂')+'</div>';
       });
       h+='<div style="font-size:14px;color:#475569;margin-top:6px">📝 '+esc(g.reason)+'</div>';
       h+=renderFlowBar(first);
@@ -347,12 +350,12 @@ function renderPendingTab(){
         h+='<div class="rev-detail">';
         pg.pairs.forEach(function(rec,i){
           if(i>0)h+='<hr style="border:none;border-top:1px solid #e8ecf0;margin:6px 0">';
-          h+='<b>調課 '+(i+1)+'：</b>'+esc(rec.dateA)+' '+esc(rec.weekdayA)+' '+esc(PL[rec.periodA]||rec.periodA)+' — '+esc(rec.subA)+' '+esc(rec.classA)+'<br>';
-          h+='<span style="color:#059669">↔</span> '+esc(rec.nameB)+' '+esc(rec.dateB)+' '+esc(rec.weekdayB)+' '+esc(PL[rec.periodB]||rec.periodB)+' — '+(rec.subB||'空堂')+'<br>';
+          h+='<b>調課 '+(i+1)+'：</b>'+fmtDate(rec.dateA)+' '+fmtPeriod(rec.periodA)+' '+esc(rec.subA)+' '+esc(rec.classA)+'<br>';
+          h+='<span style="color:#059669">　　↔ </span>'+esc(rec.nameB)+'老師 '+fmtDate(rec.dateB)+' '+fmtPeriod(rec.periodB)+' '+(rec.subB||'空堂')+'<br>';
         });
         h+='<b>原因：</b>'+esc(pg.reason);
-        if(pg.pairs[0].partnerTime)h+='<br><b>對方確認：</b>'+esc(pg.pairs[0].partnerTime);
-        if(pg.pairs[0].revName)h+='<br><b>組長：</b>'+esc(pg.pairs[0].revName)+' ('+esc(pg.pairs[0].revTime)+')';
+        if(pg.pairs[0].partnerTime)h+='<br><b>對方確認：</b>'+fmtTime(pg.pairs[0].partnerTime);
+        if(pg.pairs[0].revName)h+='<br><b>組長：</b>'+esc(pg.pairs[0].revName)+' ('+fmtTime(pg.pairs[0].revTime)+')';
         h+='</div>';
         h+=renderFlowBar(pg.pairs[0]);
         var aLabel=role==='partner'?'✅ 確認同意':'✅ 核准';
@@ -391,6 +394,50 @@ function doReviewBatch(seqNo,decision){
     alert('✅ 已'+label+'！共 '+r.count+' 筆\n新狀態：'+r.newStatus);renderPendingTab();
   }).catch(function(e){alert('❌ '+e.message);});}
 
+/* ---- 全部紀錄總覽（教學組/主任） ---- */
+function renderOverviewTab(){
+  $('app').innerHTML=mkHeader()+mkTabs('overview')+'<div class="main"><div class="center-msg"><div class="spinner"></div></div></div>';
+  apiGet({action:"swapList",email:EMAIL}).then(function(r){
+    if(r.error){$('app').innerHTML=mkHeader()+mkTabs('overview')+'<div class="main"><div class="warn-box">'+esc(r.error)+'</div></div>';return;}
+    // 按序號分組
+    var groups={};r.records.forEach(function(rec){
+      if(!groups[rec.seqNo])groups[rec.seqNo]={seqNo:rec.seqNo,nameA:rec.nameA,status:rec.status,time:rec.time,reason:rec.reason,pairs:[]};
+      groups[rec.seqNo].pairs.push(rec);
+    });
+    var gList=Object.values(groups).reverse();
+    var pc=countPending(r);
+    var h=mkHeader()+mkTabs('overview',pc)+'<div class="main"><div class="card"><h3>📊 全部調課紀錄（共 '+gList.length+' 筆申請）</h3>';
+    // 狀態篩選
+    h+='<div style="margin-bottom:12px;display:flex;gap:8px;flex-wrap:wrap">';
+    ['全部','待對方確認','待組長審核','待主任核定','已核准','已駁回'].forEach(function(st){
+      h+='<button onclick="filterOverview(\''+st+'\')" style="padding:4px 12px;border-radius:14px;font-size:13px;font-weight:600;border:1.5px solid #e2e8f0;background:#fff;color:#475569;cursor:pointer;font-family:inherit" id="flt_'+st+'">'+st+'</button>';
+    });
+    h+='</div>';
+    h+='<div id="overviewBody" style="overflow-x:auto"><table class="record-table"><tr><th>序號</th><th>申請人</th><th>申請時間</th><th>調課內容</th><th>原因</th><th>狀態</th></tr>';
+    gList.forEach(function(g){
+      var content='';
+      g.pairs.forEach(function(p,i){
+        if(i>0)content+='<br>';
+        content+=fmtDate(p.dateA)+' '+fmtPeriod(p.periodA)+' '+esc(p.subA||'')+' '+esc(p.classA||'')+' ↔ '+esc(p.nameB)+'老師';
+      });
+      h+='<tr data-status="'+esc(g.status)+'">';
+      h+='<td style="font-size:11px;color:#94a3b8">'+esc(g.seqNo)+'</td>';
+      h+='<td style="font-weight:600">'+esc(g.nameA)+'</td>';
+      h+='<td>'+fmtTime(g.time)+'</td>';
+      h+='<td style="font-size:13px;line-height:1.6">'+content+'</td>';
+      h+='<td style="max-width:120px">'+esc(g.reason)+'</td>';
+      h+='<td>'+statusBadge(g.status)+'</td></tr>';
+    });
+    h+='</table></div></div></div>';
+    $('app').innerHTML=h;
+  }).catch(function(e){$('app').innerHTML=mkHeader()+mkTabs('overview')+'<div class="main"><div class="warn-box">❌ '+e.message+'</div></div>';});
+}
+function filterOverview(st){
+  var rows=document.querySelectorAll('#overviewBody tr[data-status]');
+  rows.forEach(function(r){r.style.display=(st==='全部'||r.getAttribute('data-status')===st)?'':'none';});
+  document.querySelectorAll('[id^=flt_]').forEach(function(b){b.style.background=(b.id==='flt_'+st)?'#1a365d':'#fff';b.style.color=(b.id==='flt_'+st)?'#fff':'#475569';});
+}
+
 /* ---- 計算待處理項目 ---- */
 function getPendingItems(r){
   var items=[];
@@ -421,6 +468,13 @@ function renderFlowBar(rec){
 /* ---- Helpers ---- */
 function $(id){return document.getElementById(id)}
 function esc(s){var d=document.createElement('div');d.textContent=s||'';return d.innerHTML}
+function fmtDate(s){
+  if(!s)return'';var d=new Date(s);if(isNaN(d.getTime()))return s;
+  var wd=['日','一','二','三','四','五','六'];
+  return(d.getFullYear()-1911)+'年'+(d.getMonth()+1)+'月'+d.getDate()+'日（'+wd[d.getDay()]+'）';
+}
+function fmtTime(s){if(!s)return'';var m=s.match(/(\d{4})\/(\d{2})\/(\d{2})\s+(\d{2}):(\d{2})/);if(!m)return s;return(parseInt(m[1])-1911)+'/'+parseInt(m[2])+'/'+parseInt(m[3])+' '+m[4]+':'+m[5];}
+function fmtPeriod(p){return PL[p]||('第'+p+'節');}
 function statusBadge(s){var c='st-p';if(s==='待組長審核'||s==='待主任核定')c='st-r';else if(s==='已核准')c='st-ok';else if(s==='已駁回')c='st-no';
   return'<span class="st '+c+'">'+esc(s)+'</span>';}
 </script>
