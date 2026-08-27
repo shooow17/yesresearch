@@ -7,36 +7,45 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Noto Sans TC',-apple-system,sans-serif;background:#f8fafc;color:#1e293b;line-height:1.8}
+/* 加入預設字體大小 16px */
+body{font-family:'Noto Sans TC',-apple-system,sans-serif;background:#f8fafc;color:#1e293b;line-height:1.8;font-size:16px}
 .hero{background:linear-gradient(135deg,#1a365d 0%,#2563eb 100%);color:#fff;padding:28px 24px;text-align:center}
 .hero h1{font-size:28px;font-weight:900;margin-bottom:4px}
-.hero p{font-size:15px;color:rgba(255,255,255,.8);max-width:600px;margin:0 auto}
+/* 15px -> 18px */
+.hero p{font-size:18px;color:rgba(255,255,255,.8);max-width:600px;margin:0 auto}
 .container{max-width:1100px;margin:0 auto;padding:0 24px 60px}
 
 /* 分頁 */
 .tabs{display:flex;gap:0;margin:24px 0 0;border-bottom:3px solid #1a365d;flex-wrap:wrap}
-.tab{padding:14px 22px;font-size:15px;font-weight:700;cursor:pointer;color:#64748b;background:#fff;border:2px solid #e2e8f0;border-bottom:none;border-radius:10px 10px 0 0;margin-bottom:-3px;transition:all .15s;font-family:inherit}
+/* 15px -> 16px */
+.tab{padding:14px 22px;font-size:16px;font-weight:700;cursor:pointer;color:#64748b;background:#fff;border:2px solid #e2e8f0;border-bottom:none;border-radius:10px 10px 0 0;margin-bottom:-3px;transition:all .15s;font-family:inherit}
 .tab:hover{color:#2563eb;background:#eff6ff}
 .tab.active{color:#fff;background:#1a365d;border-color:#1a365d}
 .tab-content{display:none;padding:24px 0}
 .tab-content.active{display:block}
 
 /* 重要提醒 */
-.notice{background:#fef3c7;border:2px solid #f59e0b;border-radius:12px;padding:16px 20px;margin:16px 0;font-size:14px;color:#92400e}
-.notice b{color:#b45309;font-size:16px}
+/* 14px -> 16px */
+.notice{background:#fef3c7;border:2px solid #f59e0b;border-radius:12px;padding:16px 20px;margin:16px 0;font-size:16px;color:#92400e}
+/* 16px -> 18px */
+.notice b{color:#b45309;font-size:18px}
 .notice ul{margin:6px 0 0 20px}
 
 /* 步驟 */
 .step{background:#fff;border-radius:14px;padding:22px 28px;margin:16px 0;box-shadow:0 2px 8px rgba(0,0,0,.06);border-left:5px solid #2563eb;position:relative}
-.step-num{position:absolute;top:-12px;left:20px;background:#2563eb;color:#fff;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:900;box-shadow:0 2px 6px rgba(37,99,235,.3)}
+/* 16px -> 18px */
+.step-num{position:absolute;top:-12px;left:20px;background:#2563eb;color:#fff;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:900;box-shadow:0 2px 6px rgba(37,99,235,.3)}
 .step h2{font-size:20px;font-weight:700;color:#1a365d;margin:4px 0 10px}
-.step p,.step-text{font-size:15px;margin-bottom:8px}
-.substep{background:#f1f5f9;border-radius:8px;padding:12px 16px;margin:8px 0;font-size:14px;line-height:1.9}
+/* 15px -> 16px */
+.step p,.step-text{font-size:16px;margin-bottom:8px}
+/* 14px -> 16px */
+.substep{background:#f1f5f9;border-radius:8px;padding:12px 16px;margin:8px 0;font-size:16px;line-height:1.9}
 .substep b{color:#1a365d}
 
 /* 流程圖 */
 .flow-chart{display:flex;align-items:center;justify-content:center;gap:0;margin:20px 0;flex-wrap:wrap}
-.flow-node{background:#fff;border:2px solid #2563eb;border-radius:10px;padding:10px 16px;font-size:14px;font-weight:600;color:#1e3a5f;text-align:center;min-width:90px}
+/* 14px -> 16px */
+.flow-node{background:#fff;border:2px solid #2563eb;border-radius:10px;padding:10px 16px;font-size:16px;font-weight:600;color:#1e3a5f;text-align:center;min-width:90px}
 .flow-node.green{border-color:#059669;color:#047857;background:#ecfdf5}
 .flow-node.amber{border-color:#f59e0b;color:#b45309;background:#fffbeb}
 .flow-arrow{font-size:24px;color:#94a3b8;padding:0 6px}
@@ -45,29 +54,39 @@ body{font-family:'Noto Sans TC',-apple-system,sans-serif;background:#f8fafc;colo
 .role-grid{display:flex;gap:12px;flex-wrap:wrap;margin:16px 0}
 .role-card{flex:1;min-width:180px;background:#fff;border-radius:10px;padding:16px;border:2px solid #e2e8f0;text-align:center}
 .role-card .emoji{font-size:32px;margin-bottom:6px}
-.role-card h3{font-size:16px;font-weight:700;color:#1a365d;margin-bottom:4px}
-.role-card p{font-size:13px;color:#64748b}
+/* 16px -> 18px */
+.role-card h3{font-size:18px;font-weight:700;color:#1a365d;margin-bottom:4px}
+/* 13px -> 16px */
+.role-card p{font-size:16px;color:#64748b}
 
 /* 提示 */
-.tip{background:#eff6ff;border:1.5px solid #93c5fd;border-radius:10px;padding:10px 16px;margin:8px 0;font-size:14px;color:#1e40af}
+/* 14px -> 16px */
+.tip{background:#eff6ff;border:1.5px solid #93c5fd;border-radius:10px;padding:10px 16px;margin:8px 0;font-size:16px;color:#1e40af}
 .tip b{color:#1d4ed8}
 
 /* FAQ */
 .faq-item{background:#fff;border-radius:10px;padding:14px 18px;margin:8px 0;box-shadow:0 1px 4px rgba(0,0,0,.05)}
-.faq-item h3{font-size:15px;font-weight:700;color:#2563eb;margin-bottom:4px}
-.faq-item p{font-size:14px;color:#475569}
+/* 15px -> 18px */
+.faq-item h3{font-size:18px;font-weight:700;color:#2563eb;margin-bottom:4px}
+/* 14px -> 16px */
+.faq-item p{font-size:16px;color:#475569}
 
 /* 摘要 */
 .summary-box{background:#ecfdf5;border:2px solid #059669;border-radius:12px;padding:18px 24px;margin:14px 0;color:#047857}
-.summary-box b{font-size:16px}
-.summary-box ol{margin:8px 0 0 20px;font-size:15px;line-height:2.2}
+/* 16px -> 18px */
+.summary-box b{font-size:18px}
+/* 15px -> 16px */
+.summary-box ol{margin:8px 0 0 20px;font-size:16px;line-height:2.2}
 
 /* 紅色分頁 */
 .tab.tab-red{background:#dc2626;color:#fff;border-color:#dc2626;font-weight:900}
 .tab.tab-red:hover{background:#b91c1c}
 
-.footer{text-align:center;padding:24px;color:#94a3b8;font-size:13px;border-top:1px solid #e2e8f0;margin-top:40px}
-@media(max-width:640px){.hero h1{font-size:24px}.step h2{font-size:18px}.flow-chart{flex-direction:column}.flow-arrow{transform:rotate(90deg)}.tab{padding:10px 14px;font-size:13px}}
+/* 13px -> 16px */
+.footer{text-align:center;padding:24px;color:#94a3b8;font-size:16px;border-top:1px solid #e2e8f0;margin-top:40px}
+
+/* 手機版 13px -> 16px */
+@media(max-width:640px){.hero h1{font-size:24px}.step h2{font-size:18px}.flow-chart{flex-direction:column}.flow-arrow{transform:rotate(90deg)}.tab{padding:10px 14px;font-size:16px}}
 </style>
 </head>
 <body>
@@ -147,9 +166,9 @@ body{font-family:'Noto Sans TC',-apple-system,sans-serif;background:#f8fafc;colo
     <b>② 點擊老師姓名：</b>導師會按年級班級排列，方便查找。點擊後老師名字會變成藍色。<br>
     <b>③ 選擇日期：</b>選擇您希望調課的對方日期。<br>
     <b>④ 系統會列出對方當天的課表：</b><br>
-    　• 有授課的時段 → 顯示科目和班級<br>
-    　• 導師的非授課時段 → 顯示「科任課時段」<br>
-    　• 科任 / 行政老師的非授課時段 → 顯示「✅ 空堂（可調課）」<br>
+     • 有授課的時段 → 顯示科目和班級<br>
+     • 導師的非授課時段 → 顯示「科任課時段」<br>
+     • 科任 / 行政老師的非授課時段 → 顯示「✅ 空堂（可調課）」<br>
     <b>⑤ 點擊對方的一個時段</b>，即完成這組調課的選擇。
   </div>
   <div class="tip"><b>💡 系統會自動檢查衝堂</b>，如果有衝突會出現橘色警告，但您仍可以送出申請，由行政審核判斷。</div>
@@ -183,8 +202,8 @@ body{font-family:'Noto Sans TC',-apple-system,sans-serif;background:#f8fafc;colo
   <p>點擊上方的 <b>「📋 申請紀錄」</b> 頁籤，可以查看您所有的調課申請。</p>
   <p>每筆申請下方有<b>進度條</b>，四個圓點清楚顯示目前進行到哪一關：</p>
   <div class="substep">
-    <b style="color:#059669">✓ 綠色</b> = 已通過　　
-    <b style="color:#2563eb">● 藍色閃爍</b> = 等待中　　
+    <b style="color:#059669">✓ 綠色</b> = 已通過  
+    <b style="color:#2563eb">● 藍色閃爍</b> = 等待中  
     <b style="color:#dc2626">✕ 紅色</b> = 已駁回
   </div>
 </div>
