@@ -655,8 +655,8 @@ function openPrintPage(role,results){
   html+='body{font-family:"DFKai-SB","BiauKai","KaiTi","標楷體",serif;color:#000;font-size:16px}';
   html+='.page{page-break-after:always;height:100vh;display:flex;flex-direction:column;padding:0;overflow:hidden}';
   html+='.page:last-child{page-break-after:auto}';
-  html+='.tt-title{text-align:left;font-size:21px;font-weight:bold;padding:4px 0 2px}';
-  html+='.tt-sub{text-align:left;font-size:21px;font-weight:bold;padding:2px 0 6px}';
+  html+='.tt-title{text-align:center;font-size:21px;font-weight:bold;padding:4px 0 2px}';
+  html+='.tt-sub{text-align:center;font-size:21px;font-weight:bold;padding:2px 0 6px}';
   html+='table.tt{width:100%;border-collapse:collapse;table-layout:fixed;flex:1}';
   html+='table.tt th,table.tt td{border:1px solid #000;text-align:center;vertical-align:middle;padding:2px 1px}';
   html+='table.tt th{font-size:16px;font-weight:bold}';
@@ -670,7 +670,7 @@ function openPrintPage(role,results){
 
   html+='<div class="no-print" style="text-align:center;padding:16px;background:#1a365d;color:#fff;font-size:14px">';
   html+='📄 '+esc(role)+'課表（共 '+results.length+' 位）';
-  html+='<button onclick="window.print()" style="margin-left:16px;padding:8px 24px;background:#2563eb;color:#fff;border:none;border-radius:8px;font-size:14px;cursor:pointer">🖨️ 列印 / 存為 PDF</button>';
+  html+='<button onclick="window.print()" style="margin-left:16px;padding:8px 24px;background:#2563eb;color:#fff;border:none;border-radius:8px;font-size:14px;cursor:pointer">🖨️ 列印 / 存為 PDF</button><button onclick="window.close()" style="margin-left:12px;padding:8px 24px;background:#fff;color:#475569;border:1px solid #cbd5e1;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer">✕ 關閉分頁</button>';
   html+='</div>';
 
   results.forEach(function(r){
@@ -694,11 +694,11 @@ function openPrintPage(role,results){
       var timeParts=(f.time||'').split(' - ');
       var t1=timeParts[0]||'', t2=timeParts[1]||'';
       if(f.type==='break'){
-        html+='<tr><td>'+esc(f.label)+'</td><td>'+esc(t1)+'</td><td>'+esc(t2)+'</td>';
+        html+='<tr><td>'+esc(f.label)+'</td><td style="font-size:13.5px;letter-spacing:-0.5px">'+esc(t1)+'</td><td style="font-size:13.5px;letter-spacing:-0.5px">'+esc(t2)+'</td>';
         html+='<td colspan="5"></td></tr>';
         return;
       }
-      html+='<tr><td>'+esc(f.label)+'</td><td>'+esc(t1)+'</td><td>'+esc(t2)+'</td>';
+      html+='<tr><td>'+esc(f.label)+'</td><td style="font-size:13.5px;letter-spacing:-0.5px">'+esc(t1)+'</td><td style="font-size:13.5px;letter-spacing:-0.5px">'+esc(t2)+'</td>';
       DAYS.forEach(function(day){
         var entries=tt.filter(function(e){return e.day===day&&e.period===f.id});
         html+='<td>';
@@ -794,7 +794,7 @@ function exportRoomPDF(){
   html+='th{background:#e8e8e8;font-weight:700;font-size:14px}td.pl{background:#f5f5f5;font-weight:600;font-size:12px;width:14%}td.pl .time{display:block;font-size:9px;color:#666}';
   html+='.sub{font-weight:700;font-size:18px;margin-bottom:2px;line-height:1.1;white-space:nowrap}.cls{font-size:12px;color:#555}.tea{font-size:12px;color:#777}';
   html+='@media print{.no-print{display:none !important}}</style></head><body>';
-  html+='<div class="no-print" style="text-align:center;padding:16px;background:#1a365d;color:#fff;font-size:14px;font-weight:700">專科教室課表（共 '+roomData.length+' 間）<button onclick="window.print()" style="margin-left:16px;padding:8px 24px;background:#2563eb;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer">🖨️ 列印 / 存為 PDF</button></div>';
+  html+='<div class="no-print" style="text-align:center;padding:16px;background:#1a365d;color:#fff;font-size:14px;font-weight:700">專科教室課表（共 '+roomData.length+' 間）<button onclick="window.print()" style="margin-left:16px;padding:8px 24px;background:#2563eb;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer">🖨️ 列印 / 存為 PDF</button><button onclick="window.close()" style="margin-left:12px;padding:8px 24px;background:#fff;color:#475569;border:1px solid #cbd5e1;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer">✕ 關閉分頁</button></div>';
 
   roomData.forEach(function(room){
     html+='<div class="page"><div class="tt-header"><div class="school">'+esc(schoolName)+' '+esc(schoolYear)+'學年度</div><div class="info">'+esc(room.name)+' 教室課表</div></div>';
