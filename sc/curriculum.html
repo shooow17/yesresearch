@@ -655,14 +655,16 @@ function openPrintPage(role,results){
   html+='body{font-family:"DFKai-SB","BiauKai","KaiTi","標楷體",serif;color:#000;font-size:16px}';
   html+='.page{page-break-after:always;height:100vh;display:flex;flex-direction:column;padding:0}';
   html+='.page:last-child{page-break-after:auto}';
-  html+='.tt-title{text-align:center;font-size:22px;padding:10px 0 2px}';
-  html+='.tt-sub{text-align:center;font-size:20px;padding:2px 0 6px}';
+  html+='.tt-title{text-align:left;font-size:24px;font-weight:bold;padding:10px 0 2px}';
+  html+='.tt-sub{text-align:left;font-size:24px;font-weight:bold;padding:2px 0 10px}';
   html+='table.tt{width:100%;border-collapse:collapse;table-layout:fixed;flex:1}';
-  html+='table.tt th,table.tt td{border:1px solid #000;text-align:center;vertical-align:middle;padding:3px 2px}';
-  html+='table.tt th{font-size:17px;font-weight:normal}';
-  html+='table.tt col.c-p{width:12%}';
-  html+='table.tt col.c-t{width:5%}';
-  html+='.cell-sep{border:none;width:35%;margin:2px auto;border-top:1px solid #ccc}';
+  html+='table.tt th,table.tt td{border:1px solid #000;text-align:center;vertical-align:middle;padding:6px 2px}';
+  html+='table.tt th{font-size:18px;font-weight:bold}';
+  html+='table.tt col.c-p{width:10%}';
+  html+='table.tt col.c-t{width:6%}';
+  html+='.sub-name{font-size:24px;font-weight:bold;margin-bottom:6px;line-height:1.2}';
+  html+='.sub-info{font-size:15px;line-height:1.2}';
+  html+='.cell-sep{border:none;width:90%;margin:6px auto;border-top:1px dashed #aaa}';
   html+='@media print{.no-print{display:none !important}.page{height:100vh}}';
   html+='</style></head><body>';
 
@@ -684,10 +686,9 @@ function openPrintPage(role,results){
     /* 表頭：節次 | 時間(colspan2) | 星期一~五 */
     html+='<table class="tt">';
     html+='<colgroup><col class="c-p"><col class="c-t"><col class="c-t"><col><col><col><col><col></colgroup>';
-    html+='<tr><th rowspan="2">節次</th><th colspan="2">時間</th>';
-    DAYS.forEach(function(d){html+='<th rowspan="2">'+d+'</th>'});
+    html+='<tr><th>節次</th><th colspan="2">時間</th>';
+    DAYS.forEach(function(d){html+='<th>'+d+'</th>'});
     html+='</tr>';
-    html+='<tr><th></th><th></th></tr>';
 
     allFrames.forEach(function(f){
       var timeParts=(f.time||'').split(' - ');
@@ -705,11 +706,15 @@ function openPrintPage(role,results){
           entries.forEach(function(e,i){
             if(i>0) html+='<hr class="cell-sep">';
             var sn=(e.subName||'').replace(/^資源班[-－—–]/,'');
-            html+=esc(sn);
-            if(isHR&&e.teaId!==t.id) html+='<br>'+esc(e.teaName);
-            else if(isHR) html+='<br>'+esc(t.name);
-            if(!isHR) html+='<br>'+esc(e.className);
-            if(e.roomName) html+='<br>'+esc(e.roomName);
+            html+='<div class="sub-name">'+esc(sn)+'</div>';
+            
+            var infoArr = [];
+            if(isHR&&e.teaId!==t.id) infoArr.push(esc(e.teaName));
+            else if(isHR) infoArr.push(esc(t.name));
+            if(!isHR) infoArr.push(esc(e.className));
+            if(e.roomName) infoArr.push(esc(e.roomName));
+            
+            if(infoArr.length>0) html+='<div class="sub-info">'+infoArr.join(' ')+'</div>';
           });
         }
         html+='</td>';
@@ -782,7 +787,7 @@ function exportRoomPDF(){
   html+='.tt-header{text-align:center;margin-bottom:8px}.tt-header .school{font-size:20px;font-weight:700}.tt-header .info{font-size:16px;color:#333;margin-top:4px}';
   html+='table{width:100%;border-collapse:collapse;table-layout:fixed}th,td{border:1.5px solid #000;padding:6px 4px;text-align:center;vertical-align:middle;font-size:13px}';
   html+='th{background:#e8e8e8;font-weight:700;font-size:14px}td.pl{background:#f5f5f5;font-weight:600;font-size:12px;width:14%}td.pl .time{display:block;font-size:9px;color:#666}';
-  html+='.sub{font-weight:700;font-size:14px}.cls{font-size:11px;color:#555}.tea{font-size:10px;color:#777}';
+  html+='.sub{font-weight:700;font-size:20px;margin-bottom:4px;line-height:1.2}.cls{font-size:12px;color:#555}.tea{font-size:12px;color:#777}';
   html+='@media print{.no-print{display:none !important}}</style></head><body>';
   html+='<div class="no-print" style="text-align:center;padding:16px;background:#1a365d;color:#fff;font-size:14px;font-weight:700">專科教室課表（共 '+roomData.length+' 間）<button onclick="window.print()" style="margin-left:16px;padding:8px 24px;background:#2563eb;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer">🖨️ 列印 / 存為 PDF</button></div>';
 
