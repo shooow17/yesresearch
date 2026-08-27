@@ -732,7 +732,14 @@ function openPrintPage(role,results){
 
   var blob=new Blob([html],{type:'text/html;charset=utf-8'});
   var url=URL.createObjectURL(blob);
-  window.open(url,'_blank')||window.location.assign(url);
+  var newWin = window.open(url,'_blank');
+  if(!newWin || newWin.closed || typeof newWin.closed=='undefined') {
+    // Popup blocked, replace current page. The "Close" button should use history.back() instead.
+    var blobHtml = html.replace('window.close()', 'history.back()');
+    blobHtml = blobHtml.replace('✕ 關閉分頁', '🔙 返回系統');
+    var fallbackBlob = new Blob([blobHtml],{type:'text/html;charset=utf-8'});
+    window.location.assign(URL.createObjectURL(fallbackBlob));
+  }
 }
 
 /* ================================================================
@@ -817,7 +824,15 @@ function exportRoomPDF(){
     html+='</table></div>';
   });
   html+='</body></html>';
-  var blob=new Blob([html],{type:'text/html;charset=utf-8'});window.open(URL.createObjectURL(blob),'_blank');
+  var blob=new Blob([html],{type:'text/html;charset=utf-8'});
+  var url=URL.createObjectURL(blob);
+  var newWin = window.open(url,'_blank');
+  if(!newWin || newWin.closed || typeof newWin.closed=='undefined') {
+    var blobHtml = html.replace('window.close()', 'history.back()');
+    blobHtml = blobHtml.replace('✕ 關閉分頁', '🔙 返回系統');
+    var fallbackBlob = new Blob([blobHtml],{type:'text/html;charset=utf-8'});
+    window.location.assign(URL.createObjectURL(fallbackBlob));
+  }
 }
 
 /* ================================================================
