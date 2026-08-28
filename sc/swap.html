@@ -129,26 +129,20 @@ function renderLogin(){
 function doLogin(){
   var email=document.getElementById('inpEmail').value.trim();if(!email){document.getElementById('loginErr').textContent='請輸入電子郵件';return;}
   var btn=document.getElementById('btnLogin');btn.disabled=true;btn.textContent='驗證中...';document.getElementById('loginErr').textContent='';
-  apiGet({action:"verify",email:email}).then(function(r){
-    btn.disabled=false;btn.textContent='登入';if(r.error){document.getElementById('loginErr').textContent=r.error;return;}
-    USER=r;EMAIL=email.toLowerCase();try{localStorage.setItem('swapSysEmail',email)}catch(e){}loadInitialData();
+  apiGet({action:"swapInit",email:email}).then(function(r){
+    btn.disabled=false;btn.textContent='登入';
+    if(r.error){document.getElementById('loginErr').textContent=r.error;return;}
+    if(r.verify&&r.verify.error){document.getElementById('loginErr').textContent=r.verify.error;return;}
+    USER=r.verify;EMAIL=email.toLowerCase();
+    mySchedule=r.schedule?r.schedule.timetable:[];
+    allTeachers=r.teachers?r.teachers.teachers.filter(function(t){return t.id!==USER.teacher.id}):[];
+    cachedSwapData=r.swapList||null;
+    try{localStorage.setItem('swapSysEmail',email)}catch(e){}
+    showTab('apply');updateBadge();
   }).catch(function(e){btn.disabled=false;btn.textContent='登入';document.getElementById('loginErr').textContent='連線錯誤：'+e.message;});
 }
-function logout(){USER=null;allTeachers=null;mySchedule=null;partnerSchedule=null;selA=null;selB=null;cachedSwapList=null;renderLogin();}
+function logout(){USER=null;allTeachers=null;mySchedule=null;partnerSchedule=null;selA=null;selB=null;cachedSwapData=null;swapList=[];swapSelTid='';renderLogin();}
 
-function loadInitialData(){
-  $('app').innerHTML=mkHeader()+'<div class="center-msg"><div class="spinner"></div><span>載入資料...</span></div>';
-  // 先載入課表和教師（必要），swapList 背景載入
-  Promise.all([
-    apiGet({action:"schedule",tid:USER.teacher.id,mode:"personal",cid:""}),
-    apiGet({action:"swapTeachers"})
-  ]).then(function(res){
-    mySchedule=res[0].timetable;allTeachers=res[1].teachers.filter(function(t){return t.id!==USER.teacher.id});
-    showTab('apply');
-    // 背景載入 swapList（更新 badge）
-    apiGet({action:"swapList",email:EMAIL}).then(function(r){cachedSwapData=r;updateBadge();}).catch(function(){});
-  }).catch(function(e){$('app').innerHTML=mkHeader()+'<div class="center-msg" style="color:#dc2626">❌ '+e.message+'</div>';});
-}
 function updateBadge(){
   var badge=document.querySelector('.tab-badge');
   if(cachedSwapData){
