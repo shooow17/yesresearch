@@ -130,16 +130,33 @@ function doLogin(){
   var email=document.getElementById('inpEmail').value.trim();if(!email){document.getElementById('loginErr').textContent='請輸入電子郵件';return;}
   var btn=document.getElementById('btnLogin');btn.disabled=true;btn.textContent='驗證中...';document.getElementById('loginErr').textContent='';
   apiGet({action:"swapInit",email:email}).then(function(r){
-    btn.disabled=false;btn.textContent='登入';
-    if(r.error){document.getElementById('loginErr').textContent=r.error;return;}
-    if(r.verify&&r.verify.error){document.getElementById('loginErr').textContent=r.verify.error;return;}
+    // 合併端點成功
+    if(r.error){btn.disabled=false;btn.textContent='登入';document.getElementById('loginErr').textContent=r.error;return;}
+    if(r.verify&&r.verify.error){btn.disabled=false;btn.textContent='登入';document.getElementById('loginErr').textContent=r.verify.error;return;}
     USER=r.verify;EMAIL=email.toLowerCase();
     mySchedule=r.schedule?r.schedule.timetable:[];
     allTeachers=r.teachers?r.teachers.teachers.filter(function(t){return t.id!==USER.teacher.id}):[];
     cachedSwapData=r.swapList||null;
     try{localStorage.setItem('swapSysEmail',email)}catch(e){}
     showTab('apply');updateBadge();
-  }).catch(function(e){btn.disabled=false;btn.textContent='登入';document.getElementById('loginErr').textContent='連線錯誤：'+e.message;});
+  }).catch(function(){
+    // 合併端點失敗，退回逐步呼叫
+    apiGet({action:"verify",email:email}).then(function(r){
+      btn.disabled=false;btn.textContent='登入';
+      if(r.error){document.getElementById('loginErr').textContent=r.error;return;}
+      USER=r;EMAIL=email.toLowerCase();
+      try{localStorage.setItem('swapSysEmail',email)}catch(e){}
+      $('app').innerHTML=mkHeader()+'<div class="center-msg"><div class="spinner"></div><span>載入資料...</span></div>';
+      Promise.all([
+        apiGet({action:"schedule",tid:USER.teacher.id,mode:"personal",cid:""}),
+        apiGet({action:"swapTeachers"})
+      ]).then(function(res){
+        mySchedule=res[0].timetable;allTeachers=res[1].teachers.filter(function(t){return t.id!==USER.teacher.id});
+        showTab('apply');
+        apiGet({action:"swapList",email:EMAIL}).then(function(s){cachedSwapData=s;updateBadge();}).catch(function(){});
+      }).catch(function(e){$('app').innerHTML=mkHeader()+'<div class="center-msg" style="color:#dc2626">❌ '+e.message+'</div>';});
+    }).catch(function(e){btn.disabled=false;btn.textContent='登入';document.getElementById('loginErr').textContent='連線錯誤：'+e.message;});
+  });
 }
 function logout(){USER=null;allTeachers=null;mySchedule=null;partnerSchedule=null;selA=null;selB=null;cachedSwapData=null;swapList=[];swapSelTid='';renderLogin();}
 
