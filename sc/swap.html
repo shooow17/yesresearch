@@ -138,15 +138,33 @@ function logout(){USER=null;allTeachers=null;mySchedule=null;partnerSchedule=nul
 
 function loadInitialData(){
   $('app').innerHTML=mkHeader()+'<div class="center-msg"><div class="spinner"></div><span>載入資料...</span></div>';
+  // 先載入課表和教師（必要），swapList 背景載入
   Promise.all([
     apiGet({action:"schedule",tid:USER.teacher.id,mode:"personal",cid:""}),
-    apiGet({action:"swapTeachers"}),
-    apiGet({action:"swapList",email:EMAIL})
+    apiGet({action:"swapTeachers"})
   ]).then(function(res){
     mySchedule=res[0].timetable;allTeachers=res[1].teachers.filter(function(t){return t.id!==USER.teacher.id});
-    cachedSwapData=res[2];
     showTab('apply');
+    // 背景載入 swapList（更新 badge）
+    apiGet({action:"swapList",email:EMAIL}).then(function(r){cachedSwapData=r;updateBadge();}).catch(function(){});
   }).catch(function(e){$('app').innerHTML=mkHeader()+'<div class="center-msg" style="color:#dc2626">❌ '+e.message+'</div>';});
+}
+function updateBadge(){
+  var badge=document.querySelector('.tab-badge');
+  if(cachedSwapData){
+    var pc=countPending(cachedSwapData);
+    var tabs=document.querySelectorAll('.tab-btn');
+    tabs.forEach(function(t){
+      if(t.textContent.indexOf('待處理')!==-1){
+        var existing=t.querySelector('.tab-badge');
+        if(pc>0){
+          if(existing){existing.textContent=pc;}
+          else{var b=document.createElement('span');b.className='tab-badge';b.textContent=pc;t.appendChild(b);}
+          t.style.color='#dc2626';t.style.fontWeight='900';
+        } else if(existing){existing.remove();}
+      }
+    });
+  }
 }
 function getSwapData(force){
   if(!force&&cachedSwapData)return Promise.resolve(cachedSwapData);
@@ -161,8 +179,8 @@ function mkHeader(){
   h+='<div class="h-right"><div class="user-badge">'+esc(USER.teacher.name)+'（'+esc(USER.teacher.role)+'）</div>';
   h+='<button class="btn-out" onclick="logout()">登出</button></div></div></div>';return h;
 }
-function mkTabs(active,pendingCount){
-  var pc=pendingCount||0;
+function mkTabs(active){
+  var pc=0;if(cachedSwapData)pc=countPending(cachedSwapData);
   var h='<div class="tabs">';
   h+='<button class="tab-btn'+(active==='apply'?' active':'')+'" onclick="showTab(\'apply\')">📝 調課申請</button>';
   h+='<button class="tab-btn'+(active==='history'?' active':'')+'" onclick="showTab(\'history\')">📋 申請紀錄</button>';
@@ -361,7 +379,7 @@ function renderHistoryTab(){
     // 按序號分組
     var groups={};mine.forEach(function(rec){if(!groups[rec.seqNo])groups[rec.seqNo]={status:rec.status,reason:rec.reason,time:rec.time,pairs:[]};groups[rec.seqNo].pairs.push(rec);});
     var pc=countPending(r);
-    var h=mkHeader()+mkTabs('history',pc)+'<div class="main"><div class="card"><h3>📋 我的調課申請</h3>';
+    var h=mkHeader()+mkTabs('history')+'<div class="main"><div class="card"><h3>📋 我的調課申請</h3>';
     var gKeys=Object.keys(groups);
     if(gKeys.length===0){h+='<div class="empty-msg">目前沒有調課申請紀錄</div>';}
     else{gKeys.reverse().forEach(function(seqNo){
@@ -389,10 +407,17 @@ function renderPendingTab(){
     cachedSwapList=r;
     var items=getPendingItems(r);
     var pc=items.length;
-    var h=mkHeader()+mkTabs('pending',pc)+'<div class="main">';
+    var h=mkHeader()+mkTabs('pending')+'<div class="main">';
 
     if(items.length===0){h+='<div class="card"><div class="empty-msg">🎉 目前沒有待處理的項目</div></div>';}
     else{
+      // 批次操作列
+      h+='<div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;flex-wrap:wrap">';
+      h+='<label style="font-size:15px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px"><input type="checkbox" id="chkAll" onchange="toggleAllPending(this.checked)" style="width:20px;height:20px;accent-color:#2563eb"> 全選</label>';
+      h+='<button onclick="batchApproveAll()" style="padding:8px 20px;background:#059669;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit">✅ 批次核准勾選項目</button>';
+      h+='<span id="batchCount" style="font-size:13px;color:#64748b"></span>';
+      h+='</div>';
+
       // 按序號分組
       var pGroups={};items.forEach(function(item){
         var sn=item.rec.seqNo;
@@ -401,7 +426,8 @@ function renderPendingTab(){
       });
       Object.keys(pGroups).forEach(function(seqNo){
         var pg=pGroups[seqNo],role=pg.role;
-        h+='<div class="rev-card"><div class="rev-head"><div class="rev-title">'+esc(pg.nameA)+' 的調課申請（'+pg.pairs.length+'組）</div><div>';
+        h+='<div class="rev-card">';
+        h+='<div class="rev-head"><div style="display:flex;align-items:center;gap:10px"><input type="checkbox" class="pending-chk" value="'+esc(seqNo)+'" onchange="updateBatchCount()" style="width:20px;height:20px;accent-color:#2563eb"><div class="rev-title">'+esc(pg.nameA)+' 的調課申請（'+pg.pairs.length+'組）</div></div><div>';
         if(role==='partner')h+='<span class="rev-role partner">需要您確認</span>';
         else if(role==='reviewer')h+='<span class="rev-role chief">教學組審核</span>';
         else if(role==='approver')h+='<span class="rev-role dean">主任核定</span>';
@@ -419,8 +445,8 @@ function renderPendingTab(){
         h+=renderFlowBar(pg.pairs[0]);
         var aLabel=role==='partner'?'✅ 確認同意':'✅ 核准';
         h+='<div class="rev-actions">';
-        h+='<button class="btn-approve" onclick="doReviewBatch(\''+seqNo+'\',\'approve\')">'+aLabel+'（全部）</button>';
-        h+='<button class="btn-reject" onclick="doReviewBatch(\''+seqNo+'\',\'reject\')">❌ 駁回（全部）</button>';
+        h+='<button class="btn-approve" onclick="doReviewBatch(\''+seqNo+'\',\'approve\')">'+aLabel+'</button>';
+        h+='<button class="btn-reject" onclick="doReviewBatch(\''+seqNo+'\',\'reject\')">❌ 駁回</button>';
         h+='</div></div>';
       });
     }
@@ -447,11 +473,38 @@ function doReview(row,decision){
 
 function doReviewBatch(seqNo,decision){
   var label=decision==='approve'?'核准/確認':'駁回';
-  if(!confirm('確定要「'+label+'」序號 '+seqNo+' 的全部調課申請嗎？'))return;
+  if(!confirm('確定要「'+label+'」序號 '+seqNo+' 的調課申請嗎？'))return;
   apiPost({action:"reviewSwapBatch",seqNo:seqNo,decision:decision,reviewerEmail:EMAIL}).then(function(r){
     if(r.error){alert('❌ '+r.error);return;}
-    alert('✅ 已'+label+'！共 '+r.count+' 筆\n新狀態：'+r.newStatus);invalidateCache();renderPendingTab();
+    alert('✅ 已'+label+'！');invalidateCache();renderPendingTab();
   }).catch(function(e){alert('❌ '+e.message);});}
+
+function toggleAllPending(checked){
+  document.querySelectorAll('.pending-chk').forEach(function(c){c.checked=checked});
+  updateBatchCount();
+}
+function updateBatchCount(){
+  var n=document.querySelectorAll('.pending-chk:checked').length;
+  var el=document.getElementById('batchCount');
+  if(el)el.textContent=n>0?'已勾選 '+n+' 筆':'';
+}
+function batchApproveAll(){
+  var checked=[];
+  document.querySelectorAll('.pending-chk:checked').forEach(function(c){checked.push(c.value)});
+  if(checked.length===0){alert('請先勾選要核准的項目');return;}
+  if(!confirm('確定要批次核准 '+checked.length+' 筆調課申請嗎？'))return;
+
+  var total=checked.length,done=0,fail=0;
+  var promises=checked.map(function(seqNo){
+    return apiPost({action:"reviewSwapBatch",seqNo:seqNo,decision:"approve",reviewerEmail:EMAIL}).then(function(r){
+      if(r.error)fail++;else done++;
+    }).catch(function(){fail++;});
+  });
+  Promise.all(promises).then(function(){
+    alert('✅ 批次核准完成！\n成功 '+done+' 筆'+(fail>0?'，失敗 '+fail+' 筆':''));
+    invalidateCache();renderPendingTab();
+  });
+}
 
 /* ---- 全部紀錄總覽（教學組/主任） ---- */
 function renderOverviewTab(){
@@ -465,7 +518,7 @@ function renderOverviewTab(){
     });
     var gList=Object.values(groups).reverse();
     var pc=countPending(r);
-    var h=mkHeader()+mkTabs('overview',pc)+'<div class="main"><div class="card"><h3>📊 全部調課紀錄（共 '+gList.length+' 筆申請）</h3>';
+    var h=mkHeader()+mkTabs('overview')+'<div class="main"><div class="card"><h3>📊 全部調課紀錄（共 '+gList.length+' 筆申請）</h3>';
     // 狀態篩選
     h+='<div style="margin-bottom:12px;display:flex;gap:8px;flex-wrap:wrap">';
     ['全部','待對方確認','待組長審核','待主任核定','已核准','已駁回'].forEach(function(st){
